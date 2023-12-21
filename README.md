@@ -1,8 +1,8 @@
 # OpenRPGF
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcarlbarrdahl%2Fpokt-rpgf&env=POSTGRES_URL,POSTGRES_PRISMA_URL,POSTGRES_URL_NON_POOLING,POSTGRES_USER,POSTGRES_HOST,POSTGRES_PASSWORD,POSTGRES_DATABASE,NEXTAUTH_SECRET,NEXTAUTH_URL)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgitcoinco%2Fopen-rpgf&env=POSTGRES_URL,POSTGRES_PRISMA_URL,POSTGRES_URL_NON_POOLING,POSTGRES_USER,POSTGRES_HOST,POSTGRES_PASSWORD,POSTGRES_DATABASE,NEXTAUTH_SECRET,NEXTAUTH_URL)
 
-[Fork OpenRPGF](https://github.com/carlbarrdahl/pokt-rpgf/fork)
+[Fork OpenRPGF](https://github.com/gitcoinco/open-rpgf/fork)
 
 **TODO**
 
@@ -33,7 +33,7 @@ _You can edit files directly in GitHub by navigating to a file and clicking the 
 ### Development
 
 ```sh
-git clone https://github.com/carlbarrdahl/pokt-rpgf
+git clone https://github.com/gitcoinco/open-rpgf
 
 bun install # (or pnpm / yarn / npm)
 
