@@ -32,7 +32,7 @@ import { api } from "~/utils/api";
 import { metadata, theme } from "~/config";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
-  statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to RetroPGF",
+  statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
 });
 
 const { config, chains, appInfo } = createWagmiConfig();

@@ -7,8 +7,8 @@ export const config = {
 export const metadata = {
   title: "OpenRPGF",
   description: "OpenRPGF: Open-source Retro Public Goods Funding platform",
-  url: "https://pokt-rpgf.vercel.app",
-  image: "https://i.imgur.com/Dj6VsdH.png",
+  url: "https://open-rpgf.vercel.app",
+  image: "",
 };
 
 export const theme = {
