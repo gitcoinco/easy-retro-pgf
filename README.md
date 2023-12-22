@@ -1,6 +1,8 @@
 # OpenRPGF
 
-![](./docs/screenshot.png)
+#### [View demo](https://open-rpgf.vercel.app)
+
+[<img src="./docs/screenshot.png">](https://open-rpgf.vercel.app)
 
 ## Deploying
 
