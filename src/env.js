@@ -90,7 +90,7 @@ export const env = createEnv({
       .string()
       .default("https://optimism.easscan.org/graphql"),
     NEXT_PUBLIC_WALLETCONNECT_ID: z.string(),
-    NEXT_PUBLIC_ALCHEMY_ID: z.string(),
+    NEXT_PUBLIC_ALCHEMY_ID: z.string().optional(),
 
     NEXT_PUBLIC_SKIP_BADGEHOLDER_CHECK: z.string().default("true"),
   },
