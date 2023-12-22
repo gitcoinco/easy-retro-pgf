@@ -53,12 +53,9 @@ export const ballotRouter = createTRPCRouter({
 
 async function verifyUnpublishedBallot(voterId: string, { ballot }: typeof db) {
   const existing = await ballot.findUnique({ where: { voterId } });
-  if (!existing) {
-    throw new TRPCError({ code: "NOT_FOUND" });
-  }
 
   // Can only be submitted once
-  if (existing.publishedAt) {
+  if (existing?.publishedAt) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Ballot already published",

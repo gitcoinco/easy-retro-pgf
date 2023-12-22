@@ -38,7 +38,7 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_CHAIN_NAME: z.string(),
-    NEXT_PUBLIC_SIGN_STATEMENT: z.string(),
+    NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
 
     NEXT_PUBLIC_MAX_ALLOCATION_TOTAL: z.string().default("30000000"),
     NEXT_PUBLIC_MAX_ALLOCATION_PROJECT: z.string().default("5000000"),

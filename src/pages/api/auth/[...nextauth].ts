@@ -8,12 +8,6 @@ import { SiweMessage } from "siwe";
 import { db } from "~/server/db";
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
-  console.log(
-    "VERCEL_URL",
-    process.env.VERCEL,
-    process.env.VERCEL_URL,
-    process.env.NEXTAUTH_URL,
-  );
   const providers = [
     CredentialsProvider({
       async authorize(credentials) {
@@ -27,6 +21,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
             (process.env.VERCEL_URL
               ? `https://${process.env.VERCEL_URL}`
               : null);
+
           if (!nextAuthUrl) {
             return null;
           }

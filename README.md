@@ -1,36 +1,68 @@
 # OpenRPGF
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgitcoinco%2Fopen-rpgf&env=POSTGRES_URL,POSTGRES_PRISMA_URL,POSTGRES_URL_NON_POOLING,POSTGRES_USER,POSTGRES_HOST,POSTGRES_PASSWORD,POSTGRES_DATABASE,NEXTAUTH_SECRET,NEXTAUTH_URL)
+![](./docs/screenshot.png)
+
+## Deploying
+
+### 1. Fork repo
 
 [Fork OpenRPGF](https://github.com/gitcoinco/open-rpgf/fork)
 
-**TODO**
+1. Press `.env.example` in your newly created repo
+2. Copy its contents and paste into a text editor
 
-- Introduction text about this project
-- Screenshots
-- Deployment Loom video
-
-### Deploying
-
-#### 1. Create a Postgres database
+### 2. Create a Postgres database
 
 https://vercel.com/dashboard/stores?type=postgres
 
-#### 2. Configure the environment variables
+1. Press Create Database button
+2. Select Postgres, press continue, and give it a name and region
+3. Press `.env.local` tab, Copy Snippet and paste into text editor
 
-https://vercel.com/dashboard
+<div>
+    <img width="45%" src="./docs/create_postgres.png">
+    <img width="45%" src="./docs/create_postgres_details.png">
+</div>
 
-Navigate to your project and add the Environment variables found on the Settings tab
+### 3. Create a WalletConnect Cloud account
 
-See `.env.example` for examples
+https://cloud.walletconnect.com
 
-#### 3. Configure theme and metadata
+1. Sign in or register for a new account
+2. Create new Project
+3. Copy ProjectId and paste into text editor
+
+> Can we update the code to not require this step? Does Rainbowkit require WalletConnect?
+
+<div>
+    <img width="32%" src="./docs/walletconnect_create.png">
+    <img width="32%" src="./docs/walletconnect_create2.png">
+    <img width="32%" src="./docs/walletconnect_information.png">
+</div>
+
+### 3. Deploy to Vercel
+
+https://vercel.com/new
+
+1. Import the newly created repo
+2. Open the Environment Variables panel
+3. Select the first field and paste your variables from your text editor
+4. Deploy!
+
+<div>
+<img width="45%" src="./docs/vercel_new.png">
+<img width="45%" src="./docs/vercel_configure.png">
+</div>
+
+## Additional configuration
+
+### Configure theme and metadata
 
 Edit `tailwind.config.ts` and `src/config.ts`
 
 _You can edit files directly in GitHub by navigating to a file and clicking the Pen icon to the right._
 
-### Development
+## Development
 
 ```sh
 git clone https://github.com/gitcoinco/open-rpgf
