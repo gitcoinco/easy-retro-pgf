@@ -10,7 +10,13 @@ import { Menu, X } from "lucide-react";
 
 const Logo = () => (
   <div className="h-10">
-    <img className="max-h-full" src={config.logoUrl} alt={config.title} />
+    {config.logoUrl ? (
+      <img className="max-h-full" src={config.logoUrl} />
+    ) : (
+      <div className="flex h-full w-24 items-center justify-center rounded-full border-2 border-dashed border-white text-xs font-medium tracking-wider ">
+        Open RPGF
+      </div>
+    )}
   </div>
 );
 

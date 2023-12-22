@@ -1,5 +1,5 @@
 export const config = {
-  logoUrl: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='80'%3E%3Crect width='200' height='80' style='stroke-width:10;stroke:rgb(255,255,255);fill:transparent' stroke-dasharray='8' /%3E%3Ctext x='16' y='48' style='fill:white;font-family:system-ui;font-size:32' textLength='170'%3EYour logo%3C/text%3E%3C/svg%3E`,
+  logoUrl: "",
 
   pageSize: 3 * 4,
 };
