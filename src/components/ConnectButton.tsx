@@ -27,8 +27,14 @@ export const ConnectButton = () => {
         openChainModal,
         openConnectModal,
         mounted,
+        authenticationStatus,
       }) => {
-        const connected = mounted && account && chain;
+        const ready = mounted && authenticationStatus !== "loading";
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus || authenticationStatus === "authenticated");
 
         return (
           <div
