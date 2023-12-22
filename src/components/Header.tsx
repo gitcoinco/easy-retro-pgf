@@ -13,7 +13,7 @@ const Logo = () => (
     {config.logoUrl ? (
       <img className="max-h-full" src={config.logoUrl} />
     ) : (
-      <div className="flex h-full w-24 items-center justify-center rounded-full border-2 border-dashed border-white text-xs font-medium tracking-wider ">
+      <div className="flex h-full w-24 items-center justify-center rounded-full border-2 border-dashed border-white text-xs font-medium tracking-wider text-white">
         Open RPGF
       </div>
     )}
