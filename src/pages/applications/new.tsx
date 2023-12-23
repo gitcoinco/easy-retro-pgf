@@ -1,6 +1,6 @@
 import { Layout } from "~/layouts/DefaultLayout";
 
-import { NewApplicationForm } from "~/features/applications/components/NewApplicationForm";
+import { ApplicationForm } from "~/features/applications/components/ApplicationForm";
 import { Markdown } from "~/components/ui/Markdown";
 
 export default function NewProjectPage() {
@@ -15,7 +15,7 @@ then be reviewed by our admins.
 Your progress is saved locally so you can return to this page to resume your application.
 `}
       </Markdown>
-      <NewApplicationForm />
+      <ApplicationForm />
     </Layout>
   );
 }

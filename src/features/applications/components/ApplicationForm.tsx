@@ -87,7 +87,7 @@ function useUploadMetadata() {
   );
 }
 
-export function NewApplicationForm() {
+export function ApplicationForm() {
   const attestation = useCreateAttestation();
   const metadata = useUploadMetadata();
 
