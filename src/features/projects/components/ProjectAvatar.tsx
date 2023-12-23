@@ -8,5 +8,5 @@ export function ProjectAvatar({
   ...props
 }: { metadataPtr?: string } & ComponentProps<typeof Avatar>) {
   const { data: metadata } = useProfileMetadata(metadataPtr);
-  return <Avatar bordered {...props} src={metadata?.profileImageUrl} />;
+  return <Avatar {...props} src={metadata?.profileImageUrl} />;
 }

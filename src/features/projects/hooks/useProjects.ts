@@ -10,7 +10,7 @@ export function useProjectById(id: string) {
 const seed = 0;
 // const seed = Math.random();
 export function useProjects() {
-  return api.projects.query.useInfiniteQuery(
+  return api.projects.search.useInfiniteQuery(
     { limit: config.pageSize, seed },
     {
       getNextPageParam: (_, pages) => pages.length + 1,

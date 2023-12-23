@@ -1,7 +1,7 @@
 import { SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
 import { useMutation } from "@tanstack/react-query";
 import { PlusIcon, Trash } from "lucide-react";
-import { ReactNode } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { Z } from "vitest/dist/reporters-O4LBziQ_.js";
 import { z } from "zod";
@@ -123,7 +123,10 @@ export function ApplicationForm() {
         }}
       >
         <FormControl name="name" label="Name" required>
-          <Input placeholder="Impactful Project" className="text-3xl" />
+          <Input
+            placeholder="Impactful Project"
+            className="text-3xl font-semibold"
+          />
         </FormControl>
         <div className="mb-4 gap-4 md:flex">
           <div>
@@ -175,94 +178,106 @@ export function ApplicationForm() {
           <Textarea rows={4} placeholder="What impact has your project had?" />
         </FormControl>
 
-        <FieldArray
-          name="contributionLinks"
+        <FormSection
           label="Contribution links"
-          renderField={(field, i) => (
-            <>
-              <FormControl
-                className="min-w-96 flex-1"
-                name={`contributionLinks.${i}.description`}
-                required
-              >
-                <Input placeholder="Description" />
-              </FormControl>
-              <FormControl name={`contributionLinks.${i}.url`} required>
-                <Input placeholder="https://" />
-              </FormControl>
-              <FormControl name={`contributionLinks.${i}.type`} required>
-                <Select>
-                  {Object.entries(contributionTypes).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-            </>
-          )}
-        />
+          description="Where can we find your contributions?"
+        >
+          <FieldArray
+            name="contributionLinks"
+            renderField={(field, i) => (
+              <>
+                <FormControl
+                  className="min-w-96 flex-1"
+                  name={`contributionLinks.${i}.description`}
+                  required
+                >
+                  <Input placeholder="Description" />
+                </FormControl>
+                <FormControl name={`contributionLinks.${i}.url`} required>
+                  <Input placeholder="https://" />
+                </FormControl>
+                <FormControl name={`contributionLinks.${i}.type`} required>
+                  <Select>
+                    {Object.entries(contributionTypes).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            )}
+          />
+        </FormSection>
 
-        <FieldArray
-          name="impactMetrics"
-          label="ImpactMetrics"
-          renderField={(field, i) => (
-            <>
-              <FormControl
-                className="min-w-96 flex-1"
-                name={`impactMetrics.${i}.description`}
-                required
-              >
-                <Input placeholder="Description" />
-              </FormControl>
-              <FormControl name={`impactMetrics.${i}.url`} required>
-                <Input placeholder="https://" />
-              </FormControl>
-              <FormControl
-                name={`impactMetrics.${i}.number`}
-                required
-                valueAsNumber
-              >
-                <Input type="number" placeholder="Number" />
-              </FormControl>
-            </>
-          )}
-        />
+        <FormSection
+          label="Impact metrics"
+          description="What kind of impact have your project made?"
+        >
+          <FieldArray
+            name="impactMetrics"
+            renderField={(field, i) => (
+              <>
+                <FormControl
+                  className="min-w-96 flex-1"
+                  name={`impactMetrics.${i}.description`}
+                  required
+                >
+                  <Input placeholder="Description" />
+                </FormControl>
+                <FormControl name={`impactMetrics.${i}.url`} required>
+                  <Input placeholder="https://" />
+                </FormControl>
+                <FormControl
+                  name={`impactMetrics.${i}.number`}
+                  required
+                  valueAsNumber
+                >
+                  <Input type="number" placeholder="Number" />
+                </FormControl>
+              </>
+            )}
+          />
+        </FormSection>
 
-        <FieldArray
-          name="fundingSources"
+        <FormSection
           label="Funding sources"
-          renderField={(field, i) => (
-            <>
-              <FormControl
-                className="min-w-96 flex-1"
-                name={`fundingSources.${i}.description`}
-                required
-              >
-                <Input placeholder="Description" />
-              </FormControl>
-              <FormControl
-                name={`fundingSources.${i}.amount`}
-                required
-                valueAsNumber
-              >
-                <Input type="number" placeholder="Amount" />
-              </FormControl>
-              <FormControl name={`fundingSources.${i}.currency`} required>
-                <Input placeholder="USD" />
-              </FormControl>
-              <FormControl name={`fundingSources.${i}.type`} required>
-                <Select>
-                  {Object.entries(contributionTypes).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-            </>
-          )}
-        />
+          description="From what sources have you received funding?"
+        >
+          <FieldArray
+            name="fundingSources"
+            renderField={(field, i) => (
+              <>
+                <FormControl
+                  className="min-w-96 flex-1"
+                  name={`fundingSources.${i}.description`}
+                  required
+                >
+                  <Input placeholder="Description" />
+                </FormControl>
+                <FormControl
+                  name={`fundingSources.${i}.amount`}
+                  required
+                  valueAsNumber
+                >
+                  <Input type="number" placeholder="Amount" />
+                </FormControl>
+                <FormControl name={`fundingSources.${i}.currency`} required>
+                  <Input placeholder="USD" />
+                </FormControl>
+                <FormControl name={`fundingSources.${i}.type`} required>
+                  <Select>
+                    {Object.entries(contributionTypes).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            )}
+          />
+        </FormSection>
 
         <div className="flex items-center justify-between">
           {error ? (
@@ -290,12 +305,28 @@ export function ApplicationForm() {
   );
 }
 
-function FieldArray<S extends z.Schema>({
+function FormSection({
   label,
+  description,
+  children,
+}: PropsWithChildren<{ label: string; description: string }>) {
+  return (
+    <div>
+      <div>
+        <Heading as="h3" size="xl" className="mb-0 mt-0 text-gray-300">
+          {label}
+        </Heading>
+        <p className="mb-4 leading-loose text-gray-400">{description}</p>
+      </div>
+
+      <div>{children}</div>
+    </div>
+  );
+}
+function FieldArray<S extends z.Schema>({
   name,
   renderField,
 }: {
-  label: string;
   name: string;
   renderField: (field: z.infer<S>, index: number) => ReactNode;
 }) {
@@ -309,11 +340,6 @@ function FieldArray<S extends z.Schema>({
 
   return (
     <div className="mb-8">
-      <div className="mb-2 flex items-center justify-between">
-        <Heading as="h3" size="lg" className="mb-0 mt-0 text-gray-300">
-          {label}
-        </Heading>
-      </div>
       {error && (
         <div className="border border-red-900 p-2 dark:text-red-500">
           {String(error)}

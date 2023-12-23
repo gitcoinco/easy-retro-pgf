@@ -78,7 +78,10 @@ function ProjectItem({
   const { data: profile } = useProfile(attestation?.attester);
   const metadata = useProjectMetadata(attestation?.metadataPtr);
   return (
-    <div className="rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500">
+    <article
+      data-testid={`project-${attestation.id}`}
+      className="rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
+    >
       <ProjectBanner isLoading={isLoading} metadataPtr={profile?.metadataPtr} />
       <ProjectAvatar
         rounded="full"
@@ -94,6 +97,6 @@ function ProjectItem({
           {metadata.data?.bio}
         </Skeleton>
       </p>
-    </div>
+    </article>
   );
 }

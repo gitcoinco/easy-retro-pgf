@@ -1,3 +1,7 @@
+console.log(
+  "process.env.NEXT_PUBLIC_VOTING_END_DATE",
+  process.env.NEXT_PUBLIC_VOTING_END_DATE,
+);
 export const config = {
   logoUrl: "",
   pageSize: 3 * 4,

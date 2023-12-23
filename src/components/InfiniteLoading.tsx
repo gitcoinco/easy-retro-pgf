@@ -35,6 +35,8 @@ export function InfiniteLoading<T>({
     [data],
   );
 
+  console.log(items, data);
+
   return (
     <div>
       <div className={`mb-16 grid ${columnMap[columns]} gap-4`}>

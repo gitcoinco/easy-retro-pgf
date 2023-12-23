@@ -26,30 +26,10 @@ import { useInterval, useLocalStorage } from "react-use";
 
 const inputBase = [
   "w-full",
-  // "border-none",
-  // "dark:bg-gray-800",
   "dark:bg-gray-900",
-  // "!ring-gray-400",
-  // "flex",
-  // "w-full",
-  // "border",
-  // "border-gray-300",
-  // "bg-background",
-  // "px-3",
-  // "py-2",
-  // "bg-transparent",
-  // "text-gray-900",
-  // "dark:text-gray-100",
-  // "ring-offset-background",
-  // "file:border-0",
-  // "placeholder:text-gray-600",
-  // "focus-visible:outline-none",
-  // "focus-visible:ring-2",
-  // "focus-visible:ring-ring",
-  // "focus-visible:ring-offset-2",
-  // "disabled:cursor-not-allowed",
-  // "disabled:bg-gray-200",
-  // "disabled:dark:bg-gray-800",
+  "dark:text-gray-300",
+  "dark:border-gray-700",
+  "rounded",
   "disabled:opacity-30",
 ];
 export const Input = createComponent(
@@ -119,7 +99,7 @@ export const SearchInput = forwardRef(function SearchInput(
 export const Label = createComponent(
   "label",
   tv({
-    base: "block tracking-wider dark:text-gray-300",
+    base: "block tracking-wider dark:text-gray-300 font-semibold",
     variants: { required: { true: "after:content-['*']" } },
   }),
 );
@@ -144,8 +124,6 @@ export const FormControl = ({
     register,
     formState: { errors },
   } = useFormContext();
-
-  // const error = errors[name];
 
   // Get error for name - handles field arrays (field.index.prop)
   const error = name.split(".").reduce(
@@ -180,7 +158,7 @@ export interface FormProps<S extends z.Schema> extends PropsWithChildren {
 export function Form<S extends z.Schema>({
   schema,
   children,
-  persist = "",
+  persist,
   defaultValues,
   onSubmit,
 }: FormProps<S>) {
@@ -191,7 +169,7 @@ export function Form<S extends z.Schema>({
     mode: "onBlur",
   });
 
-  usePersistForm(persist, form);
+  usePersistForm(form, persist);
 
   // Pass the form methods to a FormProvider. This lets us access the form from components with useFormContext
   return (
@@ -203,8 +181,9 @@ export function Form<S extends z.Schema>({
   );
 }
 
-function usePersistForm(persist: string, form: UseFormReturn<FieldValues>) {
-  const [draft, saveDraft] = useLocalStorage(persist);
+function usePersistForm(form: UseFormReturn<FieldValues>, persist?: string) {
+  // useLocalStorage needs a string to be initialized
+  const [draft, saveDraft] = useLocalStorage(persist ?? "not-set");
 
   useInterval(() => {
     if (persist) saveDraft(form?.getValues());

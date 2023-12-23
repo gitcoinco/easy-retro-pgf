@@ -8,6 +8,7 @@ import { api } from "~/utils/api";
 
 export function useSaveBallot() {
   const utils = api.useUtils();
+
   const save = api.ballot.save.useMutation({
     // Refetch the ballot to update the UI
     onSuccess: () => utils.ballot.invalidate().catch(console.log),

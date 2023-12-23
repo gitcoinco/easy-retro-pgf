@@ -65,7 +65,7 @@ export const projectsRouter = createTRPCRouter({
         return attestation ? parseProject(attestation) : undefined;
       });
     }),
-  query: publicProcedure.input(FilterSchema).query(async ({ input }) => {
+  search: publicProcedure.input(FilterSchema).query(async ({ input }) => {
     return fetchAttestations([eas.schemas.approvedApplicationsSchema], {
       where: { attester: { in: eas.admins } },
     })

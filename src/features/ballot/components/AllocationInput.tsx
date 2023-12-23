@@ -2,8 +2,8 @@ import { type ComponentPropsWithRef } from "react";
 import { NumericFormat } from "react-number-format";
 import { useFormContext, Controller } from "react-hook-form";
 
-import { MAX_ALLOCATION_PROJECT } from "~/features/projects/components/AddToBallot";
 import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
+import { config } from "~/config";
 
 export const AllocationInput = ({
   name,
@@ -22,12 +22,13 @@ export const AllocationInput = ({
         name={name!}
         render={({ field }) => (
           <NumericFormat
+            aria-label="allocation-input"
             customInput={Input}
             error={props.error}
             {...field}
             className="pr-16"
             isAllowed={({ floatValue }) =>
-              (floatValue ?? 0) <= MAX_ALLOCATION_PROJECT
+              (floatValue ?? 0) <= config.votingMaxProject
             }
             disabled={props.disabled}
             defaultValue={props.defaultValue as string}

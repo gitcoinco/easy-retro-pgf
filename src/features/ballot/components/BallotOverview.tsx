@@ -15,10 +15,8 @@ import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn, useVotingTimeLeft } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
+import { config } from "~/config";
 
-export const MAX_ALLOCATION_TOTAL = Number(
-  process.env.NEXT_PUBLIC_MAX_ALLOCATION_TOTAL!,
-);
 export const BallotOverview = () => {
   const router = useRouter();
 
@@ -56,7 +54,7 @@ export const BallotOverview = () => {
                 OP allocated:
                 <div
                   className={clsx("text-gray-900 dark:text-gray-300", {
-                    ["text-primary-500"]: sum > MAX_ALLOCATION_TOTAL,
+                    ["text-primary-500"]: sum > config.votingMaxTotal,
                   })}
                 >
                   {formatNumber(sum)} OP
@@ -64,10 +62,10 @@ export const BallotOverview = () => {
               </div>
             }
           >
-            <Progress value={sum} max={MAX_ALLOCATION_TOTAL} />
+            <Progress value={sum} max={config.votingMaxTotal} />
             <div className="flex justify-between text-xs">
               <div>Total</div>
-              <div>{formatNumber(MAX_ALLOCATION_TOTAL)} OP</div>
+              <div>{formatNumber(config.votingMaxTotal)} OP</div>
             </div>
           </BallotSection>
           {ballot?.publishedAt ? (
@@ -75,7 +73,7 @@ export const BallotOverview = () => {
               View submitted ballot
             </Button>
           ) : canSubmit ? (
-            <SubmitBallotButton disabled={sum > MAX_ALLOCATION_TOTAL} />
+            <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
           ) : allocations.length ? (
             <Button
               className="w-full"
