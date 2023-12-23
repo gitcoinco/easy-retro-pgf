@@ -23,6 +23,7 @@
     "@rainbow-me/rainbowkit": "^1.3.1",
     "@rainbow-me/rainbowkit-siwe-next-auth": "^0.3.4",
     "@t3-oss/env-nextjs": "^0.7.1",
+    "@tailwindcss/forms": "^0.5.7",
     "@tanstack/react-query": "^4.36.1",
     "@trpc/client": "^10.44.1",
     "@trpc/next": "^10.44.1",
