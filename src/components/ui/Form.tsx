@@ -81,6 +81,18 @@ export const InputIcon = createComponent(
   }),
 );
 
+export const Select = createComponent(
+  "select",
+  tv({
+    base: [...inputBase, "h-12"],
+    variants: {
+      error: {
+        true: "ring-primary-500",
+      },
+    },
+  }),
+);
+
 export const SearchInput = forwardRef(function SearchInput(
   { ...props }: ComponentPropsWithRef<typeof Input>,
   ref,
@@ -96,7 +108,10 @@ export const SearchInput = forwardRef(function SearchInput(
   );
 });
 
-export const Label = createComponent("label", tv({ base: "pb-1 block" }));
+export const Label = createComponent(
+  "label",
+  tv({ base: "pb-1 block tracking-wider dark:text-gray-300" }),
+);
 export const Textarea = createComponent("textarea", tv({ base: inputBase }));
 
 export const FormControl = ({
@@ -108,7 +123,7 @@ export const FormControl = ({
   className,
 }: {
   name: string;
-  label: string;
+  label?: string;
   required?: boolean;
   hint?: string;
 } & ComponentPropsWithoutRef<"fieldset">) => {
@@ -120,17 +135,19 @@ export const FormControl = ({
   const error = errors[name];
   return (
     <fieldset className={clsx("mb-4", className)}>
-      <Label htmlFor={name}>
-        {label}
-        {required ? <span className="text-red-300">*</span> : ""}
-      </Label>
+      {label && (
+        <Label htmlFor={name}>
+          {label}
+          {required ? <span className="text-red-300">*</span> : ""}
+        </Label>
+      )}
       {cloneElement(children as ReactElement, { id: name, ...register(name) })}
-      {hint ? <div className="pt-1 text-xs text-gray-500">{hint}</div> : null}
-      {error ? (
+      {hint && <div className="pt-1 text-xs text-gray-500">{hint}</div>}
+      {error && (
         <div className="pt-1 text-xs text-red-500">
           {error.message as string}
         </div>
-      ) : null}
+      )}
     </fieldset>
   );
 };
@@ -138,16 +155,29 @@ export const FormControl = ({
 export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   defaultValues?: UseFormProps<z.infer<S>>["defaultValues"];
   schema: S;
+  persist?: string;
   onSubmit: (values: z.infer<S>) => void;
-  onChange?: (values: z.infer<S>) => void;
 }
 
+function loadDraft<T>(key?: string) {
+  if (!key || typeof window === "undefined") return undefined;
+  try {
+    const value = global.localStorage?.getItem(key);
+    return value ? (JSON.parse(value) as T) : undefined;
+  } catch (error) {}
+}
+function saveDraft(key?: string, draft?: Record<string, unknown>) {
+  if (!key || typeof window === "undefined") return undefined;
+  try {
+    global.localStorage?.setItem(key, draft ? JSON.stringify(draft) : "");
+  } catch (error) {}
+}
 export function Form<S extends z.Schema>({
-  defaultValues,
   schema,
   children,
+  persist,
+  defaultValues = loadDraft(persist),
   onSubmit,
-  onChange,
 }: FormProps<S>) {
   // Initialize the form with defaultValues and schema for validation
   const form = useForm({
@@ -158,8 +188,10 @@ export function Form<S extends z.Schema>({
 
   const formValues = form.watch();
   useEffect(() => {
-    onChange?.(formValues);
-  }, [formValues, onChange]);
+    // Store in localStorage (add debounce)
+    console.log("Saving draft", formValues);
+    saveDraft(persist, formValues);
+  }, [formValues]);
 
   // Pass the form methods to a FormProvider. This lets us access the form from components without passing props.
   return (

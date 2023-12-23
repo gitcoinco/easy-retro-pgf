@@ -3,20 +3,21 @@ import { useAccount, useDisconnect } from "wagmi";
 import { useSession } from "next-auth/react";
 
 import { Dialog } from "./ui/Dialog";
-import { Alert } from "./ui/Alert";
-import { useBadgeHolder } from "~/hooks/useBadgeHolder";
+import { useApprovedVoter } from "~/hooks/useApprovedVoter";
+import { metadata } from "~/config";
 
 export const EligibilityDialog = () => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const { data: session } = useSession();
-  const { data, isLoading, error } = useBadgeHolder(address!);
+  const { data, isLoading, error } = useApprovedVoter(address!);
 
   if (isLoading || !address || !session || error) return null;
 
   return (
     <Dialog
-      isOpen={data?.length === 0}
+      size="sm"
+      isOpen={!data}
       onOpenChange={() => disconnect()}
       title={
         <>
@@ -24,14 +25,14 @@ export const EligibilityDialog = () => {
         </>
       }
     >
-      <Alert variant="warning">
-        Only badgeholders are able to vote in RetroPGF. You can find out more
-        about how badgeholders are selected{" "}
+      <div>
+        Only badgeholders are able to vote in {metadata.title}. You can find out
+        more about how badgeholders are selected{" "}
         <Link href="" target="_blank" className="underline underline-offset-2">
           here
         </Link>
         .
-      </Alert>
+      </div>
     </Dialog>
   );
 };

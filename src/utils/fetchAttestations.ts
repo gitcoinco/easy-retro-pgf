@@ -9,7 +9,7 @@ type AttestationsFilter = {
   skip?: number;
   where?: {
     id?: { equals?: string; in?: string[] };
-    attester?: { equals: string };
+    attester?: { in: string[] };
     schemaId?: { in: string[] };
   };
 };

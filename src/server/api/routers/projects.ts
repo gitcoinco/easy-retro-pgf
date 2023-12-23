@@ -27,7 +27,7 @@ export const FilterSchema = z.object({
 export const projectsRouter = createTRPCRouter({
   count: publicProcedure.query(async ({}) => {
     return fetchAttestations([eas.schemas.approvedApplicationsSchema], {
-      where: { attester: { equals: eas.attesterAddress } },
+      where: { attester: { in: eas.admins } },
     })
       .then(filterApproved)
       .then((attestations) => {
@@ -67,7 +67,7 @@ export const projectsRouter = createTRPCRouter({
     }),
   query: publicProcedure.input(FilterSchema).query(async ({ input }) => {
     return fetchAttestations([eas.schemas.approvedApplicationsSchema], {
-      where: { attester: { equals: eas.attesterAddress } },
+      where: { attester: { in: eas.admins } },
     })
       .then(filterApproved)
       .then((attestations) => {
