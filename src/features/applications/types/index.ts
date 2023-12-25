@@ -13,7 +13,7 @@ export const ProfileSchema = z.object({
   bannerImageUrl: z.string(),
 });
 
-export type ProfileSchema = z.infer<typeof ProfileSchema>;
+export type Profile = z.infer<typeof ProfileSchema>;
 
 export const contributionTypes = {
   CONTRACT_ADDRESS: "Contract address",
@@ -28,7 +28,7 @@ export const fundingSourceTypes = {
   OTHER: "Other",
 } as const;
 
-export const ApplicationCreateSchema = z.object({
+export const ApplicationSchema = z.object({
   name: z.string().min(3),
   description: z.string().min(3),
   websiteUrl: z.string().url().min(1),
@@ -65,4 +65,4 @@ export const ApplicationCreateSchema = z.object({
     .min(1),
 });
 
-export type ApplicationCreateSchema = z.infer<typeof ApplicationCreateSchema>;
+export type Application = z.infer<typeof ApplicationSchema>;

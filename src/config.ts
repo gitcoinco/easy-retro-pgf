@@ -12,7 +12,7 @@ export const config = {
     process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK!,
   ),
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
-
+  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
   network,
 };
 
@@ -30,7 +30,7 @@ export const theme = {
 export const eas = {
   url: process.env.NEXT_PUBLIC_EASSCAN_URL ?? "",
   attesterAddress: process.env.NEXT_PUBLIC_APPROVED_APPLICATIONS_ATTESTER ?? "",
-  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
+
   contracts: {
     eas:
       process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS ??

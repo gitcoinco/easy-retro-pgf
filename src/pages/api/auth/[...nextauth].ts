@@ -16,11 +16,11 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
             JSON.parse(credentials?.message ?? "{}") as Partial<SiweMessage>,
           );
 
-          const nextAuthUrl =
-            process.env.NEXTAUTH_URL ??
-            (process.env.VERCEL_URL
-              ? `https://${process.env.VERCEL_URL}`
-              : null);
+          const nextAuthUrl = parseUrl(
+            process.env.NEXTAUTH_URL ?? process.env.VERCEL_URL,
+          ).origin;
+
+          console.log({ nextAuthUrl });
 
           if (!nextAuthUrl) {
             return null;
@@ -79,6 +79,40 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     session: {
       strategy: "jwt",
     },
+  };
+}
+
+function parseUrl(url?: string): {
+  /** @default "http://localhost:3000" */
+  origin: string;
+  /** @default "localhost:3000" */
+  host: string;
+  /** @default "/api/auth" */
+  path: string;
+  /** @default "http://localhost:3000/api/auth" */
+  base: string;
+  /** @default "http://localhost:3000/api/auth" */
+  toString: () => string;
+} {
+  const defaultUrl = new URL("http://localhost:3000/api/auth");
+
+  if (url && !url.startsWith("http")) {
+    url = `https://${url}`;
+  }
+
+  const _url = new URL(url ?? defaultUrl);
+  const path = (_url.pathname === "/" ? defaultUrl.pathname : _url.pathname)
+    // Remove trailing slash
+    .replace(/\/$/, "");
+
+  const base = `${_url.origin}${path}`;
+
+  return {
+    origin: _url.origin,
+    host: _url.host,
+    path,
+    base,
+    toString: () => base,
   };
 }
 

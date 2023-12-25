@@ -1,14 +1,7 @@
 import { type Address } from "viem";
 
-export type Attestation = {
-  id: string;
-  name: string;
-  attester: Address;
-  metadataPtr: string;
-};
-
 export type ProjectMetadata = {
-  bio: string;
+  description: string;
   payoutAddress: Address;
   contributionDescription: string;
   impactDescription: string;

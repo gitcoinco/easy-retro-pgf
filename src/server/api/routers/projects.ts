@@ -2,13 +2,10 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
-  type AttestationWithMetadata,
   fetchAttestations,
-  parseDecodedMetadata,
 } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
-import { type Attestation } from "~/features/projects/types";
-import { eas } from "~/config";
+import { config, eas } from "~/config";
 
 export const SortEnum = z.enum(["shuffle", "name"]).optional();
 export const TypeEnum = z
@@ -24,7 +21,7 @@ export const FilterSchema = z.object({
 export const projectsRouter = createTRPCRouter({
   count: publicProcedure.query(async ({}) => {
     return fetchAttestations([eas.schemas.approval], {
-      where: { attester: { in: eas.admins } },
+      where: { attester: { in: config.admins } },
     }).then((attestations) => {
       const approvedIds = attestations.map(({ refUID }) => refUID);
       return { count: approvedIds.length };
@@ -48,29 +45,20 @@ export const projectsRouter = createTRPCRouter({
         if (!attestation) {
           throw new TRPCError({ code: "NOT_FOUND" });
         }
-
-        console.log("attestation", attestation);
-        return attestation ? parseProject(attestation) : undefined;
+        return attestation;
       });
     }),
   search: publicProcedure.input(FilterSchema).query(async ({ input }) => {
     return fetchAttestations([eas.schemas.approval], {
-      where: { attester: { in: eas.admins } },
+      where: { attester: { in: config.admins } },
     }).then((attestations) => {
       const approvedIds = attestations.map(({ refUID }) => refUID);
       return fetchAttestations([eas.schemas.metadata], {
         take: input.limit,
         skip: input.cursor * input.limit,
         where: { id: { in: approvedIds } },
-      }).then((attestations) => attestations.map(parseProject));
+      });
     });
   }),
 });
 
-function parseProject({
-  id,
-  attester,
-  decodedDataJson,
-}: AttestationWithMetadata): Attestation {
-  return { id, attester, ...parseDecodedMetadata(decodedDataJson) };
-}

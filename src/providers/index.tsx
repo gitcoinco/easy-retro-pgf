@@ -23,7 +23,7 @@ import {
   type GetSiweMessageOptions,
 } from "@rainbow-me/rainbowkit-siwe-next-auth";
 
-import { metadata, theme } from "~/config";
+import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
@@ -37,7 +37,7 @@ export function Providers({
   session,
 }: PropsWithChildren<{ session?: Session }>) {
   return (
-    <ThemeProvider attribute="class" forcedTheme={theme.colorMode}>
+    <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>
         <WagmiConfig config={config}>
           <RainbowKitSiweNextAuthProvider
@@ -55,14 +55,14 @@ export function Providers({
 }
 
 function createWagmiConfig() {
-  const activeChains: wagmiChains.Chain[] = [wagmiChains.mainnet];
+  const activeChains: wagmiChains.Chain[] = [
+    wagmiChains.mainnet,
+    appConfig.config.network,
+  ];
 
-  const configuredChain: wagmiChains.Chain | undefined =
-    wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains];
-
-  if (configuredChain) {
-    activeChains.push(configuredChain);
-  }
+  // if (configuredChain) {
+  //   activeChains.push(configuredChain);
+  // }
   if (process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true") {
     activeChains.push(wagmiChains.optimismGoerli);
   }
@@ -75,7 +75,7 @@ function createWagmiConfig() {
   );
 
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
-  const appName = metadata.title;
+  const appName = appConfig.metadata.title;
 
   const { wallets } = getDefaultWallets({ appName, projectId, chains });
 

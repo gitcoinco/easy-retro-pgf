@@ -8,12 +8,13 @@ import { createComponent } from "~/components/ui";
 import { Avatar } from "~/components/ui/Avatar";
 import { Table, Tbody, Tr, Td } from "~/components/ui/Table";
 import { formatNumber } from "~/utils/formatNumber";
-import { useProfile, useProfileMetadata } from "~/hooks/useProfile";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
 import { api } from "~/utils/api";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
 import { type Vote } from "../types";
+import { useProjectById } from "~/features/projects/hooks/useProjects";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -27,12 +28,7 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => (
         {votes?.map((project) => (
           <Tr key={project.projectId}>
             <Td className={"w-full"}>
-              <ProjectAvatarWithName
-                link
-                id={project.projectId}
-
-                // {...{ [projectIdKey]: project.projectId }}
-              />
+              <ProjectAvatarWithName link id={project.projectId} />
             </Td>
             <Td className="whitespace-nowrap text-right">
               {formatNumber(project.amount)} OP
@@ -61,8 +57,6 @@ export function AllocationForm({
     keyName: "key",
     control: form.control,
   });
-
-  console.log("Allocation form", fields);
 
   return (
     <AllocationListWrapper>
@@ -131,9 +125,8 @@ export const ProjectAvatarWithName = ({
   link?: boolean;
   subtitle?: string;
 }) => {
-  const { data: project } = api.projects.get.useQuery({ id });
-  const { data: profile } = useProfile(project?.attester);
-  const { data: metadata } = useProfileMetadata(profile?.metadataPtr);
+  const { data: project } = useProjectById(id!);
+  const { data: metadata } = useProfileWithMetadata(project?.attester);
   const Component = link ? Link : "div";
 
   return (
@@ -142,9 +135,9 @@ export const ProjectAvatarWithName = ({
       className={clsx("flex flex-1 items-center gap-2 py-1 ", {
         ["hover:underline"]: link,
       })}
-      href={`/projects/${project?.id}`}
+      href={`/projects/${id}`}
     >
-      <Avatar rounded="full" size="sm" src={metadata?.profileImageUrl} />
+      <Avatar rounded="full" size="sm" src={metadata?.avatarImageUrl} />
       <div>
         <div className="font-bold">{project?.name}</div>
         <div className="text-muted">{subtitle}</div>

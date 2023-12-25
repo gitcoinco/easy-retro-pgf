@@ -1,5 +1,5 @@
 import { config, eas } from "~/config";
-import { type Attestation } from "~/features/projects/types";
+import { type Attestation } from "./fetchAttestations";
 
 const query = `
   query Attestations($where: AttestationWhereInput) {
@@ -10,7 +10,9 @@ const query = `
   }
 `;
 
-export async function fetchApprovedVoter(address: string) {
+export async function fetchApprovedVoter(address: string): Promise<boolean> {
+  if (config.skipApprovedVoterCheck) return true;
+
   return fetch(eas.url, {
     method: "POST",
     body: JSON.stringify({
@@ -19,7 +21,7 @@ export async function fetchApprovedVoter(address: string) {
         where: {
           recipient: { equals: address },
           schemaId: { equals: eas.schemas.badgeholder },
-          attester: { in: eas.admins },
+          attester: { in: config.admins },
           revoked: { equals: false },
         },
       },
@@ -34,6 +36,6 @@ export async function fetchApprovedVoter(address: string) {
     })
     .then(
       (r: { data: { attestations: Attestation[] } }) =>
-        config.skipApprovedVoterCheck ?? r.data.attestations.length > 0,
+        r.data.attestations.length > 0,
     );
 }

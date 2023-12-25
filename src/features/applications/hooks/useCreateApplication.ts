@@ -3,7 +3,7 @@ import { config, eas } from "~/config";
 import { useUploadMetadata } from "~/hooks/useMetadata";
 import { toast } from "sonner";
 import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
-import type { ApplicationCreateSchema, ProfileSchema } from "../types";
+import type { Application, Profile } from "../types";
 
 export function useCreateApplication() {
   const attestation = useCreateAttestation();
@@ -11,10 +11,7 @@ export function useCreateApplication() {
   const upload = useUploadMetadata();
 
   const mutation = useMutation(
-    async (values: {
-      application: ApplicationCreateSchema;
-      profile: ProfileSchema;
-    }) => {
+    async (values: { application: Application; profile: Profile }) => {
       console.log("Uploading profile and application metadata");
       return Promise.all([
         upload.mutateAsync(values.application).then(({ url: metadataPtr }) => {

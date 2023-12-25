@@ -1,9 +1,24 @@
-import { fromHex, type Address, toHex } from "viem";
+import { fromHex, type Address } from "viem";
 import { eas } from "~/config";
 import { createCachedFetch } from "./fetch";
 import { ethers } from "ethers";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
+
+export type AttestationWithMetadata = {
+  id: string;
+  refUID: string;
+  attester: Address;
+  recipient: string;
+  revoked: boolean;
+  decodedDataJson: string;
+  schemaId: string;
+};
+
+export type Attestation = Omit<AttestationWithMetadata, "decodedDataJson"> & {
+  name: string;
+  metadataPtr: string;
+};
 
 type AttestationsFilter = {
   take?: number;
@@ -14,16 +29,6 @@ type AttestationsFilter = {
     schemaId?: { in: string[] };
     decodedDataJson?: { contains: string };
   };
-};
-
-export type AttestationWithMetadata = {
-  id: string;
-  refUID: string;
-  attester: Address;
-  recipient: string;
-  revoked: boolean;
-  decodedDataJson: string;
-  schemaId: string;
 };
 
 const AttestationsQuery = `
@@ -45,7 +50,6 @@ export async function fetchAttestations(
   schema: string[],
   filter?: AttestationsFilter,
 ) {
-  console.log("fetch attestations", eas.url);
   return fetch<{ attestations: AttestationWithMetadata[] }>(eas.url, {
     method: "POST",
     body: JSON.stringify({
@@ -59,15 +63,14 @@ export async function fetchAttestations(
         },
       },
     }),
-  }).then((r) => r.data?.attestations);
+  }).then((r) => r.data?.attestations.map(parseAttestation));
 }
 
-export function parseDecodedJSON<T>(json: string): T {
-  const data = JSON.parse(json) as { name: string; value: { value: string } }[];
-  return data.reduce<T>(
-    (acc, x) => ({ ...acc, [x.name]: x.value.value }),
-    {} as T,
-  );
+function parseAttestation({
+  decodedDataJson,
+  ...attestation
+}: AttestationWithMetadata): Attestation {
+  return { ...attestation, ...parseDecodedMetadata(decodedDataJson) };
 }
 
 type Metadata = {
@@ -84,8 +87,8 @@ export function parseDecodedMetadata(json: string): Metadata {
   );
   return {
     ...metadata,
-    type: parseBytes(metadata.type),
-    round: parseBytes(metadata.round),
+    // type: parseBytes(metadata.type),
+    // round: parseBytes(metadata.round),
   };
 }
 
@@ -101,5 +104,11 @@ const typeMaps = {
 
 export function createDataFilter(name: string, type: "bytes32", value: string) {
   const formatter = typeMaps[type];
-  return `"name":"${name}","type":"${type}","value":"${formatter(value)}"}`;
+  return {
+    decodedDataJson: {
+      contains: `"name":"${name}","type":"${type}","value":"${formatter(
+        value,
+      )}"}`,
+    },
+  };
 }

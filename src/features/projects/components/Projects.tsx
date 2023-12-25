@@ -2,8 +2,6 @@ import clsx from "clsx";
 import Link from "next/link";
 import { XIcon } from "lucide-react";
 
-import { type Attestation } from "../types";
-import { useProfile, useProfileWithMetadata } from "~/hooks/useProfile";
 import { ProjectAvatar } from "./ProjectAvatar";
 import { ProjectBanner } from "./ProjectBanner";
 import { Heading } from "~/components/ui/Heading";
@@ -13,6 +11,7 @@ import { Button } from "~/components/ui/Button";
 import { useProjectMetadata, useProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
+import { type Attestation } from "../types";
 
 export function Projects() {
   const projects = useProjects();
@@ -77,31 +76,24 @@ export function ProjectItem({
   isLoading: boolean;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
-  const profile = useProfileWithMetadata(attestation?.attester);
-  const profileMetadata = profile.data ?? {};
 
-  console.log("124235345", metadata.data, profileMetadata);
   return (
     <article
       data-testid={`project-${attestation.id}`}
       className="rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
     >
-      <ProjectBanner
-        isLoading={isLoading || profile.isLoading}
-        {...profileMetadata}
-      />
+      <ProjectBanner profileId={attestation?.attester} />
       <ProjectAvatar
         rounded="full"
-        isLoading={isLoading || profile.isLoading}
         className="-mt-8 ml-4"
-        {...profileMetadata}
+        profileId={attestation?.attester}
       />
       <Heading className="truncate" size="lg" as="h3">
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
       </Heading>
       <p className="line-clamp-2 h-12 dark:text-gray-300">
         <Skeleton isLoading={isLoading} className="w-full">
-          {metadata.data?.bio}
+          {metadata.data?.description}
         </Skeleton>
       </p>
     </article>

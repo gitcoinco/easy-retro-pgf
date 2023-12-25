@@ -16,12 +16,17 @@ import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
 import { useAccount, useNetwork } from "wagmi";
 import {
-  ApplicationCreateSchema,
+  ApplicationSchema,
   ProfileSchema,
   contributionTypes,
   fundingSourceTypes,
 } from "../types";
-import { useCreateApplication } from "../hooks/useApplicationHook";
+import { useCreateApplication } from "../hooks/useCreateApplication";
+
+const ApplicationCreateSchema = z.object({
+  profile: ProfileSchema,
+  application: ApplicationSchema,
+});
 
 export function ApplicationForm({ address = "" }) {
   const create = useCreateApplication();
@@ -39,10 +44,7 @@ export function ApplicationForm({ address = "" }) {
           },
         }}
         persist="application-draft"
-        schema={z.object({
-          profile: ProfileSchema,
-          application: ApplicationCreateSchema,
-        })}
+        schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application }) => {
           console.log(application, profile);
           create.mutate({ application, profile });

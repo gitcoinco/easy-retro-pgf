@@ -15,11 +15,9 @@ export default function ProjectDetails({
 }: {
   attestation?: Attestation;
 }) {
-  const { data: profile } = useProfile(attestation?.attester);
-
   const metadata = useProjectMetadata(attestation?.metadataPtr);
 
-  const { bio, websiteUrl, payoutAddress, fundingSources } =
+  const { description, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
 
   return (
@@ -31,14 +29,14 @@ export default function ProjectDetails({
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        <ProjectBanner size="lg" metadataPtr={profile?.metadataPtr} />
+        <ProjectBanner size="lg" profileId={attestation?.attester} />
       </div>
       <div className="mb-8 flex items-end gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-8"
-          metadataPtr={profile?.metadataPtr}
+          profileId={attestation?.attester}
         />
         <div>
           <div className="">
@@ -49,7 +47,7 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
-      <p className="text-2xl">{bio}</p>
+      <p className="text-2xl">{description}</p>
       <div>
         <Heading as="h2" size="3xl">
           Impact statements

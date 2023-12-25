@@ -1,19 +1,18 @@
 import { type ComponentProps } from "react";
-import { Banner } from "~/components/ui/Banner";
+import { type Address } from "viem";
 
-// TODO: ProfileMetadata
+import { Banner } from "~/components/ui/Banner";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
+
 export function ProjectBanner(
-  props: { avatarImageUrl: string; bannerImageUrl: string } & ComponentProps<
-    typeof Banner
-  >,
+  props: { profileId: Address } & ComponentProps<typeof Banner>,
 ) {
+  const profile = useProfileWithMetadata(props.profileId);
+  const { avatarImageUrl, bannerImageUrl } = profile.data ?? {};
+
   return (
     <div className="overflow-hidden rounded-3xl">
-      <Banner
-        {...props}
-        src={props.bannerImageUrl}
-        fallbackSrc={props.avatarImageUrl}
-      />
+      <Banner {...props} src={bannerImageUrl} fallbackSrc={avatarImageUrl} />
     </div>
   );
 }

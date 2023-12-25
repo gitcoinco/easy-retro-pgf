@@ -10,6 +10,48 @@
 
 [<img src="./docs/screenshot.png">](https://open-rpgf.vercel.app)
 
+## Deployment
+
+Follow these instructions to deploy your own instance of OpenRPGF.
+
+#### 1. Fork Repo
+
+[Fork OpenRPGF](https://github.com/gitcoinco/open-rpgf/fork)
+
+1. Click to view the `.env.example` file in your newly created repo
+2. Copy its contents and paste into a text editor
+
+#### 2. Configuration
+
+The `.env.example` contains instructions for most of these steps.
+
+##### Database
+
+https://vercel.com/dashboard/stores?type=postgres
+
+1. Press Create Database button
+2. Select Postgres, press continue, and give it a name and region
+3. Press `.env.local` tab, Copy Snippet and paste into text editor
+
+##### Auth
+
+1. Generate a secret (`openssl rand -base64 32`)
+2. Configure `NEXTAUTH_URL` (this should only be necessary on localhost or production domains)
+
+##### Network
+
+- Configure what chain you want to run this on
+- Currently you need WalletConnect to run the app (does RainbowKit require this for all wallets?)
+- Configure api key for the Alchemy RPC provider
+
+##### App
+
+##### EAS
+
+#### 3. Deployment
+
+---
+
 ## Deploying
 
 ### 1. Fork repo
