@@ -37,7 +37,15 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_CHAIN_NAME: z.string(),
+    NEXT_PUBLIC_CHAIN_NAME: z.enum([
+      "ethereum",
+      "optimism",
+      "optimismGoerli",
+      "arbitrum",
+      "linea",
+      "sepolia",
+      "baseGoerli",
+    ]),
     NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
 
     NEXT_PUBLIC_MAX_VOTES_TOTAL: z.string().default("30000000"),

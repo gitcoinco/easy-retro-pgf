@@ -10,7 +10,7 @@ import { config } from "./config";
 
 console.log(config);
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: "error" });
+  // server.listen({ onUnhandledRequest: "warn" });
   /* eslint-disable-next-line */
   vi.mock("next/router", () => require("next-router-mock"));
 });

@@ -6,15 +6,21 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   type AttestationWithMetadata,
   fetchAttestations,
-  parseDecodedJSON,
+  parseDecodedMetadata,
+  createDataFilter,
 } from "~/utils/fetchAttestations";
 
 export const profileRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
-      return fetchAttestations([eas.schemas.profileSchema], {
-        where: { attester: { equals: input.id } },
+      return fetchAttestations([eas.schemas.metadata], {
+        where: {
+          attester: { in: [input.id] },
+          decodedDataJson: {
+            contains: createDataFilter("type", "bytes32", "profile"),
+          },
+        },
       }).then(([attestation]) => {
         if (!attestation) {
           throw new TRPCError({ code: "NOT_FOUND" });
@@ -29,10 +35,9 @@ function parseProfile({
   attester,
   decodedDataJson,
 }: AttestationWithMetadata) {
-  const { name: name, profileMetadataPtr: metadataPtr } = parseDecodedJSON<{
-    name: string;
-    profileMetadataPtr: string;
-  }>(decodedDataJson);
-
-  return { id, attester, name, metadataPtr };
+  return {
+    id,
+    attester,
+    ...parseDecodedMetadata(decodedDataJson),
+  };
 }

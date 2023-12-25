@@ -1,21 +1,18 @@
 import { type ComponentProps } from "react";
 import { Banner } from "~/components/ui/Banner";
-import { useMetadata } from "~/hooks/useMetadata";
 
-export function ProjectBanner({
-  metadataPtr = "",
-  ...props
-}: { metadataPtr?: string } & ComponentProps<typeof Banner>) {
-  const { data: metadata } = useMetadata<{
-    bannerImageUrl: string;
-    profileImageUrl: string;
-  }>(metadataPtr);
+// TODO: ProfileMetadata
+export function ProjectBanner(
+  props: { avatarImageUrl: string; bannerImageUrl: string } & ComponentProps<
+    typeof Banner
+  >,
+) {
   return (
     <div className="overflow-hidden rounded-3xl">
       <Banner
         {...props}
-        src={metadata?.bannerImageUrl}
-        fallbackSrc={metadata?.profileImageUrl}
+        src={props.bannerImageUrl}
+        fallbackSrc={props.avatarImageUrl}
       />
     </div>
   );

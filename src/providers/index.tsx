@@ -24,6 +24,7 @@ import {
 } from "@rainbow-me/rainbowkit-siwe-next-auth";
 
 import { metadata, theme } from "~/config";
+import { Toaster } from "~/components/Toaster";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
@@ -44,6 +45,7 @@ export function Providers({
           >
             <RainbowKitProvider appInfo={appInfo} chains={chains}>
               {children}
+              <Toaster />
             </RainbowKitProvider>
           </RainbowKitSiweNextAuthProvider>
         </WagmiConfig>

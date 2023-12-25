@@ -1,7 +1,7 @@
-console.log(
-  "process.env.NEXT_PUBLIC_VOTING_END_DATE",
-  process.env.NEXT_PUBLIC_VOTING_END_DATE,
-);
+import * as wagmiChains from "wagmi/chains";
+const network: wagmiChains.Chain =
+  wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains];
+
 export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
@@ -11,6 +11,9 @@ export const config = {
   skipApprovedVoterCheck: ["true", "1"].includes(
     process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK!,
   ),
+  roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
+
+  network,
 };
 
 export const metadata = {
@@ -28,6 +31,14 @@ export const eas = {
   url: process.env.NEXT_PUBLIC_EASSCAN_URL ?? "",
   attesterAddress: process.env.NEXT_PUBLIC_APPROVED_APPLICATIONS_ATTESTER ?? "",
   admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
+  contracts: {
+    eas:
+      process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS ??
+      "0x4200000000000000000000000000000000000021",
+    schemaRegistry:
+      process.env.NEXT_PUBLIC_EAS_SCHEMA_REGISTRY_ADDRESS ??
+      "0x4200000000000000000000000000000000000020",
+  },
   schemas: {
     metadata: process.env.NEXT_PUBLIC_METADATA_SCHEMA!,
     approval: process.env.NEXT_PUBLIC_APPROVAL_SCHEMA!,

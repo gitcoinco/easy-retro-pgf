@@ -18,6 +18,6 @@ export const BackgroundImage = ({
       ["blur-[40px]"]: fallbackSrc && !src,
       ["animate-pulse bg-gray-100"]: isLoading,
     })}
-    style={{ backgroundImage: `url(${src ?? fallbackSrc})` }}
+    style={{ backgroundImage: `url("${src ?? fallbackSrc}")` }}
   />
 );

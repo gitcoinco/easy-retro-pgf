@@ -1,0 +1,74 @@
+import {
+  SchemaEncoder,
+  SchemaRegistry,
+  type SchemaValue,
+  type MultiAttestationRequest,
+  type AttestationRequest,
+} from "@ethereum-attestation-service/eas-sdk";
+import { type SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
+import { type providers } from "ethers";
+import * as config from "~/config";
+
+type Params = {
+  values: Record<string, unknown>;
+  schemaUID: string;
+  refUID?: string;
+};
+
+export async function createAttestation(
+  params: Params,
+  signer: providers.JsonRpcSigner,
+): Promise<AttestationRequest> {
+  console.log("Getting recipient address");
+  const recipient = await signer.getAddress();
+
+  console.log("Encoding attestation data");
+  const data = await encodeData(params, signer);
+
+  return {
+    schema: params.schemaUID,
+    data: {
+      recipient,
+      expirationTime: 0n,
+      revocable: true,
+      data,
+      refUID: params.refUID,
+    },
+  };
+}
+
+async function encodeData(
+  { values, schemaUID }: Params,
+  signer: providers.JsonRpcSigner,
+) {
+  const schemaRegistry = new SchemaRegistry(
+    config.eas.contracts.schemaRegistry,
+  );
+  console.log("Connecting signer to SchemaRegistry...");
+  schemaRegistry.connect(signer as unknown as SignerOrProvider);
+
+  console.log("Getting schema record...");
+  const schemaRecord = await schemaRegistry.getSchema({ uid: schemaUID });
+
+  const schemaEncoder = new SchemaEncoder(schemaRecord.schema);
+
+  console.log("Creating data to encode from schema record...");
+  console.log(values, schemaRecord.schema);
+  const dataToEncode = schemaRecord?.schema.split(",").map((param) => {
+    const [type, name] = param.trim().split(" ");
+    console.log({ type, name, param });
+    if (name && type && values) {
+      const value = values[name] as SchemaValue;
+      return { name, type, value };
+    } else {
+      throw new Error(
+        `Attestation data: ${name} not found in ${JSON.stringify(values)}`,
+      );
+    }
+  });
+
+  console.log(values);
+  console.log(dataToEncode);
+  console.log("Encoding data with schema...");
+  return schemaEncoder.encodeData(dataToEncode);
+}

@@ -8,6 +8,7 @@ import {
   forwardRef,
   cloneElement,
   useEffect,
+  ReactNode,
 } from "react";
 import {
   FormProvider,
@@ -16,6 +17,7 @@ import {
   UseFormReturn,
   type UseFormProps,
   type FieldValues,
+  useFieldArray,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -23,19 +25,21 @@ import { createComponent } from ".";
 // import { Search } from "../icons";
 import clsx from "clsx";
 import { useInterval, useLocalStorage } from "react-use";
+import { IconButton } from "./Button";
+import { PlusIcon, Trash } from "lucide-react";
 
 const inputBase = [
-  "w-full",
   "dark:bg-gray-900",
   "dark:text-gray-300",
   "dark:border-gray-700",
   "rounded",
   "disabled:opacity-30",
+  "checked:bg-gray-800",
 ];
 export const Input = createComponent(
   "input",
   tv({
-    base: [...inputBase],
+    base: ["w-full", ...inputBase],
     variants: {
       error: {
         true: "!border-red-900",
@@ -81,6 +85,16 @@ export const Select = createComponent(
   }),
 );
 
+export const Checkbox = createComponent(
+  "input",
+  tv({
+    base: [
+      ...inputBase,
+      "checked:focus:dark:bg-gray-700 checked:hover:dark:bg-gray-700",
+    ],
+  }),
+);
+
 export const SearchInput = forwardRef(function SearchInput(
   { ...props }: ComponentPropsWithRef<typeof Input>,
   ref,
@@ -103,7 +117,10 @@ export const Label = createComponent(
     variants: { required: { true: "after:content-['*']" } },
   }),
 );
-export const Textarea = createComponent("textarea", tv({ base: inputBase }));
+export const Textarea = createComponent(
+  "textarea",
+  tv({ base: [...inputBase, "w-full"] }),
+);
 
 export const FormControl = ({
   name,
@@ -134,7 +151,14 @@ export const FormControl = ({
 
   return (
     <fieldset className={clsx("mb-4", className)}>
-      {label && <Label htmlFor={name} required={required} children={label} />}
+      {label && (
+        <Label
+          className="mb-1"
+          htmlFor={name}
+          required={required}
+          children={label}
+        />
+      )}
       {cloneElement(children as ReactElement, {
         id: name,
         error: Boolean(error),
@@ -148,6 +172,51 @@ export const FormControl = ({
   );
 };
 
+export function FieldArray<S extends z.Schema>({
+  name,
+  renderField,
+}: {
+  name: string;
+  renderField: (field: z.infer<S>, index: number) => ReactNode;
+}) {
+  const form = useFormContext();
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name,
+  });
+
+  const error = form.formState.errors[name]?.message ?? "";
+
+  return (
+    <div className="mb-8">
+      {error && (
+        <div className="border border-red-900 p-2 dark:text-red-500">
+          {String(error)}
+        </div>
+      )}
+      {fields.map((field, i) => (
+        <div key={field.id} className="gap-4 md:flex">
+          {renderField(field, i)}
+
+          <div className="flex justify-end">
+            <IconButton
+              tabIndex={-1}
+              type="button"
+              variant="ghost"
+              icon={Trash}
+              onClick={() => remove(i)}
+            />
+          </div>
+        </div>
+      ))}
+      <div className="flex justify-end">
+        <IconButton size="sm" icon={PlusIcon} onClick={() => append({})}>
+          Add row
+        </IconButton>
+      </div>
+    </div>
+  );
+}
 export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   defaultValues?: UseFormProps<z.infer<S>>["defaultValues"];
   schema: S;
@@ -187,7 +256,7 @@ function usePersistForm(form: UseFormReturn<FieldValues>, persist?: string) {
 
   useInterval(() => {
     if (persist) saveDraft(form?.getValues());
-  }, 1000);
+  }, 5000);
 
   useEffect(() => {
     if (persist && draft) form?.reset(draft);

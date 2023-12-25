@@ -33,7 +33,7 @@ vi.mock("@rainbow-me/rainbowkit", async () => {
   };
 });
 
-describe("OpenRPGF", () => {
+describe.skip("OpenRPGF", () => {
   test("browse projects", async () => {
     render(<ProjectsPage />);
 

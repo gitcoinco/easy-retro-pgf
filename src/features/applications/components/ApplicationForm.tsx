@@ -1,148 +1,88 @@
-import { SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
-import { useMutation } from "@tanstack/react-query";
-import { PlusIcon, Trash } from "lucide-react";
-import { PropsWithChildren, ReactNode } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { Z } from "vitest/dist/reporters-O4LBziQ_.js";
 import { z } from "zod";
-import { Button, IconButton } from "~/components/ui/Button";
+import { type PropsWithChildren } from "react";
+
+import { ImageUpload } from "~/components/ImageUpload";
+import { IconButton } from "~/components/ui/Button";
 import {
+  FieldArray,
   Form,
   FormControl,
   Input,
-  Label,
   Select,
   Textarea,
 } from "~/components/ui/Form";
 import { Heading } from "~/components/ui/Heading";
 import { Spinner } from "~/components/ui/Spinner";
-import { eas } from "~/config";
-import { createAttestation } from "~/utils/eas";
-import { reverseKeys } from "~/utils/reverseKeys";
+import { config } from "~/config";
+import { useAccount, useNetwork } from "wagmi";
+import {
+  ApplicationCreateSchema,
+  ProfileSchema,
+  contributionTypes,
+  fundingSourceTypes,
+} from "../types";
+import { useCreateApplication } from "../hooks/useApplicationHook";
 
-const MetadataSchema = z.object({
-  name: z.string().min(3),
-  metadataType: z.enum(["1"]),
-  metadataPtr: z.string().min(3),
-});
+export function ApplicationForm({ address = "" }) {
+  const create = useCreateApplication();
 
-const contributionTypes = {
-  CONTRACT_ADDRESS: "Contract address",
-  GITHUB_REPO: "Github repo",
-  OTHER: "Other",
-} as const;
-
-const ApplicationCreateSchema = z.object({
-  name: z.string(),
-  websiteUrl: z.string().url(),
-  payoutAddress: z.string().startsWith("0x"),
-  contributionDescription: z.string(),
-  impactDescription: z.string(),
-  contributionLinks: z
-    .array(
-      z.object({
-        description: z.string().min(3).describe("Description"),
-        type: z.nativeEnum(reverseKeys(contributionTypes)).describe("Type"),
-        url: z.string().url().describe("Contribution URL"),
-      }),
-    )
-    .min(1),
-  impactMetrics: z
-    .array(
-      z.object({
-        description: z.string().min(3).describe("Description"),
-        url: z.string().url().describe("Impact URL"),
-        number: z.number().describe("Number"),
-      }),
-    )
-    .min(1),
-  fundingSources: z
-    .array(
-      z.object({
-        description: z.string().describe("Description"),
-        amount: z.number().describe("Amount"),
-        currency: z.string().min(3).max(4).describe("Currency"),
-        type: z.string().describe("Type"),
-      }),
-    )
-    .min(1),
-});
-
-type ApplicationCreateSchema = z.infer<typeof ApplicationCreateSchema>;
-
-function useCreateAttestation() {
-  const signer = {} as SignerOrProvider;
-  return useMutation(
-    async (data: { values: Record<string, unknown>; schemaUID: string }) => {
-      if (!signer) throw new Error("Connect wallet first");
-      return createAttestation(data, signer);
-    },
-  );
-}
-
-function useUploadMetadata() {
-  return useMutation(
-    async (data: Record<string, unknown>) =>
-      new Promise((r) => setTimeout(() => r("metadataPtr"), 2000)),
-  );
-}
-
-export function ApplicationForm() {
-  const attestation = useCreateAttestation();
-  const metadata = useUploadMetadata();
-
-  const error = metadata.error ?? attestation.error;
-
-  console.log({ error });
+  const error = create.error;
   return (
     <div>
       <Form
         defaultValues={{
-          contributionLinks: [{}],
-          impactMetrics: [{}],
-          fundingSources: [{}],
+          application: {
+            payoutAddress: address,
+            contributionLinks: [{}],
+            impactMetrics: [{}],
+            fundingSources: [{}],
+          },
         }}
         persist="application-draft"
-        schema={ApplicationCreateSchema}
-        onSubmit={(values) => {
-          metadata.mutate(values, {
-            onSuccess: (metadataPtr) =>
-              attestation.mutate(
-                {
-                  schemaUID: eas.schemas.metadata,
-                  values: { name: values.name, metadataPtr },
-                },
-                {
-                  onSuccess: () => {
-                    // localStorage.removeItem("application-draft");
-                    // Redirect to confirmation page
-                  },
-                },
-              ),
-          });
+        schema={z.object({
+          profile: ProfileSchema,
+          application: ApplicationCreateSchema,
+        })}
+        onSubmit={async ({ profile, application }) => {
+          console.log(application, profile);
+          create.mutate({ application, profile });
         }}
       >
-        <FormControl name="name" label="Name" required>
-          <Input
-            placeholder="Impactful Project"
-            className="text-3xl font-semibold"
-          />
+        <Heading as="h3" size="xl" className="">
+          Profile
+        </Heading>
+        <FormControl name="profile.name" label="Name" required>
+          <Input placeholder="Your name" />
         </FormControl>
         <div className="mb-4 gap-4 md:flex">
-          <div>
-            <Label>Avatar</Label>
-            <div className="h-48 w-48 cursor-pointer rounded-xl bg-gray-800 transition-colors hover:bg-gray-700" />
-          </div>
-          <div className="flex-1">
-            <Label>Cover image</Label>
-            <div className="h-48 rounded-xl bg-gray-800" />
-          </div>
+          <FormControl required label="Avatar" name="profile.avatarImageUrl">
+            <ImageUpload className="h-48 w-48 " />
+          </FormControl>
+          <FormControl
+            required
+            label="Cover image"
+            name="profile.bannerImageUrl"
+            className="flex-1"
+          >
+            <ImageUpload className="h-48 " />
+          </FormControl>
         </div>
 
+        <FormControl name="application.name" label="Name" required>
+          <Input placeholder="Project name" />
+        </FormControl>
+
+        <FormControl
+          name="application.description"
+          label="Description"
+          required
+        >
+          <Input placeholder="Project description" />
+        </FormControl>
         <div className="gap-4 md:flex">
           <FormControl
             className="flex-1"
-            name="websiteUrl"
+            name="application.websiteUrl"
             label="Website"
             required
           >
@@ -151,7 +91,7 @@ export function ApplicationForm() {
 
           <FormControl
             className="flex-1"
-            name="payoutAddress"
+            name="application.payoutAddress"
             label="Payout address"
             required
           >
@@ -160,7 +100,7 @@ export function ApplicationForm() {
         </div>
 
         <FormControl
-          name="contributionDescription"
+          name="application.contributionDescription"
           label="Contribution description"
           required
         >
@@ -171,32 +111,38 @@ export function ApplicationForm() {
         </FormControl>
 
         <FormControl
-          name="impactDescription"
+          name="application.impactDescription"
           label="Impact description"
           required
         >
           <Textarea rows={4} placeholder="What impact has your project had?" />
         </FormControl>
 
-        <FormSection
+        <ApplicationFormSection
           label="Contribution links"
           description="Where can we find your contributions?"
         >
           <FieldArray
-            name="contributionLinks"
+            name="application.contributionLinks"
             renderField={(field, i) => (
               <>
                 <FormControl
                   className="min-w-96 flex-1"
-                  name={`contributionLinks.${i}.description`}
+                  name={`application.contributionLinks.${i}.description`}
                   required
                 >
                   <Input placeholder="Description" />
                 </FormControl>
-                <FormControl name={`contributionLinks.${i}.url`} required>
+                <FormControl
+                  name={`application.contributionLinks.${i}.url`}
+                  required
+                >
                   <Input placeholder="https://" />
                 </FormControl>
-                <FormControl name={`contributionLinks.${i}.type`} required>
+                <FormControl
+                  name={`application.contributionLinks.${i}.type`}
+                  required
+                >
                   <Select>
                     {Object.entries(contributionTypes).map(([value, label]) => (
                       <option key={value} value={value}>
@@ -208,28 +154,31 @@ export function ApplicationForm() {
               </>
             )}
           />
-        </FormSection>
+        </ApplicationFormSection>
 
-        <FormSection
+        <ApplicationFormSection
           label="Impact metrics"
           description="What kind of impact have your project made?"
         >
           <FieldArray
-            name="impactMetrics"
+            name="application.impactMetrics"
             renderField={(field, i) => (
               <>
                 <FormControl
                   className="min-w-96 flex-1"
-                  name={`impactMetrics.${i}.description`}
+                  name={`application.impactMetrics.${i}.description`}
                   required
                 >
                   <Input placeholder="Description" />
                 </FormControl>
-                <FormControl name={`impactMetrics.${i}.url`} required>
+                <FormControl
+                  name={`application.impactMetrics.${i}.url`}
+                  required
+                >
                   <Input placeholder="https://" />
                 </FormControl>
                 <FormControl
-                  name={`impactMetrics.${i}.number`}
+                  name={`application.impactMetrics.${i}.number`}
                   required
                   valueAsNumber
                 >
@@ -238,74 +187,112 @@ export function ApplicationForm() {
               </>
             )}
           />
-        </FormSection>
+        </ApplicationFormSection>
 
-        <FormSection
+        <ApplicationFormSection
           label="Funding sources"
           description="From what sources have you received funding?"
         >
           <FieldArray
-            name="fundingSources"
+            name="application.fundingSources"
             renderField={(field, i) => (
               <>
                 <FormControl
                   className="min-w-96 flex-1"
-                  name={`fundingSources.${i}.description`}
+                  name={`application.fundingSources.${i}.description`}
                   required
                 >
                   <Input placeholder="Description" />
                 </FormControl>
                 <FormControl
-                  name={`fundingSources.${i}.amount`}
+                  name={`application.fundingSources.${i}.amount`}
                   required
                   valueAsNumber
                 >
                   <Input type="number" placeholder="Amount" />
                 </FormControl>
-                <FormControl name={`fundingSources.${i}.currency`} required>
+                <FormControl
+                  name={`application.fundingSources.${i}.currency`}
+                  required
+                >
                   <Input placeholder="USD" />
                 </FormControl>
-                <FormControl name={`fundingSources.${i}.type`} required>
+                <FormControl
+                  name={`application.fundingSources.${i}.type`}
+                  required
+                >
                   <Select>
-                    {Object.entries(contributionTypes).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
+                    {Object.entries(fundingSourceTypes).map(
+                      ([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ),
+                    )}
                   </Select>
                 </FormControl>
               </>
             )}
           />
-        </FormSection>
+        </ApplicationFormSection>
 
-        <div className="flex items-center justify-between">
-          {error ? (
-            <div className="text-red-600">{error.reason as string}</div>
-          ) : (
-            <div />
-          )}
-          <IconButton
-            icon={metadata.isLoading || attestation.isLoading ? Spinner : null}
-            disabled={metadata.isLoading || attestation.isLoading}
-            variant="primary"
-            type="submit"
-            isLoading={metadata.isLoading || attestation.isLoading}
-          >
-            {metadata.isLoading
+        {error ? (
+          <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
+            Make sure you&apos;re not connected to a VPN since this can cause
+            problems with the RPC and your wallet.
+          </div>
+        ) : null}
+
+        <CreateApplicationButton
+          isLoading={create.isLoading}
+          buttonText={
+            create.isUploading
               ? "Uploading metadata"
-              : attestation.isLoading
+              : create.isAttesting
                 ? "Creating attestation"
-                : "Create application"}
-          </IconButton>
-        </div>
-        <FormErrors />
+                : "Create application"
+          }
+        />
       </Form>
     </div>
   );
 }
 
-function FormSection({
+function CreateApplicationButton({
+  isLoading,
+  buttonText,
+}: {
+  isLoading: boolean;
+  buttonText: string;
+}) {
+  const { isConnected } = useAccount();
+  const { chain } = useNetwork();
+
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        {!isConnected && <div>You must connect wallet to create a list</div>}
+        {isConnected && chain?.id !== config.network.id && (
+          <div className="flex items-center gap-2">
+            You must be connected to Optimism
+          </div>
+        )}
+      </div>
+
+      <IconButton
+        icon={isLoading ? Spinner : null}
+        disabled={isLoading || !isConnected}
+        variant="primary"
+        type="submit"
+        isLoading={isLoading}
+      >
+        {buttonText}
+      </IconButton>
+    </div>
+  );
+}
+
+function ApplicationFormSection({
   label,
   description,
   children,
@@ -313,7 +300,7 @@ function FormSection({
   return (
     <div>
       <div>
-        <Heading as="h3" size="xl" className="mb-0 mt-0 text-gray-300">
+        <Heading as="h3" size="xl" className="">
           {label}
         </Heading>
         <p className="mb-4 leading-loose text-gray-400">{description}</p>
@@ -322,56 +309,4 @@ function FormSection({
       <div>{children}</div>
     </div>
   );
-}
-function FieldArray<S extends z.Schema>({
-  name,
-  renderField,
-}: {
-  name: string;
-  renderField: (field: z.infer<S>, index: number) => ReactNode;
-}) {
-  const form = useFormContext();
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name,
-  });
-
-  const error = form.formState.errors[name]?.message ?? "";
-
-  return (
-    <div className="mb-8">
-      {error && (
-        <div className="border border-red-900 p-2 dark:text-red-500">
-          {String(error)}
-        </div>
-      )}
-      {fields.map((field, i) => (
-        <div key={field.id} className="gap-4 md:flex">
-          {renderField(field, i)}
-
-          <div className="flex justify-end">
-            <IconButton
-              tabIndex={-1}
-              type="button"
-              variant="ghost"
-              icon={Trash}
-              onClick={() => remove(i)}
-            />
-          </div>
-        </div>
-      ))}
-      <div className="flex justify-end">
-        <IconButton size="sm" icon={PlusIcon} onClick={() => append({})}>
-          Add row
-        </IconButton>
-      </div>
-    </div>
-  );
-}
-
-function FormErrors() {
-  const form = useFormContext();
-  console.log(form.formState.errors);
-  return <pre>errors {Object.keys(form.formState.errors).length}</pre>;
-  return <pre>{JSON.stringify(errors, null, 2)}</pre>;
 }
