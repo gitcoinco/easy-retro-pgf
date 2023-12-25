@@ -102,7 +102,7 @@ export const env = createEnv({
     NEXT_PUBLIC_METADATA_SCHEMA: z.string().startsWith("0x"),
 
     NEXT_PUBLIC_ROUND_ID: z.string(),
-    NEXT_PUBLIC_WALLETCONNECT_ID: z.string(),
+    NEXT_PUBLIC_WALLETCONNECT_ID: z.string().optional(),
     NEXT_PUBLIC_ALCHEMY_ID: z.string().optional(),
 
     NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK: z.string(),

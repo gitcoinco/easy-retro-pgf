@@ -10,6 +10,11 @@ import {
   trustWallet,
   ledgerWallet,
   frameWallet,
+  injectedWallet,
+  metaMaskWallet,
+  braveWallet,
+  safeWallet,
+  coinbaseWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import * as wagmiChains from "wagmi/chains";
@@ -77,22 +82,28 @@ function createWagmiConfig() {
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
   const appName = appConfig.metadata.title;
 
-  const { wallets } = getDefaultWallets({ appName, projectId, chains });
-
   const appInfo = { appName };
 
-  const connectors = connectorsForWallets([
-    ...wallets,
-    {
-      groupName: "Other",
-      wallets: [
-        argentWallet({ projectId, chains }),
-        trustWallet({ projectId, chains }),
-        ledgerWallet({ projectId, chains }),
-        frameWallet({ chains }),
-      ],
-    },
-  ]);
+  const connectors = projectId
+    ? connectorsForWallets(
+        getDefaultWallets({ appName, chains, projectId }).wallets,
+      )
+    : connectorsForWallets(getInjectedWallets({ appName, chains }));
+  // const { wallets } = getInjectedWallets({ appName, chains });
+  // const { wallets } = getDefaultWallets({ appName, projectId, chains });
+
+  // const connectors = connectorsForWallets([
+  //   ...wallets,
+  //   // {
+  //   //   groupName: "Other",
+  //   //   wallets: [
+  //   //     argentWallet({ projectId, chains }),
+  //   //     trustWallet({ projectId, chains }),
+  //   //     ledgerWallet({ projectId, chains }),
+  //   //     frameWallet({ chains }),
+  //   //   ],
+  //   // },
+  // ]);
 
   const config = createConfig({
     autoConnect: true,
@@ -102,4 +113,25 @@ function createWagmiConfig() {
   });
 
   return { chains, config, appInfo };
+}
+
+function getInjectedWallets({
+  appName,
+  chains,
+}: {
+  appName: string;
+  chains: wagmiChains.Chain[];
+}) {
+  return [
+    {
+      groupName: "Popular",
+      wallets: [
+        injectedWallet({ chains }),
+        safeWallet({ chains }),
+        coinbaseWallet({ appName, chains }),
+        braveWallet({ chains }),
+        frameWallet({ chains }),
+      ],
+    },
+  ];
 }
