@@ -20,11 +20,12 @@ This means applications, profiles and lists share the same schema and are differ
 Run: npx tsx src/lib/eas/registerSchemas
 */
 
-const approvalSchema = "string note";
+const approvalSchema = "bytes32 type";
 const metadataSchema =
   "string name, string metadataPtr, uint256 metadataType, bytes32 type, bytes32 round";
 
 const schemas = [
+  { name: "Voter Approval", schema: approvalSchema },
   { name: "Application Approval", schema: approvalSchema },
   { name: "Application Metadata", schema: metadataSchema },
   { name: "Profile Metadata", schema: metadataSchema },
@@ -47,9 +48,11 @@ export async function registerSchemas() {
     schemas.map(async ({ name, schema }) => {
       console.log(`Registering schema: ${name}`);
 
-      const exists = await schemaRegistry.getSchema({
-        uid: getSchemaUID(schema, ZERO_ADDRESS, true),
-      });
+      const exists = await schemaRegistry
+        .getSchema({
+          uid: getSchemaUID(schema, ZERO_ADDRESS, true),
+        })
+        .catch();
       console.log("exists", exists);
       if (exists) return { name, ...exists };
 

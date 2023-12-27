@@ -20,13 +20,15 @@ export type Attestation = Omit<AttestationWithMetadata, "decodedDataJson"> & {
   metadataPtr: string;
 };
 
+type MatchFilter = { equals?: string; in?: string[] };
 type AttestationsFilter = {
   take?: number;
   skip?: number;
   where?: {
-    id?: { equals?: string; in?: string[] };
-    attester?: { in: string[] };
-    schemaId?: { in: string[] };
+    id?: MatchFilter;
+    attester?: MatchFilter;
+    recipient?: MatchFilter;
+    schemaId?: MatchFilter;
     decodedDataJson?: { contains: string };
   };
 };

@@ -6,7 +6,6 @@ import { Checkbox, Form } from "~/components/ui/Form";
 import { Markdown } from "~/components/ui/Markdown";
 import { Spinner } from "~/components/ui/Spinner";
 import { useMetadata } from "~/hooks/useMetadata";
-import { Layout } from "~/layouts/DefaultLayout";
 import { api } from "~/utils/api";
 import { useAttest } from "~/hooks/useEAS";
 import { useMutation } from "@tanstack/react-query";
@@ -99,7 +98,11 @@ function useApprove() {
     const attestations = await Promise.all(
       applicationIds.map((refUID) =>
         createAttestation(
-          { values: { note: "" }, schemaUID: eas.schemas.approval, refUID },
+          {
+            values: { type: "application" },
+            schemaUID: eas.schemas.approval,
+            refUID,
+          },
           signer,
         ),
       ),
@@ -170,7 +173,7 @@ function ApproveButton() {
   const form = useFormContext();
   const selectedCount = Object.values(form.watch()).filter(Boolean).length;
 
-  const isAdmin = config.admins.includes(address);
+  const isAdmin = config.admins.includes(address!);
   return (
     <Button
       disabled={!selectedCount || !isAdmin}

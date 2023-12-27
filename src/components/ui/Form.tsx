@@ -26,7 +26,7 @@ import { createComponent } from ".";
 import clsx from "clsx";
 import { useInterval, useLocalStorage } from "react-use";
 import { IconButton } from "./Button";
-import { PlusIcon, Trash } from "lucide-react";
+import { PlusIcon, Search, Trash } from "lucide-react";
 
 const inputBase = [
   "dark:bg-gray-900",
@@ -94,21 +94,6 @@ export const Checkbox = createComponent(
     ],
   }),
 );
-
-export const SearchInput = forwardRef(function SearchInput(
-  { ...props }: ComponentPropsWithRef<typeof Input>,
-  ref,
-) {
-  return (
-    <InputWrapper className="">
-      <InputIcon>
-        SEARCH
-        {/* <Search /> */}
-      </InputIcon>
-      <Input ref={ref} {...props} className="pl-10" />
-    </InputWrapper>
-  );
-});
 
 export const Label = createComponent(
   "label",
@@ -221,7 +206,7 @@ export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   defaultValues?: UseFormProps<z.infer<S>>["defaultValues"];
   schema: S;
   persist?: string;
-  onSubmit: (values: z.infer<S>) => void;
+  onSubmit: (values: z.infer<S>, form: UseFormReturn<z.infer<S>>) => void;
 }
 
 export function Form<S extends z.Schema>({
@@ -243,7 +228,7 @@ export function Form<S extends z.Schema>({
   // Pass the form methods to a FormProvider. This lets us access the form from components with useFormContext
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit((values) => onSubmit(values))}>
+      <form onSubmit={form.handleSubmit((values) => onSubmit(values, form))}>
         {children}
       </form>
     </FormProvider>

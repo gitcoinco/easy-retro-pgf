@@ -2,7 +2,6 @@ import {
   SchemaEncoder,
   SchemaRegistry,
   type SchemaValue,
-  type MultiAttestationRequest,
   type AttestationRequest,
 } from "@ethereum-attestation-service/eas-sdk";
 import { type SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
@@ -12,6 +11,7 @@ import * as config from "~/config";
 type Params = {
   values: Record<string, unknown>;
   schemaUID: string;
+  recipient?: string;
   refUID?: string;
 };
 
@@ -20,7 +20,7 @@ export async function createAttestation(
   signer: providers.JsonRpcSigner,
 ): Promise<AttestationRequest> {
   console.log("Getting recipient address");
-  const recipient = await signer.getAddress();
+  const recipient = params.recipient ?? (await signer.getAddress());
 
   console.log("Encoding attestation data");
   const data = await encodeData(params, signer);
@@ -53,10 +53,8 @@ async function encodeData(
   const schemaEncoder = new SchemaEncoder(schemaRecord.schema);
 
   console.log("Creating data to encode from schema record...");
-  console.log(values, schemaRecord.schema);
   const dataToEncode = schemaRecord?.schema.split(",").map((param) => {
     const [type, name] = param.trim().split(" ");
-    console.log({ type, name, param });
     if (name && type && values) {
       const value = values[name] as SchemaValue;
       return { name, type, value };
@@ -67,8 +65,6 @@ async function encodeData(
     }
   });
 
-  console.log(values);
-  console.log(dataToEncode);
   console.log("Encoding data with schema...");
   return schemaEncoder.encodeData(dataToEncode);
 }

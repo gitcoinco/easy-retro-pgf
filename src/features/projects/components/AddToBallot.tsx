@@ -22,7 +22,6 @@ import { config } from "~/config";
 type Props = { id?: string; name?: string };
 
 export const ProjectAddToBallot = ({ id, name }: Props) => {
-  const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();

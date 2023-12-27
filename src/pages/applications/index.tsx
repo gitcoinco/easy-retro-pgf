@@ -3,7 +3,7 @@ import { ApplicationsToApprove } from "~/features/applications/components/Applic
 
 export default function ApplicationsPage() {
   return (
-    <Layout>
+    <Layout title="Review applications">
       <ApplicationsToApprove />
     </Layout>
   );
