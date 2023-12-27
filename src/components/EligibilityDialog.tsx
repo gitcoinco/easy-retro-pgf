@@ -2,9 +2,9 @@ import Link from "next/link";
 import { useAccount, useDisconnect } from "wagmi";
 import { useSession } from "next-auth/react";
 
-import { Dialog } from "./ui/Dialog";
-import { useApprovedVoter } from "~/hooks/useApprovedVoter";
 import { metadata } from "~/config";
+import { Dialog } from "./ui/Dialog";
+import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
 
 export const EligibilityDialog = () => {
   const { address } = useAccount();

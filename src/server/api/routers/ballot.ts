@@ -10,10 +10,10 @@ import {
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { ballotTypedData } from "~/utils/typedData";
 import type { db } from "~/server/db";
-import { fetchApprovedVoter } from "~/utils/fetchApprovedVoter";
 import { config } from "~/config";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { type Prisma } from "@prisma/client";
+import { fetchApprovedVoter } from "~/utils/fetchAttestations";
 
 const defaultBallotSelect = {
   votes: true,

@@ -1,5 +1,5 @@
 import { fromHex, type Address } from "viem";
-import { eas } from "~/config";
+import { config, eas } from "~/config";
 import { createCachedFetch } from "./fetch";
 import { ethers } from "ethers";
 
@@ -66,6 +66,16 @@ export async function fetchAttestations(
       },
     }),
   }).then((r) => r.data?.attestations.map(parseAttestation));
+}
+
+export async function fetchApprovedVoter(address: string) {
+  if (config.skipApprovedVoterCheck) return true;
+  return fetchAttestations([eas.schemas.approval], {
+    where: {
+      recipient: { equals: address },
+      ...createDataFilter("type", "bytes32", "voter"),
+    },
+  }).then((attestations) => attestations.length);
 }
 
 function parseAttestation({
