@@ -1,18 +1,19 @@
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
-import { useProfile } from "~/hooks/useProfile";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
-import type { Attestation } from "../types";
 import ProjectContributions from "./ProjectContributions";
 import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
-import { ProjectAddToBallot } from "./AddToBallot";
 import { useProjectMetadata } from "../hooks/useProjects";
+import { type ReactNode } from "react";
+import { type Attestation } from "~/utils/fetchAttestations";
 
 export default function ProjectDetails({
   attestation,
+  action,
 }: {
+  action: ReactNode;
   attestation?: Attestation;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
@@ -25,7 +26,7 @@ export default function ProjectDetails({
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
-          <ProjectAddToBallot {...attestation} />
+          {action}
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">

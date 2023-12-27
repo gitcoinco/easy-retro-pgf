@@ -4,7 +4,8 @@ import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
 
-type TransactionError = { reason?: string; data?: { message: string } };
+// TODO: Move this to a shared folders
+export type TransactionError = { reason?: string; data?: { message: string } };
 
 export function useApproveVoters(options: {
   onSuccess: () => void;

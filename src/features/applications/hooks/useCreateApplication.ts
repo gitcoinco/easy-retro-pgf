@@ -1,11 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 import { config, eas } from "~/config";
 import { useUploadMetadata } from "~/hooks/useMetadata";
-import { toast } from "sonner";
 import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
 import type { Application, Profile } from "../types";
+import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 
-export function useCreateApplication() {
+export function useCreateApplication(options: {
+  onSuccess: () => void;
+  onError: (err: TransactionError) => void;
+}) {
   const attestation = useCreateAttestation();
   const attest = useAttest();
   const upload = useUploadMetadata();
@@ -18,7 +21,6 @@ export function useCreateApplication() {
           console.log("Creating application attestation data");
           return attestation.mutateAsync({
             schemaUID: eas.schemas.metadata,
-            // schemaUID: eas.schemas.applicationMetadata,
             values: {
               name: values.application.name,
               metadataType: 0, // "http"
@@ -42,23 +44,14 @@ export function useCreateApplication() {
           });
         }),
       ]).then((attestations) => {
-        console.log("Creating onchain attestations", attestations);
+        console.log("Creating onchain attestations", attestations, values);
         return attest.mutateAsync(
           attestations.map((att) => ({ ...att, data: [att.data] })),
         );
       });
     },
 
-    {
-      onError: (err) =>
-        toast.error("Error creating application", {
-          description: JSON.stringify(err),
-        }),
-      onSuccess: (res) => {
-        console.log("Successful", res);
-        toast.success("Application created successfully!");
-      },
-    },
+    options,
   );
 
   return {

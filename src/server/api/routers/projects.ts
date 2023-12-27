@@ -1,9 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import {
-  fetchAttestations,
-} from "~/utils/fetchAttestations";
+import { fetchAttestations, createDataFilter } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { config, eas } from "~/config";
 
@@ -21,7 +19,10 @@ export const FilterSchema = z.object({
 export const projectsRouter = createTRPCRouter({
   count: publicProcedure.query(async ({}) => {
     return fetchAttestations([eas.schemas.approval], {
-      where: { attester: { in: config.admins } },
+      where: {
+        attester: { in: config.admins },
+        ...createDataFilter("type", "bytes32", "application"),
+      },
     }).then((attestations) => {
       const approvedIds = attestations.map(({ refUID }) => refUID);
       return { count: approvedIds.length };
@@ -61,4 +62,3 @@ export const projectsRouter = createTRPCRouter({
     });
   }),
 });
-

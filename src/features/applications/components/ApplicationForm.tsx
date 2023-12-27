@@ -22,6 +22,7 @@ import {
   fundingSourceTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
+import { toast } from "sonner";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -29,8 +30,15 @@ const ApplicationCreateSchema = z.object({
 });
 
 export function ApplicationForm({ address = "" }) {
-  const create = useCreateApplication();
-
+  const create = useCreateApplication({
+    onSuccess: () => {
+      toast.success("Application created successfully!");
+    },
+    onError: (err: { reason?: string; data?: { message: string } }) =>
+      toast.error("Application create error", {
+        description: err.reason ?? err.data?.message,
+      }),
+  });
   const error = create.error;
   return (
     <div>

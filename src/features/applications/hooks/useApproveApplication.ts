@@ -3,8 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
 import { eas } from "~/config";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
+import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 
-export function useApprove() {
+export function useApproveApplication(options: {
+  onSuccess: () => void;
+  onError: (err: TransactionError) => void;
+}) {
   const attest = useAttest();
   const signer = useEthersSigner();
 
@@ -13,7 +17,11 @@ export function useApprove() {
     const attestations = await Promise.all(
       applicationIds.map((refUID) =>
         createAttestation(
-          { values: { note: "" }, schemaUID: eas.schemas.approval, refUID },
+          {
+            values: { type: "application" },
+            schemaUID: eas.schemas.approval,
+            refUID,
+          },
           signer,
         ),
       ),
@@ -21,5 +29,5 @@ export function useApprove() {
     return attest.mutateAsync(
       attestations.map((att) => ({ ...att, data: [att.data] })),
     );
-  });
+  }, options);
 }

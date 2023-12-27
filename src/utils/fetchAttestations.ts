@@ -20,22 +20,26 @@ export type Attestation = Omit<AttestationWithMetadata, "decodedDataJson"> & {
   metadataPtr: string;
 };
 
-type MatchFilter = { equals?: string; in?: string[] };
+type MatchFilter = { equals?: string; in?: string[]; gte?: number };
 type AttestationsFilter = {
   take?: number;
   skip?: number;
+  orderBy?: {
+    time?: "asc" | "desc";
+  }[];
   where?: {
     id?: MatchFilter;
     attester?: MatchFilter;
     recipient?: MatchFilter;
     schemaId?: MatchFilter;
+    time?: MatchFilter;
     decodedDataJson?: { contains: string };
   };
 };
 
 const AttestationsQuery = `
-  query Attestations($where: AttestationWhereInput, $take: Int, $skip: Int) {
-    attestations(take: $take, skip: $skip, orderBy: { attester: desc }, where: $where) {
+  query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByWithRelationInput!], $take: Int, $skip: Int) {
+    attestations(take: $take, skip: $skip, orderBy: $orderBy, where: $where) {
       id
       refUID
       decodedDataJson
@@ -43,6 +47,7 @@ const AttestationsQuery = `
       recipient
       revoked
       schemaId
+      time
       time
     }
   }
