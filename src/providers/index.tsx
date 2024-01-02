@@ -61,8 +61,8 @@ export function Providers({
 
 function createWagmiConfig() {
   const activeChains: wagmiChains.Chain[] = [
-    wagmiChains.mainnet,
     appConfig.config.network,
+    wagmiChains.mainnet,
   ];
 
   // if (configuredChain) {
@@ -89,21 +89,6 @@ function createWagmiConfig() {
         getDefaultWallets({ appName, chains, projectId }).wallets,
       )
     : connectorsForWallets(getInjectedWallets({ appName, chains }));
-  // const { wallets } = getInjectedWallets({ appName, chains });
-  // const { wallets } = getDefaultWallets({ appName, projectId, chains });
-
-  // const connectors = connectorsForWallets([
-  //   ...wallets,
-  //   // {
-  //   //   groupName: "Other",
-  //   //   wallets: [
-  //   //     argentWallet({ projectId, chains }),
-  //   //     trustWallet({ projectId, chains }),
-  //   //     ledgerWallet({ projectId, chains }),
-  //   //     frameWallet({ chains }),
-  //   //   ],
-  //   // },
-  // ]);
 
   const config = createConfig({
     autoConnect: true,
