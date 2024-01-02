@@ -1,17 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
 import { useBeforeUnload } from "react-use";
-import { useAccount, useSignTypedData } from "wagmi";
+import { useAccount, useNetwork, useSignTypedData } from "wagmi";
 import type { Vote, Ballot } from "~/features/ballot/types";
 
 import { ballotTypedData } from "~/utils/typedData";
 import { api } from "~/utils/api";
+import { useSession } from "next-auth/react";
+import { keccak256 } from "viem";
 
-export function useSaveBallot() {
+export function useSaveBallot(opts?: { onSuccess?: () => void }) {
   const utils = api.useUtils();
 
   const save = api.ballot.save.useMutation({
-    // Refetch the ballot to update the UI
-    onSuccess: () => utils.ballot.invalidate().catch(console.log),
+    onSuccess: () => {
+      // Refetch the ballot to update the UI
+      utils.ballot.invalidate().catch(console.log);
+      opts?.onSuccess?.();
+    },
   });
   useBeforeUnload(save.isLoading, "You have unsaved changes, are you sure?");
 
@@ -43,8 +48,11 @@ export function useRemoveFromBallot() {
 
 export function useBallot() {
   const { address } = useAccount();
+  const { data: session } = useSession();
 
-  return api.ballot.get.useQuery(undefined, { enabled: Boolean(address) });
+  return api.ballot.get.useQuery(undefined, {
+    enabled: Boolean(address && session),
+  });
 }
 
 export function useSubmitBallot({
@@ -52,6 +60,7 @@ export function useSubmitBallot({
 }: {
   onSuccess: () => Promise<void>;
 }) {
+  const { chain } = useNetwork();
   const { data: ballot } = useBallot();
   const { mutateAsync, isLoading } = api.ballot.publish.useMutation({
     onSuccess,
@@ -61,15 +70,18 @@ export function useSubmitBallot({
   const message = {
     total_votes: BigInt(sumBallot(ballot?.votes)),
     project_count: BigInt(ballot?.votes?.length ?? 0),
+    hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
   };
   const { signTypedDataAsync } = useSignTypedData({
-    ...ballotTypedData,
+    ...ballotTypedData(chain?.id),
     message,
   });
+
   return useMutation(async () => {
-    // TODO: Sign typed message
-    const signature = await signTypedDataAsync();
-    return mutateAsync({ signature, message });
+    if (chain) {
+      const signature = await signTypedDataAsync();
+      return mutateAsync({ signature, message, chainId: chain?.id });
+    }
   });
 }
 

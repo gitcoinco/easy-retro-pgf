@@ -22,6 +22,7 @@ import { config } from "~/config";
 type Props = { id?: string; name?: string };
 
 export const ProjectAddToBallot = ({ id, name }: Props) => {
+  const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
@@ -45,10 +46,9 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         </IconButton>
       ) : (
         <Button
-          // disabled={!address}
+          disabled={!address}
           onClick={() => setOpen(true)}
           variant="primary"
-          // icon={AddBallot}
           className="w-full md:w-auto"
         >
           Add to ballot

@@ -16,6 +16,9 @@ import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn, useVotingTimeLeft } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { config } from "~/config";
+import { useIsMutating } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
+import { api } from "~/utils/api";
 
 export const BallotOverview = () => {
   const router = useRouter();
@@ -95,6 +98,7 @@ export const BallotOverview = () => {
 };
 
 const SubmitBallotButton = ({ disabled = false }) => {
+  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
   const router = useRouter();
   const [isOpen, setOpen] = useState(false);
 
@@ -136,10 +140,10 @@ const SubmitBallotButton = ({ disabled = false }) => {
       <Button
         className="w-full"
         variant="primary"
-        disabled={disabled}
+        disabled={disabled || isSaving}
         onClick={async () => setOpen(true)}
       >
-        Submit ballot
+        {isSaving ? "Ballot is updating..." : "Submit ballot"}
       </Button>
       <Dialog size="sm" isOpen={isOpen} onOpenChange={setOpen} title={title}>
         <p className="pb-8">{instructions}</p>

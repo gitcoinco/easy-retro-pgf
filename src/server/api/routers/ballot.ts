@@ -1,11 +1,12 @@
 import { TRPCError } from "@trpc/server";
-import { type Address, verifyTypedData } from "viem";
+import { type Address, verifyTypedData, keccak256 } from "viem";
 import { isAfter } from "date-fns";
 import {
   type BallotPublish,
   BallotPublishSchema,
   BallotSchema,
   type Vote,
+  Ballot,
 } from "~/features/ballot/types";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { ballotTypedData } from "~/utils/typedData";
@@ -78,8 +79,24 @@ export const ballotRouter = createTRPCRouter({
         });
       }
 
-      const { message, signature } = input;
-      await verifyBallotSignature({ message, signature, address: voterId });
+      if (
+        !(await verifyBallotHash(
+          input.message.hashed_votes,
+          ballot.votes as Vote[],
+        ))
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Votes hash mismatch",
+        });
+      }
+      const { signature } = input;
+      if (!(await verifyBallotSignature({ ...input, address: voterId }))) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Signature couldn't be verified",
+        });
+      }
 
       return ctx.db.ballot.update({
         where: { voterId },
@@ -96,6 +113,9 @@ function verifyBallotCount(votes: Vote[]) {
   return sum <= config.votingMaxTotal && validVotes;
 }
 
+async function verifyBallotHash(hashed_votes: string, votes: Vote[]) {
+  return hashed_votes === keccak256(Buffer.from(JSON.stringify(votes)));
+}
 async function verifyUnpublishedBallot(voterId: string, { ballot }: typeof db) {
   const existing = await ballot.findUnique({
     select: defaultBallotSelect,
@@ -116,19 +136,12 @@ async function verifyBallotSignature({
   address,
   signature,
   message,
+  chainId,
 }: { address: string } & BallotPublish) {
-  const verified = await verifyTypedData({
-    ...ballotTypedData,
+  return await verifyTypedData({
+    ...ballotTypedData(chainId),
     address: address as Address,
     message,
     signature,
   });
-
-  if (!verified) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Signature couldn't be verified",
-    });
-  }
-  return true;
 }

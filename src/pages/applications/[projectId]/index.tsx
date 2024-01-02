@@ -4,17 +4,23 @@ import { Layout } from "~/layouts/DefaultLayout";
 import ProjectDetails from "~/features/projects/components/ProjectDetails";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { Button } from "~/components/ui/Button";
+import { useApproveApplication } from "~/features/applications/hooks/useApproveApplication";
 
 export default function ApplicationDetailsPage({ projectId = "" }) {
   const project = useProjectById(projectId);
 
-  console.log(project.data, projectId);
+  const approve = useApproveApplication();
+
   return (
     <Layout title={project.data?.name}>
       <ProjectDetails
         attestation={project.data}
         action={
-          <Button variant="primary" onClick={() => alert("not implemented")}>
+          <Button
+            variant="primary"
+            disabled={approve.isLoading}
+            onClick={() => approve.mutate([projectId])}
+          >
             Approve project
           </Button>
         }

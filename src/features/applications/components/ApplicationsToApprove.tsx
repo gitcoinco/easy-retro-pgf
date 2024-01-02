@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { useMemo } from "react";
-import { useAccount } from "wagmi";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
@@ -11,21 +10,19 @@ import { Markdown } from "~/components/ui/Markdown";
 import { Spinner } from "~/components/ui/Spinner";
 import { useMetadata } from "~/hooks/useMetadata";
 import { api } from "~/utils/api";
-import { config } from "~/config";
 import { useApplications } from "~/features/applications/hooks/useApplications";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { type Application } from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
 import { useApproveApplication } from "../hooks/useApproveApplication";
-import { format } from "date-fns";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 
 function ApplicationItem({
   id,
   attester,
   name,
   metadataPtr,
-  time,
   isApproved,
 }: Attestation & { isApproved?: boolean }) {
   const metadata = useMetadata<Application>(metadataPtr);
@@ -34,8 +31,6 @@ function ApplicationItem({
 
   const {
     description,
-    contributionDescription,
-    impactDescription,
     fundingSources = [],
     impactMetrics = [],
   } = metadata.data ?? {};
@@ -91,15 +86,7 @@ function useApprovals() {
 export function ApplicationsToApprove() {
   const applications = useApplications();
   const approved = useApprovals();
-  const approve = useApproveApplication({
-    onSuccess: () => {
-      toast.success("Application approved successfully!");
-    },
-    onError: (err: { reason?: string; data?: { message: string } }) =>
-      toast.error("Application approve error", {
-        description: err.reason ?? err.data?.message,
-      }),
-  });
+  const approve = useApproveApplication();
 
   const approvedById = useMemo(
     () =>
@@ -148,11 +135,10 @@ Select the applications you want to approve. You must be a configured admin to a
 }
 
 function ApproveButton() {
-  const { address } = useAccount();
+  const isAdmin = useIsAdmin();
   const form = useFormContext();
   const selectedCount = Object.values(form.watch()).filter(Boolean).length;
 
-  const isAdmin = config.admins.includes(address!);
   return (
     <Button
       disabled={!selectedCount || !isAdmin}

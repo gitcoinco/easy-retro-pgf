@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { Form, FormControl, Textarea } from "~/components/ui/Form";
-import { type Address, useAccount } from "wagmi";
+import { type Address } from "wagmi";
 import { useFormContext } from "react-hook-form";
-import { config } from "~/config";
 import { IconButton } from "~/components/ui/Button";
 import { useMemo, useState } from "react";
 import { UserRoundPlus } from "lucide-react";
@@ -11,6 +10,7 @@ import { Spinner } from "~/components/ui/Spinner";
 import { toast } from "sonner";
 import { Dialog } from "~/components/ui/Dialog";
 import { useApproveVoters } from "../hooks/useApproveVoters";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 
 function parseAddresses(addresses: string): Address[] {
   return addresses
@@ -21,6 +21,8 @@ function parseAddresses(addresses: string): Address[] {
 }
 
 export function ApproveVoters() {
+  const isAdmin = useIsAdmin();
+
   const [isOpen, setOpen] = useState(false);
   const approve = useApproveVoters({
     onSuccess: () => {
@@ -38,9 +40,10 @@ export function ApproveVoters() {
       <IconButton
         icon={UserRoundPlus}
         variant="primary"
+        disabled={!isAdmin}
         onClick={() => setOpen(true)}
       >
-        Add voters
+        {isAdmin ? `Add voters` : "You must be an admin"}
       </IconButton>
       <Dialog isOpen={isOpen} onOpenChange={setOpen} title={`Approve voters`}>
         <p className="pb-4 leading-relaxed">
@@ -68,7 +71,7 @@ export function ApproveVoters() {
             />
           </FormControl>
           <div className="flex items-center justify-end">
-            <ApproveButton isLoading={approve.isLoading} />
+            <ApproveButton isLoading={approve.isLoading} isAdmin={isAdmin} />
           </div>
         </Form>
       </Dialog>
@@ -76,7 +79,7 @@ export function ApproveVoters() {
   );
 }
 
-function ApproveButton({ isLoading = false }) {
+function ApproveButton({ isLoading = false, isAdmin = false }) {
   const form = useFormContext<{ voters: string }>();
   const voters = form.watch("voters");
 
@@ -84,9 +87,7 @@ function ApproveButton({ isLoading = false }) {
     () => parseAddresses(voters ?? "").length,
     [voters],
   );
-  const { address } = useAccount();
 
-  const isAdmin = config.admins.includes(address!);
   return (
     <IconButton
       suppressHydrationWarning

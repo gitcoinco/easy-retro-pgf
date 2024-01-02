@@ -8,6 +8,7 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type ReactNode } from "react";
 import { type Attestation } from "~/utils/fetchAttestations";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export default function ProjectDetails({
   attestation,
@@ -17,6 +18,7 @@ export default function ProjectDetails({
   attestation?: Attestation;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
+  const profile = useProfileWithMetadata(attestation?.attester);
 
   const { description, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};

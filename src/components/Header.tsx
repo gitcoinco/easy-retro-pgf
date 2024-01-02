@@ -20,19 +20,6 @@ const Logo = () => (
   </div>
 );
 
-const navLinks = [
-  {
-    href: "/projects",
-    children: "Projects",
-    type: "projects",
-  },
-  {
-    href: "/lists",
-    children: "Lists",
-    type: "lists",
-  },
-] as const;
-
 const NavLink = ({
   isActive,
   ...props
@@ -48,7 +35,8 @@ const NavLink = ({
   />
 );
 
-export const Header = () => {
+type NavLink = { href: string; children: string };
+export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
   const { asPath } = useRouter();
   const [isOpen, setOpen] = useState(false);
 
@@ -67,7 +55,7 @@ export const Header = () => {
           </Link>
         </div>
         <div className="hidden h-full items-center gap-4 md:flex">
-          {navLinks.map((link) => (
+          {navLinks?.map((link) => (
             <NavLink
               isActive={asPath.startsWith(link.href)}
               key={link.href}
@@ -81,13 +69,19 @@ export const Header = () => {
         <div className="ml-4 flex gap-4 md:ml-8 xl:ml-32">
           <ConnectButton />
         </div>
-        <MobileMenu isOpen={isOpen} />
+        <MobileMenu isOpen={isOpen} navLinks={navLinks} />
       </div>
     </header>
   );
 };
 
-const MobileMenu = ({ isOpen = false }) => (
+const MobileMenu = ({
+  isOpen,
+  navLinks,
+}: {
+  isOpen?: boolean;
+  navLinks: NavLink[];
+}) => (
   <div
     className={clsx(
       "fixed left-0 top-16 z-10 h-full w-full bg-white transition-transform duration-150 dark:bg-gray-900",
