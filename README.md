@@ -125,7 +125,7 @@ This will create an Attestation with the Metadata schema and populate the fields
 
 ### 2. Reviewing and approving applications
 
-- Navigate to https://open-rpgf.vercel.app/admin/applications (replace the domain with your deployment)
+- Navigate to https://open-rpgf.vercel.app/applications (replace the domain with your deployment)
 - Make sure you have configured `NEXT_PUBLIC_ADMIN_ADDRESSES` with the address you connect your wallet with
 - You will see a list of submitted applications
 - Select the projects you want to approve
@@ -133,24 +133,26 @@ This will create an Attestation with the Metadata schema and populate the fields
 
 ### 3. Registering voters
 
-- Navigate to https://open-rpgf.vercel.app/admin/voters (replace the domain with your deployment)
+- Navigate to https://open-rpgf.vercel.app/voters (replace the domain with your deployment)
 - Make sure you have configured `NEXT_PUBLIC_ADMIN_ADDRESSES` with the address you connect your wallet with
 - Enter a list of addresses you want to allow to vote
 - Press Approve button to create attestations for these voters (send transaction to confirm)
 
 ### 4. Exploring approved applications
 
+- https://open-rpgf.vercel.app/projects
+
 ### 5. Creating lists
+
+- https://open-rpgf.vercel.app/lists/new
 
 ### 6. Vote for projects and submit ballot
 
 ### 7. Round Results
 
-## Manager UI
+Results are found on the same page as projects.
 
-### Approving applications
-
-### Adding approved voters
+- https://open-rpgf.vercel.app/projects
 
 ## Development
 
