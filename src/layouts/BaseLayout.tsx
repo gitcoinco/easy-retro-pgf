@@ -1,11 +1,19 @@
 import clsx from "clsx";
 import Head from "next/head";
-import type { ReactNode, PropsWithChildren } from "react";
+import {
+  type ReactNode,
+  type PropsWithChildren,
+  createContext,
+  useContext,
+} from "react";
 import { useAccount } from "wagmi";
 
 import { useRouter } from "next/router";
 import { metadata } from "~/config";
 import { useTheme } from "next-themes";
+
+const Context = createContext({ eligibilityCheck: true, showBallot: true });
+export const useLayoutOptions = () => useContext(Context);
 
 export const BaseLayout = ({
   header,
@@ -13,6 +21,8 @@ export const BaseLayout = ({
   sidebar,
   sidebarComponent,
   requireAuth,
+  eligibilityCheck = true,
+  showBallot = true,
   children,
 }: PropsWithChildren<{
   sidebar?: "left" | "right";
@@ -20,6 +30,8 @@ export const BaseLayout = ({
   header?: ReactNode;
   title?: string;
   requireAuth?: boolean;
+  eligibilityCheck?: boolean;
+  showBallot?: boolean;
 }>) => {
   const { theme } = useTheme();
   const router = useRouter();
@@ -32,7 +44,7 @@ export const BaseLayout = ({
 
   title = title ? `${title} - ${metadata.title}` : metadata.title;
   return (
-    <>
+    <Context.Provider value={{ eligibilityCheck, showBallot }}>
       <Head>
         <title>{title}</title>
         <meta name="description" content={metadata.description} />
@@ -66,6 +78,6 @@ export const BaseLayout = ({
           {sidebar === "right" ? sidebarComponent : null}
         </div>
       </div>
-    </>
+    </Context.Provider>
   );
 };

@@ -22,10 +22,12 @@ export const Layout = ({
   title,
   requireAuth,
   children,
+  eligibilityCheck,
 }: PropsWithChildren<{
   sidebar?: "left" | "right";
   title?: string;
   requireAuth?: boolean;
+  eligibilityCheck?: boolean;
 }>) => {
   const router = useRouter();
   const { address, isConnecting } = useAccount();
