@@ -10,7 +10,7 @@ export default function ProjectDetailsPage({ projectId = "" }) {
   const { name } = project.data ?? {};
 
   return (
-    <Layout sidebar="left" title={name}>
+    <Layout sidebar="left" title={name} showBallot eligibilityCheck>
       <ProjectDetails
         attestation={project.data}
         action={<ProjectAddToBallot id={projectId} name={name} />}

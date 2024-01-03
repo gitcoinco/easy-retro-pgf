@@ -12,27 +12,31 @@ import { useRouter } from "next/router";
 import { metadata } from "~/config";
 import { useTheme } from "next-themes";
 
-const Context = createContext({ eligibilityCheck: true, showBallot: true });
+const Context = createContext({ eligibilityCheck: false, showBallot: false });
 export const useLayoutOptions = () => useContext(Context);
 
+export type LayoutProps = {
+  title?: string;
+  requireAuth?: boolean;
+  eligibilityCheck?: boolean;
+  showBallot?: boolean;
+};
 export const BaseLayout = ({
   header,
   title,
   sidebar,
   sidebarComponent,
   requireAuth,
-  eligibilityCheck = true,
-  showBallot = true,
+  eligibilityCheck = false,
+  showBallot = false,
   children,
-}: PropsWithChildren<{
-  sidebar?: "left" | "right";
-  sidebarComponent?: ReactNode;
-  header?: ReactNode;
-  title?: string;
-  requireAuth?: boolean;
-  eligibilityCheck?: boolean;
-  showBallot?: boolean;
-}>) => {
+}: PropsWithChildren<
+  {
+    sidebar?: "left" | "right";
+    sidebarComponent?: ReactNode;
+    header?: ReactNode;
+  } & LayoutProps
+>) => {
   const { theme } = useTheme();
   const router = useRouter();
   const { address, isConnecting } = useAccount();

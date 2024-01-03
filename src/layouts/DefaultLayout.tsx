@@ -2,10 +2,9 @@ import clsx from "clsx";
 import { type PropsWithChildren } from "react";
 import { useAccount } from "wagmi";
 
-import { useRouter } from "next/router";
 import { Header } from "~/components/Header";
 import { BallotOverview } from "~/features/ballot/components/BallotOverview";
-import { BaseLayout } from "./BaseLayout";
+import { BaseLayout, type LayoutProps } from "./BaseLayout";
 
 const navLinks = [
   {
@@ -17,25 +16,17 @@ const navLinks = [
     children: "Lists",
   },
 ];
+
 export const Layout = ({
   sidebar,
-  title,
-  requireAuth,
   children,
-  eligibilityCheck,
-}: PropsWithChildren<{
-  sidebar?: "left" | "right";
-  title?: string;
-  requireAuth?: boolean;
-  eligibilityCheck?: boolean;
-}>) => {
-  const router = useRouter();
-  const { address, isConnecting } = useAccount();
-
-  if (requireAuth && !address && !isConnecting) {
-    void router.push("/");
-    return null;
-  }
+  ...props
+}: PropsWithChildren<
+  {
+    sidebar?: "left" | "right";
+  } & LayoutProps
+>) => {
+  const { address } = useAccount();
 
   const sidebarComponent = (
     <Sidebar side={sidebar}>{address ? <BallotOverview /> : null}</Sidebar>
@@ -43,7 +34,7 @@ export const Layout = ({
 
   return (
     <BaseLayout
-      title={title}
+      {...props}
       sidebar={sidebar}
       sidebarComponent={sidebarComponent}
       header={<Header navLinks={navLinks} />}

@@ -8,7 +8,12 @@ export default function ProjectDetailsPage({ listId = "" }) {
   const project = useListById(listId);
 
   return (
-    <Layout sidebar="left" title={project.data?.name}>
+    <Layout
+      sidebar="left"
+      title={project.data?.name}
+      showBallot
+      eligibilityCheck
+    >
       <ListDetails attestation={project.data!} />
     </Layout>
   );

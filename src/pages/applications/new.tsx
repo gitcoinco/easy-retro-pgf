@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 export default function NewProjectPage() {
   const { address } = useAccount();
   return (
-    <Layout eligibilityCheck={false}>
+    <Layout>
       <Markdown className={"mb-8"}>
         {`
 ### New Application
