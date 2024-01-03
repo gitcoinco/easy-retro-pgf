@@ -8,6 +8,7 @@ import {
   Form,
   FormControl,
   Input,
+  Label,
   Select,
   Textarea,
 } from "~/components/ui/Form";
@@ -23,6 +24,8 @@ import {
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
 import { toast } from "sonner";
+import { useController, useFormContext } from "react-hook-form";
+import { Tag } from "~/components/ui/Tag";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -127,6 +130,8 @@ export function ApplicationForm({ address = "" }) {
         >
           <Textarea rows={4} placeholder="What impact has your project had?" />
         </FormControl>
+
+        <ImpactTags />
 
         <ApplicationFormSection
           label="Contribution links"
@@ -317,6 +322,45 @@ function ApplicationFormSection({
       </div>
 
       <div>{children}</div>
+    </div>
+  );
+}
+
+// TODO: Move these to a config for customization?
+const impactCategories = {
+  ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },
+  OPEN_SOURCE: { label: "Web3 Open Source Software" },
+  COMMUNITY_EDUCATION: { label: "Web3 Community & Education" },
+} as const;
+
+function ImpactTags() {
+  const { control, watch } = useFormContext();
+  const { field } = useController({ name: "impactCategory", control });
+
+  const selected = (watch("impactCategory") ?? []) as string[];
+
+  return (
+    <div className="mb-4">
+      <Label>
+        Impact categories<span className="text-red-300">*</span>
+      </Label>
+      <div className="flex flex-wrap gap-2">
+        {Object.entries(impactCategories).map(([value, { label }]) => {
+          const isSelected = selected.includes(value);
+          return (
+            <Tag
+              size="lg"
+              selected={isSelected}
+              key={value}
+              onClick={() => {
+                field.onChange([value]);
+              }}
+            >
+              {label}
+            </Tag>
+          );
+        })}
+      </div>
     </div>
   );
 }
