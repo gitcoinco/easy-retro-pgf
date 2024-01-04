@@ -9,7 +9,7 @@ export function useProfile(id?: Address) {
 export function useProfileWithMetadata(id?: Address) {
   const profile = useProfile(id);
 
-  return useMetadata<{ avatarImageUrl: string; bannerImageUrl: string }>(
+  return useMetadata<{ profileImageUrl: string; bannerImageUrl: string }>(
     profile.data?.metadataPtr,
   );
 }

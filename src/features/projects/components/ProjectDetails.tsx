@@ -18,7 +18,7 @@ export default function ProjectDetails({
   attestation?: Attestation;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
-  const profile = useProfileWithMetadata(attestation?.attester);
+  const profile = useProfileWithMetadata(attestation?.recipient);
 
   const { description, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
@@ -32,14 +32,14 @@ export default function ProjectDetails({
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        <ProjectBanner size="lg" profileId={attestation?.attester} />
+        <ProjectBanner size="lg" profileId={attestation?.recipient} />
       </div>
       <div className="mb-8 flex items-end gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-8"
-          profileId={attestation?.attester}
+          profileId={attestation?.recipient}
         />
         <div>
           <div className="">

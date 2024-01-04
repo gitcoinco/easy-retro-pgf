@@ -1,13 +1,11 @@
 import { z } from "zod";
 import { useMemo } from "react";
-import { toast } from "sonner";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 
 import { Button } from "~/components/ui/Button";
 import { Checkbox, Form } from "~/components/ui/Form";
 import { Markdown } from "~/components/ui/Markdown";
-import { Spinner } from "~/components/ui/Spinner";
 import { useMetadata } from "~/hooks/useMetadata";
 import { api } from "~/utils/api";
 import { useApplications } from "~/features/applications/hooks/useApplications";
@@ -17,14 +15,17 @@ import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
 import { useApproveApplication } from "../hooks/useApproveApplication";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
+import { Skeleton } from "~/components/ui/Skeleton";
+import { Spinner } from "~/components/ui/Spinner";
 
-function ApplicationItem({
+export function ApplicationItem({
   id,
-  attester,
+  recipient,
   name,
   metadataPtr,
   isApproved,
-}: Attestation & { isApproved?: boolean }) {
+  isLoading,
+}: Attestation & { isApproved?: boolean; isLoading?: boolean }) {
   const metadata = useMetadata<Application>(metadataPtr);
 
   const form = useFormContext();
@@ -40,14 +41,16 @@ function ApplicationItem({
       <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
         <Checkbox
           disabled={isApproved}
-          {...form.register(id)}
+          {...form.register(`selected.${id}`)}
           type="checkbox"
         />
 
-        <ProjectAvatar size="sm" profileId={attester} />
+        <ProjectAvatar isLoading={isLoading} size="sm" profileId={recipient} />
         <div className=" flex-1">
           <div className="flex items-center justify-between">
-            <div>{name}</div>
+            <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
+              {name}
+            </Skeleton>
           </div>
           <div>
             <div className="flex gap-4 text-xs dark:text-gray-400">
@@ -65,6 +68,7 @@ function ApplicationItem({
           <Badge>Pending</Badge>
         )}
         <Button
+          disabled={isLoading}
           as={Link}
           target="_blank"
           href={`/applications/${id}`}
@@ -79,6 +83,11 @@ function ApplicationItem({
   );
 }
 
+const ApplicationsToApproveSchema = z.object({
+  selected: z.record(z.boolean()),
+});
+
+type ApplicationsToApprove = z.infer<typeof ApplicationsToApproveSchema>;
 function useApprovals() {
   return api.applications.approvals.useQuery({});
 }
@@ -86,7 +95,7 @@ function useApprovals() {
 export function ApplicationsToApprove() {
   const applications = useApplications();
   const approved = useApprovals();
-  const approve = useApproveApplication();
+  const approve = useApproveApplication({});
 
   const approvedById = useMemo(
     () =>
@@ -97,12 +106,18 @@ export function ApplicationsToApprove() {
     [approved.data],
   );
 
+  const applicationsToApprove = applications.data?.filter(
+    (application) => !approvedById?.get(application.id),
+  );
+
   return (
     <Form
-      schema={z.record(z.boolean())}
+      schema={ApplicationsToApproveSchema}
       onSubmit={(values) => {
         console.log("approve", values);
-        const selected = Object.keys(values).filter((key) => values[key]);
+        const selected = Object.keys(values.selected).filter(
+          (key) => values.selected[key],
+        );
         console.log("selected", selected);
 
         approve.mutate(selected);
@@ -112,12 +127,18 @@ export function ApplicationsToApprove() {
 Select the applications you want to approve. You must be a configured admin to approve applications.
       `}</Markdown>
 
-      <div className="my-2 flex justify-end">
-        <ApproveButton />
+      <div className="my-2 flex items-center justify-between">
+        <div className="text-gray-300">
+          {applications.data?.length} applications found
+        </div>
+        <div className="flex gap-2">
+          <SelectAllButton applications={applicationsToApprove} />
+          <ApproveButton isLoading={approve.isLoading} />
+        </div>
       </div>
 
       {applications.isLoading ? (
-        <div className="flex h-32 items-center justify-center">
+        <div className="flex items-center justify-center py-16">
           <Spinner />
         </div>
       ) : !applications.data?.length ? (
@@ -127,6 +148,7 @@ Select the applications you want to approve. You must be a configured admin to a
         <ApplicationItem
           key={item.id}
           {...item}
+          isLoading={applications.isLoading}
           isApproved={approvedById?.get(item.id)}
         />
       ))}
@@ -134,14 +156,48 @@ Select the applications you want to approve. You must be a configured admin to a
   );
 }
 
-function ApproveButton() {
+function SelectAllButton({
+  applications = [],
+}: {
+  applications: Attestation[] | undefined;
+}) {
+  const form = useFormContext<ApplicationsToApprove>();
+  console.log("form", form.watch());
+  const selected = form.watch("selected");
+
+  const isAllSelected = selected && Object.values(selected).every(Boolean);
+  return (
+    <Button
+      disabled={!applications.length}
+      type="button"
+      onClick={() => {
+        const allApplications = applications.reduce(
+          (applications, curr) => ({
+            ...applications,
+            [curr.id]: !isAllSelected,
+          }),
+          {},
+        );
+        console.log({ allApplications });
+        form.setValue("selected", allApplications);
+      }}
+    >
+      {isAllSelected ? "Deselect all" : "Select all"}
+    </Button>
+  );
+}
+
+function ApproveButton({ isLoading = false }) {
   const isAdmin = useIsAdmin();
-  const form = useFormContext();
-  const selectedCount = Object.values(form.watch()).filter(Boolean).length;
+  const form = useFormContext<ApplicationsToApprove>();
+  const selectedCount = Object.values(form.watch("selected") ?? {}).filter(
+    Boolean,
+  ).length;
 
   return (
     <Button
-      disabled={!selectedCount || !isAdmin}
+      suppressHydrationWarning
+      disabled={!selectedCount || !isAdmin || isLoading}
       variant="primary"
       type="submit"
     >

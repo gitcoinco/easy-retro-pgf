@@ -8,7 +8,11 @@ import {
   type Vote,
   Ballot,
 } from "~/features/ballot/types";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { ballotTypedData } from "~/utils/typedData";
 import type { db } from "~/server/db";
 import { config } from "~/config";
@@ -103,7 +107,37 @@ export const ballotRouter = createTRPCRouter({
         data: { publishedAt: new Date(), signature },
       });
     }),
+  results: publicProcedure.query(async ({ ctx }) => {
+    if (config.votingEndsAt < new Date()) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Voting has not ended yet",
+      });
+    }
+
+    const ballots = await ctx.db.ballot.findMany({
+      where: { publishedAt: undefined },
+    });
+    const results = calculateResults(ballots);
+  }),
 });
+
+type BallotPublished = {};
+function calculateResults(ballots: BallotPublished[]) {
+  const results = {};
+  // for (const ballot in ballots ) {
+
+  //   for (const vote in ballot.votes) {
+  //     results[vote.projectId] =
+  //   }
+  // }
+
+  // return ballots.reduce((acc, ballot) => {
+  //   return {
+  //     []
+  //   }
+  // })
+}
 
 function verifyBallotCount(votes: Vote[]) {
   const sum = sumBallot(votes);

@@ -5,7 +5,7 @@ import { eas } from "~/config";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { toast } from "sonner";
 
-export function useApproveApplication() {
+export function useApproveApplication(opts?: { onSuccess?: () => void }) {
   const attest = useAttest();
   const signer = useEthersSigner();
 
@@ -31,6 +31,7 @@ export function useApproveApplication() {
     {
       onSuccess: () => {
         toast.success("Application approved successfully!");
+        opts?.onSuccess?.();
       },
       onError: (err: { reason?: string; data?: { message: string } }) =>
         toast.error("Application approve error", {

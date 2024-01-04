@@ -9,7 +9,7 @@ export const MetadataSchema = z.object({
 
 export const ProfileSchema = z.object({
   name: z.string().min(3),
-  avatarImageUrl: z.string(),
+  profileImageUrl: z.string(),
   bannerImageUrl: z.string(),
 });
 

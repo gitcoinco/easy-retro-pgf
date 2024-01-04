@@ -9,7 +9,7 @@ export function ProjectAvatar(
   props: { profileId: Address } & ComponentProps<typeof Avatar>,
 ) {
   const profile = useProfileWithMetadata(props.profileId);
-  const { avatarImageUrl } = profile.data ?? {};
+  const { profileImageUrl } = profile.data ?? {};
 
-  return <Avatar {...props} src={avatarImageUrl} />;
+  return <Avatar {...props} src={profileImageUrl} />;
 }
