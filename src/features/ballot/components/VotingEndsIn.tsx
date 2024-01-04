@@ -3,10 +3,7 @@ import { tv } from "tailwind-variants";
 
 import { calculateTimeLeft } from "~/utils/time";
 import { createComponent } from "~/components/ui";
-
-const VOTING_END_DATE =
-  process.env.NEXT_PUBLIC_VOTING_END_DATE ??
-  new Date(Date.now() + 1000 * 60 * 60 * 24 * 15).toISOString();
+import { config } from "~/config";
 
 const useEndDate = createGlobalState<[number, number, number, number]>([
   0, 0, 0, 0,
@@ -15,7 +12,7 @@ export function useVotingTimeLeft() {
   const [state, setState] = useEndDate();
 
   useHarmonicIntervalFn(
-    () => setState(calculateTimeLeft(new Date(VOTING_END_DATE))),
+    () => setState(calculateTimeLeft(config.votingEndsAt)),
     1000,
   );
 

@@ -6,8 +6,10 @@ export function useProfile(id?: Address) {
   return api.profile.get.useQuery({ id: String(id) }, { enabled: Boolean(id) });
 }
 
-export function useProfileMetadata(metadataPtr?: string) {
+export function useProfileWithMetadata(id?: Address) {
+  const profile = useProfile(id);
+
   return useMetadata<{ profileImageUrl: string; bannerImageUrl: string }>(
-    metadataPtr,
+    profile.data?.metadataPtr,
   );
 }

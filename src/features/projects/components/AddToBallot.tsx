@@ -17,15 +17,10 @@ import {
   sumBallot,
 } from "~/features/ballot/hooks/useBallot";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
-
-export const MAX_ALLOCATION_PROJECT = Number(
-  process.env.NEXT_PUBLIC_MAX_ALLOCATION_PROJECT!,
-);
-export const MAX_ALLOCATION_TOTAL = Number(
-  process.env.NEXT_PUBLIC_MAX_ALLOCATION_TOTAL!,
-);
+import { config } from "~/config";
 
 type Props = { id?: string; name?: string };
+
 export const ProjectAddToBallot = ({ id, name }: Props) => {
   const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
@@ -51,16 +46,20 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         </IconButton>
       ) : (
         <Button
-          // disabled={!address}
+          disabled={!address}
           onClick={() => setOpen(true)}
           variant="primary"
-          // icon={AddBallot}
           className="w-full md:w-auto"
         >
           Add to ballot
         </Button>
       )}
-      <Dialog isOpen={isOpen} onOpenChange={setOpen} title={`Vote for ${name}`}>
+      <Dialog
+        size="sm"
+        isOpen={isOpen}
+        onOpenChange={setOpen}
+        title={`Vote for ${name}`}
+      >
         <p className="pb-4 leading-relaxed">
           How much OP should this Project receive to fill the gap between the
           impact they generated for Optimism and the profit they received for
@@ -72,7 +71,9 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             amount: z
               .number()
               .min(0)
-              .max(Math.min(MAX_ALLOCATION_PROJECT, MAX_ALLOCATION_TOTAL - sum))
+              .max(
+                Math.min(config.votingMaxProject, config.votingMaxTotal - sum),
+              )
               .default(0),
           })}
           onSubmit={({ amount }) => {
@@ -110,8 +111,8 @@ const ProjectAllocation = ({
     : 0;
   const total = amount + current;
 
-  const exceededProjectOP = amount > MAX_ALLOCATION_PROJECT;
-  const exceededMaxOP = total > MAX_ALLOCATION_TOTAL;
+  const exceededProjectOP = amount > config.votingMaxProject;
+  const exceededMaxOP = total > config.votingMaxTotal;
 
   const isError = exceededProjectOP || exceededMaxOP;
   return (
@@ -140,7 +141,7 @@ const ProjectAllocation = ({
           </span>
           <span className="text-gray-600 dark:text-gray-400">/</span>
           <span className="text-gray-600 dark:text-gray-400">
-            {formatNumber(MAX_ALLOCATION_PROJECT)}
+            {formatNumber(config.votingMaxProject)}
           </span>
         </div>
       </div>

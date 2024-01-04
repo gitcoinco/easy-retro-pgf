@@ -1,25 +1,26 @@
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
-import { useProfile } from "~/hooks/useProfile";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
-import type { Attestation } from "../types";
 import ProjectContributions from "./ProjectContributions";
 import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
-import { ProjectAddToBallot } from "./AddToBallot";
 import { useProjectMetadata } from "../hooks/useProjects";
+import { type ReactNode } from "react";
+import { type Attestation } from "~/utils/fetchAttestations";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export default function ProjectDetails({
   attestation,
+  action,
 }: {
+  action: ReactNode;
   attestation?: Attestation;
 }) {
-  const { data: profile } = useProfile(attestation?.attester);
-
   const metadata = useProjectMetadata(attestation?.metadataPtr);
+  const profile = useProfileWithMetadata(attestation?.recipient);
 
-  const { bio, websiteUrl, payoutAddress, fundingSources } =
+  const { description, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
 
   return (
@@ -27,18 +28,18 @@ export default function ProjectDetails({
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
-          <ProjectAddToBallot {...attestation} />
+          {action}
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        <ProjectBanner size="lg" metadataPtr={profile?.metadataPtr} />
+        <ProjectBanner size="lg" profileId={attestation?.recipient} />
       </div>
       <div className="mb-8 flex items-end gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-8"
-          metadataPtr={profile?.metadataPtr}
+          profileId={attestation?.recipient}
         />
         <div>
           <div className="">
@@ -49,7 +50,7 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
-      <p className="text-2xl">{bio}</p>
+      <p className="text-2xl">{description}</p>
       <div>
         <Heading as="h2" size="3xl">
           Impact statements

@@ -2,8 +2,6 @@ import clsx from "clsx";
 import Link from "next/link";
 import { XIcon } from "lucide-react";
 
-import { type Attestation } from "../types";
-import { useProfile } from "~/hooks/useProfile";
 import { ProjectAvatar } from "./ProjectAvatar";
 import { ProjectBanner } from "./ProjectBanner";
 import { Heading } from "~/components/ui/Heading";
@@ -13,8 +11,10 @@ import { Button } from "~/components/ui/Button";
 import { useProjectMetadata, useProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
+import { Attestation } from "~/utils/fetchAttestations";
 
 export function Projects() {
+  const projects = useProjects();
   const select = useSelectProjects();
 
   return (
@@ -40,7 +40,7 @@ export function Projects() {
         </Button>
       </div>
       <InfiniteLoading
-        {...useProjects()}
+        {...projects}
         renderItem={(item, { isLoading }) => {
           return (
             <Link
@@ -68,32 +68,34 @@ export function Projects() {
   );
 }
 
-function ProjectItem({
+export function ProjectItem({
   attestation,
   isLoading,
 }: {
   attestation: Attestation;
   isLoading: boolean;
 }) {
-  const { data: profile } = useProfile(attestation?.attester);
   const metadata = useProjectMetadata(attestation?.metadataPtr);
+
   return (
-    <div className="rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500">
-      <ProjectBanner isLoading={isLoading} metadataPtr={profile?.metadataPtr} />
+    <article
+      data-testid={`project-${attestation.id}`}
+      className="rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
+    >
+      <ProjectBanner profileId={attestation?.recipient} />
       <ProjectAvatar
         rounded="full"
-        isLoading={isLoading}
         className="-mt-8 ml-4"
-        metadataPtr={profile?.metadataPtr}
+        profileId={attestation?.recipient}
       />
       <Heading className="truncate" size="lg" as="h3">
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
       </Heading>
       <p className="line-clamp-2 h-12 dark:text-gray-300">
         <Skeleton isLoading={isLoading} className="w-full">
-          {metadata.data?.bio}
+          {metadata.data?.description}
         </Skeleton>
       </p>
-    </div>
+    </article>
   );
 }

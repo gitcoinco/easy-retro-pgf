@@ -30,10 +30,18 @@ export function InfiniteLoading<T>({
       })) as T[],
     [],
   );
+  const pages = data?.pages ?? [];
   const items = useMemo(
-    () => data?.pages.reduce<T[]>((acc, x) => acc.concat(x), []) ?? [],
-    [data],
+    () => pages.reduce<T[]>((acc, x) => acc.concat(x), []) ?? [],
+    [pages],
   );
+
+  const hasMore = useMemo(
+    () => !(pages?.length && pages[pages.length - 1].length < config.pageSize),
+    [pages],
+  );
+
+  console.log(items, data, hasMore);
 
   return (
     <div>
@@ -44,6 +52,7 @@ export function InfiniteLoading<T>({
       </div>
 
       <FetchInView
+        hasMore={hasMore}
         fetchNextPage={fetchNextPage}
         isFetchingNextPage={isFetchingNextPage}
       />
@@ -52,9 +61,11 @@ export function InfiniteLoading<T>({
 }
 
 function FetchInView({
+  hasMore,
   isFetchingNextPage,
   fetchNextPage,
 }: {
+  hasMore?: boolean;
   isFetchingNextPage: boolean;
   fetchNextPage: () => Promise<unknown>;
 }) {
@@ -68,7 +79,7 @@ function FetchInView({
   useEffect(() => {
     if (intersection?.isIntersecting) {
       console.log("load more");
-      fetchNextPage().catch(console.log);
+      !isFetchingNextPage && hasMore && fetchNextPage().catch(console.log);
     }
   }, [intersection?.isIntersecting]);
 

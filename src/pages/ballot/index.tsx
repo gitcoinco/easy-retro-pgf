@@ -1,8 +1,10 @@
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
+import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
 import { AllocationForm } from "~/features/ballot/components/AllocationList";
@@ -61,7 +63,9 @@ function BallotAllocationForm() {
           variant="warning"
         ></Alert>
       )}
-
+      <div className="mb-2 flex justify-end">
+        {votes.length ? <ClearBallot /> : null}
+      </div>
       <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
         <div className="p-8">
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
@@ -82,6 +86,35 @@ function BallotAllocationForm() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ClearBallot() {
+  const [isOpen, setOpen] = useState(false);
+  const { mutate, isLoading } = useSaveBallot({
+    onSuccess: () => setOpen(false),
+  });
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>
+        Remove all projects from ballot
+      </Button>
+      <Dialog title="Are you sure?" isOpen={isOpen}>
+        <p className="leading-6">
+          This will empty your ballot and remove all the projects you have
+          added.
+        </p>
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            disabled={isLoading}
+            onClick={() => mutate({ votes: [] })}
+          >
+            {isLoading ? <Spinner className="h-4 w-4" /> : "Yes I'm sure"}
+          </Button>
+        </div>
+      </Dialog>
+    </>
   );
 }
 

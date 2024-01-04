@@ -1,7 +1,7 @@
 import { config } from "~/config";
 import { useMetadata } from "~/hooks/useMetadata";
 import { api } from "~/utils/api";
-import { type ProjectMetadata } from "../types";
+import { type Application } from "~/features/applications/types";
 
 export function useProjectById(id: string) {
   return api.projects.get.useQuery({ id }, { enabled: Boolean(id) });
@@ -10,7 +10,7 @@ export function useProjectById(id: string) {
 const seed = 0;
 // const seed = Math.random();
 export function useProjects() {
-  return api.projects.query.useInfiniteQuery(
+  return api.projects.search.useInfiniteQuery(
     { limit: config.pageSize, seed },
     {
       getNextPageParam: (_, pages) => pages.length + 1,
@@ -19,7 +19,7 @@ export function useProjects() {
 }
 
 export function useProjectMetadata(metadataPtr?: string) {
-  return useMetadata<ProjectMetadata>(metadataPtr);
+  return useMetadata<Application>(metadataPtr);
 }
 
 export function useProjectCount() {

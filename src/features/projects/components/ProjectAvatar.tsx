@@ -1,12 +1,15 @@
 import { type ComponentProps } from "react";
+import { type Address } from "viem";
 
 import { Avatar } from "~/components/ui/Avatar";
-import { useProfileMetadata } from "~/hooks/useProfile";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
 
-export function ProjectAvatar({
-  metadataPtr = "",
-  ...props
-}: { metadataPtr?: string } & ComponentProps<typeof Avatar>) {
-  const { data: metadata } = useProfileMetadata(metadataPtr);
-  return <Avatar bordered {...props} src={metadata?.profileImageUrl} />;
+// TODO: ProfileMetadata
+export function ProjectAvatar(
+  props: { profileId: Address } & ComponentProps<typeof Avatar>,
+) {
+  const profile = useProfileWithMetadata(props.profileId);
+  const { profileImageUrl } = profile.data ?? {};
+
+  return <Avatar {...props} src={profileImageUrl} />;
 }

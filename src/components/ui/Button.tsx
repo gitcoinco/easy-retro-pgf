@@ -43,7 +43,11 @@ export const IconButton = forwardRef(function IconButton(
 ) {
   return (
     <Button ref={ref} {...props} size={children ? size : "icon"}>
-      {createElement(icon, { className: `w-4 h-4 ${children ? "mr-2" : ""}` })}
+      {icon
+        ? createElement(icon, {
+            className: `w-4 h-4 ${children ? "mr-2" : ""}`,
+          })
+        : null}
       {children}
     </Button>
   );

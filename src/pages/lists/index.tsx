@@ -4,7 +4,7 @@ import { Lists } from "~/features/lists/components/Lists";
 
 export default function ListsPage() {
   return (
-    <Layout sidebar="left">
+    <Layout sidebar="left" showBallot eligibilityCheck>
       <Lists />
     </Layout>
   );

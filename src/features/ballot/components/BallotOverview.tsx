@@ -15,10 +15,11 @@ import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn, useVotingTimeLeft } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
+import { config } from "~/config";
+import { useIsMutating } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
+import { api } from "~/utils/api";
 
-export const MAX_ALLOCATION_TOTAL = Number(
-  process.env.NEXT_PUBLIC_MAX_ALLOCATION_TOTAL!,
-);
 export const BallotOverview = () => {
   const router = useRouter();
 
@@ -56,7 +57,7 @@ export const BallotOverview = () => {
                 OP allocated:
                 <div
                   className={clsx("text-gray-900 dark:text-gray-300", {
-                    ["text-primary-500"]: sum > MAX_ALLOCATION_TOTAL,
+                    ["text-primary-500"]: sum > config.votingMaxTotal,
                   })}
                 >
                   {formatNumber(sum)} OP
@@ -64,10 +65,10 @@ export const BallotOverview = () => {
               </div>
             }
           >
-            <Progress value={sum} max={MAX_ALLOCATION_TOTAL} />
+            <Progress value={sum} max={config.votingMaxTotal} />
             <div className="flex justify-between text-xs">
               <div>Total</div>
-              <div>{formatNumber(MAX_ALLOCATION_TOTAL)} OP</div>
+              <div>{formatNumber(config.votingMaxTotal)} OP</div>
             </div>
           </BallotSection>
           {ballot?.publishedAt ? (
@@ -75,7 +76,7 @@ export const BallotOverview = () => {
               View submitted ballot
             </Button>
           ) : canSubmit ? (
-            <SubmitBallotButton disabled={sum > MAX_ALLOCATION_TOTAL} />
+            <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
           ) : allocations.length ? (
             <Button
               className="w-full"
@@ -97,6 +98,7 @@ export const BallotOverview = () => {
 };
 
 const SubmitBallotButton = ({ disabled = false }) => {
+  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
   const router = useRouter();
   const [isOpen, setOpen] = useState(false);
 
@@ -138,10 +140,10 @@ const SubmitBallotButton = ({ disabled = false }) => {
       <Button
         className="w-full"
         variant="primary"
-        disabled={disabled}
+        disabled={disabled || isSaving}
         onClick={async () => setOpen(true)}
       >
-        Submit ballot
+        {isSaving ? "Ballot is updating..." : "Submit ballot"}
       </Button>
       <Dialog size="sm" isOpen={isOpen} onOpenChange={setOpen} title={title}>
         <p className="pb-8">{instructions}</p>

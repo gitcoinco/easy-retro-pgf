@@ -1,22 +1,18 @@
 import { type ComponentProps } from "react";
-import { Banner } from "~/components/ui/Banner";
-import { useMetadata } from "~/hooks/useMetadata";
+import { type Address } from "viem";
 
-export function ProjectBanner({
-  metadataPtr = "",
-  ...props
-}: { metadataPtr?: string } & ComponentProps<typeof Banner>) {
-  const { data: metadata } = useMetadata<{
-    bannerImageUrl: string;
-    profileImageUrl: string;
-  }>(metadataPtr);
+import { Banner } from "~/components/ui/Banner";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
+
+export function ProjectBanner(
+  props: { profileId: Address } & ComponentProps<typeof Banner>,
+) {
+  const profile = useProfileWithMetadata(props.profileId);
+  const { avatarImageUrl, bannerImageUrl } = profile.data ?? {};
+
   return (
     <div className="overflow-hidden rounded-3xl">
-      <Banner
-        {...props}
-        src={metadata?.bannerImageUrl}
-        fallbackSrc={metadata?.profileImageUrl}
-      />
+      <Banner {...props} src={bannerImageUrl} fallbackSrc={avatarImageUrl} />
     </div>
   );
 }

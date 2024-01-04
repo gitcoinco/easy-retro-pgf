@@ -37,13 +37,22 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_CHAIN_NAME: z.string(),
+    NEXT_PUBLIC_CHAIN_NAME: z.enum([
+      "ethereum",
+      "optimism",
+      "optimismGoerli",
+      "arbitrum",
+      "linea",
+      "sepolia",
+      "baseGoerli",
+    ]),
     NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
 
-    NEXT_PUBLIC_MAX_ALLOCATION_TOTAL: z.string().default("30000000"),
-    NEXT_PUBLIC_MAX_ALLOCATION_PROJECT: z.string().default("5000000"),
+    NEXT_PUBLIC_MAX_VOTES_TOTAL: z.string().default("30000000"),
+    NEXT_PUBLIC_MAX_VOTES_PROJECT: z.string().default("5000000"),
     NEXT_PUBLIC_VOTING_END_DATE: z
       .string()
+      .datetime()
       .default(new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString()),
     NEXT_PUBLIC_FEEDBACK_URL: z.string().default("#"),
 
@@ -84,15 +93,19 @@ export const env = createEnv({
       .string()
       .default("0x4200000000000000000000000000000000000021"),
 
-    NEXT_PUBLIC_WEB3_STORAGE_API_KEY: z.string(),
-
     NEXT_PUBLIC_EASSCAN_URL: z
       .string()
       .default("https://optimism.easscan.org/graphql"),
-    NEXT_PUBLIC_WALLETCONNECT_ID: z.string(),
+
+    NEXT_PUBLIC_ADMIN_ADDRESSES: z.string().startsWith("0x"),
+    NEXT_PUBLIC_APPROVAL_SCHEMA: z.string().startsWith("0x"),
+    NEXT_PUBLIC_METADATA_SCHEMA: z.string().startsWith("0x"),
+
+    NEXT_PUBLIC_ROUND_ID: z.string(),
+    NEXT_PUBLIC_WALLETCONNECT_ID: z.string().optional(),
     NEXT_PUBLIC_ALCHEMY_ID: z.string().optional(),
 
-    NEXT_PUBLIC_SKIP_BADGEHOLDER_CHECK: z.string().default("true"),
+    NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK: z.string(),
   },
 
   /**
@@ -114,10 +127,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME,
     NEXT_PUBLIC_SIGN_STATEMENT: process.env.NEXT_PUBLIC_SIGN_STATEMENT,
 
-    NEXT_PUBLIC_MAX_ALLOCATION_TOTAL:
-      process.env.NEXT_PUBLIC_MAX_ALLOCATION_TOTAL,
-    NEXT_PUBLIC_MAX_ALLOCATION_PROJECT:
-      process.env.NEXT_PUBLIC_MAX_ALLOCATION_PROJECT,
+    NEXT_PUBLIC_MAX_VOTES_TOTAL: process.env.NEXT_PUBLIC_MAX_VOTES_TOTAL,
+    NEXT_PUBLIC_MAX_VOTES_PROJECT: process.env.NEXT_PUBLIC_MAX_VOTES_PROJECT,
     NEXT_PUBLIC_VOTING_END_DATE: process.env.NEXT_PUBLIC_VOTING_END_DATE,
     NEXT_PUBLIC_FEEDBACK_URL: process.env.NEXT_PUBLIC_FEEDBACK_URL,
 
@@ -135,13 +146,17 @@ export const env = createEnv({
 
     NEXT_PUBLIC_EAS_CONTRACT_ADDRESS:
       process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS,
-    NEXT_PUBLIC_WEB3_STORAGE_API_KEY:
-      process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY,
     NEXT_PUBLIC_EASSCAN_URL: process.env.NEXT_PUBLIC_EASSCAN_URL,
     NEXT_PUBLIC_WALLETCONNECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_ID,
     NEXT_PUBLIC_ALCHEMY_ID: process.env.NEXT_PUBLIC_ALCHEMY_ID,
-    NEXT_PUBLIC_SKIP_BADGEHOLDER_CHECK:
-      process.env.NEXT_PUBLIC_SKIP_BADGEHOLDER_CHECK,
+    NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK:
+      process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK,
+
+    NEXT_PUBLIC_ADMIN_ADDRESSES: process.env.NEXT_PUBLIC_ADMIN_ADDRESSES,
+    NEXT_PUBLIC_APPROVAL_SCHEMA: process.env.NEXT_PUBLIC_APPROVAL_SCHEMA,
+    NEXT_PUBLIC_METADATA_SCHEMA: process.env.NEXT_PUBLIC_METADATA_SCHEMA,
+
+    NEXT_PUBLIC_ROUND_ID: process.env.NEXT_PUBLIC_ROUND_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

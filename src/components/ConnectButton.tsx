@@ -11,6 +11,7 @@ import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
+import { useLayoutOptions } from "~/layouts/BaseLayout";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -92,10 +93,11 @@ const ConnectedDetails = ({
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
 
+  const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (
     <div>
       <div className="flex gap-2 text-white">
-        {ballot?.publishedAt ? (
+        {!showBallot ? null : ballot?.publishedAt ? (
           <Chip>Already submitted</Chip>
         ) : (
           <Chip className="gap-2" as={Link} href={"/ballot"}>
@@ -111,7 +113,7 @@ const ConnectedDetails = ({
         >
           {isMobile ? null : account.displayName}
         </UserInfo>
-        <EligibilityDialog />
+        {eligibilityCheck && <EligibilityDialog />}
       </div>
     </div>
   );

@@ -10,10 +10,12 @@ export const BallotSchema = z.object({
 });
 
 export const BallotPublishSchema = z.object({
+  chainId: z.number(),
   signature: z.custom<`0x${string}`>(),
   message: z.object({
     total_votes: z.bigint(),
     project_count: z.bigint(),
+    hashed_votes: z.string(),
   }),
 });
 

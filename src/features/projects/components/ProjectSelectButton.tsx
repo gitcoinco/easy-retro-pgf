@@ -32,7 +32,7 @@ export function ProjectSelectButton({ state, ...props }: Props) {
   }[state];
 
   return (
-    <ActionButton color={color} {...props}>
+    <ActionButton role="button" color={color} {...props}>
       <Icon className="h-4 w-4" />
     </ActionButton>
   );

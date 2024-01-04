@@ -2,20 +2,20 @@ import { ListBanner } from "~/features/lists/components/ListBanner";
 import { useProfile } from "~/hooks/useProfile";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
-import { type Attestation } from "~/features/projects/types";
 import { AllocationList } from "~/features/ballot/components/AllocationList";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { formatNumber } from "~/utils/formatNumber";
 import { ListEditDistribution } from "./ListEditDistribution";
 import { Markdown } from "~/components/ui/Markdown";
 import { useListMetadata } from "../hooks/useLists";
+import { Attestation } from "~/utils/fetchAttestations";
 
 export default function ListDetails({
   attestation,
 }: {
   attestation?: Attestation;
 }) {
-  const { data: profile } = useProfile(attestation?.attester);
+  const { data: profile } = useProfile(attestation?.recipient);
 
   const metadata = useListMetadata(attestation?.metadataPtr);
 
@@ -47,7 +47,7 @@ export default function ListDetails({
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-8"
-          metadataPtr={profile?.metadataPtr}
+          projectId={attestation?.recipient}
         />
       </div>
       <Markdown className="mb-8 w-full">{listDescription}</Markdown>

@@ -27,10 +27,10 @@ import {
 } from "~/features/ballot/hooks/useBallot";
 import { useAddToBallot } from "~/features/ballot/hooks/useBallot";
 import { Spinner } from "~/components/ui/Spinner";
-import { MAX_ALLOCATION_TOTAL } from "~/features/ballot/components/BallotOverview";
 
 import { AllocationForm } from "~/features/ballot/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
+import { config } from "~/config";
 
 export const ListEditDistribution = ({
   listName,
@@ -173,7 +173,7 @@ const TotalOPBanner = () => {
 
   const current = sumBallot(votes);
 
-  const exceeds = current + sum - MAX_ALLOCATION_TOTAL;
+  const exceeds = current + sum - config.votingMaxTotal;
   const isExceeding = exceeds > 0;
 
   return (
