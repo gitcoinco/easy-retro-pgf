@@ -15,7 +15,7 @@ export default function ListDetails({
 }: {
   attestation?: Attestation;
 }) {
-  const { data: profile } = useProfile(attestation?.attester);
+  const { data: profile } = useProfile(attestation?.recipient);
 
   const metadata = useListMetadata(attestation?.metadataPtr);
 
@@ -47,7 +47,7 @@ export default function ListDetails({
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-8"
-          projectId={attestation?.attester}
+          projectId={attestation?.recipient}
         />
       </div>
       <Markdown className="mb-8 w-full">{listDescription}</Markdown>

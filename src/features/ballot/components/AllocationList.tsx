@@ -126,7 +126,7 @@ export const ProjectAvatarWithName = ({
   subtitle?: string;
 }) => {
   const { data: project } = useProjectById(id!);
-  const { data: metadata } = useProfileWithMetadata(project?.attester);
+  const { data: metadata } = useProfileWithMetadata(project?.recipient);
   const Component = link ? Link : "div";
 
   return (

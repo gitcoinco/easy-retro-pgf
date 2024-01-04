@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 export function ListBanner({ id = "" }) {
   const { data: project } = api.projects.get.useQuery({ approvedId: id });
   const { data: metadata, isLoading } = useProfileWithMetadata(
-    project?.attester,
+    project?.recipient,
   );
   return (
     <div className="overflow-hidden">

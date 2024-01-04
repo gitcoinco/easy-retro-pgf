@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/Button";
 import { useProjectMetadata, useProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
-import { type Attestation } from "../types";
+import { Attestation } from "~/utils/fetchAttestations";
 
 export function Projects() {
   const projects = useProjects();
@@ -82,11 +82,11 @@ export function ProjectItem({
       data-testid={`project-${attestation.id}`}
       className="rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
     >
-      <ProjectBanner profileId={attestation?.attester} />
+      <ProjectBanner profileId={attestation?.recipient} />
       <ProjectAvatar
         rounded="full"
         className="-mt-8 ml-4"
-        profileId={attestation?.attester}
+        profileId={attestation?.recipient}
       />
       <Heading className="truncate" size="lg" as="h3">
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
