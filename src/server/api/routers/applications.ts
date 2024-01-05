@@ -11,12 +11,13 @@ export const FilterSchema = z.object({
 
 export const applicationsRouter = createTRPCRouter({
   approvals: publicProcedure.input(FilterSchema).query(async ({ input }) => {
+    console.log(config.roundId);
     return fetchAttestations([eas.schemas.approval], {
       where: {
         attester: { in: config.admins },
         AND: [
           createDataFilter("type", "bytes32", "application"),
-          createDataFilter("round", "bytes32", config.roundId),
+          // createDataFilter("round", "bytes32", config.roundId),
         ],
       },
     });

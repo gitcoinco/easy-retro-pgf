@@ -18,12 +18,15 @@ import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
+import { formatDate, timeAgo } from "~/utils/time";
+import { ClockIcon } from "lucide-react";
 
 export function ApplicationItem({
   id,
   recipient,
   name,
   metadataPtr,
+  time,
   isApproved,
   isLoading,
 }: Attestation & { isApproved?: boolean; isLoading?: boolean }) {
@@ -42,7 +45,8 @@ export function ApplicationItem({
       <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
         <Checkbox
           disabled={isApproved}
-          {...form.register(`selected.${id}`)}
+          value={id}
+          {...form.register(`selected`)}
           type="checkbox"
         />
 
@@ -62,6 +66,16 @@ export function ApplicationItem({
               {description}
             </div>
           </div>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
+          <ClockIcon className="size-3" />
+          <Skeleton
+            isLoading={isLoading}
+            title={new Date(time)}
+            className="mb-1 min-h-5 min-w-24"
+          >
+            {formatDate(time * 1000)}
+          </Skeleton>
         </div>
         {isApproved ? (
           <Badge variant="success">Approved</Badge>
@@ -85,7 +99,7 @@ export function ApplicationItem({
 }
 
 const ApplicationsToApproveSchema = z.object({
-  selected: z.record(z.boolean()),
+  selected: z.array(z.string()),
 });
 
 type ApplicationsToApprove = z.infer<typeof ApplicationsToApproveSchema>;
@@ -114,15 +128,7 @@ export function ApplicationsToApprove() {
   return (
     <Form
       schema={ApplicationsToApproveSchema}
-      onSubmit={(values) => {
-        console.log("approve", values);
-        const selected = Object.keys(values.selected).filter(
-          (key) => values.selected[key],
-        );
-        console.log("selected", selected);
-
-        approve.mutate(selected);
-      }}
+      onSubmit={(values) => approve.mutate(values.selected)}
     >
       <Markdown>{`### Review applications
 Select the applications you want to approve. You must be a configured admin to approve applications.
@@ -169,24 +175,16 @@ function SelectAllButton({
   applications: Attestation[] | undefined;
 }) {
   const form = useFormContext<ApplicationsToApprove>();
-  console.log("form", form.watch());
   const selected = form.watch("selected");
-
-  const isAllSelected = selected && Object.values(selected).every(Boolean);
+  const isAllSelected =
+    selected?.length > 0 && selected?.length === applications?.length;
   return (
     <Button
       disabled={!applications.length}
       type="button"
       onClick={() => {
-        const allApplications = applications.reduce(
-          (applications, curr) => ({
-            ...applications,
-            [curr.id]: !isAllSelected,
-          }),
-          {},
-        );
-        console.log({ allApplications });
-        form.setValue("selected", allApplications);
+        const selectAll = isAllSelected ? [] : applications.map(({ id }) => id);
+        form.setValue("selected", selectAll);
       }}
     >
       {isAllSelected ? "Deselect all" : "Select all"}
@@ -200,7 +198,6 @@ function ApproveButton({ isLoading = false }) {
   const selectedCount = Object.values(form.watch("selected") ?? {}).filter(
     Boolean,
   ).length;
-
   return (
     <Button
       suppressHydrationWarning

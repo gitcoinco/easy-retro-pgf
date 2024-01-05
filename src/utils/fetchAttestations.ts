@@ -11,6 +11,7 @@ export type AttestationWithMetadata = {
   attester: Address;
   recipient: Address;
   revoked: boolean;
+  time: number;
   decodedDataJson: string;
   schemaId: string;
 };

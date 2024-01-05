@@ -73,11 +73,7 @@ export function AllocationForm({
             return (
               <Tr key={project.projectId}>
                 <Td className={"w-full"}>
-                  <ProjectAvatarWithName
-                    link
-                    id={project.projectId}
-                    // {...{ [projectIdKey]: project.projectId }}
-                  />
+                  <ProjectAvatarWithName link id={project.projectId} />
                 </Td>
                 <Td>
                   {listAllocation ? (
