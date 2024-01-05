@@ -1,6 +1,11 @@
 import * as wagmiChains from "wagmi/chains";
-const network: wagmiChains.Chain =
-  wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains];
+
+export const metadata = {
+  title: "EasyRetroPGF",
+  description: "EasyRetroPGF: Open-source Retro Public Goods Funding platform",
+  url: "https://easy-retro-pgf.vercel.app",
+  image: "",
+};
 
 export const config = {
   logoUrl: "",
@@ -15,18 +20,12 @@ export const config = {
   ),
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
   admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
-  network,
-};
-
-export const metadata = {
-  title: "OpenRPGF",
-  description: "OpenRPGF: Open-source Retro Public Goods Funding platform",
-  url: "https://open-rpgf.vercel.app",
-  image: "",
+  network:
+    wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
 };
 
 export const theme = {
-  colorMode: "dark",
+  colorMode: "light",
 };
 
 export const eas = {

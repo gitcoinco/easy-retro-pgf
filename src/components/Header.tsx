@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 import { ConnectButton } from "./ConnectButton";
 import { IconButton } from "./ui/Button";
-import { config } from "~/config";
+import { config, metadata } from "~/config";
 import { Menu, X } from "lucide-react";
 
 const Logo = () => (
@@ -13,8 +13,8 @@ const Logo = () => (
     {config.logoUrl ? (
       <img className="max-h-full" src={config.logoUrl} />
     ) : (
-      <div className="flex h-full w-24 items-center justify-center rounded-full border-2 border-dashed border-white text-xs font-medium tracking-wider text-white">
-        Open RPGF
+      <div className="flex h-full items-center justify-center rounded-full border-2 border-dashed border-white px-4 text-xs font-medium tracking-wider text-white">
+        {metadata.title}
       </div>
     )}
   </div>
