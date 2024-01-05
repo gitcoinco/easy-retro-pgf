@@ -137,7 +137,7 @@ export const ProjectAvatarWithName = ({
       })}
       href={`/projects/${id}`}
     >
-      <Avatar rounded="full" size="sm" src={metadata?.avatarImageUrl} />
+      <Avatar rounded="full" size="sm" src={metadata?.profileImageUrl} />
       <div>
         <div className="font-bold">{project?.name}</div>
         <div className="text-muted">{subtitle}</div>
