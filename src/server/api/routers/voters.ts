@@ -6,7 +6,7 @@ import {
   createDataFilter,
   fetchApprovedVoter,
 } from "~/utils/fetchAttestations";
-import { eas } from "~/config";
+import { config, eas } from "~/config";
 
 export const FilterSchema = z.object({
   limit: z.number().default(3 * 8),
@@ -22,7 +22,10 @@ export const votersRouter = createTRPCRouter({
   list: publicProcedure.input(FilterSchema).query(async ({}) => {
     return fetchAttestations([eas.schemas.approval], {
       where: {
-        ...createDataFilter("type", "bytes32", "voter"),
+        AND: [
+          createDataFilter("type", "bytes32", "voter"),
+          createDataFilter("round", "bytes32", config.roundId),
+        ],
       },
     });
   }),

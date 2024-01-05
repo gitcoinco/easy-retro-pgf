@@ -21,20 +21,22 @@ export type Attestation = Omit<AttestationWithMetadata, "decodedDataJson"> & {
 };
 
 type MatchFilter = { equals?: string; in?: string[]; gte?: number };
+type MatchWhere = {
+  id?: MatchFilter;
+  attester?: MatchFilter;
+  recipient?: MatchFilter;
+  schemaId?: MatchFilter;
+  time?: MatchFilter;
+  decodedDataJson?: { contains: string };
+  AND?: MatchWhere[];
+};
 type AttestationsFilter = {
   take?: number;
   skip?: number;
   orderBy?: {
     time?: "asc" | "desc";
   }[];
-  where?: {
-    id?: MatchFilter;
-    attester?: MatchFilter;
-    recipient?: MatchFilter;
-    schemaId?: MatchFilter;
-    time?: MatchFilter;
-    decodedDataJson?: { contains: string };
-  };
+  where?: MatchWhere;
 };
 
 const AttestationsQuery = `
@@ -57,6 +59,8 @@ export async function fetchAttestations(
   schema: string[],
   filter?: AttestationsFilter,
 ) {
+  const registrationEndsAt = Math.floor(+config.registrationEndsAt / 1000);
+
   return fetch<{ attestations: AttestationWithMetadata[] }>(eas.url, {
     method: "POST",
     body: JSON.stringify({
@@ -66,6 +70,7 @@ export async function fetchAttestations(
         where: {
           schemaId: { in: schema },
           revoked: { equals: false },
+          time: { gte: registrationEndsAt },
           ...filter?.where,
         },
       },

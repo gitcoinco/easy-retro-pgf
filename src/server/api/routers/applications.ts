@@ -14,22 +14,21 @@ export const applicationsRouter = createTRPCRouter({
     return fetchAttestations([eas.schemas.approval], {
       where: {
         attester: { in: config.admins },
-        ...createDataFilter("type", "bytes32", "application"),
+        AND: [
+          createDataFilter("type", "bytes32", "application"),
+          createDataFilter("round", "bytes32", config.roundId),
+        ],
       },
     });
   }),
   list: publicProcedure.input(FilterSchema).query(async ({}) => {
-    const registrationEndsAt = Math.floor(+config.registrationEndsAt / 1000);
-
     return fetchAttestations([eas.schemas.metadata], {
       orderBy: [{ time: "desc" }],
       where: {
-        time: { gte: registrationEndsAt },
-        ...createDataFilter("type", "bytes32", "application"),
-        // AND: [
-        //   createDataFilter("type", "bytes32", "application"),
-        //   createDataFilter("round", "bytes32", "open-rpgf"),
-        // ],
+        AND: [
+          createDataFilter("type", "bytes32", "application"),
+          createDataFilter("round", "bytes32", config.roundId),
+        ],
       },
     });
   }),
