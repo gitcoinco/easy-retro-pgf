@@ -34,7 +34,6 @@ export function ApproveVoters() {
         description: err.reason ?? err.data?.message,
       }),
   });
-
   return (
     <div>
       <IconButton

@@ -1,4 +1,4 @@
-import { eas } from "~/config";
+import { config, eas } from "~/config";
 import { useAttest } from "~/hooks/useEAS";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { useMutation } from "@tanstack/react-query";
@@ -20,7 +20,7 @@ export function useApproveVoters(options: {
       voters.map((recipient) =>
         createAttestation(
           {
-            values: { type: "voter" },
+            values: { type: "voter", round: config.roundId },
             schemaUID: eas.schemas.approval,
             recipient,
           },
