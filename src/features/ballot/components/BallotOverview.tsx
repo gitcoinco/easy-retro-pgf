@@ -54,13 +54,13 @@ export const BallotOverview = () => {
           <BallotSection
             title={
               <div className="flex justify-between">
-                OP allocated:
+                {config.tokenName} allocated:
                 <div
                   className={clsx("text-gray-900 dark:text-gray-300", {
                     ["text-primary-500"]: sum > config.votingMaxTotal,
                   })}
                 >
-                  {formatNumber(sum)} OP
+                  {formatNumber(sum)} {config.tokenName}
                 </div>
               </div>
             }
@@ -68,7 +68,9 @@ export const BallotOverview = () => {
             <Progress value={sum} max={config.votingMaxTotal} />
             <div className="flex justify-between text-xs">
               <div>Total</div>
-              <div>{formatNumber(config.votingMaxTotal)} OP</div>
+              <div>
+                {formatNumber(config.votingMaxTotal)} {config.tokenName}
+              </div>
             </div>
           </BallotSection>
           {ballot?.publishedAt ? (

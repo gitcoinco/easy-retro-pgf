@@ -123,8 +123,9 @@ export const ListEditDistribution = ({
                 title={`${alreadyInBallot?.length} project(s) in the ${listName} list already exist in your ballot.`}
               >
                 <div className="flex gap-2">
-                  You can change your OP alloaction based on the list or remove
-                  the project(s) from the list to keep your existing allocation.
+                  You can change your {config.tokenName} alloaction based on the
+                  list or remove the project(s) from the list to keep your
+                  existing allocation.
                 </div>
               </Alert>
             ) : null}
@@ -137,7 +138,7 @@ export const ListEditDistribution = ({
                 projectIdKey={"approvedId"}
               />
             </div>
-            <TotalOPBanner />
+            <TotalAllocationBanner />
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -162,7 +163,7 @@ export const ListEditDistribution = ({
     </div>
   );
 };
-const TotalOPBanner = () => {
+const TotalAllocationBanner = () => {
   const form = useFormContext<{ votes: Vote[] }>();
 
   // Load existing ballot
@@ -181,10 +182,12 @@ const TotalOPBanner = () => {
       <div className={"flex justify-between font-semibold"}>
         <div>
           {isExceeding
-            ? `Total exceeds by ${formatNumber(exceeds)} OP`
+            ? `Total exceeds by ${formatNumber(exceeds)} ${config.tokenName}`
             : "Total"}
         </div>
-        <div>{formatNumber(current)} OP</div>
+        <div>
+          {formatNumber(current)} {config.tokenName}
+        </div>
       </div>
     </div>
   );

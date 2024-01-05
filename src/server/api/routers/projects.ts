@@ -60,7 +60,13 @@ export const projectsRouter = createTRPCRouter({
       return fetchAttestations([eas.schemas.metadata], {
         take: input.limit,
         skip: input.cursor * input.limit,
-        where: { id: { in: approvedIds } },
+        where: {
+          id: { in: approvedIds },
+          AND: [
+            createDataFilter("type", "bytes32", "application"),
+            createDataFilter("round", "bytes32", config.roundId),
+          ],
+        },
       });
     });
   }),

@@ -17,6 +17,7 @@ import { useApproveApplication } from "../hooks/useApproveApplication";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
+import { EmptyState } from "~/components/EmptyState";
 
 export function ApplicationItem({
   id,
@@ -128,9 +129,11 @@ Select the applications you want to approve. You must be a configured admin to a
       `}</Markdown>
 
       <div className="my-2 flex items-center justify-between">
-        <div className="text-gray-300">
-          {applications.data?.length} applications found
-        </div>
+        {applications.data?.length ? (
+          <div className="text-gray-300">
+            {applications.data?.length} applications found
+          </div>
+        ) : null}
         <div className="flex gap-2">
           <SelectAllButton applications={applicationsToApprove} />
           <ApproveButton isLoading={approve.isLoading} />
@@ -142,7 +145,11 @@ Select the applications you want to approve. You must be a configured admin to a
           <Spinner />
         </div>
       ) : !applications.data?.length ? (
-        <div>No applications found</div>
+        <EmptyState title="No applications">
+          <Button variant="primary" as={Link} href={`/applications/new`}>
+            Go to create application
+          </Button>
+        </EmptyState>
       ) : null}
       {applications.data?.map((item) => (
         <ApplicationItem

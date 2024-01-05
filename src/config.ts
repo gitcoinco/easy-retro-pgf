@@ -18,6 +18,7 @@ export const config = {
   skipApprovedVoterCheck: ["true", "1"].includes(
     process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK!,
   ),
+  tokenName: process.env.NEXT_PUBLIC_TOKEN_NAME!,
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
   admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
   network:

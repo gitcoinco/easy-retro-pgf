@@ -1,7 +1,7 @@
 import { useAttest } from "~/hooks/useEAS";
 import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
-import { eas } from "~/config";
+import { config, eas } from "~/config";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { toast } from "sonner";
 
@@ -16,7 +16,7 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
         applicationIds.map((refUID) =>
           createAttestation(
             {
-              values: { type: "application" },
+              values: { type: "application", round: config.roundId },
               schemaUID: eas.schemas.approval,
               refUID,
             },

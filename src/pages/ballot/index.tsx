@@ -81,7 +81,7 @@ function BallotAllocationForm() {
           <div>Total votes in ballot</div>
           <div className="flex items-center gap-2">
             {save.isLoading && <Spinner />}
-            <TotalOP />
+            <TotalAllocation />
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ const EmptyBallot = () => (
   </div>
 );
 
-const TotalOP = () => {
+const TotalAllocation = () => {
   const form = useFormContext<{ votes: Vote[] }>();
   const votes = form.watch("votes") ?? [];
   const sum = sumBallot(votes);

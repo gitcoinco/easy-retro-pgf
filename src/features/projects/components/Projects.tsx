@@ -76,7 +76,6 @@ export function ProjectItem({
   isLoading: boolean;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
-
   return (
     <article
       data-testid={`project-${attestation.id}`}

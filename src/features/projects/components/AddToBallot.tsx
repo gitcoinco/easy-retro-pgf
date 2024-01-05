@@ -61,9 +61,9 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         title={`Vote for ${name}`}
       >
         <p className="pb-4 leading-relaxed">
-          How much OP should this Project receive to fill the gap between the
-          impact they generated for Optimism and the profit they received for
-          generating this impact
+          How much {config.tokenName} should this Project receive to fill the
+          gap between the impact they generated for Optimism and the profit they
+          received for generating this impact
         </p>
         <Form
           defaultValues={{ amount: inBallot?.amount }}
@@ -111,10 +111,10 @@ const ProjectAllocation = ({
     : 0;
   const total = amount + current;
 
-  const exceededProjectOP = amount > config.votingMaxProject;
-  const exceededMaxOP = total > config.votingMaxTotal;
+  const exceededProjectTokens = amount > config.votingMaxProject;
+  const exceededMaxTokens = total > config.votingMaxTotal;
 
-  const isError = exceededProjectOP || exceededMaxOP;
+  const isError = exceededProjectTokens || exceededMaxTokens;
   return (
     <div>
       <AllocationInput error={isError} name="amount" />
@@ -125,7 +125,7 @@ const ProjectAllocation = ({
           </span>
           <span
             className={clsx("font-semibold", {
-              ["text-primary-500"]: exceededMaxOP,
+              ["text-primary-500"]: exceededMaxTokens,
             })}
           >
             {formatNumber(total)}
@@ -134,7 +134,7 @@ const ProjectAllocation = ({
         <div className="flex gap-2">
           <span
             className={clsx("font-semibold", {
-              ["text-primary-500"]: exceededProjectOP,
+              ["text-primary-500"]: exceededProjectTokens,
             })}
           >
             {formatNumber(amount)}

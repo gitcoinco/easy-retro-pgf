@@ -7,6 +7,7 @@ import { AllocationList } from "./AllocationList";
 import { Button } from "~/components/ui/Button";
 import { createComponent } from "~/components/ui";
 import { type Vote } from "../types";
+import { config } from "~/config";
 
 const feedbackUrl = process.env.NEXT_PUBLIC_FEEDBACK_URL;
 
@@ -55,7 +56,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
           </div>
           <div className="flex items-center justify-between border-b py-3 text-gray-600 dark:border-gray-700 dark:text-gray-300">
             <p>Project name</p>
-            <p>OP allocated by you</p>
+            <p>{config.tokenName} allocated by you</p>
           </div>
 
           <section className="max-h-[480px] overflow-y-scroll">

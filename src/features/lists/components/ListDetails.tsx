@@ -9,6 +9,7 @@ import { ListEditDistribution } from "./ListEditDistribution";
 import { Markdown } from "~/components/ui/Markdown";
 import { useListMetadata } from "../hooks/useLists";
 import { Attestation } from "~/utils/fetchAttestations";
+import { config } from "~/config";
 
 export default function ListDetails({
   attestation,
@@ -59,7 +60,9 @@ export default function ListDetails({
           </Skeleton>
           <span>·</span>
           <Skeleton className="w-32" isLoading={metadata.isLoading}>
-            <p className="font-bold">{formatNumber(0)} OP allocated</p>
+            <p className="font-bold">
+              {formatNumber(0)} {config.tokenName} allocated
+            </p>
           </Skeleton>
         </div>
         {!metadata.isLoading && (
