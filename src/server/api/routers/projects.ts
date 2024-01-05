@@ -54,9 +54,14 @@ export const projectsRouter = createTRPCRouter({
     }),
   search: publicProcedure.input(FilterSchema).query(async ({ input }) => {
     return fetchAttestations([eas.schemas.approval], {
-      where: { attester: { in: config.admins } },
+      where: {
+        attester: { in: config.admins },
+        ...createDataFilter("type", "bytes32", "application"),
+      },
     }).then((attestations) => {
-      const approvedIds = attestations.map(({ refUID }) => refUID);
+      const approvedIds = attestations
+        .map(({ refUID }) => refUID)
+        .filter(Boolean);
       return fetchAttestations([eas.schemas.metadata], {
         take: input.limit,
         skip: input.cursor * input.limit,
