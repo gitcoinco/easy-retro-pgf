@@ -1,22 +1,22 @@
-# OpenRPGF
+# EasyRetroPGF
 
 <div style="font-size:18px">
 
-<a href="https://open-rpgf.vercel.app">View demo</a>
+<a href="https://easy-retro-pgf.vercel.app">View demo</a>
 <span>|</span>
 <a href="https://t.me/+0oycDCvX3QY1NjEx">Telegram Group</a>
 
 <div>
 
-[<img src="./docs/screenshot.png">](https://open-rpgf.vercel.app)
+[<img src="./docs/screenshot.png">](https://easy-retro-pgf.vercel.app)
 
 ## Deployment
 
-Follow these instructions to deploy your own instance of OpenRPGF.
+Follow these instructions to deploy your own instance of EasyRetroPGF.
 
 #### 1. Fork Repo
 
-[Fork OpenRPGF](https://github.com/gitcoinco/open-rpgf/fork)
+[Fork EasyRetroPGF](https://github.com/gitcoinco/easy-retro-pgf/fork)
 
 1. Click to view the `.env.example` file in your newly created repo
 2. Copy its contents and paste into a text editor
@@ -106,7 +106,7 @@ WALLET_PRIVATEKEY="0x..." npm run eas:registerSchemas
 
 ### 1. Creating applications
 
-- Navigate to https://open-rpgf.vercel.app/applications/new (replace the domain with your deployment)
+- Navigate to https://easy-retro-pgf.vercel.app/applications/new (replace the domain with your deployment)
 - Create profile (if not already done so previously)
 - Fill out the fields
   - **name** - the name to be displayed
@@ -125,7 +125,7 @@ This will create an Attestation with the Metadata schema and populate the fields
 
 ### 2. Reviewing and approving applications
 
-- Navigate to https://open-rpgf.vercel.app/applications (replace the domain with your deployment)
+- Navigate to https://easy-retro-pgf.vercel.app/applications (replace the domain with your deployment)
 - Make sure you have configured `NEXT_PUBLIC_ADMIN_ADDRESSES` with the address you connect your wallet with
 - You will see a list of submitted applications
 - Select the projects you want to approve
@@ -133,18 +133,18 @@ This will create an Attestation with the Metadata schema and populate the fields
 
 ### 3. Registering voters
 
-- Navigate to https://open-rpgf.vercel.app/voters (replace the domain with your deployment)
+- Navigate to https://easy-retro-pgf.vercel.app/voters (replace the domain with your deployment)
 - Make sure you have configured `NEXT_PUBLIC_ADMIN_ADDRESSES` with the address you connect your wallet with
 - Enter a list of addresses you want to allow to vote
 - Press Approve button to create attestations for these voters (send transaction to confirm)
 
 ### 4. Exploring approved applications
 
-- https://open-rpgf.vercel.app/projects
+- https://easy-retro-pgf.vercel.app/projects
 
 ### 5. Creating lists
 
-- https://open-rpgf.vercel.app/lists/new
+- https://easy-retro-pgf.vercel.app/lists/new
 
 ### 6. Vote for projects and submit ballot
 
@@ -152,14 +152,14 @@ This will create an Attestation with the Metadata schema and populate the fields
 
 Results are found on the same page as projects.
 
-- https://open-rpgf.vercel.app/projects
+- https://easy-retro-pgf.vercel.app/projects
 
 ## Development
 
 To run locally follow these instructions:
 
 ```sh
-git clone https://github.com/gitcoinco/open-rpgf
+git clone https://github.com/gitcoinco/easy-retro-pgf
 
 bun install # (or pnpm / yarn / npm)
 

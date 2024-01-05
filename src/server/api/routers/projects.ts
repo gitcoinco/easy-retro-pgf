@@ -21,7 +21,10 @@ export const projectsRouter = createTRPCRouter({
     return fetchAttestations([eas.schemas.approval], {
       where: {
         attester: { in: config.admins },
-        ...createDataFilter("type", "bytes32", "application"),
+        AND: [
+          createDataFilter("type", "bytes32", "application"),
+          createDataFilter("round", "bytes32", config.roundId),
+        ],
       },
     }).then((attestations) => {
       const approvedIds = attestations.map(({ refUID }) => refUID);
