@@ -69,7 +69,7 @@ export const BallotOverview = () => {
             <div className="flex justify-between text-xs">
               <div>Total</div>
               <div>
-                {formatNumber(config.votingMaxTotal)} {config.tokenName}
+                {formatNumber(config.votingMaxTotal ?? 0)} {config.tokenName}
               </div>
             </div>
           </BallotSection>
