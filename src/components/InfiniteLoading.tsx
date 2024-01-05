@@ -4,6 +4,7 @@ import { type UseTRPCInfiniteQueryResult } from "@trpc/react-query/shared";
 import { config } from "~/config";
 import { useIntersection } from "react-use";
 import { Spinner } from "./ui/Spinner";
+import { EmptyState } from "./EmptyState";
 
 const columnMap = {
   2: "grid-cols-1 md:grid-cols-2",
@@ -45,6 +46,9 @@ export function InfiniteLoading<T>({
 
   return (
     <div>
+      {!isLoading && !items?.length ? (
+        <EmptyState title="No results found" />
+      ) : null}
       <div className={`mb-16 grid ${columnMap[columns]} gap-4`}>
         {items.map((item) => renderItem(item, { isLoading }))}
         {(isLoading || isFetchingNextPage) &&
