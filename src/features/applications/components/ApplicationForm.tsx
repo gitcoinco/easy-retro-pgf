@@ -61,7 +61,7 @@ export function ApplicationForm({ address = "" }) {
           create.mutate({ application, profile });
         }}
       >
-        <Heading as="h3" size="xl" className="">
+        <Heading as="h3" size="xl">
           Profile
         </Heading>
         <FormControl name="profile.name" label="Name" required>
@@ -80,7 +80,9 @@ export function ApplicationForm({ address = "" }) {
             <ImageUpload className="h-48 " />
           </FormControl>
         </div>
-
+        <Heading as="h3" size="xl">
+          Application
+        </Heading>
         <FormControl name="application.name" label="Name" required>
           <Input placeholder="Project name" />
         </FormControl>
@@ -315,7 +317,7 @@ function ApplicationFormSection({
   return (
     <div>
       <div>
-        <Heading as="h3" size="xl" className="">
+        <Heading as="h3" size="xl">
           {label}
         </Heading>
         <p className="mb-4 leading-loose text-gray-400">{description}</p>
