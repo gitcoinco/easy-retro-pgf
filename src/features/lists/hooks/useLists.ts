@@ -10,7 +10,7 @@ export function useLists() {
   return api.lists.query.useInfiniteQuery(
     { limit: config.pageSize },
     {
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (_, pages) => pages.length,
     },
   );
 }

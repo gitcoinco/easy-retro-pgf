@@ -13,7 +13,7 @@ export function useProjects() {
   return api.projects.search.useInfiniteQuery(
     { limit: config.pageSize, seed },
     {
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (_, pages) => pages.length,
     },
   );
 }
