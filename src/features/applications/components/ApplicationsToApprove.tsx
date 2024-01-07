@@ -135,11 +135,11 @@ Select the applications you want to approve. You must be a configured admin to a
       `}</Markdown>
 
       <div className="my-2 flex items-center justify-between">
-        {applications.data?.length ? (
-          <div className="text-gray-300">
-            {applications.data?.length} applications found
-          </div>
-        ) : null}
+        <div className="text-gray-300">
+          {applications.data?.length
+            ? `${applications.data?.length} applications found`
+            : ""}
+        </div>
         <div className="flex gap-2">
           <SelectAllButton applications={applicationsToApprove} />
           <ApproveButton isLoading={approve.isLoading} />
