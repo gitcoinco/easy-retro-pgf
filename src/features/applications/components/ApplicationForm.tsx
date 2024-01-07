@@ -87,11 +87,7 @@ export function ApplicationForm({ address = "" }) {
           <Input placeholder="Project name" />
         </FormControl>
 
-        <FormControl
-          name="application.description"
-          label="Description"
-          required
-        >
+        <FormControl name="application.bio" label="Description" required>
           <Input placeholder="Project description" />
         </FormControl>
         <div className="gap-4 md:flex">

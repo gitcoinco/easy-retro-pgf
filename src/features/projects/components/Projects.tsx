@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/Button";
 import { useProjectMetadata, useProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
-import { Attestation } from "~/utils/fetchAttestations";
+import { type Attestation } from "~/utils/fetchAttestations";
 import { ImpactCategories } from "./ImpactCategories";
 
 export function Projects() {
@@ -78,7 +78,6 @@ export function ProjectItem({
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
 
-  console.log("metadata", metadata.data);
   return (
     <article
       data-testid={`project-${attestation.id}`}

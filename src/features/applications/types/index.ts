@@ -30,7 +30,7 @@ export const fundingSourceTypes = {
 
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
-  description: z.string().min(3),
+  bio: z.string().min(3),
   websiteUrl: z.string().url().min(1),
   payoutAddress: z.string().startsWith("0x"),
   contributionDescription: z.string(),

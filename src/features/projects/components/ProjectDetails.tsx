@@ -18,9 +18,8 @@ export default function ProjectDetails({
   attestation?: Attestation;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
-  const profile = useProfileWithMetadata(attestation?.recipient);
 
-  const { description, websiteUrl, payoutAddress, fundingSources } =
+  const { bio, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
 
   return (
@@ -50,7 +49,7 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
-      <p className="text-2xl">{description}</p>
+      <p className="text-2xl">{bio}</p>
       <div>
         <Heading as="h2" size="3xl">
           Impact statements
