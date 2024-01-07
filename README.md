@@ -18,22 +18,6 @@
 - [Voting](./docs/04_voting.md)
 - [Results](./docs/05_results.md)
 
-### 4. Exploring approved applications
-
-- https://easy-retro-pgf.vercel.app/projects
-
-### 5. Creating lists
-
-- https://easy-retro-pgf.vercel.app/lists/new
-
-### 6. Vote for projects and submit ballot
-
-### 7. Round Results
-
-Results are found on the same page as projects.
-
-- https://easy-retro-pgf.vercel.app/projects
-
 ## Development
 
 To run locally follow these instructions:
