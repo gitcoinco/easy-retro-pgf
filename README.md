@@ -8,7 +8,7 @@
 
 <div>
 
-[<img src="./docs/screenshot.png">](https://easy-retro-pgf.vercel.app)
+[<img src="./docs/images/screenshot.png">](https://easy-retro-pgf.vercel.app)
 
 ## Documentation
 
