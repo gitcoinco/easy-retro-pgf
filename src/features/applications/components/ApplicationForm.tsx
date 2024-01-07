@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/Form";
 import { Heading } from "~/components/ui/Heading";
 import { Spinner } from "~/components/ui/Spinner";
-import { config } from "~/config";
+import { config, impactCategories } from "~/config";
 import { useAccount, useNetwork } from "wagmi";
 import {
   ApplicationSchema,
@@ -327,13 +327,6 @@ function ApplicationFormSection({
     </div>
   );
 }
-
-// TODO: Move these to a config for customization?
-const impactCategories = {
-  ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },
-  OPEN_SOURCE: { label: "Web3 Open Source Software" },
-  COMMUNITY_EDUCATION: { label: "Web3 Community & Education" },
-} as const;
 
 function ImpactTags() {
   const { control, watch } = useFormContext();

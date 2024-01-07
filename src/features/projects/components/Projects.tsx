@@ -12,6 +12,7 @@ import { useProjectMetadata, useProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
 import { Attestation } from "~/utils/fetchAttestations";
+import { ImpactCategories } from "./ImpactCategories";
 
 export function Projects() {
   const projects = useProjects();
@@ -76,6 +77,8 @@ export function ProjectItem({
   isLoading: boolean;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
+
+  console.log("metadata", metadata.data);
   return (
     <article
       data-testid={`project-${attestation.id}`}
@@ -90,11 +93,16 @@ export function ProjectItem({
       <Heading className="truncate" size="lg" as="h3">
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
       </Heading>
-      <p className="line-clamp-2 h-12 dark:text-gray-300">
-        <Skeleton isLoading={isLoading} className="w-full">
-          {metadata.data?.description}
-        </Skeleton>
-      </p>
+      <div className="mb-2">
+        <p className="line-clamp-2 h-10 text-sm dark:text-gray-300">
+          <Skeleton isLoading={isLoading} className="w-full">
+            {metadata.data?.bio}
+          </Skeleton>
+        </p>
+      </div>
+      <Skeleton isLoading={isLoading} className="w-[100px]">
+        <ImpactCategories tags={metadata.data?.impactCategory} />
+      </Skeleton>
     </article>
   );
 }
