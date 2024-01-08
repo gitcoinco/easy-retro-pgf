@@ -1,12 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { type Address, verifyTypedData, keccak256 } from "viem";
 import { isAfter } from "date-fns";
+import type { Ballot } from "@prisma/client";
 import {
   type BallotPublish,
   BallotPublishSchema,
   BallotSchema,
   type Vote,
-  Ballot,
+  // Ballot,
 } from "~/features/ballot/types";
 import {
   createTRPCRouter,
@@ -19,6 +20,7 @@ import { config } from "~/config";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { type Prisma } from "@prisma/client";
 import { fetchApprovedVoter } from "~/utils/fetchAttestations";
+import { getAppState } from "~/utils/state";
 
 const defaultBallotSelect = {
   votes: true,
@@ -108,35 +110,44 @@ export const ballotRouter = createTRPCRouter({
       });
     }),
   results: publicProcedure.query(async ({ ctx }) => {
-    if (config.votingEndsAt < new Date()) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Voting has not ended yet",
-      });
-    }
+    // if (getAppState() !== "RESULTS") {
+    //   throw new TRPCError({
+    //     code: "BAD_REQUEST",
+    //     message: "Voting has not ended yet",
+    //   });
+    // }
 
     const ballots = await ctx.db.ballot.findMany({
       where: { publishedAt: undefined },
     });
     const results = calculateResults(ballots);
+    return results;
   }),
 });
 
-type BallotPublished = {};
-function calculateResults(ballots: BallotPublished[]) {
-  const results = {};
-  // for (const ballot in ballots ) {
+type BallotResults = {
+  totalVotes: number;
+  totalVoters: number;
+  projects: Record<string, number>;
+};
+function calculateResults(ballots: Ballot[]): BallotResults {
+  let totalVotes = 0;
+  const projects = new Map<string, number>();
 
-  //   for (const vote in ballot.votes) {
-  //     results[vote.projectId] =
-  //   }
-  // }
+  ballots.forEach((ballot) => {
+    ballot.votes.forEach((vote) => {
+      const rewards = projects.get((vote as Vote).projectId) ?? 0;
+      projects.set((vote as Vote).projectId, rewards + (vote as Vote).amount);
 
-  // return ballots.reduce((acc, ballot) => {
-  //   return {
-  //     []
-  //   }
-  // })
+      totalVotes += 1;
+    });
+  });
+
+  return {
+    totalVoters: ballots.length,
+    totalVotes: totalVotes,
+    projects: Object.fromEntries(projects),
+  };
 }
 
 function verifyBallotCount(votes: Vote[]) {
