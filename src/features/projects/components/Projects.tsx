@@ -14,10 +14,14 @@ import { ProjectSelectButton } from "./ProjectSelectButton";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { ImpactCategories } from "./ImpactCategories";
 import { getAppState } from "~/utils/state";
+import { useResults } from "~/hooks/useResults";
+import { formatNumber } from "~/utils/formatNumber";
+import { config } from "~/config";
 
 export function Projects() {
   const projects = useProjects();
   const select = useSelectProjects();
+  const results = useResults();
 
   return (
     <div>
@@ -59,6 +63,14 @@ export function Projects() {
                       select.toggle(item.id);
                     }}
                   />
+                </div>
+              ) : null}
+              {!results.isLoading && getAppState() === "RESULTS" ? (
+                <div className="absolute right-2 top-[100px] z-10 -mt-2 rounded bg-gray-900 p-1 text-sm">
+                  <span className="font-bold">
+                    {formatNumber(results.data?.projects?.[item.id])}
+                  </span>{" "}
+                  {config.tokenName}
                 </div>
               ) : null}
               <ProjectItem isLoading={isLoading} attestation={item} />
