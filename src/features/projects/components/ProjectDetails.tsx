@@ -8,7 +8,6 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type ReactNode } from "react";
 import { type Attestation } from "~/utils/fetchAttestations";
-import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export default function ProjectDetails({
   attestation,

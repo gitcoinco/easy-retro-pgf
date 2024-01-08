@@ -13,6 +13,7 @@ import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { ImpactCategories } from "./ImpactCategories";
+import { getAppState } from "~/utils/state";
 
 export function Projects() {
   const projects = useProjects();
@@ -49,7 +50,7 @@ export function Projects() {
               href={`/projects/${item.id}`}
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
-              {!isLoading ? (
+              {!isLoading && getAppState() === "VOTING" ? (
                 <div className="absolute right-2 top-[100px] z-10 -mt-2">
                   <ProjectSelectButton
                     state={select.getState(item.id)}

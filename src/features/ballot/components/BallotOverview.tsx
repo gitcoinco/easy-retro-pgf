@@ -13,7 +13,7 @@ import {
 } from "~/features/ballot/hooks/useBallot";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
-import { VotingEndsIn, useVotingTimeLeft } from "./VotingEndsIn";
+import { VotingEndsIn } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { config } from "~/config";
 import { useIsMutating } from "@tanstack/react-query";
@@ -29,84 +29,83 @@ export const BallotOverview = () => {
   const sum = sumBallot(ballot?.votes);
 
   const allocations = ballot?.votes ?? [];
-  const [, , , seconds] = useVotingTimeLeft();
   const canSubmit = router.route === "/ballot" && allocations.length;
-  const votingHasEnded = seconds < 0;
 
   const { data: projectCount } = useProjectCount();
 
-  if (getAppState() !== "VOTING")
+  const appState = getAppState();
+  if (appState === "RESULTS")
     return (
-      <div className="flex flex-col items-center gap-2 pt-8 text-sm dark:text-gray-300">
-        Voting hasn't started yet
-        <Button as={Link} href={"/applications/new"}>
-          Create application
-        </Button>
+      <div className="flex flex-col items-center gap-2 pt-8 ">
+        <BallotHeader>Voting has ended</BallotHeader>
+        <BallotSection title="Results are being tallied" />
+      </div>
+    );
+  if (appState !== "VOTING")
+    return (
+      <div className="flex flex-col items-center gap-2 pt-8 ">
+        <BallotHeader>Voting hasn't started yet</BallotHeader>
+        {appState === "REVIEWING" ? (
+          <BallotSection title="Applications are being reviewed" />
+        ) : (
+          <Button as={Link} href={"/applications/new"}>
+            Create application
+          </Button>
+        )}
       </div>
     );
 
   return (
     <div className="space-y-6">
-      <h3 className="text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300">
-        Your ballot
-      </h3>
+      <BallotHeader>Your ballot</BallotHeader>
       <BallotSection title="Voting ends in:">
         <VotingEndsIn />
       </BallotSection>
-      {!votingHasEnded ? (
-        <>
-          <BallotSection title="Projects added:">
-            <div>
-              <span className="text-gray-900 dark:text-gray-300">
-                {allocations.length}
-              </span>
-              /{projectCount?.count}
-            </div>
-          </BallotSection>
-          <BallotSection
-            title={
-              <div className="flex justify-between">
-                {config.tokenName} allocated:
-                <div
-                  className={clsx("text-gray-900 dark:text-gray-300", {
-                    ["text-primary-500"]: sum > config.votingMaxTotal,
-                  })}
-                >
-                  {formatNumber(sum)} {config.tokenName}
-                </div>
-              </div>
-            }
-          >
-            <Progress value={sum} max={config.votingMaxTotal} />
-            <div className="flex justify-between text-xs">
-              <div>Total</div>
-              <div>
-                {formatNumber(config.votingMaxTotal ?? 0)} {config.tokenName}
-              </div>
-            </div>
-          </BallotSection>
-          {ballot?.publishedAt ? (
-            <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
-              View submitted ballot
-            </Button>
-          ) : canSubmit ? (
-            <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
-          ) : allocations.length ? (
-            <Button
-              className="w-full"
-              variant="primary"
-              as={Link}
-              href={"/ballot"}
+      <BallotSection title="Projects added:">
+        <div>
+          <span className="text-gray-900 dark:text-gray-300">
+            {allocations.length}
+          </span>
+          /{projectCount?.count}
+        </div>
+      </BallotSection>
+      <BallotSection
+        title={
+          <div className="flex justify-between">
+            {config.tokenName} allocated:
+            <div
+              className={clsx("text-gray-900 dark:text-gray-300", {
+                ["text-primary-500"]: sum > config.votingMaxTotal,
+              })}
             >
-              View ballot
-            </Button>
-          ) : (
-            <Button className={"w-full"} variant="primary" disabled>
-              No projects added yet
-            </Button>
-          )}
-        </>
-      ) : null}
+              {formatNumber(sum)} {config.tokenName}
+            </div>
+          </div>
+        }
+      >
+        <Progress value={sum} max={config.votingMaxTotal} />
+        <div className="flex justify-between text-xs">
+          <div>Total</div>
+          <div>
+            {formatNumber(config.votingMaxTotal ?? 0)} {config.tokenName}
+          </div>
+        </div>
+      </BallotSection>
+      {ballot?.publishedAt ? (
+        <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
+          View submitted ballot
+        </Button>
+      ) : canSubmit ? (
+        <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
+      ) : allocations.length ? (
+        <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
+          View ballot
+        </Button>
+      ) : (
+        <Button className={"w-full"} variant="primary" disabled>
+          No projects added yet
+        </Button>
+      )}
     </div>
   );
 };
@@ -186,12 +185,23 @@ const SubmitBallotButton = ({ disabled = false }) => {
   );
 };
 
-const BallotSection = ({
+function BallotHeader(props: PropsWithChildren) {
+  return (
+    <h3
+      className="text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300"
+      {...props}
+    />
+  );
+}
+
+function BallotSection({
   title,
   children,
-}: { title: string | ReactNode } & PropsWithChildren) => (
-  <div className="space-y-1 text-gray-500">
-    <h4 className="text-sm font-semibold ">{title}</h4>
-    <div className="space-y-1 text-lg font-semibold">{children}</div>
-  </div>
-);
+}: { title: string | ReactNode } & PropsWithChildren) {
+  return (
+    <div className="space-y-1 text-gray-500">
+      <h4 className="text-sm font-semibold ">{title}</h4>
+      <div className="space-y-1 text-lg font-semibold">{children}</div>
+    </div>
+  );
+}

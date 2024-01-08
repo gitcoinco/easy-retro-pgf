@@ -26,10 +26,7 @@ export const projectsRouter = createTRPCRouter({
           createDataFilter("round", "bytes32", config.roundId),
         ],
       },
-    }).then((attestations) => {
-      const approvedIds = attestations.map(({ refUID }) => refUID);
-      return { count: approvedIds.length };
-    });
+    }).then((attestations) => ({ count: attestations.length }));
   }),
   get: publicProcedure
     .input(
