@@ -19,6 +19,7 @@ import { config } from "~/config";
 import { useIsMutating } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
+import { getAppState } from "~/utils/state";
 
 export const BallotOverview = () => {
   const router = useRouter();
@@ -33,6 +34,17 @@ export const BallotOverview = () => {
   const votingHasEnded = seconds < 0;
 
   const { data: projectCount } = useProjectCount();
+
+  if (getAppState() !== "VOTING")
+    return (
+      <div className="flex flex-col items-center gap-2 pt-8 text-sm dark:text-gray-300">
+        Voting hasn't started yet
+        <Button as={Link} href={"/applications/new"}>
+          Create application
+        </Button>
+      </div>
+    );
+
   return (
     <div className="space-y-6">
       <h3 className="text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300">
