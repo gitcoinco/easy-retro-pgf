@@ -5,9 +5,11 @@ import ProjectDetails from "~/features/projects/components/ProjectDetails";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { Button } from "~/components/ui/Button";
 import { useApproveApplication } from "~/features/applications/hooks/useApproveApplication";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 
 export default function ApplicationDetailsPage({ projectId = "" }) {
   const project = useProjectById(projectId);
+  const isAdmin = useIsAdmin();
 
   const approve = useApproveApplication();
 
@@ -16,13 +18,15 @@ export default function ApplicationDetailsPage({ projectId = "" }) {
       <ProjectDetails
         attestation={project.data}
         action={
-          <Button
-            variant="primary"
-            disabled={approve.isLoading}
-            onClick={() => approve.mutate([projectId])}
-          >
-            Approve project
-          </Button>
+          isAdmin && (
+            <Button
+              variant="primary"
+              disabled={approve.isLoading}
+              onClick={() => approve.mutate([projectId])}
+            >
+              Approve project
+            </Button>
+          )
         }
       />
     </Layout>
