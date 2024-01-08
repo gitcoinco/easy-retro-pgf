@@ -1,10 +1,10 @@
 import { type PropsWithChildren } from "react";
 import { Heading } from "~/components/ui/Heading";
+import { useResults } from "~/hooks/useResults";
 import { Layout } from "~/layouts/DefaultLayout";
-import { api } from "~/utils/api";
 
 export default function ResultsPage() {
-  const results = api.ballot.results.useQuery();
+  const results = useResults();
 
   const { totalVotes, totalVoters, projects = {} } = results.data ?? {};
   return (
