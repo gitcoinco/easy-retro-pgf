@@ -2,6 +2,7 @@ import { config } from "~/config";
 import { useMetadata } from "~/hooks/useMetadata";
 import { api } from "~/utils/api";
 import { type Application } from "~/features/applications/types";
+import { useFilter } from "~/features/filter/hooks/useFilter";
 
 export function useProjectById(id: string) {
   return api.projects.get.useQuery({ id }, { enabled: Boolean(id) });
@@ -10,8 +11,10 @@ export function useProjectById(id: string) {
 const seed = 0;
 // const seed = Math.random();
 export function useProjects() {
+  const { data: filter } = useFilter("projects");
+  console.log("filter", filter);
   return api.projects.search.useInfiniteQuery(
-    { limit: config.pageSize, seed },
+    { limit: config.pageSize, seed, ...filter },
     {
       getNextPageParam: (_, pages) => pages.length,
     },

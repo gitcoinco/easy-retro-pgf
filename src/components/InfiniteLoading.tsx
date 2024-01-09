@@ -42,8 +42,6 @@ export function InfiniteLoading<T>({
     [pages],
   );
 
-  console.log(items, data, hasMore);
-
   return (
     <div>
       {!isLoading && !items?.length ? (

@@ -17,11 +17,14 @@ import { getAppState } from "~/utils/state";
 import { useResults } from "~/hooks/useResults";
 import { formatNumber } from "~/utils/formatNumber";
 import { config } from "~/config";
+import { SortFilter } from "~/components/SortFilter";
+import { useFilter } from "~/features/filter/hooks/useFilter";
 
 export function Projects() {
   const projects = useProjects();
   const select = useSelectProjects();
   const results = useResults();
+  const { data: filter } = useFilter("projects");
 
   return (
     <div>
@@ -44,6 +47,14 @@ export function Projects() {
         <Button size="icon" onClick={select.reset}>
           <XIcon />
         </Button>
+      </div>
+
+      <div className="flex justify-end">
+        <SortFilter
+          type="projects"
+          sortOptions={["name_asc", "name_desc", "time_asc", "time_desc"]}
+          filter={filter}
+        />
       </div>
       <InfiniteLoading
         {...projects}
@@ -94,14 +105,16 @@ export function ProjectItem({
   return (
     <article
       data-testid={`project-${attestation.id}`}
-      className="rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
+      className="group rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
     >
-      <ProjectBanner profileId={attestation?.recipient} />
-      <ProjectAvatar
-        rounded="full"
-        className="-mt-8 ml-4"
-        profileId={attestation?.recipient}
-      />
+      <div className="opacity-70 transition-opacity group-hover:opacity-100">
+        <ProjectBanner profileId={attestation?.recipient} />
+        <ProjectAvatar
+          rounded="full"
+          className="-mt-8 ml-4"
+          profileId={attestation?.recipient}
+        />
+      </div>
       <Heading className="truncate" size="lg" as="h3">
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
       </Heading>
