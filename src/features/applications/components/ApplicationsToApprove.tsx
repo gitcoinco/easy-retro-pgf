@@ -20,6 +20,7 @@ import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
 import { formatDate, timeAgo } from "~/utils/time";
 import { ClockIcon } from "lucide-react";
+import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 
 export function ApplicationItem({
   id,
@@ -194,6 +195,7 @@ function SelectAllButton({
 
 function ApproveButton({ isLoading = false }) {
   const isAdmin = useIsAdmin();
+  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
   const form = useFormContext<ApplicationsToApprove>();
   const selectedCount = Object.values(form.watch("selected") ?? {}).filter(
     Boolean,
@@ -201,13 +203,15 @@ function ApproveButton({ isLoading = false }) {
   return (
     <Button
       suppressHydrationWarning
-      disabled={!selectedCount || !isAdmin || isLoading}
+      disabled={!selectedCount || !isAdmin || isLoading || !isCorrectNetwork}
       variant="primary"
       type="submit"
     >
-      {isAdmin
-        ? `Approve ${selectedCount} applications`
-        : "You must be an admin"}
+      {!isCorrectNetwork
+        ? `Connect to ${correctNetwork.name}`
+        : isAdmin
+          ? `Approve ${selectedCount} applications`
+          : "You must be an admin"}
     </Button>
   );
 }

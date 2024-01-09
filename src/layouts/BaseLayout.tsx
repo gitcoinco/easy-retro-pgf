@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import { metadata } from "~/config";
 import { useTheme } from "next-themes";
+import { Footer } from "~/components/Footer";
 
 const Context = createContext({ eligibilityCheck: false, showBallot: false });
 export const useLayoutOptions = () => useContext(Context);
@@ -67,10 +68,13 @@ export const BaseLayout = ({
         <meta name="twitter:image" content={metadata.image} />
       </Head>
       <div
-        className={clsx("min-h-screen dark:bg-gray-900 dark:text-white", theme)}
+        className={clsx(
+          "flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
+          theme,
+        )}
       >
         {header}
-        <div className="mx-auto pt-12  2xl:container md:flex">
+        <div className="mx-auto h-full  flex-1 pt-12 2xl:container md:flex">
           {sidebar === "left" ? sidebarComponent : null}
           <div
             className={clsx("min-w-0 flex-1 px-2 pb-24", {
@@ -81,6 +85,7 @@ export const BaseLayout = ({
           </div>
           {sidebar === "right" ? sidebarComponent : null}
         </div>
+        <Footer />
       </div>
     </Context.Provider>
   );

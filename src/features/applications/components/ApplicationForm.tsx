@@ -14,8 +14,8 @@ import {
 } from "~/components/ui/Form";
 import { Heading } from "~/components/ui/Heading";
 import { Spinner } from "~/components/ui/Spinner";
-import { config, impactCategories } from "~/config";
-import { useAccount, useNetwork } from "wagmi";
+import { impactCategories } from "~/config";
+import { useAccount } from "wagmi";
 import {
   ApplicationSchema,
   ProfileSchema,
@@ -26,6 +26,7 @@ import { useCreateApplication } from "../hooks/useCreateApplication";
 import { toast } from "sonner";
 import { useController, useFormContext } from "react-hook-form";
 import { Tag } from "~/components/ui/Tag";
+import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -279,15 +280,15 @@ function CreateApplicationButton({
   buttonText: string;
 }) {
   const { isConnected } = useAccount();
-  const { chain } = useNetwork();
+  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
   return (
     <div className="flex items-center justify-between">
       <div>
         {!isConnected && <div>You must connect wallet to create a list</div>}
-        {isConnected && chain?.id !== config.network.id && (
+        {!isCorrectNetwork && (
           <div className="flex items-center gap-2">
-            You must be connected to Optimism
+            You must be connected to {correctNetwork.name}
           </div>
         )}
       </div>

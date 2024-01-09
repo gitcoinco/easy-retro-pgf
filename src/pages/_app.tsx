@@ -18,7 +18,9 @@ function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
           --font-inter: ${inter.style.fontFamily};
         }
       `}</style>
-      <main className={`${inter.variable} font-sans`}>
+      <main
+        className={`${inter.variable} flex min-h-screen flex-col font-sans`}
+      >
         <Component {...pageProps} />
       </main>
     </Providers>

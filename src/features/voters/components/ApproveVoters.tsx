@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Dialog } from "~/components/ui/Dialog";
 import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
+import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 
 function parseAddresses(addresses: string): Address[] {
   return addresses
@@ -22,6 +23,7 @@ function parseAddresses(addresses: string): Address[] {
 
 export function ApproveVoters() {
   const isAdmin = useIsAdmin();
+  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
   const [isOpen, setOpen] = useState(false);
   const approve = useApproveVoters({
@@ -39,10 +41,14 @@ export function ApproveVoters() {
       <IconButton
         icon={UserRoundPlus}
         variant="primary"
-        disabled={!isAdmin}
+        disabled={!isAdmin || !isCorrectNetwork}
         onClick={() => setOpen(true)}
       >
-        {isAdmin ? `Add voters` : "You must be an admin"}
+        {!isCorrectNetwork
+          ? `Connect to ${correctNetwork.name}`
+          : isAdmin
+            ? `Add voters`
+            : "You must be an admin"}
       </IconButton>
       <Dialog isOpen={isOpen} onOpenChange={setOpen} title={`Approve voters`}>
         <p className="pb-4 leading-relaxed">
