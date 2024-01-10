@@ -12,6 +12,7 @@ import { Dialog } from "~/components/ui/Dialog";
 import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import dynamic from "next/dynamic";
 
 function parseAddresses(addresses: string): Address[] {
   return addresses
@@ -21,7 +22,7 @@ function parseAddresses(addresses: string): Address[] {
     .filter((addr, i, self) => self.indexOf(addr) === i);
 }
 
-export function ApproveVoters() {
+function ApproveVoters() {
   const isAdmin = useIsAdmin();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
@@ -105,3 +106,5 @@ function ApproveButton({ isLoading = false, isAdmin = false }) {
     </IconButton>
   );
 }
+
+export default dynamic(() => Promise.resolve(ApproveVoters), { ssr: false });

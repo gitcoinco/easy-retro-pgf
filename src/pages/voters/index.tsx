@@ -1,7 +1,7 @@
 import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
-import { ApproveVoters } from "~/features/voters/components/ApproveVoters";
+import ApproveVoters from "~/features/voters/components/ApproveVoters";
 import { VotersList } from "~/features/voters/components/VotersList";
 import { AdminLayout } from "~/layouts/AdminLayout";
 

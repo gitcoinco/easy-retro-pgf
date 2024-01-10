@@ -69,15 +69,15 @@ export const BaseLayout = ({
       </Head>
       <div
         className={clsx(
-          "h-full min-h-screen dark:bg-gray-900 dark:text-white",
+          " flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
           theme,
         )}
       >
         {header}
-        <div className="mx-auto h-full  flex-1 pt-12 2xl:container md:flex">
+        <div className="mx-auto w-full flex-1 pt-12 2xl:container md:flex">
           {sidebar === "left" ? sidebarComponent : null}
           <div
-            className={clsx("min-w-0 flex-1 px-2 pb-24", {
+            className={clsx("w-full min-w-0 px-2 pb-24", {
               ["mx-auto max-w-5xl"]: !sidebar,
             })}
           >
