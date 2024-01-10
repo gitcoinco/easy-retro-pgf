@@ -26,4 +26,4 @@ This will create an Attestation with the Metadata schema and populate the fields
 - Select the applications you want to approve
 - Press Approve button to create attestations for these projects (send transaction to confirm)
 
-<div style="position: relative; padding-bottom: 62.5%; height: 0;"><iframe src="https://www.loom.com/embed/cfe9bb7ad0b44aaca4d26a446006386a?sid=a3765630-b097-41bb-aa8b-7600b6901fe4" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+![https://cdn.loom.com/sessions/thumbnails/cfe9bb7ad0b44aaca4d26a446006386a-with-play.gif](https://www.loom.com/embed/cfe9bb7ad0b44aaca4d26a446006386a?sid=a3765630-b097-41bb-aa8b-7600b6901fe4)
