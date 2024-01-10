@@ -12,7 +12,6 @@ const seed = 0;
 // const seed = Math.random();
 export function useProjects() {
   const { data: filter } = useFilter("projects");
-  console.log("filter", filter);
   return api.projects.search.useInfiniteQuery(
     { limit: config.pageSize, seed, ...filter },
     {

@@ -20,8 +20,9 @@ import { useIsMutating } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
 import { getAppState } from "~/utils/state";
+import dynamic from "next/dynamic";
 
-export const BallotOverview = () => {
+function BallotOverview() {
   const router = useRouter();
 
   const { data: ballot } = useBallot();
@@ -108,7 +109,7 @@ export const BallotOverview = () => {
       )}
     </div>
   );
-};
+}
 
 const SubmitBallotButton = ({ disabled = false }) => {
   const isSaving = useIsMutating(getQueryKey(api.ballot.save));
@@ -205,3 +206,5 @@ function BallotSection({
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(BallotOverview), { ssr: false });

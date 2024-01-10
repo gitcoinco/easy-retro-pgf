@@ -61,7 +61,6 @@ export function useUpdateFilterFromRouter(type: FilterType) {
   // Update filter when router query changes
   useEffect(() => {
     if (JSON.stringify(filter) !== JSON.stringify(query)) {
-      console.log("UPDATE FILTER", query);
       setFilter(query);
     }
   }, [query, setFilter]);

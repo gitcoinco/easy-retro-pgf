@@ -80,7 +80,6 @@ function FetchInView({
 
   useEffect(() => {
     if (intersection?.isIntersecting) {
-      console.log("load more");
       !isFetchingNextPage && hasMore && fetchNextPage().catch(console.log);
     }
   }, [intersection?.isIntersecting]);
