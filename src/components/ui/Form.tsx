@@ -241,7 +241,7 @@ function usePersistForm(form: UseFormReturn<FieldValues>, persist?: string) {
 
   useInterval(() => {
     if (persist) saveDraft(form?.getValues());
-  }, 5000);
+  }, 3000);
 
   useEffect(() => {
     if (persist && draft) form?.reset(draft);

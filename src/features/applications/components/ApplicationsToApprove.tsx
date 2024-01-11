@@ -128,6 +128,7 @@ export function ApplicationsToApprove() {
 
   return (
     <Form
+      defaultValues={{ selected: [] }}
       schema={ApplicationsToApproveSchema}
       onSubmit={(values) => approve.mutate(values.selected)}
     >
