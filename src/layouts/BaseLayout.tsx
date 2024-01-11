@@ -53,7 +53,7 @@ export const BaseLayout = ({
       <Head>
         <title>{title}</title>
         <meta name="description" content={metadata.description} />
-
+        <link rel="icon" href="favicon.svg" />
         <meta property="og:url" content={metadata.url} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
@@ -61,7 +61,10 @@ export const BaseLayout = ({
         <meta property="og:image" content={metadata.image} />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:domain" content="optimism.io" />
+        <meta
+          property="twitter:domain"
+          content="https://github.com/gitcoinco/easy-retro-pgf"
+        />
         <meta property="twitter:url" content={metadata.url} />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={metadata.description} />
