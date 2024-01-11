@@ -64,5 +64,4 @@ export const impactCategories = {
   OP_STACK: { label: "OP Stack" },
   DEVELOPER_ECOSYSTEM: { label: "Developer Ecosystem" },
   END_USER_EXPERIENCE_AND_ADOPTION: { label: "End user UX" },
-  PAIRWISE: { label: "Pairwise" },
 } as const;
