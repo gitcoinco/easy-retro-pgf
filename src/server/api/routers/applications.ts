@@ -10,18 +10,20 @@ export const FilterSchema = z.object({
 });
 
 export const applicationsRouter = createTRPCRouter({
-  approvals: publicProcedure.input(FilterSchema).query(async ({ input }) => {
-    console.log(config.roundId);
-    return fetchAttestations([eas.schemas.approval], {
-      where: {
-        attester: { in: config.admins },
-        AND: [
-          createDataFilter("type", "bytes32", "application"),
-          // createDataFilter("round", "bytes32", config.roundId),
-        ],
-      },
-    });
-  }),
+  approvals: publicProcedure
+    .input(z.object({ ids: z.array(z.string()).optional() }))
+    .query(async ({ input }) => {
+      return fetchAttestations([eas.schemas.approval], {
+        where: {
+          attester: { in: config.admins },
+          refUID: input.ids ? { in: input.ids } : undefined,
+          AND: [
+            createDataFilter("type", "bytes32", "application"),
+            createDataFilter("round", "bytes32", config.roundId),
+          ],
+        },
+      });
+    }),
   list: publicProcedure.input(FilterSchema).query(async ({}) => {
     return fetchAttestations([eas.schemas.metadata], {
       orderBy: [{ time: "desc" }],

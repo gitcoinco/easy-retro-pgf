@@ -26,6 +26,7 @@ type MatchWhere = {
   id?: MatchFilter;
   attester?: MatchFilter;
   recipient?: MatchFilter;
+  refUID?: MatchFilter;
   schemaId?: MatchFilter;
   time?: MatchFilter;
   decodedDataJson?: { contains: string };

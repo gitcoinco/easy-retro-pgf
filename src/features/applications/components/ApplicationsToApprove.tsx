@@ -7,7 +7,6 @@ import { Button } from "~/components/ui/Button";
 import { Checkbox, Form } from "~/components/ui/Form";
 import { Markdown } from "~/components/ui/Markdown";
 import { useMetadata } from "~/hooks/useMetadata";
-import { api } from "~/utils/api";
 import { useApplications } from "~/features/applications/hooks/useApplications";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { type Application } from "~/features/applications/types";
@@ -18,9 +17,10 @@ import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
-import { formatDate, timeAgo } from "~/utils/time";
+import { formatDate } from "~/utils/time";
 import { ClockIcon } from "lucide-react";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import { useApprovedApplications } from "../hooks/useApprovedApplications";
 
 export function ApplicationItem({
   id,
@@ -104,13 +104,10 @@ const ApplicationsToApproveSchema = z.object({
 });
 
 type ApplicationsToApprove = z.infer<typeof ApplicationsToApproveSchema>;
-function useApprovals() {
-  return api.applications.approvals.useQuery({});
-}
 
 export function ApplicationsToApprove() {
   const applications = useApplications();
-  const approved = useApprovals();
+  const approved = useApprovedApplications();
   const approve = useApproveApplication({});
 
   const approvedById = useMemo(
