@@ -60,7 +60,7 @@ export async function fetchAttestations(
   schema: string[],
   filter?: AttestationsFilter,
 ) {
-  const registrationEndsAt = Math.floor(+config.registrationEndsAt / 1000);
+  const startsAt = Math.floor(+config.startsAt / 1000);
 
   return fetch<{ attestations: AttestationWithMetadata[] }>(eas.url, {
     method: "POST",
@@ -71,7 +71,7 @@ export async function fetchAttestations(
         where: {
           schemaId: { in: schema },
           revoked: { equals: false },
-          time: { gte: registrationEndsAt },
+          time: { gte: startsAt },
           ...filter?.where,
         },
       },
