@@ -31,6 +31,8 @@ cp .env.example .env # and update .env variables
 
 bun run dev
 
+bun run db:push # create database tables
+
 open localhost:3000
 ```
 
