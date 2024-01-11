@@ -13,7 +13,7 @@ export function ListBanner({ id = "" }) {
         isLoading={isLoading}
         className="h-16"
         src={metadata?.bannerImageUrl}
-        fallbackSrc={metadata?.avatarImageUrl}
+        fallbackSrc={metadata?.profileImageUrl}
       />
     </div>
   );

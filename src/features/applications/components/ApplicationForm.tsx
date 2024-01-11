@@ -69,7 +69,7 @@ export function ApplicationForm({ address = "" }) {
           <Input placeholder="Your name" />
         </FormControl>
         <div className="mb-4 gap-4 md:flex">
-          <FormControl required label="Avatar" name="profile.avatarImageUrl">
+          <FormControl required label="Avatar" name="profile.profileImageUrl">
             <ImageUpload className="h-48 w-48 " />
           </FormControl>
           <FormControl
