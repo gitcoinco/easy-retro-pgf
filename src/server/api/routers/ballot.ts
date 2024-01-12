@@ -110,12 +110,12 @@ export const ballotRouter = createTRPCRouter({
       });
     }),
   results: publicProcedure.query(async ({ ctx }) => {
-    // if (getAppState() !== "RESULTS") {
-    //   throw new TRPCError({
-    //     code: "BAD_REQUEST",
-    //     message: "Voting has not ended yet",
-    //   });
-    // }
+    if (getAppState() !== "RESULTS") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Voting has not ended yet",
+      });
+    }
 
     const ballots = await ctx.db.ballot.findMany({
       where: { publishedAt: undefined },
