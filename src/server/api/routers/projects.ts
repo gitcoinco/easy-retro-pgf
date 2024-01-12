@@ -16,7 +16,14 @@ export const projectsRouter = createTRPCRouter({
           createDataFilter("round", "bytes32", config.roundId),
         ],
       },
-    }).then((attestations) => ({ count: attestations.length }));
+    }).then((attestations) => {
+      // Handle multiple approvals of an application - group by refUID
+      return {
+        count: Object.keys(
+          attestations.reduce((acc, x) => ({ ...acc, [x.refUID]: true }), {}),
+        ).length,
+      };
+    });
   }),
   get: publicProcedure
     .input(
