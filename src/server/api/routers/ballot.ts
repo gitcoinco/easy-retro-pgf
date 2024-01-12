@@ -117,9 +117,7 @@ export const ballotRouter = createTRPCRouter({
       });
     }
 
-    const ballots = await ctx.db.ballot.findMany({
-      where: { publishedAt: undefined },
-    });
+    const ballots = await ctx.db.ballot.findMany();
     const results = calculateResults(ballots);
     return results;
   }),
@@ -134,14 +132,16 @@ function calculateResults(ballots: Ballot[]): BallotResults {
   let totalVotes = 0;
   const projects = new Map<string, number>();
 
-  ballots.forEach((ballot) => {
-    ballot.votes.forEach((vote) => {
-      const rewards = projects.get((vote as Vote).projectId) ?? 0;
-      projects.set((vote as Vote).projectId, rewards + (vote as Vote).amount);
+  ballots
+    .filter((ballot) => ballot.publishedAt)
+    .forEach((ballot) => {
+      ballot.votes.forEach((vote) => {
+        const rewards = projects.get((vote as Vote).projectId) ?? 0;
+        projects.set((vote as Vote).projectId, rewards + (vote as Vote).amount);
 
-      totalVotes += 1;
+        totalVotes += 1;
+      });
     });
-  });
 
   return {
     totalVoters: ballots.length,
