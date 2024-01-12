@@ -16,7 +16,7 @@ export const projectsRouter = createTRPCRouter({
           createDataFilter("round", "bytes32", config.roundId),
         ],
       },
-    }).then((attestations) => {
+    }).then((attestations = []) => {
       // Handle multiple approvals of an application - group by refUID
       return {
         count: Object.keys(
@@ -52,7 +52,7 @@ export const projectsRouter = createTRPCRouter({
         attester: { in: config.admins },
         ...createDataFilter("type", "bytes32", "application"),
       },
-    }).then((attestations) => {
+    }).then((attestations = []) => {
       const approvedIds = attestations
         .map(({ refUID }) => refUID)
         .filter(Boolean);
