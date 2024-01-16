@@ -1,10 +1,10 @@
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
-  title: "EasyRetroPGF",
+  title: "Artemis RPGF",
   description: "Open-source Retro Public Goods Funding platform",
   url: "https://easy-retro-pgf.vercel.app",
-  image: "/api/og",
+  image: "https://i.pinimg.com/originals/4a/34/95/4a349542706fc0958c077d08e84b9c69.png",
 };
 
 export const config = {
