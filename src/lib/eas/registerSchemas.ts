@@ -20,7 +20,7 @@ This means applications, profiles and lists share the same schema and are differ
 Run: npx tsx src/lib/eas/registerSchemas
 */
 
-const approvalSchema = "bytes32 type";
+const approvalSchema = "bytes32 type, bytes32 round";
 const metadataSchema =
   "string name, string metadataPtr, uint256 metadataType, bytes32 type, bytes32 round";
 
