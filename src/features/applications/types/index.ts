@@ -35,6 +35,7 @@ export const ApplicationSchema = z.object({
   payoutAddress: z.string().startsWith("0x"),
   contributionDescription: z.string(),
   impactDescription: z.string(),
+  impactCategory: z.array(z.string()),
   contributionLinks: z
     .array(
       z.object({

@@ -107,6 +107,20 @@ export const Textarea = createComponent(
   tv({ base: [...inputBase, "w-full"] }),
 );
 
+export const SearchInput = forwardRef(function SearchInput(
+  { ...props }: ComponentPropsWithRef<typeof Input>,
+  ref,
+) {
+  return (
+    <InputWrapper className="">
+      <InputIcon>
+        <Search />
+      </InputIcon>
+      <Input ref={ref} {...props} className="pl-10" />
+    </InputWrapper>
+  );
+});
+
 export const FormControl = ({
   name,
   label,
@@ -227,6 +241,8 @@ export function Form<S extends z.Schema>({
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+
+  console.log(form.formState.errors, form.watch());
 
   usePersistForm(form, persist);
 

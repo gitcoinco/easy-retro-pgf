@@ -5,16 +5,16 @@ import Link from "next/link";
 import { Trash } from "lucide-react";
 
 import { createComponent } from "~/components/ui";
-import { Avatar } from "~/components/ui/Avatar";
 import { Table, Tbody, Tr, Td } from "~/components/ui/Table";
 import { formatNumber } from "~/utils/formatNumber";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
-import { api } from "~/utils/api";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
 import { type Vote } from "../types";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
+import { SearchProjects } from "~/features/lists/components/SearchProjects";
+import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -46,7 +46,6 @@ export function AllocationForm({
   onSave,
 }: {
   list?: Vote[];
-  projectIdKey?: "id" | "approvedId";
   header?: ReactNode;
   onSave?: (v: { votes: Vote[] }) => void;
 }) {
@@ -112,6 +111,78 @@ export function AllocationForm({
   );
 }
 
+export function AllocationFormWithSearch() {
+  const form = useFormContext<{ projects: Vote[] }>();
+
+  const { fields, append, remove } = useFieldArray({
+    name: "projects",
+    keyName: "key",
+    control: form.control,
+  });
+
+  const { errors } = form.formState;
+
+  return (
+    <AllocationListWrapper>
+      <SearchProjects
+        addedProjects={fields}
+        onSelect={(projectId) => append({ projectId, amount: 0 })}
+      />
+      <Table>
+        <Tbody>
+          {fields.length ? (
+            fields.map((project, i) => {
+              const error = errors.projects?.[i]?.amount?.message;
+              return (
+                <Tr key={project.key}>
+                  <Td className={"w-full"}>
+                    <ProjectAvatarWithName id={project.projectId} />
+                    {error ? (
+                      <div className="text-xs text-error-600">{error}</div>
+                    ) : null}
+                  </Td>
+
+                  <Td>
+                    <AllocationInput name={`projects.${i}.amount`} />
+                  </Td>
+                  <Td>
+                    <IconButton
+                      tabIndex={-1}
+                      type="button"
+                      variant="outline"
+                      icon={Trash}
+                      onClick={() => {
+                        remove(i);
+                      }}
+                    />
+                  </Td>
+                </Tr>
+              );
+            })
+          ) : (
+            <Tr>
+              <Td
+                colSpan={3}
+                className="flex flex-1 items-center justify-center py-4"
+              >
+                <div className=" max-w-[360px] space-y-4">
+                  <h3 className="text-center text-lg font-bold">
+                    List is empty
+                  </h3>
+                  <p className="text-center text-sm text-gray-700">
+                    Search projects to add them to the list.
+                  </p>
+                </div>
+              </Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
+      <button type="submit" className="hidden" />
+    </AllocationListWrapper>
+  );
+}
+
 export const ProjectAvatarWithName = ({
   id,
   subtitle,
@@ -133,7 +204,7 @@ export const ProjectAvatarWithName = ({
       })}
       href={`/projects/${id}`}
     >
-      <Avatar rounded="full" size="sm" src={metadata?.profileImageUrl} />
+      <ProjectAvatar rounded="full" size="sm" profileId={project?.attester} />
       <div>
         <div className="font-bold">{project?.name}</div>
         <div className="text-muted">{subtitle}</div>

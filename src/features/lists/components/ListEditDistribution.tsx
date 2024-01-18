@@ -133,10 +133,7 @@ export const ListEditDistribution = ({
               onReset={() => updateInBallot(itemsInBallot(votes))}
             />
             <div className="max-h-[480px] overflow-y-scroll">
-              <AllocationForm
-                list={alreadyInBallot}
-                projectIdKey={"approvedId"}
-              />
+              <AllocationForm list={alreadyInBallot} />
             </div>
             <TotalAllocationBanner />
             <div className="flex gap-2">

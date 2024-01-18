@@ -11,6 +11,7 @@ import { AvatarENS } from "~/components/ENS";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Attestation } from "~/utils/fetchAttestations";
+import { Address } from "viem";
 
 export function Lists() {
   return (
@@ -83,18 +84,15 @@ function ListItem({
   );
 }
 
-function ListProjectAvatar({ id }: { id?: string }) {
-  const project = api.projects.get.useQuery({ approvedId: id });
-  const profile = useProfile(project.data?.attester);
+function ListProjectAvatar({ id }: { id: string }) {
+  const project = api.projects.get.useQuery({ id });
 
-  const isLoading = project.isLoading || profile.isLoading;
   return (
     <ProjectAvatar
       rounded="full"
       size="xs"
-      isLoading={isLoading}
       className="-ml-1"
-      metadataPtr={profile.data?.metadataPtr}
+      profileId={project.data?.attester as Address}
     />
   );
 }

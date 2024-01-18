@@ -1,4 +1,4 @@
-import z from "zod"
+import z from "zod";
 
 export const SortEnum = z
   .enum(["name", "time" /* "shuffle" */])
@@ -11,9 +11,9 @@ export const FilterSchema = z.object({
   seed: z.number().default(0),
   orderBy: SortEnum,
   sortOrder: SortOrderEnum,
+  search: z.string().nullish(),
 });
 
-
-export type Sort = z.infer<typeof SortEnum>
-export type SortOrder = z.infer<typeof SortOrderEnum>
-export type Filter = z.infer<typeof FilterSchema>
+export type Sort = z.infer<typeof SortEnum>;
+export type SortOrder = z.infer<typeof SortOrderEnum>;
+export type Filter = z.infer<typeof FilterSchema>;

@@ -26,12 +26,7 @@ export const projectsRouter = createTRPCRouter({
     });
   }),
   get: publicProcedure
-    .input(
-      z.object({
-        id: z.string().optional(),
-        approvedId: z.string().optional(),
-      }),
-    )
+    .input(z.object({ id: z.string() }))
     .query(async ({ input: { id } }) => {
       if (!id) {
         throw new TRPCError({ code: "NOT_FOUND" });
@@ -56,16 +51,22 @@ export const projectsRouter = createTRPCRouter({
       const approvedIds = attestations
         .map(({ refUID }) => refUID)
         .filter(Boolean);
+
+      const filters = [
+        createDataFilter("type", "bytes32", "application"),
+        createDataFilter("round", "bytes32", config.roundId),
+      ];
+      if (input.search) {
+        filters.push(createDataFilter("name", "string", input.search));
+      }
+
       return fetchAttestations([eas.schemas.metadata], {
         take: input.limit,
         skip: input.cursor * input.limit,
         orderBy: [createOrderBy(input.orderBy, input.sortOrder)],
         where: {
           id: { in: approvedIds },
-          AND: [
-            createDataFilter("type", "bytes32", "application"),
-            createDataFilter("round", "bytes32", config.roundId),
-          ],
+          AND: filters,
         },
       });
     });
