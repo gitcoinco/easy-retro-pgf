@@ -16,7 +16,8 @@
 - [Adding Projects & Approving](./docs/02_adding_projects.md)
 - [Creating Badgeholders/Voters](./docs/03_creating_badgeholders.md)
 - [Voting](./docs/04_voting.md)
-- [Results](./docs/05_results.md)
+- [Lists](./docs/05_lists.md)
+- [Results](./docs/06_results.md)
 
 ## Development
 
