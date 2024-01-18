@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useProfile } from "~/hooks/useProfile";
 import { Heading } from "~/components/ui/Heading";
 import { useListMetadata, useLists } from "../hooks/useLists";
-import { type Attestation } from "~/features/projects/types";
 import { Badge } from "~/components/ui/Badge";
 import { api } from "~/utils/api";
 import { InfiniteLoading } from "~/components/InfiniteLoading";
 import { AvatarENS } from "~/components/ENS";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Skeleton } from "~/components/ui/Skeleton";
+import { Attestation } from "~/utils/fetchAttestations";
 
 export function Lists() {
   return (

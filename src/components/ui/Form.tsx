@@ -195,7 +195,12 @@ export function FieldArray<S extends z.Schema>({
         </div>
       ))}
       <div className="flex justify-end">
-        <IconButton size="sm" icon={PlusIcon} onClick={() => append({})}>
+        <IconButton
+          type="button"
+          size="sm"
+          icon={PlusIcon}
+          onClick={() => append({})}
+        >
           Add row
         </IconButton>
       </div>

@@ -27,6 +27,8 @@ import { toast } from "sonner";
 import { useController, useFormContext } from "react-hook-form";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import { useLocalStorage } from "react-use";
+import { Alert } from "~/components/ui/Alert";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -34,15 +36,25 @@ const ApplicationCreateSchema = z.object({
 });
 
 export function ApplicationForm({ address = "" }) {
+  const clearDraft = useLocalStorage("application-draft")[2];
+
   const create = useCreateApplication({
     onSuccess: () => {
       toast.success("Application created successfully!");
+      clearDraft();
     },
     onError: (err: { reason?: string; data?: { message: string } }) =>
       toast.error("Application create error", {
         description: err.reason ?? err.data?.message,
       }),
   });
+  if (create.isSuccess) {
+    return (
+      <Alert variant="success" title="Application created!">
+        It will now be reviewed by our admins.
+      </Alert>
+    );
+  }
   const error = create.error;
   return (
     <div>
