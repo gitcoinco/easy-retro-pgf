@@ -21,6 +21,7 @@ import { formatDate } from "~/utils/time";
 import { ClockIcon } from "lucide-react";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
+import { Alert } from "~/components/ui/Alert";
 
 export function ApplicationItem({
   id,
@@ -131,8 +132,11 @@ export function ApplicationsToApprove() {
     >
       <Markdown>{`### Review applications
 Select the applications you want to approve. You must be a configured admin to approve applications.
-      `}</Markdown>
 
+`}</Markdown>
+      <Alert>
+        Newly submitted applications can take 10 minutes to show up.
+      </Alert>
       <div className="my-2 flex items-center justify-between">
         <div className="text-gray-300">
           {applications.data?.length
