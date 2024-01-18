@@ -1,14 +1,10 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { fetchAttestations } from "~/utils/fetchAttestations";
+import { createDataFilter, fetchAttestations } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
-import { eas } from "~/config";
-
-export const FilterSchema = z.object({
-  limit: z.number().default(3 * 8),
-  cursor: z.number().default(0),
-});
+import { config, eas } from "~/config";
+import { FilterSchema } from "~/features/filter/types";
 
 export const listsRouter = createTRPCRouter({
   get: publicProcedure
@@ -22,10 +18,21 @@ export const listsRouter = createTRPCRouter({
         }
       });
     }),
-  query: publicProcedure.input(FilterSchema).query(async ({ input }) => {
-    return fetchAttestations([eas.schemas.listsSchema], {
+  search: publicProcedure.input(FilterSchema).query(async ({ input }) => {
+    const filters = [
+      createDataFilter("type", "bytes32", "list"),
+      createDataFilter("round", "bytes32", config.roundId),
+    ];
+    if (input.search) {
+      filters.push(createDataFilter("name", "string", input.search));
+    }
+
+    return fetchAttestations([eas.schemas.metadata], {
       take: input.limit,
       skip: input.cursor * input.limit,
+      where: {
+        AND: filters,
+      },
     });
   }),
 });

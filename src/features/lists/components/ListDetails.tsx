@@ -1,5 +1,6 @@
+import Link from "next/link";
+import { BookTextIcon, ExternalLinkIcon } from "lucide-react";
 import { ListBanner } from "~/features/lists/components/ListBanner";
-import { useProfile } from "~/hooks/useProfile";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
 import { AllocationList } from "~/features/ballot/components/AllocationList";
@@ -8,25 +9,18 @@ import { formatNumber } from "~/utils/formatNumber";
 import { ListEditDistribution } from "./ListEditDistribution";
 import { Markdown } from "~/components/ui/Markdown";
 import { useListMetadata } from "../hooks/useLists";
-import { Attestation } from "~/utils/fetchAttestations";
+import { type Attestation } from "~/utils/fetchAttestations";
 import { config } from "~/config";
+import { Button } from "~/components/ui/Button";
 
 export default function ListDetails({
   attestation,
 }: {
   attestation?: Attestation;
 }) {
-  const { data: profile } = useProfile(attestation?.recipient);
-
   const metadata = useListMetadata(attestation?.metadataPtr);
 
-  const {
-    listDescription,
-    listContent,
-    impactEvaluationLink,
-    impactCategory,
-    impactEvaluationDescription,
-  } = metadata.data ?? {};
+  const { description, projects = [], impact = {} } = metadata.data ?? {};
 
   return (
     <div className="relative">
@@ -38,8 +32,9 @@ export default function ListDetails({
         </div>
       </div>
       <div className="absolute right-2 top-2 z-10"></div>
+
       <div className="h-80 overflow-hidden rounded-3xl">
-        {(listContent ?? []).slice(0, 5).map((p) => (
+        {(projects ?? []).slice(0, 5).map((p) => (
           <ListBanner key={p.projectId} id={p.projectId} />
         ))}
       </div>
@@ -48,15 +43,34 @@ export default function ListDetails({
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-8"
-          projectId={attestation?.recipient}
+          profileId={attestation?.recipient}
         />
       </div>
-      <Markdown className="mb-8 w-full">{listDescription}</Markdown>
+      <Markdown className="mb-8 w-full">{description}</Markdown>
+
+      <div className="flex flex-col gap-3">
+        <h3 className="text-lg font-bold">Impact Evaluation</h3>
+        <Skeleton isLoading={metadata.isLoading}>
+          <p className="whitespace-pre-wrap">{impact.description}</p>
+        </Skeleton>
+        {impact.url && (
+          <Button
+            as={Link}
+            href={impact.url}
+            target="_blank"
+            className="group flex w-fit items-center gap-2 rounded-full border border-neutral-300 bg-transparent px-4 py-1"
+          >
+            <BookTextIcon className="h-7 w-7 rounded-full p-1 text-neutral-600 transition-all group-hover:bg-neutral-200" />
+            <span>Impact Evaluation</span>
+            <ExternalLinkIcon className="text-neutral-600" />
+          </Button>
+        )}
+      </div>
 
       <div className="mb-2 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           <Skeleton isLoading={metadata.isLoading}>
-            <p className="font-bold">{listContent?.length} projects</p>
+            <p className="font-bold">{projects?.length} projects</p>
           </Skeleton>
           <span>·</span>
           <Skeleton className="w-32" isLoading={metadata.isLoading}>
@@ -66,15 +80,12 @@ export default function ListDetails({
           </Skeleton>
         </div>
         {!metadata.isLoading && (
-          <ListEditDistribution
-            listName={attestation?.name}
-            votes={listContent}
-          />
+          <ListEditDistribution listName={attestation?.name} votes={projects} />
         )}
       </div>
 
       <div className="max-h-[480px] overflow-y-scroll">
-        <AllocationList votes={listContent} />
+        <AllocationList votes={projects} />
       </div>
     </div>
   );

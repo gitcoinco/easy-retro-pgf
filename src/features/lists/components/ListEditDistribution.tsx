@@ -48,13 +48,14 @@ export const ListEditDistribution = ({
   function itemsInBallot(votes?: Vote[]) {
     return votes?.filter((p) => ballotContains(p.projectId, ballot));
   }
+
+  console.log("ballot", ballot);
   // Keep the already in ballot in state because we want to update these when user removes allocations
   const [alreadyInBallot, updateInBallot] = useState(itemsInBallot(votes));
 
+  console.log({ alreadyInBallot });
   function handleAddToBallot(values: { votes: Vote[] }) {
-    console.log("Add to ballot", values);
-    alert("Disabled for OP RetroPGF3 lists");
-    // add.mutate(values.votes);
+    add.mutate(values.votes);
   }
 
   function handleOpenChange() {
@@ -63,6 +64,10 @@ export const ListEditDistribution = ({
     // add.reset(); // This is needed to reset add.isSuccess and show the allocations again
   }
 
+  const ballotVotes = votes?.map((vote) => {
+    const ballotVote = ballot.votes.find((v) => v.projectId === vote.projectId);
+    return ballotVote ?? vote;
+  });
   const showDialogTitle = !(add.isLoading || add.isSuccess);
   return (
     <div>
@@ -113,7 +118,7 @@ export const ListEditDistribution = ({
         ) : (
           <Form
             schema={BallotSchema}
-            defaultValues={{ votes }}
+            defaultValues={{ votes: ballotVotes }}
             onSubmit={handleAddToBallot}
           >
             {alreadyInBallot?.length ? (
