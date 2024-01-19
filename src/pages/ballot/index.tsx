@@ -16,6 +16,7 @@ import {
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { Layout } from "~/layouts/DefaultLayout";
 import { formatNumber } from "~/utils/formatNumber";
+import { getAppState } from "~/utils/state";
 
 export default function BallotPage() {
   const { data: ballot, isLoading } = useBallot();
@@ -70,7 +71,7 @@ function BallotAllocationForm() {
         <div className="p-8">
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
-              <AllocationForm onSave={handleSaveBallot} />
+              <AllocationForm disabled={getAppState() === "RESULTS"} onSave={handleSaveBallot} />
             ) : (
               <EmptyBallot />
             )}
@@ -94,6 +95,7 @@ function ClearBallot() {
   const { mutate, isLoading } = useSaveBallot({
     onSuccess: () => setOpen(false),
   });
+  if (getAppState() === "RESULTS") return null
   return (
     <>
       <Button onClick={() => setOpen(true)}>

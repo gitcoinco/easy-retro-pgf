@@ -42,10 +42,12 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => (
 
 export function AllocationForm({
   list,
+  disabled,
   header,
   onSave,
 }: {
   list?: Vote[];
+  disabled?: boolean,
   header?: ReactNode;
   onSave?: (v: { votes: Vote[] }) => void;
 }) {
@@ -80,12 +82,13 @@ export function AllocationForm({
                       name="compareAmount"
                       defaultValue={listAllocation}
                       disabled={true}
-                    />
-                  ) : null}
+                      />
+                      ) : null}
                 </Td>
                 <Td>
                   <AllocationInput
                     name={`votes.${idx}.amount`}
+                    disabled={disabled}
                     onBlur={() => onSave?.(form.getValues())}
                   />
                 </Td>
@@ -95,6 +98,7 @@ export function AllocationForm({
                     type="button"
                     variant="ghost"
                     icon={Trash}
+                    disabled={disabled}
                     onClick={() => {
                       remove(idx);
                       onSave?.(form.getValues());

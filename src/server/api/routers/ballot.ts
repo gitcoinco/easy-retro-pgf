@@ -44,7 +44,9 @@ export const ballotRouter = createTRPCRouter({
     .input(BallotSchema)
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session.user.name!;
-
+      if (isAfter(new Date(), config.votingEndsAt)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
+      }
       await verifyUnpublishedBallot(voterId, ctx.db);
 
       return ctx.db.ballot.upsert({
