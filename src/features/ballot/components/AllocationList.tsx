@@ -204,7 +204,7 @@ export const ProjectAvatarWithName = ({
       })}
       href={`/projects/${id}`}
     >
-      <ProjectAvatar rounded="full" size="sm" profileId={project?.attester} />
+      <ProjectAvatar rounded="full" size="sm" profileId={project?.recipient} />
       <div>
         <div className="font-bold">{project?.name}</div>
         <div className="text-muted">{subtitle}</div>
