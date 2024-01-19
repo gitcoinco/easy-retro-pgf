@@ -10,7 +10,6 @@ type Props = {
 };
 
 export const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
-  console.log(value, sortLabels);
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>

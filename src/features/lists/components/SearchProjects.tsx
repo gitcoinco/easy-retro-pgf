@@ -35,8 +35,6 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
       (project) => !addedProjects.find((p) => p.projectId === project.id),
     ) ?? [];
 
-  console.log(123, projectsData);
-
   return (
     <div className="flex-1">
       <Command
@@ -74,7 +72,6 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
                     setSearch("");
                     setOpen(false);
                     onSelect(id);
-                    console.log(id);
                   }}
                 >
                   <ProjectAvatar
