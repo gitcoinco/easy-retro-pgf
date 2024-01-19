@@ -39,7 +39,10 @@ function BallotOverview() {
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Voting has ended</BallotHeader>
-        <BallotSection title="Results are being tallied" />
+        <BallotSection title="Results are being tallied"></BallotSection>
+        <Button as={Link} href={"/projects/results"}>
+          Go to results
+        </Button>
       </div>
     );
   if (appState !== "VOTING")
