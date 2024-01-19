@@ -65,7 +65,7 @@ export const ListEditDistribution = ({
   }
 
   const ballotVotes = votes?.map((vote) => {
-    const ballotVote = ballot.votes.find((v) => v.projectId === vote.projectId);
+    const ballotVote = ballot?.votes.find((v) => v.projectId === vote.projectId);
     return ballotVote ?? vote;
   });
   const showDialogTitle = !(add.isLoading || add.isSuccess);
