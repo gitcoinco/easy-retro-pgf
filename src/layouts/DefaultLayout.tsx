@@ -5,17 +5,7 @@ import { useAccount } from "wagmi";
 import { Header } from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
-
-const navLinks = [
-  {
-    href: "/projects",
-    children: "Projects",
-  },
-  {
-    href: "/lists",
-    children: "Lists",
-  },
-];
+import { getAppState } from "~/utils/state";
 
 export const Layout = ({
   sidebar,
@@ -27,6 +17,23 @@ export const Layout = ({
   } & LayoutProps
 >) => {
   const { address } = useAccount();
+  const navLinks = [
+    {
+      href: "/projects",
+      children: "Projects",
+    },
+    {
+      href: "/lists",
+      children: "Lists",
+    },
+  ];
+
+  if (getAppState() === "RESULTS") {
+    navLinks.push({
+      href: "/stats",
+      children: "Stats",
+    });
+  }
 
   const sidebarComponent = (
     <Sidebar side={sidebar}>{address ? <BallotOverview /> : null}</Sidebar>
