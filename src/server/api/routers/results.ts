@@ -48,6 +48,7 @@ export const resultsRouter = createTRPCRouter({
 });
 
 type BallotResults = {
+  averageVotes: number;
   totalVotes: number;
   totalVoters: number;
   projects: Record<string, number>;
@@ -78,9 +79,25 @@ export async function calculateResults(
       });
     });
 
+  const averageVotes = calculateAverage(
+    Object.values(Object.fromEntries(projects)),
+  );
   return {
+    averageVotes,
     totalVoters: ballots.length,
     totalVotes: totalVotes,
     projects: Object.fromEntries(projects),
   };
+}
+
+function calculateAverage(votes: number[]) {
+  if (votes.length === 0) {
+    return 0;
+  }
+
+  const sum = votes.reduce((sum, x) => sum + x, 0);
+
+  const average = sum / votes.length;
+
+  return Math.round(average);
 }

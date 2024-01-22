@@ -1,7 +1,7 @@
 # Results
 
-Results are found on the same page as projects.
+Once the voting has ended you can view the results.
 
-- https://easy-retro-pgf.vercel.app/projects
+- https://easy-retro-pgf.vercel.app/projects/results
 
-_Results are Work in Progress_
+![](./images/voting_ended_sidebar.png)
