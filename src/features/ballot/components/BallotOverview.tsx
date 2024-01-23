@@ -35,7 +35,7 @@ function BallotOverview() {
   const { data: projectCount } = useProjectCount();
 
   const appState = getAppState();
-  if (appState === "RESULTS")
+  if (appState === "TALLYING")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Voting has ended</BallotHeader>

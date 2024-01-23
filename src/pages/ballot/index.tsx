@@ -71,7 +71,10 @@ function BallotAllocationForm() {
         <div className="p-8">
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
-              <AllocationForm disabled={getAppState() === "RESULTS"} onSave={handleSaveBallot} />
+              <AllocationForm
+                disabled={getAppState() === "RESULTS"}
+                onSave={handleSaveBallot}
+              />
             ) : (
               <EmptyBallot />
             )}
@@ -95,7 +98,7 @@ function ClearBallot() {
   const { mutate, isLoading } = useSaveBallot({
     onSuccess: () => setOpen(false),
   });
-  if (getAppState() === "RESULTS") return null
+  if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
   return (
     <>
       <Button onClick={() => setOpen(true)}>
