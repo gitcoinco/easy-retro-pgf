@@ -6,12 +6,21 @@ import { useFilter } from "~/features/filter/hooks/useFilter";
 import { type Filter } from "~/features/filter/types";
 
 export function useProjectById(id: string) {
-  return api.projects.get.useQuery({ id }, { enabled: Boolean(id) });
+  const query = api.projects.get.useQuery(
+    { ids: [id] },
+    { enabled: Boolean(id) },
+  );
+
+  return { ...query, data: query.data?.[0] };
+}
+
+export function useProjectsById(ids: string[]) {
+  return api.projects.get.useQuery({ ids }, { enabled: Boolean(ids.length) });
 }
 
 const seed = 0;
 // const seed = Math.random();
-export function useProjects(filterOverride?: Partial<Filter>) {
+export function useSearchProjects(filterOverride?: Partial<Filter>) {
   const { data: filter } = useFilter("projects");
   return api.projects.search.useInfiniteQuery(
     { limit: config.pageSize, seed, ...filter, ...filterOverride },

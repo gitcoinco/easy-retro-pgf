@@ -10,12 +10,13 @@ export const listsRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
-      return fetchAttestations([eas.schemas.listsSchema], {
+      return fetchAttestations([eas.schemas.metadata], {
         where: { id: { equals: input.id } },
       }).then(([attestation]) => {
         if (!attestation) {
           throw new TRPCError({ code: "NOT_FOUND" });
         }
+        return attestation;
       });
     }),
   search: publicProcedure.input(FilterSchema).query(async ({ input }) => {

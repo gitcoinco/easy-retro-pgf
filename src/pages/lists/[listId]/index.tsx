@@ -6,7 +6,6 @@ import { useListById } from "~/features/lists/hooks/useLists";
 
 export default function ListDetailsPage({ listId = "" }) {
   const list = useListById(listId);
-
   return (
     <Layout sidebar="left" title={list.data?.name} showBallot eligibilityCheck>
       <ListDetails attestation={list.data} />

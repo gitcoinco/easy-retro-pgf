@@ -26,19 +26,14 @@ export const projectsRouter = createTRPCRouter({
     });
   }),
   get: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input: { id } }) => {
-      if (!id) {
+    .input(z.object({ ids: z.array(z.string()) }))
+    .query(async ({ input: { ids } }) => {
+      if (!ids.length) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
       return fetchAttestations([eas.schemas.metadata], {
-        where: { id: { equals: id } },
-      }).then(([attestation]) => {
-        if (!attestation) {
-          throw new TRPCError({ code: "NOT_FOUND" });
-        }
-        return attestation;
+        where: { id: { in: ids } },
       });
     }),
   search: publicProcedure.input(FilterSchema).query(async ({ input }) => {

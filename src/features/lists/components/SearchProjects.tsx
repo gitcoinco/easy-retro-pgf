@@ -5,7 +5,7 @@ import { useClickAway } from "react-use";
 
 import { type Vote } from "~/features/ballot/types";
 import { SearchInput } from "~/components/ui/Form";
-import { useProjects } from "~/features/projects/hooks/useProjects";
+import { useSearchProjects } from "~/features/projects/hooks/useProjects";
 import { type Filter } from "~/features/filter/types";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 
@@ -28,7 +28,7 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
     cursor: 0,
     limit: 10,
   } as Partial<Filter>;
-  const projects = useProjects(filter);
+  const projects = useSearchProjects(filter);
 
   const projectsData =
     (projects.data?.pages.flat() ?? []).filter(
