@@ -4,7 +4,6 @@ import { type Address } from "viem";
 import { Avatar } from "~/components/ui/Avatar";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
 
-// TODO: ProfileMetadata
 export function ProjectAvatar(
   props: { profileId: Address } & ComponentProps<typeof Avatar>,
 ) {
