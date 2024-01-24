@@ -4,7 +4,7 @@ import { api } from "~/utils/api";
 import { type List } from "../types";
 
 export function useListById(id: string) {
-  return api.projects.get.useQuery({ id }, { enabled: Boolean(id) });
+  return api.lists.get.useQuery({ id }, { enabled: Boolean(id) });
 }
 export function useLists() {
   return api.lists.search.useInfiniteQuery(

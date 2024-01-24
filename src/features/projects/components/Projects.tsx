@@ -4,7 +4,7 @@ import { XIcon } from "lucide-react";
 
 import { InfiniteLoading } from "~/components/InfiniteLoading";
 import { Button } from "~/components/ui/Button";
-import { useProjects } from "../hooks/useProjects";
+import { useSearchProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
 import { getAppState } from "~/utils/state";
@@ -14,7 +14,7 @@ import { useFilter } from "~/features/filter/hooks/useFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
 
 export function Projects() {
-  const projects = useProjects();
+  const projects = useSearchProjects();
   const select = useSelectProjects();
   const results = useResults();
   const { data: filter } = useFilter("projects");

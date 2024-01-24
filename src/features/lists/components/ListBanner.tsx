@@ -1,9 +1,9 @@
 import { BackgroundImage } from "~/components/ui/BackgroundImage";
+import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
-import { api } from "~/utils/api";
 
 export function ListBanner({ id = "" }) {
-  const { data: project } = api.projects.get.useQuery({ id });
+  const { data: project } = useProjectById(id);
   const { data: metadata, isLoading } = useProfileWithMetadata(
     project?.recipient,
   );
