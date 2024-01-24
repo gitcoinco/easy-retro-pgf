@@ -11,6 +11,7 @@ import { Skeleton } from "~/components/ui/Skeleton";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { type Address } from "viem";
 import { ImpactCategories } from "~/features/projects/components/ImpactCategories";
+import { useProjectById } from "~/features/projects/hooks/useProjects";
 
 export function Lists() {
   return (
@@ -33,6 +34,7 @@ function ListItem({
 }) {
   const metadata = useListMetadata(attestation.metadataPtr);
 
+  console.log(attestation);
   const {
     projects = [],
     impactCategory = [],
@@ -80,7 +82,7 @@ function ListItem({
 }
 
 function ListProjectAvatar({ id }: { id: string }) {
-  const project = api.projects.get.useQuery({ id });
+  const project = useProjectById(id);
 
   return (
     <ProjectAvatar
