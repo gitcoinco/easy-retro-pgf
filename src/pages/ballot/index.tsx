@@ -1,9 +1,11 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, FileDown, FileUp } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
-import { Button } from "~/components/ui/Button";
+import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
@@ -14,13 +16,19 @@ import {
   useSaveBallot,
 } from "~/features/ballot/hooks/useBallot";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
+import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { Layout } from "~/layouts/DefaultLayout";
+import { unparse } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
 
 export default function BallotPage() {
   const { data: ballot, isLoading } = useBallot();
-
+  const { address, isConnecting } = useAccount();
+  const router = useRouter();
+  if (!address && !isConnecting) {
+    router.push("/").catch(console.log);
+  }
   if (isLoading) return null;
 
   const votes = ballot?.votes.sort((a, b) => b.amount - a.amount);
@@ -64,7 +72,8 @@ function BallotAllocationForm() {
           variant="warning"
         ></Alert>
       )}
-      <div className="mb-2 flex justify-end">
+      <div className="mb-2 justify-between sm:flex">
+        <ImportExportCSV votes={votes} />
         {votes.length ? <ClearBallot /> : null}
       </div>
       <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
@@ -93,6 +102,36 @@ function BallotAllocationForm() {
   );
 }
 
+function ImportExportCSV({ votes }: { votes: Vote[] }) {
+  // Fetch projects for votes to get the name
+  const projects = useProjectsById(votes.map((v) => v.projectId));
+
+  const exportCSV = useCallback(async () => {
+    // Append project name to votes
+    const votesWithProjects = votes.map((vote) => ({
+      ...vote,
+      name: projects.data?.find((p) => p.id === vote.projectId)?.name,
+    }));
+
+    // Generate CSV file
+    const csv = unparse(votesWithProjects, {
+      columns: ["projectId", "name", "amount"],
+    });
+    window.open(`data:text/csv;charset=utf-8,${csv}`);
+  }, [projects, votes]);
+
+  return (
+    <div className="flex gap-2">
+      <IconButton size="sm" icon={FileUp}>
+        Import CSV
+      </IconButton>
+      <IconButton size="sm" icon={FileDown} onClick={exportCSV}>
+        Export CSV
+      </IconButton>
+    </div>
+  );
+}
+
 function ClearBallot() {
   const [isOpen, setOpen] = useState(false);
   const { mutate, isLoading } = useSaveBallot({
@@ -101,10 +140,10 @@ function ClearBallot() {
   if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
+      <Button variant="outline" onClick={() => setOpen(true)}>
         Remove all projects from ballot
       </Button>
-      <Dialog title="Are you sure?" isOpen={isOpen}>
+      <Dialog title="Are you sure?" isOpen={isOpen} onOpenChange={setOpen}>
         <p className="leading-6">
           This will empty your ballot and remove all the projects you have
           added.
