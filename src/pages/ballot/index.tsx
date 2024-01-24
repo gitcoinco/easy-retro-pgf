@@ -1,8 +1,8 @@
 import { AlertCircle, FileDown, FileUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useCallback, useRef, useState } from "react";
+import { useForm, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
 import { Button, IconButton } from "~/components/ui/Button";
@@ -18,7 +18,7 @@ import {
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { Layout } from "~/layouts/DefaultLayout";
-import { unparse } from "~/utils/csv";
+import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
 
@@ -73,7 +73,10 @@ function BallotAllocationForm() {
         ></Alert>
       )}
       <div className="mb-2 justify-between sm:flex">
-        <ImportExportCSV votes={votes} />
+        <div className="flex gap-2">
+          <ImportCSV />
+          <ExportCSV votes={votes} />
+        </div>
         {votes.length ? <ClearBallot /> : null}
       </div>
       <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
@@ -102,7 +105,79 @@ function BallotAllocationForm() {
   );
 }
 
-function ImportExportCSV({ votes }: { votes: Vote[] }) {
+function ImportCSV() {
+  const form = useFormContext();
+  const [votes, setVotes] = useState<Vote[]>([]);
+  const save = useSaveBallot();
+  const csvInputRef = useRef<HTMLInputElement>(null);
+
+  const importCSV = useCallback((csvString: string) => {
+    // Parse CSV and build the ballot data (remove name column)
+    const { data } = parse<Vote>(csvString);
+    const votes = data.map(({ projectId, amount }) => ({
+      projectId,
+      amount: Number(amount),
+    }));
+    console.log(123, votes);
+    setVotes(votes);
+  }, []);
+
+  return (
+    <>
+      <IconButton
+        size="sm"
+        icon={FileUp}
+        onClick={() => csvInputRef.current?.click()}
+      >
+        Import CSV
+      </IconButton>
+
+      <input
+        ref={csvInputRef}
+        type="file"
+        accept="*.csv"
+        className="hidden"
+        onChange={(e) => {
+          const [file] = e.target.files ?? [];
+          if (!file) return;
+          // CSV parser doesn't seem to work with File
+          // Read the CSV contents as string
+          const reader = new FileReader();
+          reader.readAsText(file);
+          reader.onload = () => importCSV(String(reader.result));
+          reader.onerror = () => console.log(reader.error);
+        }}
+      />
+      <Dialog
+        size="sm"
+        title="Save ballot?"
+        isOpen={votes.length > 0}
+        onOpenChange={() => setVotes([])}
+      >
+        <p className="mb-6 leading-6">
+          This will replace your ballot with the CSV.
+        </p>
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            disabled={save.isLoading}
+            onClick={() => {
+              save
+                .mutateAsync({ votes })
+                .then(() => form.reset({ votes }))
+                .catch(console.log);
+              setVotes([]);
+            }}
+          >
+            Yes I'm sure
+          </Button>
+        </div>
+      </Dialog>
+    </>
+  );
+}
+
+function ExportCSV({ votes }: { votes: Vote[] }) {
   // Fetch projects for votes to get the name
   const projects = useProjectsById(votes.map((v) => v.projectId));
 
@@ -114,37 +189,37 @@ function ImportExportCSV({ votes }: { votes: Vote[] }) {
     }));
 
     // Generate CSV file
-    const csv = unparse(votesWithProjects, {
+    const csv = format(votesWithProjects, {
       columns: ["projectId", "name", "amount"],
     });
     window.open(`data:text/csv;charset=utf-8,${csv}`);
   }, [projects, votes]);
 
   return (
-    <div className="flex gap-2">
-      <IconButton size="sm" icon={FileUp}>
-        Import CSV
-      </IconButton>
-      <IconButton size="sm" icon={FileDown} onClick={exportCSV}>
-        Export CSV
-      </IconButton>
-    </div>
+    <IconButton size="sm" icon={FileDown} onClick={exportCSV}>
+      Export CSV
+    </IconButton>
   );
 }
 
 function ClearBallot() {
+  const form = useFormContext();
   const [isOpen, setOpen] = useState(false);
-  const { mutate, isLoading } = useSaveBallot({
-    onSuccess: () => setOpen(false),
-  });
+  const { mutateAsync, isLoading } = useSaveBallot();
   if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>
         Remove all projects from ballot
       </Button>
-      <Dialog title="Are you sure?" isOpen={isOpen} onOpenChange={setOpen}>
-        <p className="leading-6">
+
+      <Dialog
+        title="Are you sure?"
+        size="sm"
+        isOpen={isOpen}
+        onOpenChange={setOpen}
+      >
+        <p className="mb-6 leading-6">
           This will empty your ballot and remove all the projects you have
           added.
         </p>
@@ -152,9 +227,14 @@ function ClearBallot() {
           <Button
             variant="primary"
             disabled={isLoading}
-            onClick={() => mutate({ votes: [] })}
+            onClick={() =>
+              mutateAsync({ votes: [] }).then(() => {
+                setOpen(false);
+                form.reset({ votes: [] });
+              })
+            }
           >
-            {isLoading ? <Spinner className="h-4 w-4" /> : "Yes I'm sure"}
+            {isLoading ? <Spinner /> : "Yes I'm sure"}
           </Button>
         </div>
       </Dialog>
@@ -171,11 +251,11 @@ const EmptyBallot = () => (
         through the available projects and lists.
       </p>
       <div className="flex items-center justify-center gap-3">
-        <Button variant="outline" as={Link} href={"/projects"}>
+        <Button as={Link} href={"/projects"}>
           View projects
         </Button>
         <div className="text-gray-700">or</div>
-        <Button variant="outline" as={Link} href={"/lists"}>
+        <Button as={Link} href={"/lists"}>
           View lists
         </Button>
       </div>

@@ -1,10 +1,8 @@
 import Papa, { type UnparseConfig } from "papaparse";
 
-const config = {};
-
-export function parse(file: File) {
-  return Papa.parse(file, config);
+export function parse<T>(file: string) {
+  return Papa.parse<T>(file, { header: true });
 }
-export function unparse(data: unknown[], config: UnparseConfig) {
+export function format(data: unknown[], config: UnparseConfig) {
   return Papa.unparse(data, config);
 }
