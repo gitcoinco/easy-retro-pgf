@@ -19,6 +19,29 @@
 - [Lists](./docs/05_lists.md)
 - [Results](./docs/06_results.md)
 
+## Supported Networks
+
+All networks EAS is deployed to are supported
+
+- https://docs.attest.sh/docs/quick--start/contracts
+
+#### Mainnets
+
+- Ethereum
+- Optimism
+- Base
+- Arbitrum One
+- Linea
+
+#### Testnets
+
+- Sepolia
+- Optimism Goerli
+- Base Goerli
+- Arbitrum Goerli
+- Polygon Mumbai
+- Linea Goerli
+
 ## Development
 
 To run locally follow these instructions:
