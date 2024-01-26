@@ -31,6 +31,7 @@ import { Spinner } from "~/components/ui/Spinner";
 import { AllocationForm } from "~/features/ballot/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
+import { getAppState } from "~/utils/state";
 
 export const ListEditDistribution = ({
   listName,
@@ -49,7 +50,6 @@ export const ListEditDistribution = ({
     return votes?.filter((p) => ballotContains(p.projectId, ballot));
   }
 
-  console.log("ballot", ballot);
   // Keep the already in ballot in state because we want to update these when user removes allocations
   const [alreadyInBallot, updateInBallot] = useState(itemsInBallot(votes));
 
@@ -65,23 +65,26 @@ export const ListEditDistribution = ({
   }
 
   const ballotVotes = votes?.map((vote) => {
-    const ballotVote = ballot?.votes.find((v) => v.projectId === vote.projectId);
+    const ballotVote = ballot?.votes.find(
+      (v) => v.projectId === vote.projectId,
+    );
     return ballotVote ?? vote;
   });
   const showDialogTitle = !(add.isLoading || add.isSuccess);
   return (
     <div>
-      <Button
-        variant="primary"
-        onClick={() => {
-          setOpen(true);
-        }}
-        // icon={AddBallot}
-        className="w-full md:w-auto"
-        disabled={!address || add.isSuccess}
-      >
-        {add.isSuccess ? "List added" : "Add list to ballot"}
-      </Button>
+      {getAppState() === "VOTING" && (
+        <Button
+          variant="primary"
+          onClick={() => {
+            setOpen(true);
+          }}
+          className="w-full md:w-auto"
+          disabled={!address || add.isSuccess}
+        >
+          {add.isSuccess ? "List added" : "Add list to ballot"}
+        </Button>
+      )}
       <Dialog
         title={showDialogTitle ? `Edit distribution` : null}
         size={add.isSuccess ? "sm" : "md"}
