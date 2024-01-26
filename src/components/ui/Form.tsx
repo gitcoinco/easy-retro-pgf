@@ -164,12 +164,15 @@ export const FormControl = ({
         ...register(name, { valueAsNumber }),
       })}
       {hint && <div className="pt-1 text-xs text-gray-500">{hint}</div>}
-      {error && (
-        <div className="pt-1 text-xs text-red-500">{error.message}</div>
-      )}
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </fieldset>
   );
 };
+
+export const ErrorMessage = createComponent(
+  "div",
+  tv({ base: "pt-1 text-xs text-red-500" }),
+);
 
 export function FieldArray<S extends z.Schema>({
   name,

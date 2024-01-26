@@ -4,6 +4,7 @@ import { type PropsWithChildren } from "react";
 import { ImageUpload } from "~/components/ImageUpload";
 import { IconButton } from "~/components/ui/Button";
 import {
+  ErrorMessage,
   FieldArray,
   Form,
   FormControl,
@@ -338,11 +339,16 @@ function ApplicationFormSection({
 }
 
 function ImpactTags() {
-  const { control, watch } = useFormContext();
-  const { field } = useController({ name: "impactCategory", control });
+  const { control, watch, formState } =
+    useFormContext<z.infer<typeof ApplicationCreateSchema>>();
+  const { field } = useController({
+    name: "application.impactCategory",
+    control,
+  });
 
-  const selected = (watch("impactCategory") ?? []) as string[];
+  const selected = watch("application.impactCategory") ?? [];
 
+  const error = formState.errors.application?.impactCategory;
   return (
     <div className="mb-4">
       <Label>
@@ -357,7 +363,11 @@ function ImpactTags() {
               selected={isSelected}
               key={value}
               onClick={() => {
-                field.onChange([value]);
+                const currentlySelected = isSelected
+                  ? selected.filter((s) => s !== value)
+                  : selected.concat(value);
+
+                field.onChange(currentlySelected);
               }}
             >
               {label}
@@ -365,6 +375,7 @@ function ImpactTags() {
           );
         })}
       </div>
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
   );
 }
