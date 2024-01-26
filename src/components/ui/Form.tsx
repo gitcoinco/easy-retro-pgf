@@ -242,8 +242,6 @@ export function Form<S extends z.Schema>({
     mode: "onBlur",
   });
 
-  console.log(form.formState.errors, form.watch());
-
   usePersistForm(form, persist);
 
   // Pass the form methods to a FormProvider. This lets us access the form from components with useFormContext
