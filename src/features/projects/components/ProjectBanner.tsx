@@ -5,7 +5,7 @@ import { Banner } from "~/components/ui/Banner";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export function ProjectBanner(
-  props: { profileId: Address } & ComponentProps<typeof Banner>,
+  props: { profileId?: Address } & ComponentProps<typeof Banner>,
 ) {
   const profile = useProfileWithMetadata(props.profileId);
   const { profileImageUrl, bannerImageUrl } = profile.data ?? {};

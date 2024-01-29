@@ -1,11 +1,11 @@
 import { Markdown } from "~/components/ui/Markdown";
 import { Heading } from "~/components/ui/Heading";
-import { type ProjectMetadata } from "../types";
 import { LinkBox } from "./LinkBox";
 import { FileCode, Github, Globe, type LucideIcon } from "lucide-react";
 import { createElement } from "react";
+import { type Application } from "~/features/applications/types";
 
-type Props = { isLoading: boolean; project?: ProjectMetadata };
+type Props = { isLoading: boolean; project?: Application };
 
 export default function ProjectContributions({ isLoading, project }: Props) {
   return (

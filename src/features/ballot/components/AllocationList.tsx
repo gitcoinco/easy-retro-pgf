@@ -7,7 +7,6 @@ import { Trash } from "lucide-react";
 import { createComponent } from "~/components/ui";
 import { Table, Tbody, Tr, Td } from "~/components/ui/Table";
 import { formatNumber } from "~/utils/formatNumber";
-import { useProfileWithMetadata } from "~/hooks/useProfile";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
@@ -47,7 +46,7 @@ export function AllocationForm({
   onSave,
 }: {
   list?: Vote[];
-  disabled?: boolean,
+  disabled?: boolean;
   header?: ReactNode;
   onSave?: (v: { votes: Vote[] }) => void;
 }) {
@@ -82,8 +81,8 @@ export function AllocationForm({
                       name="compareAmount"
                       defaultValue={listAllocation}
                       disabled={true}
-                      />
-                      ) : null}
+                    />
+                  ) : null}
                 </Td>
                 <Td>
                   <AllocationInput
@@ -197,7 +196,6 @@ export const ProjectAvatarWithName = ({
   subtitle?: string;
 }) => {
   const { data: project } = useProjectById(id!);
-  const { data: metadata } = useProfileWithMetadata(project?.recipient);
   const Component = link ? Link : "div";
 
   return (

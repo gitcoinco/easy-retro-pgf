@@ -36,11 +36,7 @@ export function ApplicationItem({
 
   const form = useFormContext();
 
-  const {
-    description,
-    fundingSources = [],
-    impactMetrics = [],
-  } = metadata.data ?? {};
+  const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
 
   return (
     <div className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800">
@@ -64,18 +60,12 @@ export function ApplicationItem({
               <div>{fundingSources.length} funding sources</div>
               <div>{impactMetrics.length} impact metrics</div>
             </div>
-            <div className="line-clamp-2 text-sm dark:text-gray-300">
-              {description}
-            </div>
+            <div className="line-clamp-2 text-sm dark:text-gray-300">{bio}</div>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
           <ClockIcon className="size-3" />
-          <Skeleton
-            isLoading={isLoading}
-            title={new Date(time)}
-            className="mb-1 min-h-5 min-w-24"
-          >
+          <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
             {formatDate(time * 1000)}
           </Skeleton>
         </div>

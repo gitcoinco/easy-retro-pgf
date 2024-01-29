@@ -19,7 +19,6 @@ export function useProjectsById(ids: string[]) {
 }
 
 const seed = 0;
-// const seed = Math.random();
 export function useSearchProjects(filterOverride?: Partial<Filter>) {
   const { data: filter } = useFilter("projects");
   return api.projects.search.useInfiniteQuery(

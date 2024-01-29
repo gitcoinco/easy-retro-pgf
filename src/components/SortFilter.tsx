@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { SortByDropdown } from "./SortByDropdown";
 import { type Filter } from "~/features/filter/types";
 import {
+  type SortType,
   toURL,
   useUpdateFilterFromRouter,
 } from "~/features/filter/hooks/useFilter";
@@ -9,7 +10,7 @@ import {
 type Props = {
   type: "projects" | "lists";
   filter: Filter;
-  sortOptions: string[];
+  sortOptions: SortType[];
 };
 
 export const SortFilter = ({ type, filter, sortOptions }: Props) => {

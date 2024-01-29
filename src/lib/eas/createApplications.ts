@@ -1,6 +1,11 @@
 import "dotenv/config";
 import { config, eas } from "~/config";
-import { fetchAttestations, createDataFilter } from "~/utils/fetchAttestations";
+import { type MultiAttestationRequest } from "@ethereum-attestation-service/eas-sdk";
+import {
+  fetchAttestations,
+  createDataFilter,
+  type Attestation,
+} from "~/utils/fetchAttestations";
 import { createAttestation } from "./createAttestation";
 import { ethers, providers } from "ethers";
 import { createEAS } from "./createEAS";
@@ -18,7 +23,11 @@ const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY!).connect(
 ) as unknown as providers.JsonRpcSigner;
 
 console.log(wallet.getAddress());
-wallet.getBalance().then((r) => console.log(formatEther(r)));
+wallet
+  .getBalance()
+  .then((r) => console.log(formatEther(r.toBigInt())))
+  .catch(console.log);
+
 const applications = [
   "L2BEAT",
   "EthStaker",
@@ -164,8 +173,11 @@ async function createApplications() {
           },
         ).then(async ([attestation]) => {
           if (!attestation) return null;
-
-          const [profile] = await fetchAttestations(
+          const application = attestation as Attestation & {
+            applicationMetadataPtr: string;
+            displayName: string;
+          };
+          const [profile] = (await fetchAttestations(
             [
               "0xac4c92fc5c7babed88f78a917cdbcdc1c496a8f4ab2d5b2ec29402736b2cf929",
             ],
@@ -176,7 +188,7 @@ async function createApplications() {
                 attester: { equals: attestation.attester },
               },
             },
-          );
+          )) as [Attestation & { profileMetadataPtr: string }];
           if (!profile) return null;
 
           const profileAttestation = await createAttestation(
@@ -197,11 +209,11 @@ async function createApplications() {
           const applicationAttestation = await createAttestation(
             {
               schemaUID: eas.schemas.metadata,
-              recipient: attestation.attester,
+              recipient: application.attester,
               values: {
-                name: attestation.displayName,
+                name: application.displayName,
                 metadataType: 0, // "http"
-                metadataPtr: attestation?.applicationMetadataPtr,
+                metadataPtr: application?.applicationMetadataPtr,
                 type: "application",
                 round: config.roundId,
               },
@@ -229,9 +241,12 @@ async function createApplications() {
       ) {
         const EAS = createEAS(wallet);
         // Only attest 10 at a time (could cause error if more)
-        return chunk(attestations, 10).map((parts) =>
-          EAS.multiAttest(parts.map((att) => ({ ...att, data: [att.data] }))),
-        );
+        return chunk(attestations, 10).map((parts) => {
+          const data = parts
+            .filter(Boolean)
+            .map((att) => ({ ...att, data: [att?.data] }));
+          return EAS.multiAttest(data as MultiAttestationRequest[]);
+        });
       } else {
         console.log("Exiting");
         return;

@@ -20,7 +20,7 @@ export default function ListDetails({
 }) {
   const metadata = useListMetadata(attestation?.metadataPtr);
 
-  const { description, projects = [], impact = {} } = metadata.data ?? {};
+  const { description, projects = [], impact } = metadata.data ?? {};
 
   return (
     <div className="relative">
@@ -51,9 +51,9 @@ export default function ListDetails({
       <div className="flex flex-col gap-3">
         <h3 className="text-lg font-bold">Impact Evaluation</h3>
         <Skeleton isLoading={metadata.isLoading}>
-          <p className="whitespace-pre-wrap">{impact.description}</p>
+          <p className="whitespace-pre-wrap">{impact?.description}</p>
         </Skeleton>
-        {impact.url && (
+        {impact?.url && (
           <Button
             as={Link}
             href={impact.url}

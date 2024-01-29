@@ -3,12 +3,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { type Filter } from "../types";
 import { useEffect } from "react";
+import { config } from "~/config";
 
 type FilterType = "projects" | "lists";
 
-export const initialFilter: Partial<Filter> = {
+export const initialFilter: Filter = {
   orderBy: "name",
   sortOrder: "asc",
+  limit: config.pageSize,
+  cursor: 0,
+  seed: 0,
+  search: null,
 };
 
 export const sortLabels = {
@@ -17,6 +22,8 @@ export const sortLabels = {
   time_asc: "Oldest",
   time_desc: "Newest",
 };
+export type SortType = keyof typeof sortLabels;
+
 export function useFilter(type: FilterType) {
   const client = useQueryClient();
 
@@ -38,7 +45,7 @@ export function useSetFilter(type: FilterType) {
   );
 }
 
-export const toURL = (prev: Partial<Filter>, next: Partial<Filter> = {}) =>
+export const toURL = (prev: object, next: object = {}) =>
   new URLSearchParams({ ...prev, ...next } as unknown as Record<
     string,
     string
@@ -46,7 +53,7 @@ export const toURL = (prev: Partial<Filter>, next: Partial<Filter> = {}) =>
 
 export function useUpdateFilterFromRouter(type: FilterType) {
   const router = useRouter();
-  const query = router.query;
+  const query = router.query as unknown as Filter;
   const { data: filter } = useFilter(type);
   const { mutate: setFilter } = useSetFilter(type);
 

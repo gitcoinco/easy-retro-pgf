@@ -1,12 +1,12 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { IconButton } from "./ui/Button";
 import { ArrowUpDown, Check } from "lucide-react";
-import { sortLabels } from "~/features/filter/hooks/useFilter";
+import { type SortType, sortLabels } from "~/features/filter/hooks/useFilter";
 
 type Props = {
-  value: string;
+  value: SortType;
   onChange: (value: string) => void;
-  options: string[];
+  options: SortType[];
 };
 
 export const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
@@ -36,7 +36,7 @@ export const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
             onValueChange={(v) => onChange(v)}
           >
             {options.map((value) => (
-              <RadioItem key={value} value={value} label={sortLabels[value!]} />
+              <RadioItem key={value} value={value} label={sortLabels[value]} />
             ))}
           </DropdownMenu.RadioGroup>
         </DropdownMenu.Content>

@@ -2,7 +2,14 @@ import { ResponsiveLine } from "@nivo/line";
 import { formatNumber } from "~/utils/formatNumber";
 import { suffixNumber } from "~/utils/suffixNumber";
 
-export default function ResultsChart({ data }) {
+export default function ResultsChart({
+  data,
+}: {
+  data: {
+    id: string;
+    data: { x: string; y: number | undefined }[];
+  }[];
+}) {
   return (
     <ResponsiveLine
       data={data}
@@ -29,7 +36,7 @@ export default function ResultsChart({ data }) {
               textAnchor={textAnchor}
               transform={`translate(${textX},${textY})`}
             >
-              <tspan>{suffixNumber(value)}</tspan>
+              <tspan>{suffixNumber(Number(value))}</tspan>
             </text>
           </g>
         ),

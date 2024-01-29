@@ -25,17 +25,17 @@ export const server = setupServer(
   http.get("/api/auth/session", () => {
     return HttpResponse.json({});
   }),
-  mockTrpc.projects.search.query(() => {
-    return mockProjects;
-  }),
-  mockTrpc.projects.get.query(({ id }) => {
-    return mockProjects.find((p) => p.id === id);
-  }),
-  mockTrpc.metadata.get.query((params) => {
-    console.log(params);
-    return {};
-  }),
-  mockTrpc.projects.count.query(() => {
-    return { count: 9999 };
-  }),
+  // mockTrpc.projects.search.query(() => {
+  //   return mockProjects;
+  // }),
+  // mockTrpc.projects.get.query(({ id }) => {
+  //   return mockProjects.find((p) => p.id === id);
+  // }),
+  // mockTrpc.metadata.get.query((params) => {
+  //   console.log(params);
+  //   return {};
+  // }),
+  // mockTrpc.projects.count.query(() => {
+  //   return { count: 9999 };
+  // }),
 );

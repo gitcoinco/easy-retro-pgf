@@ -3,13 +3,11 @@ import Link from "next/link";
 
 import { Heading } from "~/components/ui/Heading";
 import { useListMetadata, useLists } from "../hooks/useLists";
-import { api } from "~/utils/api";
 import { InfiniteLoading } from "~/components/InfiniteLoading";
 import { AvatarENS } from "~/components/ENS";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { type Attestation } from "~/utils/fetchAttestations";
-import { type Address } from "viem";
 import { ImpactCategories } from "~/features/projects/components/ImpactCategories";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
 
@@ -34,12 +32,7 @@ function ListItem({
 }) {
   const metadata = useListMetadata(attestation.metadataPtr);
 
-  console.log(attestation);
-  const {
-    projects = [],
-    impactCategory = [],
-    impact = {},
-  } = metadata.data ?? {};
+  const { projects = [], impactCategory = [], impact } = metadata.data ?? {};
 
   return (
     <Link
@@ -60,7 +53,7 @@ function ListItem({
 
           <p className="mb-4 mt-4 line-clamp-2 h-12 text-gray-800 dark:text-gray-300">
             <Skeleton isLoading={metadata.isLoading} className="w-full">
-              {impact.description}
+              {impact?.description}
             </Skeleton>
           </p>
           <div className="ml-1 flex items-center text-gray-700 dark:text-gray-300">
@@ -89,7 +82,7 @@ function ListProjectAvatar({ id }: { id: string }) {
       rounded="full"
       size="xs"
       className="-ml-1"
-      profileId={project.data?.attester as Address}
+      profileId={project.data?.attester}
     />
   );
 }

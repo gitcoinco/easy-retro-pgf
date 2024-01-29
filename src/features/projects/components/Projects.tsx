@@ -46,7 +46,7 @@ export function Projects() {
         <SortFilter
           type="projects"
           sortOptions={["name_asc", "name_desc", "time_asc", "time_desc"]}
-          filter={filter}
+          filter={filter!}
         />
       </div>
       <InfiniteLoading
