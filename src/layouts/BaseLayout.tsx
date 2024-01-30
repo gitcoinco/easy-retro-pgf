@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { metadata } from "~/config";
 import { useTheme } from "next-themes";
 import { Footer } from "~/components/Footer";
+import { MaciSignup } from "~/components/MaciSignup";
 
 const Context = createContext({ eligibilityCheck: false, showBallot: false });
 export const useLayoutOptions = () => useContext(Context);
@@ -79,6 +80,7 @@ export const BaseLayout = ({
         {header}
         <div className="mx-auto w-full flex-1 pt-12 2xl:container md:flex">
           {sidebar === "left" ? sidebarComponent : null}
+          <MaciSignup />
           <div
             className={clsx("w-full min-w-0 px-2 pb-24", {
               ["mx-auto max-w-5xl"]: !sidebar,

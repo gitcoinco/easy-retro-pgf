@@ -25,6 +25,7 @@ export const config = {
   admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
+  maciAddress: process.env.MACI_ADDRESS!,
 };
 
 export const theme = {
