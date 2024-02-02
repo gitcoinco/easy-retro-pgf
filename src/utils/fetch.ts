@@ -1,4 +1,3 @@
-// import { fetchBuilder, MemoryCache } from "node-fetch-cache";
 import NodeFetchCache, { MemoryCache } from "node-fetch-cache";
 
 export function createCachedFetch({ ttl = 1000 * 60 }) {
