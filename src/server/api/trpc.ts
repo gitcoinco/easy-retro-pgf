@@ -13,6 +13,7 @@ import type { NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { config } from "~/config";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -124,6 +125,17 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
+  const address = ctx.session?.user.name;
+  if (!config.admins.includes(address!)) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Must be admin to access this route",
+    });
+  }
+  return next({ ctx });
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -133,3 +145,4 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const adminProcedure = protectedProcedure.use(enforceUserIsAdmin);

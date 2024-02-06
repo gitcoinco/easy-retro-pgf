@@ -7,7 +7,11 @@ import { Trash } from "lucide-react";
 import { createComponent } from "~/components/ui";
 import { Table, Tbody, Tr, Td } from "~/components/ui/Table";
 import { formatNumber } from "~/utils/formatNumber";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import {
+  type UseFormReturn,
+  useFieldArray,
+  useFormContext,
+} from "react-hook-form";
 import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
 import { type Vote } from "../types";
@@ -16,6 +20,7 @@ import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
 import { config } from "~/config";
+import { FormControl, Input } from "~/components/ui/Form";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -192,6 +197,96 @@ export function AllocationFormWithSearch() {
       </Table>
       <button type="submit" className="hidden" />
     </AllocationListWrapper>
+  );
+}
+
+type AllocationFormProps = {
+  renderHeader?: () => ReactNode;
+  renderExtraColumn?: (
+    {
+      form,
+      project,
+    }: { form: UseFormReturn<{ votes: Vote[] }>; project: Vote },
+    i: number,
+  ) => ReactNode;
+  disabled?: boolean;
+  projectIsLink?: boolean;
+  onSave?: (v: { votes: Vote[] }) => void;
+};
+
+function AllocationFormWrapper({
+  disabled,
+  projectIsLink,
+  renderHeader,
+  renderExtraColumn,
+  onSave,
+}: AllocationFormProps) {
+  const form = useFormContext<{ votes: Vote[] }>();
+  const { initialVoiceCredits } = useMaciSignup();
+
+  const { fields, remove } = useFieldArray({
+    name: "votes",
+    keyName: "key",
+    control: form.control,
+  });
+
+  return (
+    <AllocationListWrapper>
+      <Table>
+        {renderHeader?.()}
+        <Tbody>
+          {fields.map((project, i) => {
+            const idx = i;
+
+            return (
+              <Tr key={project.projectId}>
+                <Td className={"w-full"}>
+                  <ProjectAvatarWithName
+                    link={projectIsLink}
+                    id={project.projectId}
+                  />
+                </Td>
+                <Td>{renderExtraColumn?.({ project, form }, i)}</Td>
+                <Td>
+                  <AllocationInput
+                    name={`votes.${idx}.amount`}
+                    disabled={disabled}
+                    votingMaxProject={initialVoiceCredits}
+                    onBlur={() => onSave?.(form.getValues())}
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    tabIndex={-1}
+                    type="button"
+                    variant="ghost"
+                    icon={Trash}
+                    disabled={disabled}
+                    onClick={() => {
+                      remove(idx);
+                      onSave?.(form.getValues());
+                    }}
+                  />
+                </Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+    </AllocationListWrapper>
+  );
+}
+
+export function DistributionForm(props: AllocationFormProps) {
+  return (
+    <AllocationFormWrapper
+      {...props}
+      renderExtraColumn={({}, i) => (
+        <FormControl className="mb-0" name={`votes.${i}.payoutAddress`}>
+          <Input className="min-w-64 font-mono" />
+        </FormControl>
+      )}
+    />
   );
 }
 
