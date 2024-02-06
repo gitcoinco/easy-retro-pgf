@@ -13,7 +13,7 @@ export const initialFilter: Filter = {
   limit: config.pageSize,
   cursor: 0,
   seed: 0,
-  search: null,
+  search: "",
 };
 
 export const sortLabels = {
@@ -69,7 +69,12 @@ export function useUpdateFilterFromRouter(type: FilterType) {
   // Update filter when router query changes
   useEffect(() => {
     if (JSON.stringify(filter) !== JSON.stringify(query)) {
-      setFilter(query);
+      setFilter({
+        ...query,
+        limit: query.limit ? Number(query.limit) : initialFilter.limit,
+        cursor: query.cursor ? Number(query.cursor) : initialFilter.cursor,
+        seed: query.seed ? Number(query.seed) : initialFilter.seed,
+      });
     }
   }, [query, setFilter]);
 }
