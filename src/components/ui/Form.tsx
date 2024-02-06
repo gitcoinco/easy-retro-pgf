@@ -5,16 +5,16 @@ import {
   type PropsWithChildren,
   type ReactElement,
   type ComponentPropsWithoutRef,
+  type ReactNode,
   forwardRef,
   cloneElement,
   useEffect,
-  ReactNode,
 } from "react";
 import {
   FormProvider,
   useForm,
   useFormContext,
-  UseFormReturn,
+  type UseFormReturn,
   type UseFormProps,
   type FieldValues,
   useFieldArray,
@@ -22,8 +22,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createComponent } from ".";
-// import { Search } from "../icons";
-import clsx from "clsx";
+import { cn } from "~/utils/classNames";
 import { useInterval, useLocalStorage } from "react-use";
 import { IconButton } from "./Button";
 import { PlusIcon, Search, Trash } from "lucide-react";
@@ -149,7 +148,7 @@ export const FormControl = ({
   ) as unknown as { message: string };
 
   return (
-    <fieldset className={clsx("mb-4", className)}>
+    <fieldset className={cn("mb-4", className)}>
       {label && (
         <Label
           className="mb-1"

@@ -4,7 +4,7 @@ import { createCachedFetch } from "./fetch";
 const ttl = 2147483647;
 const fetch = createCachedFetch({ ttl });
 
-export async function fetchMetadata(url: string) {
+export async function fetchMetadata<T>(url: string) {
   const ipfsGateway =
     process.env.NEXT_PUBLIC_IPFS_GATEWAY ?? "https://dweb.link/ipfs/";
 
@@ -12,5 +12,5 @@ export async function fetchMetadata(url: string) {
     url = `${ipfsGateway}${url}`;
   }
 
-  return fetch(url);
+  return fetch<T>(url);
 }
