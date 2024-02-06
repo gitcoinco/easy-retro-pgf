@@ -15,6 +15,7 @@
     "eas:registerSchemas": "npx tsx src/lib/eas/registerSchemas"
   },
   "dependencies": {
+    "@allo-team/allo-v2-sdk": "^1.0.39",
     "@ethereum-attestation-service/eas-sdk": "^1.4.0",
     "@hookform/resolvers": "^3.3.4",
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -59,6 +60,7 @@
     "siwe": "^2.1.4",
     "sonner": "^1.4.0",
     "superjson": "^2.2.1",
+    "tailwind-merge": "^2.2.1",
     "tailwind-variants": "^0.1.20",
     "viem": "^1.20.3",
     "wagmi": "^1.4.12",

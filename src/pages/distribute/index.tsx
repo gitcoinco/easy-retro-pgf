@@ -6,11 +6,9 @@ import { Form } from "~/components/ui/Form";
 import { Heading } from "~/components/ui/Heading";
 import { Spinner } from "~/components/ui/Spinner";
 import { Th, Thead, Tr } from "~/components/ui/Table";
-import {
-  AllocationForm,
-  DistributionForm,
-} from "~/features/ballot/components/AllocationList";
+import { DistributionForm } from "~/features/ballot/components/AllocationList";
 import { BallotSchema } from "~/features/ballot/types";
+import { CreatePool } from "~/features/distribute/components/CreatePool";
 import { useDistribute } from "~/features/distribute/hooks/useDistribute";
 import { DistributionSchema } from "~/features/distribute/types";
 import { useProjectsResults, useResults } from "~/hooks/useResults";
@@ -27,9 +25,8 @@ export default function DistributePage() {
 
       {getAppState() === "RESULTS" && (
         <div>
-          <Button variant="primary">Create Pool</Button>
-
-          <Distributions />
+          <CreatePool />
+          {/* <Distributions /> */}
         </div>
       )}
     </Layout>
@@ -71,7 +68,7 @@ function Distributions() {
       onSubmit={(values) => {
         console.log("Distribute", values.votes[0]);
 
-        distribute.mutate(value.votes);
+        distribute.mutate(values.votes);
       }}
     >
       <div className="mb-2 flex justify-end">

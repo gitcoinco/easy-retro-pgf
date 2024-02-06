@@ -27,6 +27,12 @@ export const config = {
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
 };
 
+export const allo = {
+  alloAddress: process.env.NEXT_PUBLIC_ALLO2_ADDRESS as `0x${string}`,
+  strategyAddress: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS as `0x${string}`,
+  tokenAddress: process.env.NEXT_PUBLIC_TOKEN_ADDRESS as `0x${string}`,
+};
+
 export const theme = {
   colorMode: "dark",
 };
