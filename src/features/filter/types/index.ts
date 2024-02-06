@@ -11,7 +11,7 @@ export const FilterSchema = z.object({
   seed: z.number().default(0),
   orderBy: SortEnum,
   sortOrder: SortOrderEnum,
-  search: z.string().nullish(),
+  search: z.string().default(""),
 });
 
 export type Sort = z.infer<typeof SortEnum>;
