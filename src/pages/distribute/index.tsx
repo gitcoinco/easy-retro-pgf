@@ -6,16 +6,9 @@ import { getAppState } from "~/utils/state";
 
 export default function DistributePage() {
   return (
-    <Layout>
-      <Heading as="h1" size="3xl">
-        Distribute
-      </Heading>
-
+    <Layout sidebar="left" sidebarComponent={<CreatePool />}>
       {getAppState() === "RESULTS" ? (
         <>
-          <div className="mx-auto max-w-sm">
-            <CreatePool />
-          </div>
           <Distributions />
         </>
       ) : (
