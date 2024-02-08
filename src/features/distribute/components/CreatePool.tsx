@@ -77,7 +77,7 @@ function CreatePool() {
     <Alert title="Create pool" variant="info">
       <p className="mb-8 leading-6">
         Before you can distribute funds to the projects you need to create a
-        pool
+        pool.
       </p>
       <h3 className="mb-2 text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300">
         Pool configuration
@@ -115,11 +115,8 @@ function CreatePool() {
           });
         }}
       >
-        <FormControl name="strategyAddress" label="Strategy address">
-          <Input readOnly value={allo.strategyAddress} />
-        </FormControl>
         <FormControl name="tokenAddress" label="Token">
-          <Input readOnly value={token.data?.symbol ?? "ETH"} />
+          <Input disabled readOnly value={token.data?.symbol ?? "ETH"} />
         </FormControl>
 
         <FormControl name="amount" label="Amount of tokens to fund">
@@ -127,6 +124,7 @@ function CreatePool() {
         </FormControl>
 
         <FundPoolButton
+          buttonText="Create pool"
           isLoading={createPool.isLoading || approve.isLoading}
           decimals={decimals}
           allowance={allowance.data}
@@ -151,17 +149,20 @@ function PoolDetails({ poolId = 0 }) {
 
   console.log("err", error);
   return (
-    <Alert variant="info" title="Pool">
-      <div>
-        Pool amount: {formatUnits(amount.data ?? 0n, decimals)}{" "}
-        {token.data?.symbol}
+    <Alert variant="info">
+      <div className="mb-4 flex flex-col items-center">
+        <h3 className="mb-2 text-sm font-semibold uppercase tracking-widest text-gray-500">
+          Currently in pool
+        </h3>
+        <div className="text-2xl">
+          {formatUnits(amount.data ?? 0n, decimals)} {token.data?.symbol}
+        </div>
       </div>
 
       <Form
         schema={z.object({
           amount: z.number(),
         })}
-        defaultValues={{ amount: 0 }}
         onSubmit={async (values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
           console.log({ amount });
@@ -180,17 +181,21 @@ function PoolDetails({ poolId = 0 }) {
           fundPool.mutate({ poolId, amount });
         }}
       >
-        <div className="flex justify-end gap-1 text-sm">
-          <span className="text-gray-500">Balance:</span>
-          <span className="font-semibold">
-            {balance.data?.formatted.slice(0, 5)}
-          </span>
+        <div className="flex justify-between text-sm">
+          <div>Fund pool</div>
+          <div className="flex gap-1">
+            <span className="text-gray-500">Wallet balance:</span>
+            <span className="font-semibold">
+              {balance.data?.formatted.slice(0, 5)}
+            </span>
+          </div>
         </div>
         <div className="mb-2">
           <AllocationInput name="amount" tokenAddon />
         </div>
 
         <FundPoolButton
+          buttonText="Fund pool"
           isLoading={fundPool.isLoading || approve.isLoading}
           decimals={decimals}
           allowance={allowance}
@@ -206,6 +211,7 @@ function PoolDetails({ poolId = 0 }) {
 }
 
 function FundPoolButton({
+  buttonText = "",
   isLoading = false,
   allowance = 0n,
   balance = 0n,
@@ -234,8 +240,6 @@ function FundPoolButton({
     );
   }
 
-  // const buttonText =
-
   return (
     <IconButton
       className={"w-full"}
@@ -247,7 +251,7 @@ function FundPoolButton({
       {isLoading ? (
         <>Processing...</>
       ) : hasAllowance ? (
-        "Fund pool"
+        buttonText
       ) : (
         "Approve spending"
       )}

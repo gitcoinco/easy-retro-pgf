@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type PropsWithChildren } from "react";
+import type { ReactNode, PropsWithChildren } from "react";
 import { useAccount } from "wagmi";
 
 import { Header } from "~/components/Header";
@@ -7,16 +7,18 @@ import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";
 
-export const Layout = ({
-  sidebar,
-  children,
-  ...props
-}: PropsWithChildren<
+type Props = PropsWithChildren<
   {
     sidebar?: "left" | "right";
+    sidebarComponent?: ReactNode;
   } & LayoutProps
->) => {
-  const { address } = useAccount();
+>;
+export const Layout = ({
+  sidebar,
+  sidebarComponent,
+  children,
+  ...props
+}: Props) => {
   const appState = getAppState();
 
   const navLinks = [
@@ -33,21 +35,30 @@ export const Layout = ({
     });
   }
 
-  const sidebarComponent = (
-    <Sidebar side={sidebar}>{address ? <BallotOverview /> : null}</Sidebar>
-  );
+  const wrappedSidebar = <Sidebar side={sidebar}>{sidebarComponent}</Sidebar>;
 
   return (
     <BaseLayout
       {...props}
       sidebar={sidebar}
-      sidebarComponent={sidebarComponent}
+      sidebarComponent={wrappedSidebar}
       header={<Header navLinks={navLinks} />}
     >
       {children}
     </BaseLayout>
   );
 };
+
+export function LayoutWithBallot(props: Props) {
+  const { address } = useAccount();
+  return (
+    <Layout
+      sidebar="left"
+      sidebarComponent={address && <BallotOverview />}
+      {...props}
+    />
+  );
+}
 
 const Sidebar = (props: { side?: "left" | "right" } & PropsWithChildren) => (
   <div>

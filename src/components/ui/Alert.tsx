@@ -8,7 +8,7 @@ const alert = tv({
   variants: {
     variant: {
       warning: "bg-red-200 text-red-800",
-      info: "bg-secondary-100 text-gray-900 dark:bg-gray-800 dark:text-gray-300",
+      info: "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-300",
       success: "bg-green-200 text-green-800",
     },
   },

@@ -21,30 +21,35 @@ import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
 import { config } from "~/config";
 import { FormControl, Input } from "~/components/ui/Form";
+import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
 
 const AllocationListWrapper = createComponent(
   "div",
   tv({ base: "flex flex-col gap-2 flex-1" }),
 );
 
-export const AllocationList = ({ votes }: { votes?: Vote[] }) => (
-  <AllocationListWrapper>
-    <Table>
-      <Tbody>
-        {votes?.map((project) => (
-          <Tr key={project.projectId}>
-            <Td className={"w-full"}>
-              <ProjectAvatarWithName link id={project.projectId} />
-            </Td>
-            <Td className="whitespace-nowrap text-right">
-              {formatNumber(project.amount)} {config.tokenName}
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
-  </AllocationListWrapper>
-);
+export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
+  const token = usePoolToken();
+
+  return (
+    <AllocationListWrapper>
+      <Table>
+        <Tbody>
+          {votes?.map((project) => (
+            <Tr key={project.projectId}>
+              <Td className={"w-full"}>
+                <ProjectAvatarWithName link id={project.projectId} />
+              </Td>
+              <Td className="whitespace-nowrap text-right">
+                {formatNumber(project.amount)} {token.data?.symbol || config.tokenName}
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    </AllocationListWrapper>
+  );
+};
 
 export function AllocationForm({
   list,
