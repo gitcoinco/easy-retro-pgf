@@ -4,28 +4,35 @@ import { useFormContext, Controller } from "react-hook-form";
 
 import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
 import { config } from "~/config";
+import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
 
 export const AllocationInput = ({
   name,
   onBlur,
+  tokenAddon,
   ...props
 }: {
   disabled?: boolean;
+  tokenAddon?: boolean;
   error?: boolean;
 } & ComponentPropsWithRef<"input">) => {
   const form = useFormContext();
+
+  const token = usePoolToken();
 
   return (
     <InputWrapper className="min-w-[160px]">
       <Controller
         control={form.control}
         name={name!}
+        {...props}
         render={({ field }) => (
           <NumericFormat
             aria-label="allocation-input"
             customInput={Input}
             error={props.error}
             {...field}
+            autoComplete="off"
             className="pr-16"
             isAllowed={({ floatValue }) =>
               (floatValue ?? 0) <= config.votingMaxProject
@@ -41,7 +48,9 @@ export const AllocationInput = ({
           />
         )}
       />
-      <InputAddon disabled={props.disabled}>OP</InputAddon>
+      {tokenAddon && (
+        <InputAddon disabled={props.disabled}>{token.data?.symbol}</InputAddon>
+      )}
     </InputWrapper>
   );
 };

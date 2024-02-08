@@ -109,7 +109,9 @@ export const env = createEnv({
 
     NEXT_PUBLIC_ALLO2_ADDRESS: z.string().startsWith("0x"),
     NEXT_PUBLIC_STRATEGY_ADDRESS: z.string().startsWith("0x").default(""),
-    NEXT_PUBLIC_TOKEN_ADDRESS: z.string().default(""),
+    NEXT_PUBLIC_TOKEN_ADDRESS: z
+      .string()
+      .default("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
   },
 
   /**
