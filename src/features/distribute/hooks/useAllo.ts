@@ -22,9 +22,16 @@ export async function waitForLogs(
   abi: unknown[],
   client: PublicClient,
 ) {
-  return client
-    .waitForTransactionReceipt({ hash })
-    .then(({ logs }) =>
-      logs.map(({ data, topics }) => decodeEventLog({ abi, data, topics })),
-    );
+  return client.waitForTransactionReceipt({ hash }).then(({ logs }) => {
+    console.log("logs", logs);
+    return logs
+      .map(({ data, topics }) => {
+        try {
+          return decodeEventLog({ abi, data, topics });
+        } catch (error) {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  });
 }
