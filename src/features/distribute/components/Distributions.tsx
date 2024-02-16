@@ -61,7 +61,7 @@ export function Distributions() {
           Distribute tokens
         </Button>
       </div>
-      <div className="max-h-[500px] min-h-[360px] overflow-auto">
+      <div className="min-h-[360px] overflow-auto">
         <DistributionForm
           renderHeader={() => (
             <Thead>

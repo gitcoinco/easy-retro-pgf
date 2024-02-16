@@ -9,7 +9,7 @@ export function MintButton() {
     address: allo.tokenAddress,
     abi: parseAbi(["function mint(address to, uint256 amount)"]),
     functionName: "mint",
-    args: [address!, parseEther("100")],
+    args: [address!, parseEther("10000")],
   });
   return (
     <Button
