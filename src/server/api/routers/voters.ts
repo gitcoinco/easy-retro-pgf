@@ -5,6 +5,7 @@ import {
   fetchAttestations,
   createDataFilter,
   fetchApprovedVoter,
+  fetchApprovedVoterAttestations,
 } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";
 
@@ -19,6 +20,11 @@ export const votersRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return fetchApprovedVoter(input.address);
     }),
+
+  approvedAttestations: publicProcedure
+    .input(z.object({ address: z.string().default("") }))
+    .query(async ({ input }) => fetchApprovedVoterAttestations(input.address)),
+
   list: publicProcedure.input(FilterSchema).query(async ({}) => {
     return fetchAttestations([eas.schemas.approval], {
       where: {
