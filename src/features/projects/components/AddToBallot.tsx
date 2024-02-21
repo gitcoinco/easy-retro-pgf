@@ -19,6 +19,7 @@ import {
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 type Props = { id?: string; name?: string };
 
@@ -28,6 +29,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
   const { data: ballot } = useBallot();
+  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
@@ -35,7 +37,15 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   if (getAppState() !== "VOTING") return null;
   return (
     <div>
-      {ballot?.publishedAt ? (
+      {!isAllowedToVote ? null : !isRegistered ? (
+        <Button
+          className="w-full md:w-auto"
+          variant="primary"
+          onClick={onSignup}
+        >
+          Signup
+        </Button>
+      ) : ballot?.publishedAt ? (
         <Button disabled>Ballot published</Button>
       ) : inBallot ? (
         <IconButton

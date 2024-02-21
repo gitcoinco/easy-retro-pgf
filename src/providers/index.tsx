@@ -37,7 +37,6 @@ export function Providers({
   children,
   session,
 }: PropsWithChildren<{ session?: Session }>) {
-  
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>

@@ -100,21 +100,17 @@ function BallotOverview() {
           </div>
         </div>
       </BallotSection>
-      {ballot?.publishedAt ? (
+      {!isAllowedToVote ? null : !isRegistered ? (
+        <Button className="w-full" variant="primary" onClick={onSignup}>
+          Signup
+        </Button>
+      ) : ballot?.publishedAt ? (
         <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
           View submitted ballot
         </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
-      ) : isRegistered && isAllowedToVote && allocations.length ? (
-        <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
-          View ballot
-        </Button>
-      ) : !isRegistered && isAllowedToVote ? (
-        <Button className="w-full" variant="primary" onClick={onSignup}>
-          Signup
-        </Button>
-      ) : !isAllowedToVote ? null : (
+      ) : (
         <Button className={"w-full"} variant="primary" disabled>
           No projects added yet
         </Button>

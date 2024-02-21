@@ -10,7 +10,6 @@ import { createBreakpoint } from "react-use";
 import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
-import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
 
@@ -19,7 +18,6 @@ const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 export const ConnectButton = () => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
-  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
 
   return (
     <RainbowConnectButton.Custom>
@@ -68,19 +66,6 @@ export const ConnectButton = () => {
                 return <Chip onClick={openChainModal}>Wrong network</Chip>;
               }
 
-              if (!isAllowedToVote) {
-                return <Chip>You are not allowed to vote</Chip>;
-              }
-
-              if (!isRegistered) {
-                return (
-                  <SignupButton
-                    loading={isRegistered === undefined}
-                    onClick={onSignup}
-                  />
-                );
-              }
-
               return (
                 <ConnectedDetails
                   account={account}
@@ -107,14 +92,23 @@ const ConnectedDetails = ({
 }) => {
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
+  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
 
-  const { eligibilityCheck, showBallot } = useLayoutOptions();
+  const { showBallot } = useLayoutOptions();
   return (
     <div>
       <div className="flex gap-2 text-white">
-        {!showBallot ? null : ballot?.publishedAt ? (
+        {!isAllowedToVote && <Chip>You are not allowed to vote</Chip>}
+        {isAllowedToVote && !isRegistered && (
+          <SignupButton
+            loading={isRegistered === undefined}
+            onClick={onSignup}
+          />
+        )}
+        {isRegistered && showBallot && ballot?.publishedAt && (
           <Chip>Already submitted</Chip>
-        ) : (
+        )}
+        {isRegistered && showBallot && !ballot?.publishedAt && (
           <Chip className="gap-2" as={Link} href={"/ballot"}>
             {isMobile ? <FaListCheck className="h-4 w-4" /> : `View Ballot`}
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs">
@@ -128,7 +122,6 @@ const ConnectedDetails = ({
         >
           {isMobile ? null : account.displayName}
         </UserInfo>
-        {eligibilityCheck && <EligibilityDialog />}
       </div>
     </div>
   );

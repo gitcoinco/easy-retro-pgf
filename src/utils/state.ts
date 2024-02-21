@@ -2,7 +2,13 @@ import { isAfter } from "date-fns";
 import { config } from "~/config";
 import { useMaciPoll } from "~/hooks/useMaciPoll";
 
-type AppState = "LOADING" | "APPLICATION" | "REVIEWING" | "VOTING" | "RESULTS" | "TALLYING";
+type AppState =
+  | "LOADING"
+  | "APPLICATION"
+  | "REVIEWING"
+  | "VOTING"
+  | "RESULTS"
+  | "TALLYING";
 
 export const getAppState = (): AppState => {
   const now = new Date();
