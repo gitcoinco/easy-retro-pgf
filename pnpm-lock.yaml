@@ -90,8 +90,8 @@ dependencies:
     specifier: ^0.316.0
     version: 0.316.0(react@18.2.0)
   maci-cli:
-    specifier: 0.0.0-ci.c3c4811
-    version: 0.0.0-ci.c3c4811(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3)
+    specifier: 0.0.0-ci.aedd38b
+    version: 0.0.0-ci.aedd38b(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3)
   next:
     specifier: ^14.1.0
     version: 14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
@@ -5453,7 +5453,7 @@ packages:
     resolution: {integrity: sha512-BMtLxpV+8BD+6ZPFIWmnUBpQoy+A+ujcg4rhp2iwCRJYA7PEh2MS4NL3lz8EiDlLrJPp2hg9qWihr5pd//jcGw==}
     engines: {node: '>= 0.4'}
     dependencies:
-      call-bind: 1.0.5
+      call-bind: 1.0.7
       define-properties: 1.2.1
       es-abstract: 1.22.4
       es-errors: 1.3.0
@@ -6632,15 +6632,6 @@ packages:
       clone: 1.0.4
     dev: true
 
-  /define-data-property@1.1.1:
-    resolution: {integrity: sha512-E7uGkTzkk1d0ByLeSc6ZsFS79Axg+m1P/VsgYsxHgiuc3tFSj+MjMIwe90FC4lOAZzNBdY7kkO2P2wKdsQ1vgQ==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      get-intrinsic: 1.2.2
-      gopd: 1.0.1
-      has-property-descriptors: 1.0.1
-    dev: false
-
   /define-data-property@1.1.4:
     resolution: {integrity: sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==}
     engines: {node: '>= 0.4'}
@@ -6654,8 +6645,8 @@ packages:
     resolution: {integrity: sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==}
     engines: {node: '>= 0.4'}
     dependencies:
-      define-data-property: 1.1.1
-      has-property-descriptors: 1.0.1
+      define-data-property: 1.1.4
+      has-property-descriptors: 1.0.2
       object-keys: 1.1.1
     dev: false
 
@@ -6870,7 +6861,7 @@ packages:
       globalthis: 1.0.3
       gopd: 1.0.1
       has-property-descriptors: 1.0.2
-      has-proto: 1.0.1
+      has-proto: 1.0.3
       has-symbols: 1.0.3
       hasown: 2.0.1
       internal-slot: 1.0.7
@@ -6930,14 +6921,14 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       get-intrinsic: 1.2.4
-      has-tostringtag: 1.0.0
+      has-tostringtag: 1.0.2
       hasown: 2.0.1
     dev: false
 
   /es-shim-unscopables@1.0.2:
     resolution: {integrity: sha512-J3yBRXCzDu4ULnQwxyToo/OjdMx6akgVC7K6few0a7F/0wLtmKKN7I73AH5T2836UuXRqN7Qg+IIUw/+YJksRw==}
     dependencies:
-      hasown: 2.0.0
+      hasown: 2.0.1
     dev: false
 
   /es-to-primitive@1.2.1:
@@ -7757,7 +7748,7 @@ packages:
     dependencies:
       es-errors: 1.3.0
       function-bind: 1.1.2
-      has-proto: 1.0.1
+      has-proto: 1.0.3
       has-symbols: 1.0.3
       hasown: 2.0.1
     dev: false
@@ -7929,7 +7920,7 @@ packages:
   /gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
     dependencies:
-      get-intrinsic: 1.2.2
+      get-intrinsic: 1.2.4
     dev: false
 
   /graceful-fs@4.2.11:
@@ -8162,12 +8153,6 @@ packages:
   /has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
-
-  /has-property-descriptors@1.0.1:
-    resolution: {integrity: sha512-VsX8eaIewvas0xnvinAe9bw4WfIeODpGYikiWYLH+dma0Jw6KHYqWiWfhQlgOVK8D6PvjubK5Uc4P0iIhIcNVg==}
-    dependencies:
-      get-intrinsic: 1.2.2
-    dev: false
 
   /has-property-descriptors@1.0.2:
     resolution: {integrity: sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==}
@@ -8486,8 +8471,8 @@ packages:
     resolution: {integrity: sha512-Xj6dv+PsbtwyPpEflsejS+oIZxmMlV44zAhG479uYu89MsjcYOhCFnNyKrkJrihbsiasQyY0afoCl/9BLR65bg==}
     engines: {node: '>= 0.4'}
     dependencies:
-      get-intrinsic: 1.2.2
-      hasown: 2.0.0
+      get-intrinsic: 1.2.4
+      hasown: 2.0.1
       side-channel: 1.0.4
     dev: false
 
@@ -8598,7 +8583,7 @@ packages:
     resolution: {integrity: sha512-gDYaKHJmnj4aWxyj6YHyXVpdQawtVLHU5cb+eztPGczf6cjuTdwve5ZIEfgXqH4e57An1D1AKf8CZ3kYrQRqYA==}
     engines: {node: '>= 0.4'}
     dependencies:
-      call-bind: 1.0.5
+      call-bind: 1.0.7
       has-tostringtag: 1.0.0
     dev: false
 
@@ -8651,7 +8636,7 @@ packages:
     resolution: {integrity: sha512-jsEjy9l3yiXEQ+PsXdmBwEPcOxaXWLspKdplFUVI9vq1iZgIekeC0L167qeu86czQaxed3q/Uzuw0swL0irL8A==}
     engines: {node: '>= 0.4'}
     dependencies:
-      has-tostringtag: 1.0.0
+      has-tostringtag: 1.0.2
     dev: false
 
   /is-glob@4.0.3:
@@ -8769,7 +8754,7 @@ packages:
     resolution: {integrity: sha512-tE2UXzivje6ofPW7l23cjDOMa09gb7xlAqG6jG5ej6uPV32TlWP3NKPigtaGeHNu9fohccRYvIiZMfOOnOYUtg==}
     engines: {node: '>= 0.4'}
     dependencies:
-      has-tostringtag: 1.0.0
+      has-tostringtag: 1.0.2
     dev: false
 
   /is-symbol@1.0.4:
@@ -8814,8 +8799,8 @@ packages:
   /is-weakset@2.0.2:
     resolution: {integrity: sha512-t2yVvttHkQktwnNNmBQ98AhENLdPUTDTE21uPqAQ0ARwQfGeQKRVS0NNurH7bTf7RrvcVn1OOge45CnBeHCSmg==}
     dependencies:
-      call-bind: 1.0.5
-      get-intrinsic: 1.2.2
+      call-bind: 1.0.7
+      get-intrinsic: 1.2.4
     dev: false
 
   /is-what@4.1.16:
@@ -9304,23 +9289,23 @@ packages:
     hasBin: true
     dev: false
 
-  /maci-circuits@0.0.0-ci.c3c4811:
-    resolution: {integrity: sha512-5gQEB4blDHPE/ZV320jzWIg3I9Cm9KBwt1nQh4SiCiIObigsfPn/pTHw2IA/ZDpdYAAnZ5ejsl1v/8gwIAwnHQ==}
+  /maci-circuits@0.0.0-ci.aedd38b:
+    resolution: {integrity: sha512-NVutfoy81KEqhilwEUuBn2gGccaRimX+/brlak2WMyBCuMKADyG7nvwbejYGyKrJq1ZxlqOkutlxgy5oH6hZqQ==}
     dependencies:
       '@zk-kit/circuits': 0.3.0
       circomkit: 0.0.24
       circomlib: 2.0.5
-      maci-core: 0.0.0-ci.c3c4811
-      maci-crypto: 0.0.0-ci.c3c4811
-      maci-domainobjs: 0.0.0-ci.c3c4811
+      maci-core: 0.0.0-ci.aedd38b
+      maci-crypto: 0.0.0-ci.aedd38b
+      maci-domainobjs: 0.0.0-ci.aedd38b
       snarkjs: 0.7.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
     dev: false
 
-  /maci-cli@0.0.0-ci.c3c4811(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3):
-    resolution: {integrity: sha512-+jizs+AsgVN8iGNKw8/5+nFnC8wwIcTkbP+C7GHqtJmLrdz7geowLPhGtyYGH8KdNLGvj3qWwMnTy0DLg0wzsw==}
+  /maci-cli@0.0.0-ci.aedd38b(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3):
+    resolution: {integrity: sha512-KOBx9BjR+uweIvOYQOK9RCiOlHVR6xxP5zUqtFkOVU0pYHB7tIRlMcGyFADTTN/Y3bZDq/XD8+dcvqVfOFViIA==}
     hasBin: true
     dependencies:
       '@commander-js/extra-typings': 12.0.0(commander@12.0.0)
@@ -9329,11 +9314,11 @@ packages:
       dotenv: 16.4.5
       ethers: 6.11.1
       hardhat: 2.20.1(ts-node@10.9.2)(typescript@5.3.3)
-      maci-circuits: 0.0.0-ci.c3c4811
-      maci-contracts: 0.0.0-ci.c3c4811(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3)
-      maci-core: 0.0.0-ci.c3c4811
-      maci-crypto: 0.0.0-ci.c3c4811
-      maci-domainobjs: 0.0.0-ci.c3c4811
+      maci-circuits: 0.0.0-ci.aedd38b
+      maci-contracts: 0.0.0-ci.aedd38b(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3)
+      maci-core: 0.0.0-ci.aedd38b
+      maci-crypto: 0.0.0-ci.aedd38b
+      maci-domainobjs: 0.0.0-ci.aedd38b
       prompt: 1.3.0
     transitivePeerDependencies:
       - '@nomicfoundation/hardhat-chai-matchers'
@@ -9357,8 +9342,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /maci-contracts@0.0.0-ci.c3c4811(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3):
-    resolution: {integrity: sha512-4wLnRNOOZwqrMJvDV6A3WVUnzP51O8YbPzznsIyWKNbZzyuY0eUfaF1jAQ4Y+jGmwoIhOYjFCrHtV6LYPX4igw==}
+  /maci-contracts@0.0.0-ci.aedd38b(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.4)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.10)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.7)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3):
+    resolution: {integrity: sha512-ohrOjoTeoSEcnY4lrtLKrplc4i73bJamydDvlc0VNJamh09RU0KkNmA+2+uBt9PV6E6mzHASGrKKaeJrD8A2qQ==}
     hasBin: true
     dependencies:
       '@nomicfoundation/hardhat-ethers': 3.0.5(ethers@6.11.1)(hardhat@2.20.1)
@@ -9367,10 +9352,10 @@ packages:
       circomlibjs: 0.1.7
       ethers: 6.11.1
       hardhat: 2.20.1(ts-node@10.9.2)(typescript@5.3.3)
-      maci-circuits: 0.0.0-ci.c3c4811
-      maci-core: 0.0.0-ci.c3c4811
-      maci-crypto: 0.0.0-ci.c3c4811
-      maci-domainobjs: 0.0.0-ci.c3c4811
+      maci-circuits: 0.0.0-ci.aedd38b
+      maci-core: 0.0.0-ci.aedd38b
+      maci-crypto: 0.0.0-ci.aedd38b
+      maci-domainobjs: 0.0.0-ci.aedd38b
       solidity-docgen: 0.6.0-beta.36(hardhat@2.20.1)
     transitivePeerDependencies:
       - '@nomicfoundation/hardhat-chai-matchers'
@@ -9393,18 +9378,18 @@ packages:
       - utf-8-validate
     dev: false
 
-  /maci-core@0.0.0-ci.c3c4811:
-    resolution: {integrity: sha512-NPLXRf0HmMZ46Q7D68mq7SL8c52llaFmtRHW8dPtARl58JGbs+EZe5zL4qdzEIP9/WjcZ+LyfqSonsW8fjiBQg==}
+  /maci-core@0.0.0-ci.aedd38b:
+    resolution: {integrity: sha512-E0p3EA21QTIvTTvTndmpwhZbj2mSpidTdiwapMmNpA1KL70Ztu/A+Lhkcw/X0fx7GviYfl7WoGftsFTF8wSgkw==}
     dependencies:
-      maci-crypto: 0.0.0-ci.c3c4811
-      maci-domainobjs: 0.0.0-ci.c3c4811
+      maci-crypto: 0.0.0-ci.aedd38b
+      maci-domainobjs: 0.0.0-ci.aedd38b
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
     dev: false
 
-  /maci-crypto@0.0.0-ci.c3c4811:
-    resolution: {integrity: sha512-TZdm9BWfFYgTQDh1hAdsCAgVRrqwpldRc22sJxVXv4Xgz+Tlbf3qmvbC934Q1ZoyH1WaD8XByTVxaQ84gDK5LQ==}
+  /maci-crypto@0.0.0-ci.aedd38b:
+    resolution: {integrity: sha512-rXfk/CPRdMCLNoPdOvIlh/0Fegwsw3FD8i1vUMGD0u1krqZxCWEuBFMpXQKmV6RHl/SfR1j5CuSCUGPuq5EDtA==}
     dependencies:
       '@zk-kit/baby-jubjub': 0.1.1
       '@zk-kit/eddsa-poseidon': 0.5.1
@@ -9415,10 +9400,10 @@ packages:
       - utf-8-validate
     dev: false
 
-  /maci-domainobjs@0.0.0-ci.c3c4811:
-    resolution: {integrity: sha512-lc9atV/kFXrR5vPPRec4tD3g1BjVeQn5HphFeaWQ3WXhK/kUxAzB12vmQHsk9ueqnEU4Aql4t5/ryxM2mSQNdQ==}
+  /maci-domainobjs@0.0.0-ci.aedd38b:
+    resolution: {integrity: sha512-O0IyRYxD2rdP/azQ3ckYD57donQevkEq2P83DPtoiuB/3ThSTOsvYvmaEoiLtY4U8k8Yg/zg8NcKd6Xl32S8rw==}
     dependencies:
-      maci-crypto: 0.0.0-ci.c3c4811
+      maci-crypto: 0.0.0-ci.aedd38b
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -11512,7 +11497,7 @@ packages:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
     hasBin: true
     dependencies:
-      glob: 7.2.0
+      glob: 7.2.3
     dev: false
 
   /rimraf@3.0.2:
@@ -11719,11 +11704,11 @@ packages:
     resolution: {integrity: sha512-4DBHDoyHlM1IRPGYcoxexgh67y4ueR53FKV1yyxwFMY7aCqcN/38M1+SwZ/qJQ8iLv7+ck385ot4CcisOAPT9w==}
     engines: {node: '>= 0.4'}
     dependencies:
-      define-data-property: 1.1.1
+      define-data-property: 1.1.4
       function-bind: 1.1.2
-      get-intrinsic: 1.2.2
+      get-intrinsic: 1.2.4
       gopd: 1.0.1
-      has-property-descriptors: 1.0.1
+      has-property-descriptors: 1.0.2
     dev: false
 
   /set-function-length@1.2.1:
@@ -11742,9 +11727,9 @@ packages:
     resolution: {integrity: sha512-tMNCiqYVkXIZgc2Hnoy2IvC/f8ezc5koaRFkCjrpWzGpCd3qbZXPzVy9MAZzK1ch/X0jvSkojys3oqJN0qCmdA==}
     engines: {node: '>= 0.4'}
     dependencies:
-      define-data-property: 1.1.1
+      define-data-property: 1.1.4
       functions-have-names: 1.2.3
-      has-property-descriptors: 1.0.1
+      has-property-descriptors: 1.0.2
     dev: false
 
   /set-harmonic-interval@1.0.1:
@@ -12709,7 +12694,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       for-each: 0.3.3
-      has-proto: 1.0.1
+      has-proto: 1.0.3
       is-typed-array: 1.1.13
     dev: false
 
@@ -13060,8 +13045,8 @@ packages:
       inherits: 2.0.4
       is-arguments: 1.1.1
       is-generator-function: 1.0.10
-      is-typed-array: 1.1.12
-      which-typed-array: 1.1.13
+      is-typed-array: 1.1.13
+      which-typed-array: 1.1.14
     dev: false
 
   /uuid@8.3.2:

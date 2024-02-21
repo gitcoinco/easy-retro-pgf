@@ -101,8 +101,6 @@ export async function fetchApprovedVoterAttestations(address: string) {
   }).then((attestations) => attestations);
 }
 
-
-
 function parseAttestation({
   decodedDataJson,
   ...attestation
