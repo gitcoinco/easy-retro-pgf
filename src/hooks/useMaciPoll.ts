@@ -27,6 +27,10 @@ export const useMaciPoll = (): IUseMaciPollData => {
   );
 
   useEffect(() => {
+    if (!signer) {
+      return;
+    }
+
     setIsLoading(true);
     getPoll({
       maciAddress: config.maciAddress!,

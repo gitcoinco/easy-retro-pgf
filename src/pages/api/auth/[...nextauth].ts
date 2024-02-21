@@ -33,7 +33,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
           }
 
           if (
-            siwe.nonce !==
+            siwe.resources?.[0] !==
             (await getCsrfToken({ req: { headers: req.headers } }))
           ) {
             return null;

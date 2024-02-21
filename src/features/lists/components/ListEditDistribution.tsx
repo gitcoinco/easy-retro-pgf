@@ -32,6 +32,7 @@ import { AllocationForm } from "~/features/ballot/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 export const ListEditDistribution = ({
   listName,
@@ -44,6 +45,7 @@ export const ListEditDistribution = ({
   const [isOpen, setOpen] = useState(false);
   const { data: ballot } = useBallot();
   const add = useAddToBallot();
+  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
 
   // What list projects are already in the ballot?
   function itemsInBallot(votes?: Vote[]) {
@@ -98,14 +100,22 @@ export const ListEditDistribution = ({
               List added to ballot successfully!
             </div>
             <div className="space-y-2">
-              <Button
-                variant="primary"
-                className="w-full"
-                as={Link}
-                href={"/ballot"}
-              >
-                View ballot
-              </Button>
+              {isRegistered && (
+                <Button
+                  variant="primary"
+                  className="w-full"
+                  as={Link}
+                  href={"/ballot"}
+                >
+                  View ballot
+                </Button>
+              )}
+
+              {isAllowedToVote && !isRegistered && (
+                <Button variant="primary" className="w-full" onClick={onSignup}>
+                  Signup
+                </Button>
+              )}
               <Button
                 className="w-full"
                 variant="ghost"

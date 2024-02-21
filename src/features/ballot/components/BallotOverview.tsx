@@ -6,10 +6,7 @@ import { useRouter } from "next/router";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Progress } from "~/components/ui/Progress";
-import {
-  useBallot,
-  sumBallot,
-} from "~/features/ballot/hooks/useBallot";
+import { useBallot, sumBallot } from "~/features/ballot/hooks/useBallot";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
@@ -17,10 +14,12 @@ import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 function BallotOverview() {
   const router = useRouter();
 
+  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
   const { data: ballot } = useBallot();
 
   const sum = sumBallot(ballot?.votes);
@@ -31,7 +30,7 @@ function BallotOverview() {
   const { data: projectCount } = useProjectCount();
 
   const appState = getAppState();
-  
+
   if (appState === "RESULTS")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
@@ -107,11 +106,15 @@ function BallotOverview() {
         </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
-      ) : allocations.length ? (
+      ) : isRegistered && isAllowedToVote && allocations.length ? (
         <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
           View ballot
         </Button>
-      ) : (
+      ) : !isRegistered && isAllowedToVote ? (
+        <Button className="w-full" variant="primary" onClick={onSignup}>
+          Signup
+        </Button>
+      ) : !isAllowedToVote ? null : (
         <Button className={"w-full"} variant="primary" disabled>
           No projects added yet
         </Button>
@@ -122,7 +125,7 @@ function BallotOverview() {
 
 const SubmitBallotButton = ({ disabled = false }) => {
   const [isOpen, setOpen] = useState(false);
-  
+
   const isSaving = false;
 
   const submit = {

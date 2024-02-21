@@ -6,12 +6,8 @@ import {
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
 import {
-  argentWallet,
-  trustWallet,
-  ledgerWallet,
   frameWallet,
   injectedWallet,
-  metaMaskWallet,
   braveWallet,
   safeWallet,
   coinbaseWallet,
@@ -26,7 +22,7 @@ import { ThemeProvider } from "next-themes";
 import {
   RainbowKitSiweNextAuthProvider,
   type GetSiweMessageOptions,
-} from "@rainbow-me/rainbowkit-siwe-next-auth";
+} from "./RainbowKitSiweNextAuthProvider";
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
@@ -41,6 +37,7 @@ export function Providers({
   children,
   session,
 }: PropsWithChildren<{ session?: Session }>) {
+  
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>
