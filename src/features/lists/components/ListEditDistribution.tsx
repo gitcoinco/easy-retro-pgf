@@ -71,9 +71,10 @@ export const ListEditDistribution = ({
     return ballotVote ?? vote;
   });
   const showDialogTitle = !(add.isLoading || add.isSuccess);
+  const appState = getAppState();
   return (
     <div>
-      {getAppState() === "VOTING" && (
+      {appState === "VOTING" && (
         <Button
           variant="primary"
           onClick={() => {

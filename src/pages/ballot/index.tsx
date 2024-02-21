@@ -2,7 +2,7 @@ import { AlertCircle, FileDown, FileUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useRef, useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
 import { Button, IconButton } from "~/components/ui/Button";
@@ -52,6 +52,7 @@ function BallotAllocationForm() {
   const form = useFormContext<{ votes: Vote[] }>();
 
   const save = useSaveBallot();
+  const appState = getAppState();
 
   const votes = form.watch("votes");
   function handleSaveBallot({ votes }: { votes: Vote[] }) {
@@ -84,7 +85,7 @@ function BallotAllocationForm() {
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
               <AllocationForm
-                disabled={getAppState() === "RESULTS"}
+                disabled={appState === "RESULTS"}
                 onSave={handleSaveBallot}
               />
             ) : (

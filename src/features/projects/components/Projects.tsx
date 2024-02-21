@@ -18,6 +18,7 @@ export function Projects() {
   const select = useSelectProjects();
   const results = useResults();
   const { data: filter } = useFilter("projects");
+  const appState = getAppState();
 
   return (
     <div>
@@ -58,7 +59,7 @@ export function Projects() {
               href={`/projects/${item.id}`}
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
-              {!isLoading && getAppState() === "VOTING" ? (
+              {!isLoading && appState === "VOTING" ? (
                 <div className="absolute right-2 top-[100px] z-10 -mt-2">
                   <ProjectSelectButton
                     state={select.getState(item.id)}
@@ -69,7 +70,7 @@ export function Projects() {
                   />
                 </div>
               ) : null}
-              {!results.isLoading && getAppState() === "RESULTS" ? (
+              {!results.isLoading && appState === "RESULTS" ? (
                 <ProjectItemAwarded
                   amount={results.data?.projects?.[item.id]}
                 />

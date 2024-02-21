@@ -10,9 +10,10 @@ import { ProjectAwarded } from "~/features/projects/components/ProjectAwarded";
 export default function ProjectDetailsPage({ projectId = "" }) {
   const project = useProjectById(projectId);
   const { name } = project.data ?? {};
+  const appState = getAppState();
 
   const action =
-    getAppState() === "RESULTS" ? (
+    appState === "RESULTS" ? (
       <ProjectAwarded id={projectId} />
     ) : (
       <ProjectAddToBallot id={projectId} name={name} />

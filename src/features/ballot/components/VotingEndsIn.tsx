@@ -3,23 +3,26 @@ import { tv } from "tailwind-variants";
 
 import { calculateTimeLeft } from "~/utils/time";
 import { createComponent } from "~/components/ui";
-import { config } from "~/config";
+import { useMaciPoll } from "~/hooks/useMaciPoll";
 
 const useEndDate = createGlobalState<[number, number, number, number]>([
   0, 0, 0, 0,
 ]);
-export function useVotingTimeLeft() {
+
+export function useVotingTimeLeft(votingEndsAt: Date) {
   const [state, setState] = useEndDate();
 
-  useHarmonicIntervalFn(
-    () => setState(calculateTimeLeft(config.votingEndsAt)),
-    1000,
-  );
+  useHarmonicIntervalFn(() => setState(calculateTimeLeft(votingEndsAt)), 1000);
 
   return state;
 }
 export const VotingEndsIn = () => {
-  const [days, hours, minutes, seconds] = useVotingTimeLeft();
+  const { isLoading, votingEndsAt } = useMaciPoll();
+  const [days, hours, minutes, seconds] = useVotingTimeLeft(votingEndsAt);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (seconds < 0) {
     return <div>Voting has ended</div>;
