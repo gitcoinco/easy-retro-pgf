@@ -90,6 +90,19 @@ export async function fetchApprovedVoter(address: string) {
   }).then((attestations) => attestations.length);
 }
 
+export async function fetchApprovedVoterAttestations(address: string) {
+  if (config.skipApprovedVoterCheck) return true;
+
+  return fetchAttestations([eas.schemas.approval], {
+    where: {
+      recipient: { equals: address },
+      ...createDataFilter("type", "bytes32", "voter"),
+    },
+  }).then((attestations) => attestations);
+}
+
+
+
 function parseAttestation({
   decodedDataJson,
   ...attestation

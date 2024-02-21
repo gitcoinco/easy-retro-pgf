@@ -12,12 +12,14 @@ import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
 export const ConnectButton = () => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
+  const { isRegistered, onSignup } = useMaciSignup();
 
   return (
     <RainbowConnectButton.Custom>
@@ -64,6 +66,15 @@ export const ConnectButton = () => {
 
               if (chain.unsupported) {
                 return <Chip onClick={openChainModal}>Wrong network</Chip>;
+              }
+
+              if (!isRegistered) {
+                return (
+                  <SignupButton
+                    loading={isRegistered === undefined}
+                    onClick={onSignup}
+                  />
+                );
               }
 
               return (
@@ -138,6 +149,17 @@ const UserInfo = ({
         )}
       </div>
       {children}
+    </Chip>
+  );
+};
+
+const SignupButton = ({
+  loading,
+  ...props
+}: ComponentPropsWithRef<typeof Chip> & { loading: boolean }): JSX.Element => {
+  return (
+    <Chip className="gap-2" disabled={loading} {...props}>
+      {loading ? "Loading..." : "Sign up"}
     </Chip>
   );
 };
