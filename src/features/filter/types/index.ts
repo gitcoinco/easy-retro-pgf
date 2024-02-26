@@ -6,12 +6,15 @@ export const SortEnum = z
 export const SortOrderEnum = z.enum(["asc", "desc"]).default("asc");
 
 export const FilterSchema = z.object({
-  limit: z.number().default(3 * 8),
-  cursor: z.number().default(0),
-  seed: z.number().default(0),
+  limit: z.coerce.number().default(3 * 8),
+  cursor: z.coerce.number().default(0),
+  seed: z.coerce.number().default(0),
   orderBy: SortEnum,
   sortOrder: SortOrderEnum,
-  search: z.string().nullish(),
+  search: z.preprocess(
+    (v) => (v === "null" || v === "undefined" ? null : v),
+    z.string().nullish(),
+  ),
 });
 
 export type Sort = z.infer<typeof SortEnum>;
