@@ -1,5 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { IncomingMessage } from "http";
+import { genKeyPair } from "maci-cli/sdk";
 import type { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -39,8 +40,18 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
           }
 
           await siwe.verify({ signature: credentials?.signature ?? "" });
+          const keypair = genKeyPair({
+            seed: credentials?.signature
+              ? BigInt(credentials.signature)
+              : undefined,
+          });
+
           return {
-            id: siwe.address,
+            id: JSON.stringify({
+              address: siwe.address,
+              publicKey: keypair.publicKey,
+              privateKey: keypair.privateKey,
+            }),
           };
         } catch (e) {
           return null;
@@ -66,11 +77,33 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     adapter: PrismaAdapter(db),
     callbacks: {
       async session({ session, token }) {
-        (session as { address?: string }).address = token.sub;
-        (session as { user?: { name?: string } }).user = {
-          name: token.sub,
-        };
-        return session;
+        try {
+          type ExtendedSession = Partial<{
+            address: string;
+            publicKey: string;
+            privateKey: string;
+          }>;
+
+          const { address, publicKey, privateKey } = JSON.parse(
+            token.sub ?? "{}",
+          ) as ExtendedSession;
+          (session as ExtendedSession).address = address;
+          (session as ExtendedSession).publicKey = publicKey;
+          (session as ExtendedSession).privateKey = privateKey;
+          (
+            session as {
+              user?: { name?: string; publicKey?: string; privateKey?: string };
+            }
+          ).user = {
+            name: address,
+            publicKey,
+            privateKey,
+          };
+        } catch (e) {
+          console.error(`Can't return session ${(e as Error).message}`);
+        } finally {
+          return session;
+        }
       },
     },
     // https://next-auth.js.org/configuration/providers/oauth

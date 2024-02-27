@@ -22,10 +22,6 @@ export const Layout = ({
       href: "/projects",
       children: "Projects",
     },
-    {
-      href: "/lists",
-      children: "Lists",
-    },
   ];
 
   if (getAppState() === "RESULTS") {

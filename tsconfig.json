@@ -26,8 +26,8 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
-    }
+      "~/*": ["./src/*"],
+    },
   },
   "include": [
     ".eslintrc.cjs",
@@ -36,7 +36,8 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.js",
-    ".next/types/**/*.ts"
-, "src/pages/api/indexer/webhook._ts"  ],
-  "exclude": ["node_modules"]
+    ".next/types/**/*.ts",
+    "src/pages/api/indexer/webhook._ts",
+  ],
+  "exclude": ["node_modules"],
 }

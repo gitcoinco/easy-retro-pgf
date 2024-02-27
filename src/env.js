@@ -106,6 +106,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ALCHEMY_ID: z.string().optional(),
 
     NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK: z.string(),
+
+    NEXT_PUBLIC_MACI_ADDRESS: z.string().startsWith("0x"),
   },
 
   /**
@@ -157,6 +159,8 @@ export const env = createEnv({
     NEXT_PUBLIC_METADATA_SCHEMA: process.env.NEXT_PUBLIC_METADATA_SCHEMA,
 
     NEXT_PUBLIC_ROUND_ID: process.env.NEXT_PUBLIC_ROUND_ID,
+
+    NEXT_PUBLIC_MACI_ADDRESS: process.env.NEXT_PUBLIC_MACI_ADDRESS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

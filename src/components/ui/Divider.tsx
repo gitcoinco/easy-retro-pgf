@@ -15,7 +15,7 @@ export const Divider = createComponent(
     defaultVariants: {
       orientation: "horizontal",
     },
-  })
+  }),
 );
 
 export const DividerIcon = ({

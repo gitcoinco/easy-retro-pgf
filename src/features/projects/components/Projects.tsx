@@ -9,6 +9,7 @@ import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
 import { getAppState } from "~/utils/state";
 import { useResults } from "~/hooks/useResults";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 import { SortFilter } from "~/components/SortFilter";
 import { useFilter } from "~/features/filter/hooks/useFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
@@ -18,6 +19,7 @@ export function Projects() {
   const select = useSelectProjects();
   const results = useResults();
   const { data: filter } = useFilter("projects");
+  const { isRegistered } = useMaciSignup();
 
   return (
     <div>
@@ -58,7 +60,7 @@ export function Projects() {
               href={`/projects/${item.id}`}
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
-              {!isLoading && getAppState() === "VOTING" ? (
+              {isRegistered && !isLoading && getAppState() === "VOTING" ? (
                 <div className="absolute right-2 top-[100px] z-10 -mt-2">
                   <ProjectSelectButton
                     state={select.getState(item.id)}
