@@ -19,7 +19,7 @@ const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 export const ConnectButton = () => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
-  const { isRegistered, onSignup } = useMaciSignup();
+  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
 
   return (
     <RainbowConnectButton.Custom>
@@ -66,6 +66,10 @@ export const ConnectButton = () => {
 
               if (chain.unsupported) {
                 return <Chip onClick={openChainModal}>Wrong network</Chip>;
+              }
+
+              if (!isAllowedToVote) {
+                return <Chip>You are not allowed to vote</Chip>;
               }
 
               if (!isRegistered) {

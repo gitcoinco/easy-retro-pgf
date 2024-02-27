@@ -1,4 +1,4 @@
-import { differenceInDays, formatRelative } from "date-fns";
+import { differenceInDays } from "date-fns";
 import dynamic from "next/dynamic";
 import { useMemo, type PropsWithChildren } from "react";
 import { Alert } from "~/components/ui/Alert";
@@ -20,13 +20,14 @@ const ResultsChart = dynamic(
 
 export default function StatsPage() {
   console.log(ResultsChart);
+  const appState = getAppState();
   return (
     <Layout>
       <Heading as="h1" size="3xl">
         Stats
       </Heading>
 
-      {getAppState() === "RESULTS" ? (
+      {appState === "RESULTS" ? (
         <Stats />
       ) : (
         <Alert variant="info" className="mx-auto max-w-sm text-center">

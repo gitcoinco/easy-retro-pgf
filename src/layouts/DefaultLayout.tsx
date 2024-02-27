@@ -17,6 +17,8 @@ export const Layout = ({
   } & LayoutProps
 >) => {
   const { address } = useAccount();
+  const appState = getAppState();
+
   const navLinks = [
     {
       href: "/projects",
@@ -24,7 +26,7 @@ export const Layout = ({
     },
   ];
 
-  if (getAppState() === "RESULTS") {
+  if (appState === "RESULTS") {
     navLinks.push({
       href: "/stats",
       children: "Stats",

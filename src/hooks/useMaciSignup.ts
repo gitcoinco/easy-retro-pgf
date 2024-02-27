@@ -9,6 +9,7 @@ import { useEthersSigner } from "./useEthersSigner";
 import { useAccount } from "wagmi";
 
 export interface IUseMaciSignUpData {
+  isAllowedToVote: boolean;
   stateIndex?: string;
   isRegistered?: boolean;
   onSignup: () => Promise<void>;
@@ -32,6 +33,8 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
 
     return values?.[length - 1]?.id;
   }, [attestations]);
+
+  const isAllowedToVote = useMemo(() => Boolean(attestationId), [attestationId]);
 
   const onSignup = useCallback(async () => {
     if (!data?.publicKey || !signer || !attestationId) {
@@ -61,7 +64,7 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
   ]);
 
   useEffect(() => {
-    if (!signer || !data?.publicKey) {
+    if (!isConnected || !signer || !data?.publicKey || !address) {
       return;
     }
 
@@ -85,6 +88,7 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
   ]);
 
   return {
+    isAllowedToVote,
     stateIndex,
     isRegistered,
     onSignup,

@@ -3,8 +3,10 @@ import { api } from "~/utils/api";
 import { getAppState } from "~/utils/state";
 
 export function useResults() {
+  const appState = getAppState();
+
   return api.results.stats.useQuery(undefined, {
-    enabled: getAppState() === "RESULTS",
+    enabled: appState === "RESULTS",
   });
 }
 
@@ -23,8 +25,11 @@ export function useProjectCount() {
 }
 
 export function useProjectResults(id: string) {
+  const appState = getAppState();
+
   return api.results.project.useQuery(
     { id },
-    { enabled: getAppState() === "RESULTS" },
+    { enabled: appState === "RESULTS" },
   );
 }
+

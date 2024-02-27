@@ -13,7 +13,6 @@ export const config = {
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
   reviewEndsAt: new Date(process.env.NEXT_PUBLIC_REVIEW_END_DATE!),
-  votingEndsAt: new Date(process.env.NEXT_PUBLIC_VOTING_END_DATE!),
   resultsAt: new Date(process.env.NEXT_PUBLIC_RESULTS_DATE!),
   votingMaxTotal: Number(process.env.NEXT_PUBLIC_MAX_VOTES_TOTAL),
   votingMaxProject: Number(process.env.NEXT_PUBLIC_MAX_VOTES_PROJECT),

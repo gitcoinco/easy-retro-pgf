@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { type Address, verifyTypedData, keccak256 } from "viem";
-import { isAfter } from "date-fns";
 import {
   type BallotPublish,
   BallotPublishSchema,
@@ -37,9 +36,7 @@ export const ballotRouter = createTRPCRouter({
     .input(BallotSchema)
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session.user.name!;
-      if (isAfter(new Date(), config.votingEndsAt)) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
-      }
+
       await verifyUnpublishedBallot(voterId, ctx.db);
 
       return ctx.db.ballot.upsert({
@@ -53,10 +50,6 @@ export const ballotRouter = createTRPCRouter({
     .input(BallotPublishSchema)
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session.user.name!;
-
-      if (isAfter(new Date(), config.votingEndsAt)) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
-      }
 
       const ballot = await verifyUnpublishedBallot(voterId, ctx.db);
       if (!ballot) {

@@ -6,25 +6,20 @@ import { useRouter } from "next/router";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Progress } from "~/components/ui/Progress";
-import {
-  useSubmitBallot,
-  useBallot,
-  sumBallot,
-} from "~/features/ballot/hooks/useBallot";
+import { useBallot, sumBallot } from "~/features/ballot/hooks/useBallot";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { config } from "~/config";
-import { useIsMutating } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
-import { api } from "~/utils/api";
 import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 function BallotOverview() {
   const router = useRouter();
 
+  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
   const { data: ballot } = useBallot();
 
   const sum = sumBallot(ballot?.votes);
@@ -35,6 +30,7 @@ function BallotOverview() {
   const { data: projectCount } = useProjectCount();
 
   const appState = getAppState();
+
   if (appState === "RESULTS")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
@@ -45,6 +41,7 @@ function BallotOverview() {
         </Button>
       </div>
     );
+
   if (appState === "TALLYING")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
@@ -52,6 +49,7 @@ function BallotOverview() {
         <BallotSection title="Results are being tallied"></BallotSection>
       </div>
     );
+
   if (appState !== "VOTING")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
@@ -108,11 +106,15 @@ function BallotOverview() {
         </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
-      ) : allocations.length ? (
+      ) : isRegistered && isAllowedToVote && allocations.length ? (
         <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
           View ballot
         </Button>
-      ) : (
+      ) : !isRegistered && isAllowedToVote ? (
+        <Button className="w-full" variant="primary" onClick={onSignup}>
+          Signup
+        </Button>
+      ) : !isAllowedToVote ? null : (
         <Button className={"w-full"} variant="primary" disabled>
           No projects added yet
         </Button>
@@ -122,13 +124,17 @@ function BallotOverview() {
 }
 
 const SubmitBallotButton = ({ disabled = false }) => {
-  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
-  const router = useRouter();
   const [isOpen, setOpen] = useState(false);
 
-  const submit = useSubmitBallot({
-    onSuccess: async () => void router.push("/ballot/confirmation"),
-  });
+  const isSaving = false;
+
+  const submit = {
+    isLoading: false,
+    error: "",
+    mutate: () => {
+      // TODO: implement voting;
+    },
+  };
 
   const messages = {
     signing: {
