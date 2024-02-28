@@ -32,4 +32,3 @@ export function useProjectResults(id: string) {
     { enabled: appState === "RESULTS" },
   );
 }
-

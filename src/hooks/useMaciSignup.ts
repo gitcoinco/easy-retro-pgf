@@ -34,7 +34,10 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
     return values?.[length - 1]?.id;
   }, [attestations]);
 
-  const isAllowedToVote = useMemo(() => Boolean(attestationId), [attestationId]);
+  const isAllowedToVote = useMemo(
+    () => Boolean(attestationId),
+    [attestationId],
+  );
 
   const onSignup = useCallback(async () => {
     if (!data?.publicKey || !signer || !attestationId) {

@@ -11,11 +11,11 @@ export type ComponentProps<C extends ElementType> = {
 
 export function createComponent<T extends ElementType, TV>(
   tag: T,
-  variant: TV
+  variant: TV,
 ) {
   return forwardRef(function UIComponent<C extends ElementType>(
     props: ComponentPropsWithRef<C & T>,
-    ref?: PolymorphicRef<C>
+    ref?: PolymorphicRef<C>,
   ) {
     const { as: Component = tag, className, ...rest } = props;
     return (
