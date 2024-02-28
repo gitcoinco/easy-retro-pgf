@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useBeforeUnload } from "react-use";
-import { useAccount, useNetwork, useSignTypedData } from "wagmi";
+import { useAccount, useChainId, useSignTypedData } from "wagmi";
 import type { Vote, Ballot } from "~/features/ballot/types";
 
 import { ballotTypedData } from "~/utils/typedData";
@@ -18,19 +18,28 @@ export function useSaveBallot(opts?: { onSuccess?: () => void }) {
       opts?.onSuccess?.();
     },
   });
-  useBeforeUnload(save.isLoading, "You have unsaved changes, are you sure?");
+  useBeforeUnload(save.isPending, "You have unsaved changes, are you sure?");
 
   return save;
+}
+
+export function useLockBallot() {
+  const lock = api.ballot.lock.useMutation();
+  const unlock = api.ballot.unlock.useMutation();
+
+  return { lock, unlock };
 }
 
 export function useAddToBallot() {
   const { data: ballot } = useBallot();
   const { mutate } = useSaveBallot();
 
-  return useMutation(async (votes: Vote[]) => {
-    if (ballot) {
-      return mutate(mergeBallot(ballot as unknown as Ballot, votes));
-    }
+  return useMutation({
+    mutationFn: async (votes: Vote[]) => {
+      if (ballot) {
+        return mutate(mergeBallot(ballot as unknown as Ballot, votes));
+      }
+    },
   });
 }
 
@@ -38,11 +47,13 @@ export function useRemoveFromBallot() {
   const { data: ballot } = useBallot();
 
   const { mutate } = useSaveBallot();
-  return useMutation(async (projectId: string) => {
-    const votes = (ballot?.votes ?? []).filter(
-      (v) => v.projectId !== projectId,
-    );
-    return mutate({ ...ballot, votes });
+  return useMutation({
+    mutationFn: async (projectId: string) => {
+      const votes = (ballot?.votes ?? []).filter(
+        (v) => v.projectId !== projectId,
+      );
+      return mutate({ ...ballot, votes });
+    },
   });
 }
 
@@ -60,28 +71,30 @@ export function useSubmitBallot({
 }: {
   onSuccess: () => Promise<void>;
 }) {
-  const { chain } = useNetwork();
+  const chainId = useChainId();
   const { data: ballot } = useBallot();
-  const { mutateAsync, isLoading } = api.ballot.publish.useMutation({
+  const { mutateAsync, isPending } = api.ballot.publish.useMutation({
     onSuccess,
   });
-  useBeforeUnload(isLoading, "You have unsaved changes, are you sure?");
+  useBeforeUnload(isPending, "You have unsaved changes, are you sure?");
 
   const message = {
     total_votes: BigInt(sumBallot(ballot?.votes)),
     project_count: BigInt(ballot?.votes?.length ?? 0),
     hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
   };
-  const { signTypedDataAsync } = useSignTypedData({
-    ...ballotTypedData(chain?.id),
-    message,
-  });
+  const { signTypedDataAsync } = useSignTypedData();
 
-  return useMutation(async () => {
-    if (chain) {
-      const signature = await signTypedDataAsync();
-      return mutateAsync({ signature, message, chainId: chain?.id });
-    }
+  return useMutation({
+    mutationFn: async () => {
+      if (chainId) {
+        const signature = await signTypedDataAsync({
+          ...ballotTypedData(chainId),
+          message,
+        });
+        return mutateAsync({ signature, message, chainId });
+      }
+    },
   });
 }
 

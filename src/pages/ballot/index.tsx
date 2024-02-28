@@ -1,7 +1,7 @@
 import { AlertCircle, FileDown, FileUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
@@ -26,10 +26,14 @@ export default function BallotPage() {
   const { data: ballot, isLoading } = useBallot();
   const { address, isConnecting } = useAccount();
   const router = useRouter();
-  if (!address && !isConnecting) {
-    router.push("/").catch(console.log);
-  }
+
   if (isLoading) return null;
+
+  useEffect(() => {
+    if (!address && !isConnecting) {
+      router.push("/").catch(console.log);
+    }
+  }, [address, isConnecting, router]);
 
   const votes = ballot?.votes.sort((a, b) => b.amount - a.amount);
   return (
@@ -78,7 +82,7 @@ function BallotAllocationForm() {
           <ImportCSV />
           <ExportCSV votes={votes} />
         </div>
-        {votes.length ? <ClearBallot /> : null}
+        {votes?.length ? <ClearBallot /> : null}
       </div>
       <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
         <div className="p-8">
@@ -97,7 +101,7 @@ function BallotAllocationForm() {
         <div className="flex h-16 items-center justify-between rounded-b-2xl border-t border-gray-300 px-8 py-4 text-lg font-semibold dark:border-gray-800">
           <div>Total votes in ballot</div>
           <div className="flex items-center gap-2">
-            {save.isLoading && <Spinner />}
+            {save.isPending && <Spinner />}
             <TotalAllocation />
           </div>
         </div>
@@ -115,10 +119,11 @@ function ImportCSV() {
   const importCSV = useCallback((csvString: string) => {
     // Parse CSV and build the ballot data (remove name column)
     const { data } = parse<Vote>(csvString);
-    const votes = data.map(({ projectId, amount }) => ({
-      projectId,
-      amount: Number(amount),
-    }));
+    const votes =
+      data?.map(({ projectId, amount }) => ({
+        projectId,
+        amount: Number(amount),
+      })) ?? [];
     console.log(123, votes);
     setVotes(votes);
   }, []);
@@ -152,7 +157,7 @@ function ImportCSV() {
       <Dialog
         size="sm"
         title="Save ballot?"
-        isOpen={votes.length > 0}
+        isOpen={votes?.length > 0}
         onOpenChange={() => setVotes([])}
       >
         <p className="mb-6 leading-6">
@@ -161,7 +166,7 @@ function ImportCSV() {
         <div className="flex justify-end">
           <Button
             variant="primary"
-            disabled={save.isLoading}
+            disabled={save.isPending}
             onClick={() => {
               save
                 .mutateAsync({ votes })
@@ -180,14 +185,15 @@ function ImportCSV() {
 
 function ExportCSV({ votes }: { votes: Vote[] }) {
   // Fetch projects for votes to get the name
-  const projects = useProjectsById(votes.map((v) => v.projectId));
+  const projects = useProjectsById(votes?.map((v) => v.projectId) ?? []);
 
   const exportCSV = useCallback(async () => {
     // Append project name to votes
-    const votesWithProjects = votes.map((vote) => ({
-      ...vote,
-      name: projects.data?.find((p) => p.id === vote.projectId)?.name,
-    }));
+    const votesWithProjects =
+      votes?.map((vote) => ({
+        ...vote,
+        name: projects.data?.find((p) => p.id === vote.projectId)?.name,
+      })) ?? [];
 
     // Generate CSV file
     const csv = format(votesWithProjects, {
@@ -206,7 +212,7 @@ function ExportCSV({ votes }: { votes: Vote[] }) {
 function ClearBallot() {
   const form = useFormContext();
   const [isOpen, setOpen] = useState(false);
-  const { mutateAsync, isLoading } = useSaveBallot();
+  const { mutateAsync, isPending } = useSaveBallot();
   if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
   return (
     <>
@@ -227,7 +233,7 @@ function ClearBallot() {
         <div className="flex justify-end">
           <Button
             variant="primary"
-            disabled={isLoading}
+            disabled={isPending}
             onClick={() =>
               mutateAsync({ votes: [] }).then(() => {
                 setOpen(false);
@@ -235,7 +241,7 @@ function ClearBallot() {
               })
             }
           >
-            {isLoading ? <Spinner /> : "Yes I'm sure"}
+            {isPending ? <Spinner /> : "Yes I'm sure"}
           </Button>
         </div>
       </Dialog>

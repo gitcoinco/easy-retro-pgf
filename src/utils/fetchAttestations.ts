@@ -1,7 +1,7 @@
 import { fromHex, type Address } from "viem";
 import { config, eas } from "~/config";
 import { createCachedFetch } from "./fetch";
-import { ethers } from "ethers";
+import { encodeBytes32String, decodeBytes32String } from "ethers";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 
@@ -128,10 +128,9 @@ export function parseDecodedMetadata(json: string): Metadata {
 }
 
 export const parseBytes = (hex: string) =>
-  ethers.utils.parseBytes32String(fromHex(hex as Address, "bytes"));
+  decodeBytes32String(fromHex(hex as Address, "bytes"));
 
-export const formatBytes = (string: string) =>
-  ethers.utils.formatBytes32String(string);
+export const formatBytes = (string: string) => encodeBytes32String(string);
 
 const typeMaps = {
   bytes32: (v: string) => formatBytes(v),

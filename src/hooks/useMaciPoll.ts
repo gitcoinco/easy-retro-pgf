@@ -1,4 +1,4 @@
-import { getPoll, type Signer, type IGetPollData } from "maci-cli/sdk";
+import { getPoll, type IGetPollData } from "maci-cli/sdk";
 import { useEffect, useMemo, useState } from "react";
 
 import { config } from "~/config";
@@ -34,7 +34,7 @@ export const useMaciPoll = (): IUseMaciPollData => {
     setIsLoading(true);
     getPoll({
       maciAddress: config.maciAddress!,
-      signer: signer as unknown as Signer,
+      signer,
     })
       .then((data) => {
         setPollData(data);

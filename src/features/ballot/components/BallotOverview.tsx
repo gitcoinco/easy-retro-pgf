@@ -6,20 +6,28 @@ import { useRouter } from "next/router";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Progress } from "~/components/ui/Progress";
-import { useBallot, sumBallot } from "~/features/ballot/hooks/useBallot";
+import {
+  useBallot,
+  sumBallot,
+  useLockBallot,
+} from "~/features/ballot/hooks/useBallot";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
-import { useProjectCount } from "~/features/projects/hooks/useProjects";
+import {
+  useProjectCount,
+  useProjectIdMapping,
+} from "~/features/projects/hooks/useProjects";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
+import { useMaciVote } from "~/hooks/useMaciVote";
 
 function BallotOverview() {
   const router = useRouter();
 
-  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
+  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
   const { data: ballot } = useBallot();
 
   const sum = sumBallot(ballot?.votes);
@@ -100,7 +108,7 @@ function BallotOverview() {
           </div>
         </div>
       </BallotSection>
-      {!isAllowedToVote ? null : !isRegistered ? (
+      {!isEligibleToVote ? null : !isRegistered ? (
         <Button className="w-full" variant="primary" onClick={onSignup}>
           Signup
         </Button>
@@ -121,14 +129,34 @@ function BallotOverview() {
 
 const SubmitBallotButton = ({ disabled = false }) => {
   const [isOpen, setOpen] = useState(false);
+  const { isLoading, error, onVote } = useMaciVote();
+  const { data: ballot } = useBallot();
+  const { lock, unlock } = useLockBallot();
 
-  const isSaving = false;
+  const projectIndices = useProjectIdMapping(ballot);
+
+  const router = useRouter();
 
   const submit = {
-    isLoading: false,
-    error: "",
-    mutate: () => {
-      // TODO: implement voting;
+    isLoading,
+    error,
+    mutate: async () => {
+      const votes =
+        ballot?.votes.map(({ amount, projectId }) => ({
+          voteOptionIndex: BigInt(projectIndices[projectId]!),
+          newVoteWeight: BigInt(amount),
+        })) ?? [];
+
+      await onVote(
+        votes,
+        async () => {
+          await unlock.mutateAsync();
+        },
+        async () => {
+          await lock.mutateAsync();
+          await router.push("/ballot/confirmation");
+        },
+      );
     },
   };
 
@@ -166,10 +194,10 @@ const SubmitBallotButton = ({ disabled = false }) => {
       <Button
         className="w-full"
         variant="primary"
-        disabled={disabled || isSaving}
+        disabled={disabled}
         onClick={async () => setOpen(true)}
       >
-        {isSaving ? "Ballot is updating..." : "Submit ballot"}
+        Submit ballot
       </Button>
       <Dialog size="sm" isOpen={isOpen} onOpenChange={setOpen} title={title}>
         <p className="pb-8">{instructions}</p>

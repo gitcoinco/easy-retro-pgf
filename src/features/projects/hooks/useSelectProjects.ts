@@ -21,7 +21,7 @@ export function useSelectProjects() {
 
   return {
     count: toAdd.length,
-    isLoading: add.isLoading,
+    isLoading: add.isPending,
     add: () => {
       add.mutate(toAdd);
       setSelected({});

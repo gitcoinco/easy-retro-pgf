@@ -1,7 +1,7 @@
 import { expect, test, vi } from "vitest";
 import { createAttestation } from "../createAttestation";
 import type { Transaction } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
-import { ethers } from "ethers";
+import { ethers, type JsonRpcSigner } from "ethers";
 import type {
   AttestationRequest,
   GetSchemaParams,
@@ -11,7 +11,7 @@ import { createEAS } from "../createEAS";
 
 const signer = ethers.Wallet.createRandom().connect(
   ethers.getDefaultProvider(),
-) as unknown as ethers.providers.JsonRpcSigner;
+) as unknown as JsonRpcSigner;
 test("createAttestation", async () => {
   const application = {
     name: "foo",
@@ -36,7 +36,7 @@ test("createAttestation", async () => {
 test("createEAS", async () => {
   const eas = createEAS(signer);
 
-  expect(eas.attest).toBeDefined();
+  expect(eas.attest.bind(eas)).toBeDefined();
 });
 
 const { attestMock } = vi.hoisted(() => ({

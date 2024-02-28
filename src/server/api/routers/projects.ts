@@ -25,6 +25,7 @@ export const projectsRouter = createTRPCRouter({
       };
     });
   }),
+
   get: publicProcedure
     .input(z.object({ ids: z.array(z.string()) }))
     .query(async ({ input: { ids } }) => {
@@ -36,6 +37,7 @@ export const projectsRouter = createTRPCRouter({
         where: { id: { in: ids } },
       });
     }),
+
   search: publicProcedure.input(FilterSchema).query(async ({ input }) => {
     const filters = [
       createDataFilter("type", "bytes32", "application"),
@@ -60,6 +62,32 @@ export const projectsRouter = createTRPCRouter({
         take: input.limit,
         skip: input.cursor * input.limit,
         orderBy: [createOrderBy(input.orderBy, input.sortOrder)],
+        where: {
+          id: { in: approvedIds },
+          AND: filters,
+        },
+      });
+    });
+  }),
+
+  allApproved: publicProcedure.query(async () => {
+    const filters = [
+      createDataFilter("type", "bytes32", "application"),
+      createDataFilter("round", "bytes32", config.roundId),
+    ];
+
+    return fetchAttestations([eas.schemas.approval], {
+      where: {
+        attester: { in: config.admins },
+        ...createDataFilter("type", "bytes32", "application"),
+      },
+    }).then((attestations = []) => {
+      const approvedIds = attestations
+        .map(({ refUID }) => refUID)
+        .filter(Boolean);
+
+      return fetchAttestations([eas.schemas.metadata], {
+        orderBy: [createOrderBy("time", "asc")],
         where: {
           id: { in: approvedIds },
           AND: filters,

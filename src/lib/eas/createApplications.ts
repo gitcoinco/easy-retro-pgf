@@ -7,7 +7,7 @@ import {
   type Attestation,
 } from "~/utils/fetchAttestations";
 import { createAttestation } from "./createAttestation";
-import { ethers, providers } from "ethers";
+import { ethers, type JsonRpcSigner } from "ethers";
 import { createEAS } from "./createEAS";
 import pLimit from "p-limit";
 import { formatEther } from "viem";
@@ -15,17 +15,18 @@ import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 
 const limit = pLimit(5);
+const provider = new ethers.AlchemyProvider(
+  config.network.name,
+  process.env.NEXT_PUBLIC_ALCHEMY_ID,
+);
 const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY!).connect(
-  new providers.AlchemyProvider(
-    config.network.network,
-    process.env.NEXT_PUBLIC_ALCHEMY_ID,
-  ),
-) as unknown as providers.JsonRpcSigner;
+  provider,
+) as unknown as JsonRpcSigner;
 
 console.log(wallet.getAddress());
-wallet
-  .getBalance()
-  .then((r) => console.log(formatEther(r.toBigInt())))
+provider
+  .getBalance(wallet)
+  .then((r) => console.log(formatEther(r)))
   .catch(console.log);
 
 const applications = [

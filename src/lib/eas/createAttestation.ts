@@ -5,7 +5,7 @@ import {
   type AttestationRequest,
 } from "@ethereum-attestation-service/eas-sdk";
 import { type SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
-import { type providers } from "ethers";
+import { type JsonRpcSigner } from "ethers";
 import * as config from "~/config";
 
 type Params = {
@@ -17,7 +17,7 @@ type Params = {
 
 export async function createAttestation(
   params: Params,
-  signer: providers.JsonRpcSigner,
+  signer: JsonRpcSigner,
 ): Promise<AttestationRequest> {
   console.log("Getting recipient address");
   const recipient = params.recipient ?? (await signer.getAddress());
@@ -39,7 +39,7 @@ export async function createAttestation(
 
 async function encodeData(
   { values, schemaUID }: Params,
-  signer: providers.JsonRpcSigner,
+  signer: JsonRpcSigner,
 ) {
   const schemaRegistry = new SchemaRegistry(
     config.eas.contracts.schemaRegistry,

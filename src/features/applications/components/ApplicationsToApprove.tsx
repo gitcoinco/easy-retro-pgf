@@ -135,7 +135,7 @@ Select the applications you want to approve. You must be a configured admin to a
         </div>
         <div className="flex gap-2">
           <SelectAllButton applications={applicationsToApprove} />
-          <ApproveButton isLoading={approve.isLoading} />
+          <ApproveButton isLoading={approve.isPending} />
         </div>
       </div>
 
