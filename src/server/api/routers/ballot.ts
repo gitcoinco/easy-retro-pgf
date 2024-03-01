@@ -96,7 +96,13 @@ export const ballotRouter = createTRPCRouter({
       const voterId = ctx.session.user.name!;
 
       return ctx.db.ballot.update({
-        where: { voterId_pollId_maci: { voterId, pollId: input.pollId, maci: config.maciAddress! } },
+        where: {
+          voterId_pollId_maci: {
+            voterId,
+            pollId: input.pollId,
+            maci: config.maciAddress!,
+          },
+        },
         data: { publishedAt: null },
       });
     }),
@@ -152,7 +158,13 @@ export const ballotRouter = createTRPCRouter({
       }
 
       return ctx.db.ballot.update({
-        where: { voterId_pollId_maci: { voterId, pollId: input.pollId, maci: config.maciAddress! } },
+        where: {
+          voterId_pollId_maci: {
+            voterId,
+            pollId: input.pollId,
+            maci: config.maciAddress!,
+          },
+        },
         data: { publishedAt: new Date(), signature },
       });
     }),
@@ -176,7 +188,9 @@ async function verifyUnpublishedBallot(
 ) {
   const existing = await ballot.findUnique({
     select: defaultBallotSelect,
-    where: { voterId_pollId_maci: { voterId, pollId, maci: config.maciAddress! } },
+    where: {
+      voterId_pollId_maci: { voterId, pollId, maci: config.maciAddress! },
+    },
   });
 
   // Can only be submitted once

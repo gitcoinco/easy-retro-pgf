@@ -51,6 +51,11 @@ function createWagmiConfig() {
     wagmiChains.mainnet,
   ];
 
+  if (process.env.NEXT_PUBLIC_CHAIN_NAME === "localhost") {
+    wagmiChains.localhost.id = 31337;
+    activeChains.push(wagmiChains.localhost);
+  }
+
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
   const appName = appConfig.metadata.title;
 

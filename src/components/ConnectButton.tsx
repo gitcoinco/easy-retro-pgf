@@ -6,6 +6,7 @@ import { FaListCheck } from "react-icons/fa6";
 
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { createBreakpoint } from "react-use";
+import { toast } from "sonner";
 
 import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
@@ -93,7 +94,11 @@ const ConnectedDetails = ({
 }) => {
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
-  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
+  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaciSignup(
+    {
+      onError: () => toast.error("Signup error"),
+    },
+  );
 
   const { showBallot } = useLayoutOptions();
   return (
@@ -103,7 +108,7 @@ const ConnectedDetails = ({
 
         {isEligibleToVote && !isRegistered && (
           <SignupButton
-            loading={isRegistered === undefined}
+            loading={isRegistered === undefined || isLoading}
             onClick={onSignup}
           />
         )}

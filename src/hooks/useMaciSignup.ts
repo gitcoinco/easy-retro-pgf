@@ -9,19 +9,27 @@ import { useEthersSigner } from "./useEthersSigner";
 import { useAccount } from "wagmi";
 
 export interface IUseMaciSignUpData {
+  isLoading: boolean;
   isEligibleToVote: boolean;
   stateIndex?: string;
   isRegistered?: boolean;
   onSignup: () => Promise<void>;
 }
 
-export const useMaciSignup = (): IUseMaciSignUpData => {
+export interface IMaciSignUpInput {
+  onError: () => void;
+}
+
+export const useMaciSignup = (
+  options?: IMaciSignUpInput,
+): IUseMaciSignUpData => {
   const { data } = useSession();
   const signer = useEthersSigner();
   const { address, isConnected } = useAccount();
 
   const [isRegistered, setIsRegistered] = useState<boolean>();
   const [stateIndex, setStateIndex] = useState<string>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const attestations = api.voters.approvedAttestations.useQuery({
     address,
@@ -35,7 +43,7 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
   }, [attestations]);
 
   const isEligibleToVote = useMemo(
-    () => Boolean(attestationId),
+    () => Boolean(attestationId) && Boolean(data),
     [attestationId],
   );
 
@@ -44,18 +52,26 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
       return;
     }
 
-    const { stateIndex: index, hash } = await signup({
-      maciPubKey: data.publicKey,
-      maciAddress: config.maciAddress!,
-      sgDataArg: attestationId,
-      signer: signer as unknown as Signer,
-    });
+    setIsLoading(true);
 
-    console.log(`Signup transaction hash: ${hash}`);
+    try {
+      const { stateIndex: index, hash } = await signup({
+        maciPubKey: data.publicKey,
+        maciAddress: config.maciAddress!,
+        sgDataArg: attestationId,
+        signer,
+      });
 
-    if (index) {
-      setIsRegistered(true);
-      setStateIndex(index);
+      console.log(`Signup transaction hash: ${hash}`);
+
+      if (index) {
+        setIsRegistered(true);
+        setStateIndex(index);
+      }
+    } catch (e) {
+      options?.onError();
+    } finally {
+      setIsLoading(false);
     }
   }, [
     attestationId,
@@ -64,6 +80,8 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
     signer,
     setIsRegistered,
     setStateIndex,
+    setIsLoading,
+    options?.onError,
   ]);
 
   useEffect(() => {
@@ -91,6 +109,7 @@ export const useMaciSignup = (): IUseMaciSignUpData => {
   ]);
 
   return {
+    isLoading,
     isEligibleToVote,
     stateIndex,
     isRegistered,
