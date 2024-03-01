@@ -2,11 +2,13 @@ import clsx from "clsx";
 import Link from "next/link";
 import { XIcon } from "lucide-react";
 
+import { Alert } from "~/components/ui/Alert";
 import { InfiniteLoading } from "~/components/InfiniteLoading";
 import { Button } from "~/components/ui/Button";
 import { useSearchProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
+import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import { useResults } from "~/hooks/useResults";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
@@ -24,6 +26,13 @@ export function Projects() {
 
   return (
     <div>
+      {select.count > config.voteLimit && (
+        <Alert variant="warning">
+          You have exceeded your vote limit. You can only vote for{" "}
+          {config.voteLimit} options.
+        </Alert>
+      )}
+
       <div
         className={clsx(
           "sticky top-4 z-20 mb-4 mt-4 flex justify-end gap-4 lg:-mt-8",
@@ -35,7 +44,7 @@ export function Projects() {
         <Button
           variant="primary"
           onClick={select.add}
-          disabled={!select.count}
+          disabled={!select.count || select.count > config.voteLimit}
           className="w-full lg:w-72"
         >
           Add {select.count} projects to ballot

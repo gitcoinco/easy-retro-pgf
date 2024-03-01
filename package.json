@@ -43,7 +43,7 @@
     "formidable": "^3.5.1",
     "graphql-request": "^6.1.0",
     "lucide-react": "^0.316.0",
-    "maci-cli": "0.0.0-ci.042f1e0",
+    "maci-cli": "0.0.0-ci.9d64965",
     "next": "^14.1.0",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
