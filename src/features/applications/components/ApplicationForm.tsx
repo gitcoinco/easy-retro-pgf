@@ -271,7 +271,7 @@ export function ApplicationForm({ address = "" }) {
         ) : null}
 
         <CreateApplicationButton
-          isLoading={create.isLoading}
+          isLoading={create.isPending}
           buttonText={
             create.isUploading
               ? "Uploading metadata"

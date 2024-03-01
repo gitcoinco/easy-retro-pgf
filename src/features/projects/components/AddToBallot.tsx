@@ -5,6 +5,7 @@ import { useAccount } from "wagmi";
 import { useFormContext } from "react-hook-form";
 import { Check } from "lucide-react";
 
+import { Alert } from "~/components/ui/Alert";
 import { Button, IconButton } from "~/components/ui/Button";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
@@ -29,15 +30,25 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
   const { data: ballot } = useBallot();
-  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
+  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
   const sum = sumBallot(allocations.filter((p) => p.projectId !== id));
+  const numVotes = ballot?.votes.length ?? 0;
+
   if (getAppState() !== "VOTING") return null;
+
   return (
     <div>
-      {!isAllowedToVote ? null : !isRegistered ? (
+      {numVotes > config.voteLimit && (
+        <Alert variant="warning">
+          You have exceeded your vote limit. You can only vote for{" "}
+          {config.voteLimit} options.
+        </Alert>
+      )}
+
+      {!isEligibleToVote ? null : !isRegistered ? (
         <Button
           className="w-full md:w-auto"
           variant="primary"
@@ -57,7 +68,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         </IconButton>
       ) : (
         <Button
-          disabled={!address}
+          disabled={!address || numVotes > config.voteLimit}
           onClick={() => setOpen(true)}
           variant="primary"
           className="w-full md:w-auto"

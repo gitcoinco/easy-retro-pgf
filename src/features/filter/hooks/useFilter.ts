@@ -27,22 +27,23 @@ export type SortType = keyof typeof sortLabels;
 export function useFilter(type: FilterType) {
   const client = useQueryClient();
 
-  return useQuery(
-    ["filter", type],
-    () => client.getQueryData<Filter>(["filter", type]) ?? initialFilter,
-    { cacheTime: Infinity },
-  );
+  return useQuery({
+    queryKey: ["filter", type],
+    queryFn: () =>
+      client.getQueryData<Filter>(["filter", type]) ?? initialFilter,
+  });
 }
 
 export function useSetFilter(type: FilterType) {
   const client = useQueryClient();
 
-  return useMutation(async (filter: Filter) =>
-    client.setQueryData<Filter>(["filter", type], (prev = initialFilter) => ({
-      ...prev,
-      ...filter,
-    })),
-  );
+  return useMutation({
+    mutationFn: async (filter: Filter) =>
+      client.setQueryData<Filter>(["filter", type], (prev = initialFilter) => ({
+        ...prev,
+        ...filter,
+      })),
+  });
 }
 
 export const toURL = (prev: object, next: object = {}) =>

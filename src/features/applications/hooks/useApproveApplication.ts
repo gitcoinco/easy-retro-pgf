@@ -4,13 +4,14 @@ import { createAttestation } from "~/lib/eas/createAttestation";
 import { config, eas } from "~/config";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { toast } from "sonner";
+import type { JsonRpcSigner } from "ethers";
 
 export function useApproveApplication(opts?: { onSuccess?: () => void }) {
   const attest = useAttest();
   const signer = useEthersSigner();
 
-  return useMutation(
-    async (applicationIds: string[]) => {
+  return useMutation({
+    mutationFn: async (applicationIds: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
       const attestations = await Promise.all(
         applicationIds.map((refUID) =>
@@ -20,7 +21,7 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
               schemaUID: eas.schemas.approval,
               refUID,
             },
-            signer,
+            signer as JsonRpcSigner,
           ),
         ),
       );
@@ -28,15 +29,13 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
         attestations.map((att) => ({ ...att, data: [att.data] })),
       );
     },
-    {
-      onSuccess: () => {
-        toast.success("Application approved successfully!");
-        opts?.onSuccess?.();
-      },
-      onError: (err: { reason?: string; data?: { message: string } }) =>
-        toast.error("Application approve error", {
-          description: err.reason ?? err.data?.message,
-        }),
+    onSuccess: () => {
+      toast.success("Application approved successfully!");
+      opts?.onSuccess?.();
     },
-  );
+    onError: (err: { reason?: string; data?: { message: string } }) =>
+      toast.error("Application approve error", {
+        description: err.reason ?? err.data?.message,
+      }),
+  });
 }

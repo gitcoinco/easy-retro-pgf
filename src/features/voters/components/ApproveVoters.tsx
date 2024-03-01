@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { Form, FormControl, Textarea } from "~/components/ui/Form";
-import { type Address } from "wagmi";
 import { useFormContext } from "react-hook-form";
 import { IconButton } from "~/components/ui/Button";
 import { useMemo, useState } from "react";
@@ -14,11 +13,11 @@ import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import dynamic from "next/dynamic";
 
-function parseAddresses(addresses: string): Address[] {
+function parseAddresses(addresses: string): string[] {
   return addresses
     .split(",")
     .map((addr) => addr.trim())
-    .filter(isAddress)
+    .filter((addr) => isAddress(addr))
     .filter((addr, i, self) => self.indexOf(addr) === i);
 }
 
@@ -77,7 +76,7 @@ function ApproveVoters() {
             />
           </FormControl>
           <div className="flex items-center justify-end">
-            <ApproveButton isLoading={approve.isLoading} isAdmin={isAdmin} />
+            <ApproveButton isLoading={approve.isPending} isAdmin={isAdmin} />
           </div>
         </Form>
       </Dialog>

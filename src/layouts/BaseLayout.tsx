@@ -5,6 +5,7 @@ import {
   type PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
 } from "react";
 import { useAccount } from "wagmi";
 
@@ -42,10 +43,11 @@ export const BaseLayout = ({
   const router = useRouter();
   const { address, isConnecting } = useAccount();
 
-  if (requireAuth && !address && !isConnecting) {
-    void router.push("/");
-    return null;
-  }
+  useEffect(() => {
+    if (requireAuth && !address && !isConnecting) {
+      void router.push("/");
+    }
+  }, [requireAuth, address, isConnecting, router]);
 
   title = title ? `${title} - ${metadata.title}` : metadata.title;
   return (

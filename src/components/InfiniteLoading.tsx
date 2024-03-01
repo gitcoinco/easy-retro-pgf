@@ -11,7 +11,7 @@ const columnMap = {
   3: "sm:grid-cols-2 lg:grid-cols-3",
 } as const;
 
-type Props<T> = UseTRPCInfiniteQueryResult<T[], unknown> & {
+type Props<T> = UseTRPCInfiniteQueryResult<T[], unknown, unknown> & {
   renderItem: (item: T, opts: { isLoading: boolean }) => ReactNode;
   columns?: keyof typeof columnMap;
 };

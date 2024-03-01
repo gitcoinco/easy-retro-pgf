@@ -1,6 +1,5 @@
 import "dotenv/config";
-import { ethers } from "ethers";
-import { formatEther } from "ethers/lib/utils";
+import { ethers, formatEther } from "ethers";
 import {
   SchemaRegistry,
   ZERO_ADDRESS,
@@ -32,18 +31,20 @@ const schemas = [
   { name: "List Metadata", schema: metadataSchema },
 ];
 
+const provider = new ethers.AlchemyProvider(
+  config.network.name,
+  process.env.NEXT_PUBLIC_ALCHEMY_ID,
+);
+
 const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY!).connect(
-  new ethers.providers.AlchemyProvider(
-    config.network.network,
-    process.env.NEXT_PUBLIC_ALCHEMY_ID,
-  ),
+  provider,
 );
 
 const schemaRegistry = new SchemaRegistry(eas.contracts.schemaRegistry);
 schemaRegistry.connect(wallet as unknown as SignerOrProvider);
 
 export async function registerSchemas() {
-  console.log("Balance: ", await wallet.getBalance().then(formatEther));
+  console.log("Balance: ", await provider.getBalance(wallet).then(formatEther));
   return Promise.all(
     schemas.map(async ({ name, schema }) => {
       console.log(`Registering schema: ${name}`);

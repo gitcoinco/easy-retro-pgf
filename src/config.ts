@@ -10,6 +10,9 @@ export const metadata = {
 export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
+  // TODO: temp solution until we come up with solid one
+  // https://github.com/privacy-scaling-explorations/maci-rpgf/issues/31
+  voteLimit: 50,
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
   reviewEndsAt: new Date(process.env.NEXT_PUBLIC_REVIEW_END_DATE!),

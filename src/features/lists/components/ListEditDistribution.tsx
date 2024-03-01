@@ -45,7 +45,7 @@ export const ListEditDistribution = ({
   const [isOpen, setOpen] = useState(false);
   const { data: ballot } = useBallot();
   const add = useAddToBallot();
-  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
+  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
 
   // What list projects are already in the ballot?
   function itemsInBallot(votes?: Vote[]) {
@@ -72,7 +72,7 @@ export const ListEditDistribution = ({
     );
     return ballotVote ?? vote;
   });
-  const showDialogTitle = !(add.isLoading || add.isSuccess);
+  const showDialogTitle = !(add.isPending || add.isSuccess);
   const appState = getAppState();
   return (
     <div>
@@ -111,7 +111,7 @@ export const ListEditDistribution = ({
                 </Button>
               )}
 
-              {isAllowedToVote && !isRegistered && (
+              {isEligibleToVote && !isRegistered && (
                 <Button variant="primary" className="w-full" onClick={onSignup}>
                   Signup
                 </Button>
@@ -125,7 +125,7 @@ export const ListEditDistribution = ({
               </Button>
             </div>
           </FeedbackDialog>
-        ) : add.isLoading ? (
+        ) : add.isPending ? (
           <FeedbackDialog variant="info" icon={Spinner}>
             <div className="font-semibold">Adding list to ballot</div>
           </FeedbackDialog>

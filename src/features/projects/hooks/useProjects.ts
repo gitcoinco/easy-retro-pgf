@@ -4,6 +4,8 @@ import { api } from "~/utils/api";
 import { type Application } from "~/features/applications/types";
 import { useFilter } from "~/features/filter/hooks/useFilter";
 import { type Filter, FilterSchema } from "~/features/filter/types";
+import { useMemo } from "react";
+import type { Ballot } from "~/features/ballot/types";
 
 export function useProjectById(id: string) {
   const query = api.projects.get.useQuery(
@@ -23,16 +25,42 @@ export function useSearchProjects(filterOverride?: Partial<Filter>) {
   const { data: filter } = useFilter("projects");
 
   let clientFilter;
+
   if (filter) {
     clientFilter = FilterSchema.parse(filter);
   }
 
   return api.projects.search.useInfiniteQuery(
-    { limit: config.pageSize, seed, ...clientFilter, ...filterOverride },
+    {
+      limit: config.pageSize,
+      seed,
+      ...clientFilter,
+      ...filterOverride,
+    },
     {
       getNextPageParam: (_, pages) => pages.length,
     },
   );
+}
+
+export function useProjectIdMapping(ballot?: Ballot): Record<string, number> {
+  const { data } = api.projects.allApproved.useQuery();
+
+  const projectIndices = useMemo(
+    () =>
+      ballot?.votes.reduce<Record<string, number>>((acc, { projectId }) => {
+        const index = data?.findIndex(
+          (attestation) =>
+            attestation.id.toLowerCase() === projectId.toLowerCase(),
+        );
+        acc[projectId] = index ?? -1;
+
+        return acc;
+      }, {}) ?? {},
+    [data, ballot],
+  );
+
+  return projectIndices;
 }
 
 export function useProjectMetadata(metadataPtr?: string) {

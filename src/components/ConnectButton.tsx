@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type ComponentPropsWithRef } from "react";
-import { type Address, useEnsAvatar, useEnsName } from "wagmi";
+import { useEnsAvatar, useEnsName } from "wagmi";
 import { FaListCheck } from "react-icons/fa6";
 
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
@@ -12,6 +12,7 @@ import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
+import type { Address } from "viem";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -92,14 +93,15 @@ const ConnectedDetails = ({
 }) => {
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
-  const { isRegistered, isAllowedToVote, onSignup } = useMaciSignup();
+  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
 
   const { showBallot } = useLayoutOptions();
   return (
     <div>
       <div className="flex gap-2 text-white">
-        {!isAllowedToVote && <Chip>You are not allowed to vote</Chip>}
-        {isAllowedToVote && !isRegistered && (
+        {!isEligibleToVote && <Chip>You are not allowed to vote</Chip>}
+
+        {isEligibleToVote && !isRegistered && (
           <SignupButton
             loading={isRegistered === undefined}
             onClick={onSignup}
@@ -132,9 +134,17 @@ const UserInfo = ({
   children,
   ...props
 }: { address: Address } & ComponentPropsWithRef<typeof Chip>) => {
-  const ens = useEnsName({ address, chainId: 1, enabled: Boolean(address) });
-  const name = ens.data;
-  const avatar = useEnsAvatar({ name, chainId: 1, enabled: Boolean(name) });
+  const ens = useEnsName({
+    address,
+    chainId: 1,
+    query: { enabled: Boolean(address) },
+  });
+  const name = ens.data ?? undefined;
+  const avatar = useEnsAvatar({
+    name,
+    chainId: 1,
+    query: { enabled: Boolean(name) },
+  });
 
   return (
     <Chip className="gap-2" {...props}>

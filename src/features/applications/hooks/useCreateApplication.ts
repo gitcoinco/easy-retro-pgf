@@ -13,8 +13,11 @@ export function useCreateApplication(options: {
   const attest = useAttest();
   const upload = useUploadMetadata();
 
-  const mutation = useMutation(
-    async (values: { application: Application; profile: Profile }) => {
+  const mutation = useMutation({
+    mutationFn: async (values: {
+      application: Application;
+      profile: Profile;
+    }) => {
       console.log("Uploading profile and application metadata");
       return Promise.all([
         upload.mutateAsync(values.application).then(({ url: metadataPtr }) => {
@@ -51,13 +54,13 @@ export function useCreateApplication(options: {
       });
     },
 
-    options,
-  );
+    ...options,
+  });
 
   return {
     ...mutation,
-    error: attest.error || upload.error || mutation.error,
-    isAttesting: attest.isLoading,
-    isUploading: upload.isLoading,
+    error: attest.error ?? upload.error ?? mutation.error,
+    isAttesting: attest.isPending,
+    isUploading: upload.isPending,
   };
 }

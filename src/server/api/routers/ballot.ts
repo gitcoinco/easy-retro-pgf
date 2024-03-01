@@ -32,6 +32,7 @@ export const ballotRouter = createTRPCRouter({
         votes: (ballot?.votes as Vote[]) ?? [],
       }));
   }),
+
   save: protectedProcedure
     .input(BallotSchema)
     .mutation(async ({ input, ctx }) => {
@@ -46,6 +47,27 @@ export const ballotRouter = createTRPCRouter({
         create: { voterId, ...input },
       });
     }),
+
+  lock: protectedProcedure.mutation(async ({ ctx }) => {
+    const voterId = ctx.session.user.name!;
+
+    await verifyUnpublishedBallot(voterId, ctx.db);
+
+    return ctx.db.ballot.update({
+      where: { voterId },
+      data: { publishedAt: new Date() },
+    });
+  }),
+
+  unlock: protectedProcedure.mutation(async ({ ctx }) => {
+    const voterId = ctx.session.user.name!;
+
+    return ctx.db.ballot.update({
+      where: { voterId },
+      data: { publishedAt: null },
+    });
+  }),
+
   publish: protectedProcedure
     .input(BallotPublishSchema)
     .mutation(async ({ input, ctx }) => {
