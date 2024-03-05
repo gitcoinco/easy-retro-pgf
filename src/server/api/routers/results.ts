@@ -1,19 +1,21 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import type { PrismaClient } from "@prisma/client";
-import { type Vote } from "~/features/ballot/types";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAppState } from "~/utils/state";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { eas } from "~/config";
+import { calculateResults } from "~/utils/calculateResults";
 
 export const resultsRouter = createTRPCRouter({
-  stats: publicProcedure.query(async ({ ctx }) => calculateResults(ctx.db)),
+  stats: publicProcedure.query(async ({ ctx }) =>
+    calculateBallotResults(ctx.db),
+  ),
   project: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateResults(ctx.db);
+      const { projects } = await calculateBallotResults(ctx.db);
 
       return {
         amount: projects[input.id],
@@ -23,7 +25,7 @@ export const resultsRouter = createTRPCRouter({
   projects: publicProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateResults(ctx.db);
+      const { projects } = await calculateBallotResults(ctx.db);
 
       const sortedIDs = Object.entries(projects)
         .sort((a, b) => b[1] - a[1])
@@ -54,7 +56,7 @@ type BallotResults = {
   projects: Record<string, number>;
 };
 
-export async function calculateResults(
+async function calculateBallotResults(
   db: PrismaClient,
 ): Promise<BallotResults> {
   if (getAppState() !== "RESULTS") {
@@ -64,40 +66,9 @@ export async function calculateResults(
     });
   }
 
-  const ballots = await db.ballot.findMany();
-  let totalVotes = 0;
-  const projects = new Map<string, number>();
+  const ballots = await db.ballot.findMany({
+    where: { publishedAt: { not: undefined } },
+  });
 
-  ballots
-    .filter((ballot) => ballot.publishedAt)
-    .forEach((ballot) => {
-      ballot.votes.forEach((vote) => {
-        const rewards = projects.get((vote as Vote).projectId) ?? 0;
-        projects.set((vote as Vote).projectId, rewards + (vote as Vote).amount);
-
-        totalVotes += 1;
-      });
-    });
-
-  const averageVotes = calculateAverage(
-    Object.values(Object.fromEntries(projects)),
-  );
-  return {
-    averageVotes,
-    totalVoters: ballots.length,
-    totalVotes: totalVotes,
-    projects: Object.fromEntries(projects),
-  };
-}
-
-function calculateAverage(votes: number[]) {
-  if (votes.length === 0) {
-    return 0;
-  }
-
-  const sum = votes.reduce((sum, x) => sum + x, 0);
-
-  const average = sum / votes.length;
-
-  return Math.round(average);
+  return calculateResults(ballots);
 }

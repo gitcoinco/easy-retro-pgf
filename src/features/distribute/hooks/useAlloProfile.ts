@@ -76,11 +76,10 @@ export function useAlloIsMemberOfProfile() {
   const registry = useAlloRegistry();
   const { address } = useAccount();
 
-  const profileId = getProfileId(address);
-
   return useQuery(
     ["allo/registry/member"],
     async () => {
+      const profileId = getProfileId(address);
       return registry?.isMemberOfProfile({
         profileId,
         account: allo.strategyAddress,
