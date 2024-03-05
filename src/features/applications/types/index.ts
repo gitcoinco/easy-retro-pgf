@@ -54,16 +54,14 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
-  fundingSources: z
-    .array(
-      z.object({
-        description: z.string().min(3),
-        amount: z.number(),
-        currency: z.string().min(3).max(4),
-        type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
-      }),
-    )
-    .min(1),
+  fundingSources: z.array(
+    z.object({
+      description: z.string().min(3),
+      amount: z.number(),
+      currency: z.string().min(3).max(4),
+      type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
+    }),
+  ),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;
