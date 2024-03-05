@@ -8,7 +8,9 @@ export default function DistributePage() {
   return (
     <Layout sidebar="left" sidebarComponent={<ConfigurePool />}>
       {getAppState() === "RESULTS" ? (
-        <>{/* <Distributions /> */}</>
+        <>
+          <Distributions />
+        </>
       ) : (
         <div>Round hasn&apos;t ended yet</div>
       )}

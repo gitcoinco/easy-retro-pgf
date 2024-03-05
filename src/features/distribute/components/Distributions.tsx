@@ -35,12 +35,14 @@ export function Distributions() {
       </div>
     );
   }
-  const distributions = projectIds.map((projectId) => ({
-    projectId,
-    payoutAddress:
-      payoutAddresses[projectId as keyof typeof payoutAddresses] ?? "",
-    amount: stats.data?.projects[projectId],
-  }));
+  const distributions = projectIds
+    .map((projectId) => ({
+      projectId,
+      payoutAddress:
+        payoutAddresses[projectId as keyof typeof payoutAddresses] ?? "",
+      amount: stats.data?.projects[projectId] ?? 0,
+    }))
+    .sort((a, b) => b.amount - a.amount);
 
   return distributions.length ? (
     <Form

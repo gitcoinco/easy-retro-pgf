@@ -1,18 +1,20 @@
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
 import type { PrismaClient } from "@prisma/client";
-import type { TallyData } from "maci-cli/sdk";
-import { type Vote } from "~/features/ballot/types";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";
+import { calculateVotes } from "~/utils/calculateResults";
+import { type Vote } from "~/features/ballot/types";
+import { getSettings } from "./config";
+import { type TallyData } from "maci-cli/sdk";
 import { getAllApprovedProjects } from "./projects";
+import { TRPCError } from "@trpc/server";
 
 export const resultsRouter = createTRPCRouter({
-  stats: publicProcedure
+  votes: publicProcedure
     .input(z.object({ pollId: z.string().nullish() }))
-    .query(async ({ input, ctx }) =>
+    .query(async ({ ctx, input }) =>
       input?.pollId !== undefined && input?.pollId !== null
         ? calculateMaciResults(input.pollId)
         : calculateResults(ctx.db),
@@ -27,7 +29,7 @@ export const resultsRouter = createTRPCRouter({
         : calculateResults(ctx.db));
 
       return {
-        amount: projects[input.id],
+        amount: projects?.[input.id]?.votes ?? 0,
       };
     }),
 
@@ -39,8 +41,8 @@ export const resultsRouter = createTRPCRouter({
         ? calculateMaciResults(input.pollId)
         : calculateResults(ctx.db));
 
-      const sortedIDs = Object.entries(projects)
-        .sort((a, b) => b[1] - a[1])
+      const sortedIDs = Object.entries(projects ?? {})
+        .sort((a, b) => b[1].votes - a[1].votes)
         .map(([id]) => id)
         .slice(
           input.cursor * input.limit,
@@ -61,46 +63,38 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-type BallotResults = {
-  averageVotes: number;
-  totalVotes: number;
-  totalVoters: number;
-  projects: Record<string, number>;
-};
+export async function calculateResults(db: PrismaClient) {
+  const settings = await getSettings(db);
+  const calculation = settings?.config?.calculation;
 
-export async function calculateResults(
-  db: PrismaClient,
-): Promise<BallotResults> {
+  if (!calculation) {
+    console.log("No calculation stored");
+    return {};
+  }
+
+  // When the Minimum Qurom input is empty, return empty
+  if (calculation?.style === "op" && !calculation?.threshold) {
+    return {};
+  }
+
   const ballots = await db.ballot.findMany();
-  let totalVotes = 0;
-  const projects = new Map<string, number>();
 
-  ballots
-    .filter((ballot) => ballot.publishedAt)
-    .forEach((ballot) => {
-      ballot.votes.forEach((vote) => {
-        const rewards = projects.get((vote as Vote).projectId) ?? 0;
-        projects.set((vote as Vote).projectId, rewards + (vote as Vote).amount);
-
-        totalVotes += 1;
-      });
-    });
-
-  const averageVotes = calculateAverage(
-    Object.values(Object.fromEntries(projects)),
+  const projects = calculateVotes(
+    ballots as unknown as { voterId: string; votes: Vote[] }[],
+    calculation,
   );
 
+  const totalVotes = ballots.reduce((sum, x) => sum + x.votes.length, 0);
+
   return {
-    averageVotes,
+    averageVotes: 0,
     totalVoters: ballots.length,
-    totalVotes: totalVotes,
-    projects: Object.fromEntries(projects),
+    totalVotes,
+    projects,
   };
 }
 
-export async function calculateMaciResults(
-  pollId: string,
-): Promise<Omit<BallotResults, "totalVotes" | "totalVoters">> {
+export async function calculateMaciResults(pollId: string) {
   const [tallyData, projects] = await Promise.all([
     fetch(`${config.tallyUrl}/tally-${pollId}.json`)
       .then((res) => res.json() as Promise<TallyData>)
@@ -117,14 +111,14 @@ export async function calculateMaciResults(
 
   const results = tallyData.results.tally.reduce((acc, tally, index) => {
     if (projects[index]) {
-      acc.set(projects[index]!.id, Number(tally));
+      acc.set(projects[index]!.id, { votes: Number(tally), voters: 0 });
     }
 
     return acc;
-  }, new Map<string, number>());
+  }, new Map<string, { votes: number; voters: number }>());
 
   const averageVotes = calculateAverage(
-    Object.values(Object.fromEntries(results)),
+    Object.values(Object.fromEntries(results)).map(({ votes }) => votes),
   );
 
   return {
