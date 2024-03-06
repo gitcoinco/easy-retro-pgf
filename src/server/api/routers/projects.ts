@@ -82,6 +82,7 @@ export const projectsRouter = createTRPCRouter({
   payoutAddresses: publicProcedure
     .input(z.object({ ids: z.array(z.string()) }))
     .query(async ({ input }) => {
+      console.log({ input });
       return fetchAttestations([eas.schemas.metadata], {
         where: { id: { in: input.ids } },
       })
@@ -92,6 +93,8 @@ export const projectsRouter = createTRPCRouter({
                 const { payoutAddress } = data as unknown as {
                   payoutAddress: string;
                 };
+
+                console.log({ payoutAddress });
                 return { projectId: attestation.id, payoutAddress };
               }),
             ),
