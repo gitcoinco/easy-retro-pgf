@@ -13,13 +13,19 @@ import {
   DistributionSchema,
 } from "~/features/distribute/types";
 import { api } from "~/utils/api";
+import { type PayoutOptions } from "~/utils/calculateResults";
 
-export function Distributions() {
+export function Distributions({
+  payoutOptions,
+}: {
+  payoutOptions: PayoutOptions;
+}) {
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
-  const stats = api.results.stats.useQuery();
-  const projectIds = Object.keys(stats.data?.projects ?? {});
+
+  const votes = api.results.votes.useQuery(payoutOptions);
+  const projectIds = Object.keys(votes.data?.projects ?? {});
 
   const projects = api.projects.payoutAddresses.useQuery(
     { ids: projectIds },
@@ -28,10 +34,15 @@ export function Distributions() {
 
   const payoutAddresses = projects.data ?? {};
 
-  if (projects.isLoading ?? stats.isLoading) {
+  if (!votes.isLoading && !projectIds.length) {
+    return (
+      <EmptyState title="No project votes found (try changing Minimum Qurom)" />
+    );
+  }
+  if (projects.isLoading ?? votes.isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <Spinner />
+        <Spinner className="size-6" />
       </div>
     );
   }
@@ -40,50 +51,52 @@ export function Distributions() {
       projectId,
       payoutAddress:
         payoutAddresses[projectId as keyof typeof payoutAddresses] ?? "",
-      amount: stats.data?.projects[projectId] ?? 0,
+      amount: votes.data?.projects?.[projectId]?.votes ?? 0,
     }))
     .sort((a, b) => b.amount - a.amount);
 
-  return distributions.length ? (
-    <Form
-      schema={z.object({
-        votes: z.array(DistributionSchema),
-      })}
-      defaultValues={{ votes: distributions }}
-      onSubmit={(values) => {
-        console.log("Distribute", values.votes[0]);
-        setConfirmDistribution(values.votes);
-        // distribute.mutate(values.votes);
-      }}
-    >
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <h1 className="text-3xl font-bold">Distribute</h1>
+  if (!distributions.length) {
+    return <EmptyState title="No distribution found" />;
+  }
 
-        <Button variant="primary" type="submit">
-          Distribute tokens
-        </Button>
-      </div>
-      <div className="min-h-[360px] overflow-auto">
-        <DistributionForm
-          renderHeader={() => (
-            <Thead>
-              <Tr>
-                <Th>Project</Th>
-                <Th>Payout address</Th>
-                <Th>Amount</Th>
-              </Tr>
-            </Thead>
-          )}
-        />
-      </div>
-      <ConfirmDistributionDialog
-        distribution={confirmDistribution}
-        onOpenChange={() => setConfirmDistribution([])}
-      />
-    </Form>
-  ) : (
+  return (
     <div>
-      <EmptyState title="No distribution found" />
+      <Form
+        schema={z.object({
+          votes: z.array(DistributionSchema),
+        })}
+        values={{ votes: distributions }}
+        onSubmit={(values) => {
+          console.log("Distribute", values.votes[0]);
+          setConfirmDistribution(values.votes);
+        }}
+      >
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h1 className="text-3xl font-bold">Distribute</h1>
+
+          <Button variant="primary" type="submit">
+            Distribute tokens
+          </Button>
+        </div>
+
+        <div className="min-h-[360px] overflow-auto">
+          <DistributionForm
+            renderHeader={() => (
+              <Thead>
+                <Tr>
+                  <Th>Project</Th>
+                  <Th>Payout address</Th>
+                  <Th>Amount</Th>
+                </Tr>
+              </Thead>
+            )}
+          />
+        </div>
+        <ConfirmDistributionDialog
+          distribution={confirmDistribution}
+          onOpenChange={() => setConfirmDistribution([])}
+        />
+      </Form>
     </div>
   );
 }
@@ -114,7 +127,7 @@ function ConfirmDistributionDialog({
           icon={isLoading ? Spinner : null}
           className={"w-full"}
           variant="primary"
-          onClick={() => mutate(distribution)}
+          onClick={() => alert("not implemented yet")}
         >
           {isLoading ? "Confirming..." : "Confirm"}
         </IconButton>

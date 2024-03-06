@@ -1,5 +1,5 @@
-import { expect, test } from "vitest";
-import { calculateResults, calculateVotes } from "./calculateResults";
+import { describe, expect, test } from "vitest";
+import { calculateVotes } from "./calculateResults";
 
 describe("Calculate results", () => {
   const ballots = [
@@ -21,7 +21,7 @@ describe("Calculate results", () => {
       votes: [
         {
           projectId: "projectA",
-          amount: 20,
+          amount: 22,
         },
         {
           projectId: "projectB",
@@ -37,30 +37,64 @@ describe("Calculate results", () => {
           amount: 30,
         },
         {
+          projectId: "projectB",
+          amount: 40,
+        },
+        {
           projectId: "projectC",
           amount: 60,
         },
       ],
     },
+    {
+      voterId: "voterD",
+      votes: [
+        {
+          projectId: "projectA",
+          amount: 35,
+        },
+        {
+          projectId: "projectC",
+          amount: 70,
+        },
+      ],
+    },
   ];
   test("custom payout", () => {
-    const actual = calculateResults(ballots);
+    const actual = calculateVotes(ballots, { style: "custom" });
     console.log(actual);
-    expect(actual.totalVoters).toBe(2);
-    expect(actual.totalVotes).toBe(3);
-    expect(actual.projects).toStrictEqual({
-      projectA: 30,
-      projectB: 20,
-    });
+
+    expect(actual).toMatchInlineSnapshot(`
+      {
+        "projectA": {
+          "voters": 4,
+          "votes": 107,
+        },
+        "projectB": {
+          "voters": 3,
+          "votes": 120,
+        },
+        "projectC": {
+          "voters": 2,
+          "votes": 130,
+        },
+      }
+    `);
   });
-  test.only("OP-style payout", () => {
-    const actual = calculateVotes(ballots);
+  test("OP-style payout", () => {
+    const actual = calculateVotes(ballots, { style: "op", threshold: 3 });
     console.log(actual);
-    //     expect(actual.totalVoters).toBe(2);
-    //     expect(actual.totalVotes).toBe(3);
-    //     expect(actual.projects).toStrictEqual({
-    //       projectA: 30,
-    //       projectB: 20,
-    //     });
+    expect(actual).toMatchInlineSnapshot(`
+      {
+        "projectA": {
+          "voters": 4,
+          "votes": 26,
+        },
+        "projectB": {
+          "voters": 3,
+          "votes": 40,
+        },
+      }
+    `);
   });
 });

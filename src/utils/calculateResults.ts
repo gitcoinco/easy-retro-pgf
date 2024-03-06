@@ -1,75 +1,27 @@
-import { type Ballot } from "@prisma/client";
 import { type Vote } from "~/features/ballot/types";
 
 /*
-
+Payout styles:
+Custom: 
+- Sum up all the votes
 OP-style:
 - A project must have a minimum of x voters (threshold)
-
+- Median value is counted
 */
-type PayoutOptions = {
-  style: "custom" | "op";
-  threshold?: number;
-};
 
-const votes = {
-  ["projectId"]: {
-    voters: 3,
-    votes: 100,
-    median: 50,
-  },
-};
-export function calculateResults(
-  ballots: { voterId: string; votes: Vote[] }[],
-  payoutOpts: PayoutOptions = { style: "custom" },
-) {
-  let totalVotes = 0;
-  const projects = new Map<string, number>();
-
-  const voterCounter: Record<string, number> = {};
-
-  ballots.forEach(({ votes, voterId }) => {
-    votes.forEach((vote) => {
-      const { projectId, amount } = vote;
-      const rewards = projects.get(projectId) ?? 0;
-      projects.set(projectId, rewards + amount);
-
-      if (!voterCounter[projectId]) {
-        voterCounter[projectId] = 0;
-      }
-      voterCounter[projectId] += 1;
-      totalVotes += 1;
-    });
-  });
-
-  console.log("projects", voterCounter);
-
-  const averageVotes = calculateAverage(
-    Object.values(Object.fromEntries(projects)),
-  );
-  return {
-    averageVotes,
-    totalVoters: ballots.length,
-    totalVotes: totalVotes,
-    projects: Object.fromEntries(projects),
-  };
-}
-
-type Ballot = {
-  voterId: string;
-  votes: { projectId: string; amount: number }[];
-};
-
-type Votes = Record<
+export type PayoutOptions = { style: "custom" | "op"; threshold?: number };
+export type BallotResults = Record<
   string,
   {
     voters: number;
     votes: number;
-    median: number;
   }
 >;
-export function calculateVotes(ballots: Ballot[]) {
-  let totalVotes = 0;
+export function calculateVotes(
+  ballots: { voterId: string; votes: Vote[] }[],
+  payoutOpts: PayoutOptions = { style: "custom" },
+): BallotResults {
+  const totalVotes = ballots.reduce((sum, { votes }) => sum + votes.length, 0);
 
   const projectVotes: Record<
     string,
@@ -89,38 +41,31 @@ export function calculateVotes(ballots: Ballot[]) {
           voterIds: new Set(),
         };
       }
-      projectVotes[vote.projectId].total += vote.amount;
-      projectVotes[vote.projectId].amounts.push(vote.amount);
-      projectVotes[vote.projectId].voterIds.add(ballot.voterId);
-
-      totalVotes += 1;
+      projectVotes[vote.projectId]!.total += vote.amount;
+      projectVotes[vote.projectId]!.amounts.push(vote.amount);
+      projectVotes[vote.projectId]!.voterIds.add(ballot.voterId);
     }
   }
 
-  const projects: Votes = {};
+  const projects: BallotResults = {};
   for (const projectId in projectVotes) {
-    const { total, amounts, voterIds } = projectVotes[projectId];
-    amounts.sort((a, b) => a - b);
-    const median = calculateMedian(amounts);
-    const average = calculateAverage(amounts);
-    projects[projectId] = {
-      voters: voterIds.size,
-      votes: total,
-      median,
-      average,
-    };
+    const { total, amounts, voterIds } = projectVotes[projectId]!;
+    const voteIsCounted =
+      payoutOpts.style === "custom" ||
+      (payoutOpts.threshold && voterIds.size >= payoutOpts.threshold);
+
+    if (voteIsCounted) {
+      projects[projectId] = {
+        voters: voterIds.size,
+        votes:
+          payoutOpts.style === "op"
+            ? calculateMedian(amounts.sort((a, b) => a - b))
+            : total,
+      };
+    }
   }
 
-  const averageVotes = calculateAverage(
-    Object.values(projectVotes).map((p) => p.total),
-  );
-
-  return {
-    averageVotes,
-    totalVoters: ballots.length,
-    totalVotes: totalVotes,
-    projects,
-  };
+  return projects;
 }
 
 function calculateAverage(votes: number[]) {
