@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { Button } from "~/components/ui/Button";
-import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
+import { Form, FormControl, Input, Select } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
