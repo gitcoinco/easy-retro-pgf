@@ -4,29 +4,26 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
+import { type PrismaClient } from ".prisma/client";
+import { type Settings, SettingsSchema } from "~/features/distribute/types";
+
+export async function getSettings(db: PrismaClient) {
+  return (await db.settings.findFirst()) as unknown as Settings;
+}
 
 export const configRouter = createTRPCRouter({
-  get: publicProcedure.query(({ ctx }) => {
-    return ctx.db.settings.findFirst();
+  get: publicProcedure.query(async ({ ctx }) => {
+    return await getSettings(ctx.db);
   }),
   set: adminProcedure
-    .input(
-      z.object({
-        id: z.string().optional(),
-        config: z.object({
-          calculation: z.object({
-            style: z.enum(["custom", "op"]),
-            threshold: z.number().optional(),
-          }),
-        }),
-      }),
-    )
-    .mutation(async ({ input, ctx }) => {
-      const config = JSON.stringify(input.config);
-      return ctx.db.settings.upsert({
-        where: { id: input.id },
-        update: { config },
-        create: { config },
-      });
+    .input(SettingsSchema)
+    .mutation(async ({ input: { config }, ctx }) => {
+      const existing = await getSettings(ctx.db);
+      return existing
+        ? ctx.db.settings.update({
+            where: { id: existing.id },
+            data: { config },
+          })
+        : ctx.db.settings.create({ data: { config } });
     }),
 });

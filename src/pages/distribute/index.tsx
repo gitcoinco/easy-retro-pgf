@@ -1,16 +1,31 @@
-import { useState } from "react";
-import { Input, Label, Select } from "~/components/ui/Form";
+import { useCallback, useState } from "react";
+import { z } from "zod";
+import { Button } from "~/components/ui/Button";
+import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
+import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
 import { Distributions } from "~/features/distribute/components/Distributions";
+import { CalculationSchema } from "~/features/distribute/types";
 import { Layout } from "~/layouts/DefaultLayout";
-import { type PayoutOptions } from "~/utils/calculateResults";
+import { api } from "~/utils/api";
 
 export default function DistributePage() {
-  const [payoutOptions, setPayoutOptions] = useState<PayoutOptions>({
-    style: "custom",
-    threshold: 3,
+  const utils = api.useUtils();
+  const setConfig = api.config.set.useMutation({
+    onMutate: async (data) => {
+      // Optimistic update
+      utils.config.get.setData(undefined, (prev) => ({
+        id: prev?.id ?? "?",
+        ...data,
+      }));
+    },
+    // Trigger re-fetch of votes (with new calculation settings)
+    onSuccess: () => utils.results.votes.invalidate(),
   });
+  const settings = api.config.get.useQuery();
+
+  const calculation = settings.data?.config?.calculation;
 
   return (
     <Layout sidebar="left" sidebarComponent={<ConfigurePool />}>
@@ -19,41 +34,53 @@ export default function DistributePage() {
       ) : (
         <div>
           <div className="mb-2 flex justify-end gap-2">
-            <Label>
-              Payout style
-              <Select
-                value={payoutOptions.style}
-                className={"w-full"}
-                onChange={(e) =>
-                  setPayoutOptions((s) => ({
-                    ...s,
-                    style: e.target.value as PayoutOptions["style"],
-                  }))
-                }
+            {settings.isLoading ? (
+              <div className="h-[86px] w-[394px] animate-pulse rounded-xl bg-gray-200 dark:bg-gray-800" />
+            ) : (
+              <Form
+                defaultValues={calculation}
+                schema={CalculationSchema}
+                onSubmit={(values) => {
+                  console.log("values", values);
+                  setConfig.mutate({ config: { calculation: values } });
+                }}
               >
-                <option value="custom">Custom</option>
-                <option value="op">OP-Style</option>
-              </Select>
-            </Label>
-            <Label>
-              Minimum quorum
-              <Input
-                disabled={payoutOptions.style !== "op"}
-                value={payoutOptions.threshold}
-                type="number"
-                className="block w-44"
-                onChange={(e) =>
-                  setPayoutOptions((s) => ({
-                    ...s,
-                    threshold: e.target.value
-                      ? Number(e.target.value)
-                      : undefined,
-                  }))
-                }
-              />
-            </Label>
+                <div className="flex gap-2">
+                  <FormControl name="style" label="Payout style">
+                    <Select disabled={settings.isLoading} className={"w-full"}>
+                      <option value="custom">Custom</option>
+                      <option value="op">OP-Style</option>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl
+                    name="threshold"
+                    label="Minimum Quorum"
+                    valueAsNumber
+                  >
+                    <Input type="number" className="block w-44" />
+                  </FormControl>
+                  <div className="pt-7">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      type="submit"
+                      disabled={setConfig.isLoading}
+                    >
+                      Update
+                    </Button>
+                  </div>
+                </div>
+              </Form>
+            )}
           </div>
-          <Distributions payoutOptions={payoutOptions} />
+          {setConfig.isLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner className="size-6" />
+            </div>
+          ) : (
+            <Distributions />
+          )}
         </div>
       )}
     </Layout>
