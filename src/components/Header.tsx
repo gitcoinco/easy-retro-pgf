@@ -7,6 +7,7 @@ import { ConnectButton } from "./ConnectButton";
 import { IconButton } from "./ui/Button";
 import { config, metadata } from "~/config";
 import { Menu, X } from "lucide-react";
+import dynamic from "next/dynamic";
 
 const Logo = () => (
   <div className="h-10">
@@ -99,3 +100,5 @@ const MobileMenu = ({
     ))}
   </div>
 );
+
+export default dynamic(async () => Header, { ssr: false });

@@ -13,20 +13,16 @@ import {
   calculateVotes,
 } from "~/utils/calculateResults";
 import { Vote } from "~/features/ballot/types";
+import { getSettings } from "./config";
 
 export const resultsRouter = createTRPCRouter({
   stats: publicProcedure.query(async ({ ctx }) => {
     return {};
     // return calculateBallotResults(ctx.db);
   }),
-  votes: publicProcedure
-    .input(
-      z.object({
-        style: z.enum(["custom", "op"]),
-        threshold: z.number().optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => calculateBallotResults(ctx.db, input)),
+  votes: publicProcedure.query(async ({ ctx }) =>
+    calculateBallotResults(ctx.db),
+  ),
   project: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -64,10 +60,7 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-async function calculateBallotResults(
-  db: PrismaClient,
-  payoutOpts: PayoutOptions,
-) {
+async function calculateBallotResults(db: PrismaClient) {
   // if (getAppState() !== "RESULTS") {
   //   throw new TRPCError({
   //     code: "BAD_REQUEST",
@@ -75,9 +68,16 @@ async function calculateBallotResults(
   //   });
   // }
 
+  const settings = await getSettings(db);
+  console.log(settings);
+  const calculation = settings?.config?.calculation;
+  if (!calculation) {
+    console.log("No calculation stored");
+    return null;
+  }
   // When the Minimum Qurom input is empty, return empty
-  if (payoutOpts.style === "op" && !payoutOpts.threshold) {
-    return;
+  if (calculation?.style === "op" && !calculation?.threshold) {
+    return null;
   }
 
   // Fetch the ballots
@@ -87,7 +87,7 @@ async function calculateBallotResults(
 
   const projects = calculateVotes(
     ballots as unknown as { voterId: string; votes: Vote[] }[],
-    payoutOpts,
+    calculation,
   );
 
   return { projects };

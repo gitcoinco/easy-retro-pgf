@@ -1,7 +1,7 @@
 import type { ReactNode, PropsWithChildren } from "react";
 import { useAccount } from "wagmi";
 
-import { Header } from "~/components/Header";
+import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";

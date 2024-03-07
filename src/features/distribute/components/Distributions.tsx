@@ -13,18 +13,13 @@ import {
   DistributionSchema,
 } from "~/features/distribute/types";
 import { api } from "~/utils/api";
-import { type PayoutOptions } from "~/utils/calculateResults";
 
-export function Distributions({
-  payoutOptions,
-}: {
-  payoutOptions: PayoutOptions;
-}) {
+export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
 
-  const votes = api.results.votes.useQuery(payoutOptions);
+  const votes = api.results.votes.useQuery();
   const projectIds = Object.keys(votes.data?.projects ?? {});
 
   const projects = api.projects.payoutAddresses.useQuery(
