@@ -63,7 +63,7 @@ export const ApplicationSchema = z.object({
         type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
       }),
     )
-    .min(1),
+    .default([]),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;

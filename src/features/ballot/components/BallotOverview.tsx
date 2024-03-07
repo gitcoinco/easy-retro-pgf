@@ -142,7 +142,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
         "Once you submit your ballot, you won’t be able to change it. If you are ready, go ahead and submit!",
     },
     error: {
-      title: "Error subitting ballot",
+      title: "Error submitting ballot",
       instructions: (
         <Alert
           variant="warning"
