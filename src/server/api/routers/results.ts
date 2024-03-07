@@ -1,25 +1,14 @@
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
 import type { PrismaClient } from "@prisma/client";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getAppState } from "~/utils/state";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { eas } from "~/config";
-import {
-  BallotResults,
-  PayoutOptions,
-  calculateResults,
-  calculateVotes,
-} from "~/utils/calculateResults";
-import { Vote } from "~/features/ballot/types";
+import { calculateVotes } from "~/utils/calculateResults";
+import { type Vote } from "~/features/ballot/types";
 import { getSettings } from "./config";
 
 export const resultsRouter = createTRPCRouter({
-  stats: publicProcedure.query(async ({ ctx }) => {
-    return {};
-    // return calculateBallotResults(ctx.db);
-  }),
   votes: publicProcedure.query(async ({ ctx }) =>
     calculateBallotResults(ctx.db),
   ),
@@ -29,7 +18,7 @@ export const resultsRouter = createTRPCRouter({
       const { projects } = await calculateBallotResults(ctx.db);
 
       return {
-        amount: projects[input.id],
+        amount: projects?.[input.id]?.votes ?? 0,
       };
     }),
 
@@ -38,8 +27,8 @@ export const resultsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { projects } = await calculateBallotResults(ctx.db);
 
-      const sortedIDs = Object.entries(projects)
-        .sort((a, b) => b[1] - a[1])
+      const sortedIDs = Object.entries(projects ?? {})
+        .sort((a, b) => b[1].votes - a[1].votes)
         .map(([id]) => id)
         .slice(
           input.cursor * input.limit,
@@ -61,23 +50,15 @@ export const resultsRouter = createTRPCRouter({
 });
 
 async function calculateBallotResults(db: PrismaClient) {
-  // if (getAppState() !== "RESULTS") {
-  //   throw new TRPCError({
-  //     code: "BAD_REQUEST",
-  //     message: "Voting has not ended yet",
-  //   });
-  // }
-
   const settings = await getSettings(db);
-  console.log(settings);
   const calculation = settings?.config?.calculation;
   if (!calculation) {
     console.log("No calculation stored");
-    return null;
+    return {};
   }
   // When the Minimum Qurom input is empty, return empty
   if (calculation?.style === "op" && !calculation?.threshold) {
-    return null;
+    return {};
   }
 
   // Fetch the ballots
@@ -90,5 +71,9 @@ async function calculateBallotResults(db: PrismaClient) {
     calculation,
   );
 
-  return { projects };
+  const averageVotes = 3;
+  const totalVotes = ballots.reduce((sum, x) => sum + x.votes.length, 0);
+  const totalVoters = ballots.length;
+
+  return { projects, totalVoters, totalVotes, averageVotes };
 }

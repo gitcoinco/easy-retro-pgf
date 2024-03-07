@@ -71,7 +71,7 @@ export function Projects() {
               ) : null}
               {!results.isLoading && getAppState() === "RESULTS" ? (
                 <ProjectItemAwarded
-                  amount={results.data?.projects?.[item.id]}
+                  amount={results.data?.projects?.[item.id]?.votes}
                 />
               ) : null}
               <ProjectItem isLoading={isLoading} attestation={item} />
