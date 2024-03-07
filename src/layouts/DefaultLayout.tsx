@@ -1,11 +1,11 @@
-import clsx from "clsx";
 import type { ReactNode, PropsWithChildren } from "react";
 import { useAccount } from "wagmi";
 
-import { Header } from "~/components/Header";
+import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";
+import { config } from "~/config";
 
 type Props = PropsWithChildren<
   {
@@ -13,12 +13,8 @@ type Props = PropsWithChildren<
     sidebarComponent?: ReactNode;
   } & LayoutProps
 >;
-export const Layout = ({
-  sidebar,
-  sidebarComponent,
-  children,
-  ...props
-}: Props) => {
+export const Layout = ({ children, ...props }: Props) => {
+  const { address } = useAccount();
   const appState = getAppState();
 
   const navLinks = [
@@ -35,15 +31,31 @@ export const Layout = ({
     });
   }
 
-  const wrappedSidebar = <Sidebar side={sidebar}>{sidebarComponent}</Sidebar>;
+  if (config.admins.includes(address!)) {
+    navLinks.push(
+      ...[
+        {
+          href: "/applications",
+          children: "Applications",
+        },
+        {
+          href: "/voters",
+          children: "Voters",
+        },
+        {
+          href: "/distribute",
+          children: "Distribute",
+        },
+        {
+          href: "/info",
+          children: "Info",
+        },
+      ],
+    );
+  }
 
   return (
-    <BaseLayout
-      {...props}
-      sidebar={sidebar}
-      sidebarComponent={wrappedSidebar}
-      header={<Header navLinks={navLinks} />}
-    >
+    <BaseLayout {...props} header={<Header navLinks={navLinks} />}>
       {children}
     </BaseLayout>
   );
@@ -59,14 +71,3 @@ export function LayoutWithBallot(props: Props) {
     />
   );
 }
-
-const Sidebar = (props: { side?: "left" | "right" } & PropsWithChildren) => (
-  <div>
-    <div
-      className={clsx("px-2 md:w-[336px] md:px-4", {
-        ["left-0 top-[2rem] md:sticky"]: props.side === "left",
-      })}
-      {...props}
-    />
-  </div>
-);

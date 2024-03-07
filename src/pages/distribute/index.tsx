@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Input, Label, Select } from "~/components/ui/Form";
+import { config } from "~/config";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
 import { Distributions } from "~/features/distribute/components/Distributions";
+import { AdminLayout } from "~/layouts/AdminLayout";
 import { Layout } from "~/layouts/DefaultLayout";
-import { PayoutOptions } from "~/utils/calculateResults";
-import { getAppState } from "~/utils/state";
+import { type PayoutOptions } from "~/utils/calculateResults";
 
 export default function DistributePage() {
   const [payoutOptions, setPayoutOptions] = useState<PayoutOptions>({
@@ -12,12 +13,12 @@ export default function DistributePage() {
     threshold: 3,
   });
 
-  console.log({ payoutOptions });
-
   return (
     <Layout sidebar="left" sidebarComponent={<ConfigurePool />}>
-      {getAppState() === "RESULTS" ? (
-        <>
+      {new Date() < config.reviewEndsAt ? (
+        <div>Voting hasn't started yet</div>
+      ) : (
+        <div>
           <div className="mb-2 flex justify-end gap-2">
             <Label>
               Payout style
@@ -54,9 +55,7 @@ export default function DistributePage() {
             </Label>
           </div>
           <Distributions payoutOptions={payoutOptions} />
-        </>
-      ) : (
-        <div>Round hasn&apos;t ended yet</div>
+        </div>
       )}
     </Layout>
   );
