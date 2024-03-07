@@ -55,7 +55,7 @@ export default function InfoPage() {
 }
 
 function calculateProgress(steps: { label: string; date: Date }[]) {
-  const now = Number(new Date("2024-02-18"));
+  const now = Number(new Date());
 
   let currentStepIndex = steps.findIndex(
     (step, index) =>
