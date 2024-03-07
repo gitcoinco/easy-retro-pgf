@@ -13,6 +13,7 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
   return useMutation({
     mutationFn: async (applicationIds: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
+
       const attestations = await Promise.all(
         applicationIds.map((refUID) =>
           createAttestation(

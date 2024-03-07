@@ -3,7 +3,6 @@ import { Input, Label, Select } from "~/components/ui/Form";
 import { config } from "~/config";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
 import { Distributions } from "~/features/distribute/components/Distributions";
-import { AdminLayout } from "~/layouts/AdminLayout";
 import { Layout } from "~/layouts/DefaultLayout";
 import { type PayoutOptions } from "~/utils/calculateResults";
 
