@@ -2,7 +2,7 @@ import { useAccount, usePublicClient, useSendTransaction } from "wagmi";
 import { abi as RegistryABI } from "@allo-team/allo-v2-sdk/dist/Registry/registry.config";
 import { type Address, zeroAddress } from "viem";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ethers } from "ethers";
+import { solidityPackedKeccak256 } from "ethers";
 import { useAlloRegistry, waitForLogs } from "./useAllo";
 import { allo } from "~/config";
 
@@ -80,6 +80,7 @@ export function useAlloIsMemberOfProfile() {
     ["allo/registry/member"],
     async () => {
       const profileId = getProfileId(address);
+
       return registry?.isMemberOfProfile({
         profileId,
         account: allo.strategyAddress,
@@ -90,6 +91,8 @@ export function useAlloIsMemberOfProfile() {
 }
 
 function getProfileId(address?: Address) {
-  const { solidityKeccak256 } = ethers.utils;
-  return solidityKeccak256(["uint256", "address"], [NONCE, address]);
+  return solidityPackedKeccak256(
+    ["uint256", "address"],
+    [NONCE, address],
+  ) as `0x${string}`;
 }

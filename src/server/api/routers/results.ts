@@ -15,9 +15,10 @@ import {
 import { Vote } from "~/features/ballot/types";
 
 export const resultsRouter = createTRPCRouter({
-  stats: publicProcedure.query(async ({ ctx }) =>
-    calculateBallotResults(ctx.db),
-  ),
+  stats: publicProcedure.query(async ({ ctx }) => {
+    return {};
+    // return calculateBallotResults(ctx.db);
+  }),
   votes: publicProcedure
     .input(
       z.object({
@@ -67,12 +68,12 @@ async function calculateBallotResults(
   db: PrismaClient,
   payoutOpts: PayoutOptions,
 ) {
-  if (getAppState() !== "RESULTS") {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Voting has not ended yet",
-    });
-  }
+  // if (getAppState() !== "RESULTS") {
+  //   throw new TRPCError({
+  //     code: "BAD_REQUEST",
+  //     message: "Voting has not ended yet",
+  //   });
+  // }
 
   // When the Minimum Qurom input is empty, return empty
   if (payoutOpts.style === "op" && !payoutOpts.threshold) {
