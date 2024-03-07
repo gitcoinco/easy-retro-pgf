@@ -127,7 +127,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 
 const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
   const address = ctx.session?.user.name;
-  if (!config.admins.includes(address!)) {
+  if (!config.admins.includes(address as `0x${string}`)) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Must be admin to access this route",
