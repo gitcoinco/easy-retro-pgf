@@ -4,6 +4,7 @@ import { useMemo, type PropsWithChildren } from "react";
 import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
+import { useMaciPoll } from "~/hooks/useMaciPoll";
 import {
   useProjectCount,
   useProjectsResults,
@@ -46,13 +47,9 @@ function Stats() {
   const results = useResults();
   const count = useProjectCount();
   const { data: projectsResults } = useProjectsResults();
+  const { isLoading, pollData } = useMaciPoll();
 
-  const {
-    averageVotes,
-    totalVotes,
-    totalVoters,
-    projects = {},
-  } = results.data ?? {};
+  const { averageVotes, projects = {} } = results.data ?? {};
 
   const chartData = useMemo(() => {
     const data = (projectsResults?.pages?.[0] ?? [])
@@ -65,6 +62,10 @@ function Stats() {
     return [{ id: "awarded", data }];
   }, [projects, projectsResults]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       <h3 className="text-lg font-bold">Top Projects</h3>
@@ -75,8 +76,9 @@ function Stats() {
       <div className="grid gap-2 md:grid-cols-3">
         <Stat title="Projects applied">{count.data?.count}</Stat>
         <Stat title="Projects voted for">{Object.keys(projects).length}</Stat>
-        <Stat title="Votes">{totalVotes}</Stat>
-        <Stat title="People Voting">{totalVoters}</Stat>
+        <Stat title="People Voting">
+          {pollData?.numSignups.toString() ?? 0}
+        </Stat>
         <Stat title="Average votes per project">
           {formatNumber(averageVotes)}
         </Stat>

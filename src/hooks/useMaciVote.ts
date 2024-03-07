@@ -14,6 +14,7 @@ export interface IVoteArgs {
 
 export interface IUseMaciVoteData {
   isLoading: boolean;
+  pollId?: string;
   error?: string;
   onVote: (
     args: IVoteArgs[],
@@ -88,6 +89,7 @@ export const useMaciVote = (nonce = 0): IUseMaciVoteData => {
 
   return {
     isLoading,
+    pollId: pollData?.id.toString(),
     error,
     onVote,
   };

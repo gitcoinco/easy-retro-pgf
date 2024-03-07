@@ -1,19 +1,30 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import type { PrismaClient } from "@prisma/client";
+import type { TallyData } from "maci-cli/sdk";
 import { type Vote } from "~/features/ballot/types";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getAppState } from "~/utils/state";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
-import { eas } from "~/config";
+import { config, eas } from "~/config";
+import { getAllApprovedProjects } from "./projects";
 
 export const resultsRouter = createTRPCRouter({
-  stats: publicProcedure.query(async ({ ctx }) => calculateResults(ctx.db)),
+  stats: publicProcedure
+    .input(z.object({ pollId: z.string().nullish() }))
+    .query(async ({ input, ctx }) =>
+      input?.pollId !== undefined && input?.pollId !== null
+        ? calculateMaciResults(input.pollId)
+        : calculateResults(ctx.db),
+    ),
+
   project: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string(), pollId: z.string().nullish() }))
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateResults(ctx.db);
+      const { projects } = await (input?.pollId !== undefined &&
+      input?.pollId !== null
+        ? calculateMaciResults(input.pollId)
+        : calculateResults(ctx.db));
 
       return {
         amount: projects[input.id],
@@ -21,9 +32,12 @@ export const resultsRouter = createTRPCRouter({
     }),
 
   projects: publicProcedure
-    .input(FilterSchema)
+    .input(FilterSchema.extend({ pollId: z.string().nullish() }))
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateResults(ctx.db);
+      const { projects } = await (input?.pollId !== undefined &&
+      input?.pollId !== null
+        ? calculateMaciResults(input.pollId)
+        : calculateResults(ctx.db));
 
       const sortedIDs = Object.entries(projects)
         .sort((a, b) => b[1] - a[1])
@@ -57,13 +71,6 @@ type BallotResults = {
 export async function calculateResults(
   db: PrismaClient,
 ): Promise<BallotResults> {
-  if (getAppState() !== "RESULTS") {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Voting has not ended yet",
-    });
-  }
-
   const ballots = await db.ballot.findMany();
   let totalVotes = 0;
   const projects = new Map<string, number>();
@@ -82,11 +89,47 @@ export async function calculateResults(
   const averageVotes = calculateAverage(
     Object.values(Object.fromEntries(projects)),
   );
+
   return {
     averageVotes,
     totalVoters: ballots.length,
     totalVotes: totalVotes,
     projects: Object.fromEntries(projects),
+  };
+}
+
+export async function calculateMaciResults(
+  pollId: string,
+): Promise<Omit<BallotResults, "totalVotes" | "totalVoters">> {
+  const [tallyData, projects] = await Promise.all([
+    fetch(`${config.tallyUrl}/tally-${pollId}.json`)
+      .then((res) => res.json() as Promise<TallyData>)
+      .catch(() => undefined),
+    getAllApprovedProjects(),
+  ]);
+
+  if (!tallyData) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Voting has not ended yet",
+    });
+  }
+
+  const results = tallyData.results.tally.reduce((acc, tally, index) => {
+    if (projects[index]) {
+      acc.set(projects[index]!.id, Number(tally));
+    }
+
+    return acc;
+  }, new Map<string, number>());
+
+  const averageVotes = calculateAverage(
+    Object.values(Object.fromEntries(results)),
+  );
+
+  return {
+    averageVotes,
+    projects: Object.fromEntries(results),
   };
 }
 

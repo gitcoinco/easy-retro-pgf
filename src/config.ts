@@ -28,6 +28,7 @@ export const config = {
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
   maciAddress: process.env.NEXT_PUBLIC_MACI_ADDRESS,
+  tallyUrl: process.env.NEXT_PUBLIC_TALLY_URL,
 };
 
 export const theme = {

@@ -13,8 +13,11 @@ import { config } from "~/config";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { type Prisma } from "@prisma/client";
 import { fetchApprovedVoter } from "~/utils/fetchAttestations";
+import { z } from "zod";
 
 const defaultBallotSelect = {
+  pollId: true,
+  maci: true,
   votes: true,
   createdAt: true,
   updatedAt: true,
@@ -23,57 +26,91 @@ const defaultBallotSelect = {
 } satisfies Prisma.BallotSelect;
 
 export const ballotRouter = createTRPCRouter({
-  get: protectedProcedure.query(({ ctx }) => {
-    const voterId = ctx.session.user.name!;
-    return ctx.db.ballot
-      .findUnique({ select: defaultBallotSelect, where: { voterId } })
-      .then((ballot) => ({
-        ...ballot,
-        votes: (ballot?.votes as Vote[]) ?? [],
-      }));
-  }),
+  get: protectedProcedure
+    .input(z.object({ pollId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const voterId = ctx.session.user.name!;
+
+      console.log(input, voterId);
+
+      return ctx.db.ballot
+        .findUnique({
+          select: defaultBallotSelect,
+          where: {
+            voterId_pollId_maci: {
+              voterId,
+              pollId: input.pollId,
+              maci: config.maciAddress!,
+            },
+          },
+        })
+        .then((ballot) => ({
+          ...ballot,
+          votes: (ballot?.votes as Vote[]) ?? [],
+        }));
+    }),
 
   save: protectedProcedure
-    .input(BallotSchema)
+    .input(BallotSchema.extend({ pollId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session.user.name!;
 
-      await verifyUnpublishedBallot(voterId, ctx.db);
+      await verifyUnpublishedBallot(voterId, input.pollId, ctx.db);
 
       return ctx.db.ballot.upsert({
         select: defaultBallotSelect,
-        where: { voterId },
+        where: {
+          voterId_pollId_maci: {
+            voterId,
+            pollId: input.pollId,
+            maci: config.maciAddress!,
+          },
+        },
         update: input,
-        create: { voterId, ...input },
+        create: { voterId, maci: config.maciAddress!, ...input },
       });
     }),
 
-  lock: protectedProcedure.mutation(async ({ ctx }) => {
-    const voterId = ctx.session.user.name!;
-
-    await verifyUnpublishedBallot(voterId, ctx.db);
-
-    return ctx.db.ballot.update({
-      where: { voterId },
-      data: { publishedAt: new Date() },
-    });
-  }),
-
-  unlock: protectedProcedure.mutation(async ({ ctx }) => {
-    const voterId = ctx.session.user.name!;
-
-    return ctx.db.ballot.update({
-      where: { voterId },
-      data: { publishedAt: null },
-    });
-  }),
-
-  publish: protectedProcedure
-    .input(BallotPublishSchema)
+  lock: protectedProcedure
+    .input(z.object({ pollId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session.user.name!;
 
-      const ballot = await verifyUnpublishedBallot(voterId, ctx.db);
+      await verifyUnpublishedBallot(voterId, input.pollId, ctx.db);
+
+      return ctx.db.ballot.update({
+        where: {
+          voterId_pollId_maci: {
+            voterId,
+            pollId: input.pollId,
+            maci: config.maciAddress!,
+          },
+        },
+        data: { publishedAt: new Date() },
+      });
+    }),
+
+  unlock: protectedProcedure
+    .input(z.object({ pollId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const voterId = ctx.session.user.name!;
+
+      return ctx.db.ballot.update({
+        where: { voterId_pollId_maci: { voterId, pollId: input.pollId, maci: config.maciAddress! } },
+        data: { publishedAt: null },
+      });
+    }),
+
+  publish: protectedProcedure
+    .input(BallotPublishSchema.extend({ pollId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const voterId = ctx.session.user.name!;
+
+      const ballot = await verifyUnpublishedBallot(
+        voterId,
+        input.pollId,
+        ctx.db,
+      );
       if (!ballot) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -115,7 +152,7 @@ export const ballotRouter = createTRPCRouter({
       }
 
       return ctx.db.ballot.update({
-        where: { voterId },
+        where: { voterId_pollId_maci: { voterId, pollId: input.pollId, maci: config.maciAddress! } },
         data: { publishedAt: new Date(), signature },
       });
     }),
@@ -132,10 +169,14 @@ function verifyBallotCount(votes: Vote[]) {
 async function verifyBallotHash(hashed_votes: string, votes: Vote[]) {
   return hashed_votes === keccak256(Buffer.from(JSON.stringify(votes)));
 }
-async function verifyUnpublishedBallot(voterId: string, { ballot }: typeof db) {
+async function verifyUnpublishedBallot(
+  voterId: string,
+  pollId: string,
+  { ballot }: typeof db,
+) {
   const existing = await ballot.findUnique({
     select: defaultBallotSelect,
-    where: { voterId },
+    where: { voterId_pollId_maci: { voterId, pollId, maci: config.maciAddress! } },
   });
 
   // Can only be submitted once
@@ -154,7 +195,7 @@ async function verifyBallotSignature({
   message,
   chainId,
 }: { address: string } & BallotPublish) {
-  return await verifyTypedData({
+  return verifyTypedData({
     ...ballotTypedData(chainId),
     address: address as Address,
     message,
