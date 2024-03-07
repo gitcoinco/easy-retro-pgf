@@ -54,7 +54,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
             <Logo />
           </Link>
         </div>
-        <div className="hidden h-full items-center gap-4 md:flex">
+        <div className="hidden h-full items-center gap-4 overflow-x-auto md:flex">
           {navLinks?.map((link) => (
             <NavLink
               isActive={asPath.startsWith(link.href)}

@@ -71,3 +71,8 @@ model Ballot {
 
     @@unique([voterId, pollId, maci]) // Only one ballot per voter and poll
 }
+
+model Settings {
+    id     String @id @default(cuid())
+    config Json
+}
