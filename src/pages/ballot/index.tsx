@@ -17,6 +17,7 @@ import {
 } from "~/features/ballot/hooks/useBallot";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
+import { useMaciPoll } from "~/hooks/useMaciPoll";
 import { Layout } from "~/layouts/DefaultLayout";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
@@ -27,15 +28,20 @@ export default function BallotPage() {
   const { address, isConnecting } = useAccount();
   const router = useRouter();
 
-  if (isLoading) return null;
-
   useEffect(() => {
     if (!address && !isConnecting) {
       router.push("/").catch(console.log);
     }
   }, [address, isConnecting, router]);
 
+  if (isLoading) return null;
+
   const votes = ballot?.votes.sort((a, b) => b.amount - a.amount);
+
+  if (!votes) {
+    return <EmptyBallot />;
+  }
+
   return (
     <Layout sidebar="right" requireAuth>
       {isLoading ? null : (
@@ -54,13 +60,15 @@ export default function BallotPage() {
 
 function BallotAllocationForm() {
   const form = useFormContext<{ votes: Vote[] }>();
+  const { pollData } = useMaciPoll();
+  const pollId = pollData?.id.toString();
 
   const save = useSaveBallot();
   const appState = getAppState();
 
   const votes = form.watch("votes");
   function handleSaveBallot({ votes }: { votes: Vote[] }) {
-    save.mutate({ votes });
+    save.mutate({ votes, pollId: pollId! });
   }
 
   return (
@@ -115,6 +123,8 @@ function ImportCSV() {
   const [votes, setVotes] = useState<Vote[]>([]);
   const save = useSaveBallot();
   const csvInputRef = useRef<HTMLInputElement>(null);
+  const { pollData } = useMaciPoll();
+  const pollId = pollData?.id.toString();
 
   const importCSV = useCallback((csvString: string) => {
     // Parse CSV and build the ballot data (remove name column)
@@ -124,7 +134,6 @@ function ImportCSV() {
         projectId,
         amount: Number(amount),
       })) ?? [];
-    console.log(123, votes);
     setVotes(votes);
   }, []);
 
@@ -169,7 +178,7 @@ function ImportCSV() {
             disabled={save.isPending}
             onClick={() => {
               save
-                .mutateAsync({ votes })
+                .mutateAsync({ votes, pollId: pollId! })
                 .then(() => form.reset({ votes }))
                 .catch(console.log);
               setVotes([]);
@@ -213,7 +222,11 @@ function ClearBallot() {
   const form = useFormContext();
   const [isOpen, setOpen] = useState(false);
   const { mutateAsync, isPending } = useSaveBallot();
+  const { pollData } = useMaciPoll();
+  const pollId = pollData?.id.toString();
+
   if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
+
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>
@@ -235,7 +248,7 @@ function ClearBallot() {
             variant="primary"
             disabled={isPending}
             onClick={() =>
-              mutateAsync({ votes: [] }).then(() => {
+              mutateAsync({ votes: [], pollId: pollId! }).then(() => {
                 setOpen(false);
                 form.reset({ votes: [] });
               })

@@ -12,16 +12,16 @@ type AppState =
 
 export const getAppState = (): AppState => {
   const now = new Date();
-  const { isLoading, votingEndsAt } = useMaciPoll();
+  const { isLoading, votingEndsAt, pollData, tallyData } = useMaciPoll();
 
   if (isLoading) {
     return "LOADING";
   }
 
   if (isAfter(config.registrationEndsAt, now)) return "APPLICATION";
-  if (isAfter(config.reviewEndsAt, now)) return "REVIEWING";
+  if (isAfter(config.reviewEndsAt, now)) return "REVIEWING";``
   if (isAfter(votingEndsAt, now)) return "VOTING";
-  if (isAfter(config.resultsAt, now)) return "TALLYING";
+  if (!pollData?.isStateAqMerged || !tallyData) return "TALLYING";
 
   return "RESULTS";
 };

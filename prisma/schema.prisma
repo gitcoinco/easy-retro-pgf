@@ -59,6 +59,8 @@ model VerificationToken {
 
 model Ballot {
     voterId String
+    pollId String
+    maci String
 
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
@@ -67,5 +69,5 @@ model Ballot {
 
     votes Json[]
 
-    @@unique([voterId]) // Only one ballot per voter
+    @@unique([voterId, pollId, maci]) // Only one ballot per voter and poll
 }

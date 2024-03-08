@@ -7,6 +7,7 @@ import { ballotTypedData } from "~/utils/typedData";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import { keccak256 } from "viem";
+import { useMaciPoll } from "~/hooks/useMaciPoll";
 
 export function useSaveBallot(opts?: { onSuccess?: () => void }) {
   const utils = api.useUtils();
@@ -33,11 +34,13 @@ export function useLockBallot() {
 export function useAddToBallot() {
   const { data: ballot } = useBallot();
   const { mutate } = useSaveBallot();
+  const { pollData } = useMaciPoll();
+  const pollId = pollData?.id.toString();
 
   return useMutation({
     mutationFn: async (votes: Vote[]) => {
       if (ballot) {
-        return mutate(mergeBallot(ballot as unknown as Ballot, votes));
+        return mutate(mergeBallot(ballot as unknown as Ballot, votes, pollId!));
       }
     },
   });
@@ -45,6 +48,8 @@ export function useAddToBallot() {
 
 export function useRemoveFromBallot() {
   const { data: ballot } = useBallot();
+  const { pollData } = useMaciPoll();
+  const pollId = pollData?.id.toString();
 
   const { mutate } = useSaveBallot();
   return useMutation({
@@ -52,7 +57,7 @@ export function useRemoveFromBallot() {
       const votes = (ballot?.votes ?? []).filter(
         (v) => v.projectId !== projectId,
       );
-      return mutate({ ...ballot, votes });
+      return mutate({ ...ballot, votes, pollId: pollId! });
     },
   });
 }
@@ -60,10 +65,15 @@ export function useRemoveFromBallot() {
 export function useBallot() {
   const { address } = useAccount();
   const { data: session } = useSession();
+  const { pollData } = useMaciPoll();
+  const pollId = pollData?.id.toString();
 
-  return api.ballot.get.useQuery(undefined, {
-    enabled: Boolean(address && session),
-  });
+  return api.ballot.get.useQuery(
+    { pollId: pollId! },
+    {
+      enabled: Boolean(address && session && pollData),
+    },
+  );
 }
 
 export function useSubmitBallot({
@@ -73,6 +83,8 @@ export function useSubmitBallot({
 }) {
   const chainId = useChainId();
   const { data: ballot } = useBallot();
+  const { pollData } = useMaciPoll();
+  const pollId = pollData?.id.toString();
   const { mutateAsync, isPending } = api.ballot.publish.useMutation({
     onSuccess,
   });
@@ -92,7 +104,7 @@ export function useSubmitBallot({
           ...ballotTypedData(chainId),
           message,
         });
-        return mutateAsync({ signature, message, chainId });
+        return mutateAsync({ signature, message, chainId, pollId: pollId! });
       }
     },
   });
@@ -108,9 +120,10 @@ export function ballotContains(id: string, ballot?: Ballot) {
   return ballot?.votes.find((v) => v.projectId === id);
 }
 
-function mergeBallot(ballot: Ballot, addedVotes: Vote[]) {
+function mergeBallot(ballot: Ballot, addedVotes: Vote[], pollId: string) {
   return {
     ...ballot,
+    pollId,
     votes: Object.values<Vote>({
       ...toObject(ballot?.votes, "projectId"),
       ...toObject(addedVotes, "projectId"),
