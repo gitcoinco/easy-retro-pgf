@@ -50,6 +50,8 @@ To create your own round you need to do a few things:
 
 - Update `NEXT_PUBLIC_ADMIN_ADDRESSES` with a comma-separated list of wallet addresses that approve the applications and voters (badgeholders)
 - Set `NEXT_PUBLIC_ROUND_ID` to a unique identifier that will group the applications and lists you want to list
+- Set `NEXT_PUBLIC_MACI_ADDRESS` - your deployed maci contract
+- Set `NEXT_PUBLIC_TALLY_URL` - your endpoint for vote results, where you host `tally-{pollId}.json` files.
 
 #### EAS
 
@@ -70,6 +72,10 @@ https://vercel.com/new
   <img width="45%" src="./images/vercel_new.png">
   <img width="45%" src="./images/vercel_configure.png">
 </div>
+
+## 4. Deploy maci
+
+As a coordinator you need to deploy maci instance and poll. See [maci docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
 
 ## Additional configuration
 
