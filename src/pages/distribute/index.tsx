@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { Button } from "~/components/ui/Button";
-import { Form, FormControl, Input, Select } from "~/components/ui/Form";
+import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
@@ -33,7 +33,8 @@ export default function DistributePage() {
         <div>Voting hasn't started yet</div>
       ) : (
         <div>
-          <div className="mb-2 flex justify-end gap-2">
+          <div className="mb-2 flex justify-between gap-2">
+            <VoterCount />
             {settings.isLoading ? (
               <div className="h-[86px] w-[394px] animate-pulse rounded-xl bg-gray-200 dark:bg-gray-800" />
             ) : (
@@ -84,5 +85,19 @@ export default function DistributePage() {
         </div>
       )}
     </Layout>
+  );
+}
+
+function VoterCount() {
+  const voters = api.voters.list.useQuery({ limit: 1000 });
+  const votes = api.results.votes.useQuery();
+
+  return (
+    <div>
+      <Label>How many have voted?</Label>
+      <div className="pt-1 text-center text-2xl font-semibold">
+        {votes.data?.totalVoters} / {voters.data?.length}
+      </div>
+    </div>
   );
 }
