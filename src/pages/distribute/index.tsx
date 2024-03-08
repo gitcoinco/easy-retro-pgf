@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { z } from "zod";
 import { Button } from "~/components/ui/Button";
 import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
+import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
@@ -96,7 +97,12 @@ function VoterCount() {
     <div>
       <Label>How many have voted?</Label>
       <div className="pt-1 text-center text-2xl font-semibold">
-        {votes.data?.totalVoters} / {voters.data?.length}
+        <Skeleton
+          className="h-8 w-20"
+          isLoading={voters.isLoading || votes.isLoading}
+        >
+          {votes.data?.totalVoters} / {voters.data?.length}
+        </Skeleton>
       </div>
     </div>
   );
