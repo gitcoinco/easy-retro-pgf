@@ -1,3 +1,10 @@
+import { z } from "zod";
+import dynamic from "next/dynamic";
+import { formatUnits, parseUnits } from "viem";
+import { useAccount } from "wagmi";
+import { useSession } from "next-auth/react";
+import { type PropsWithChildren } from "react";
+
 import { Button, IconButton } from "~/components/ui/Button";
 
 import { Alert } from "~/components/ui/Alert";
@@ -6,7 +13,6 @@ import { Spinner } from "~/components/ui/Spinner";
 import {
   useAlloIsMemberOfProfile,
   useAlloProfile,
-  useAlloRegistryAddMember,
   useCreateAlloProfile,
 } from "../hooks/useAlloProfile";
 import {
@@ -20,16 +26,10 @@ import {
   useTokenBalance,
 } from "../hooks/useAlloPool";
 import { allo, config, isNativeToken } from "~/config";
-import { formatUnits, parseUnits } from "viem";
 import { ErrorMessage, Form, FormControl, Input } from "~/components/ui/Form";
-import { z } from "zod";
-import dynamic from "next/dynamic";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useFormContext } from "react-hook-form";
 import { MintButton } from "./MintButton";
-import { useAccount } from "wagmi";
-import { useSession } from "next-auth/react";
-import { type PropsWithChildren } from "react";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -37,7 +37,6 @@ function CheckAlloProfile(props: PropsWithChildren) {
   const createProfile = useCreateAlloProfile();
 
   const isMember = useAlloIsMemberOfProfile();
-  const addMember = useAlloRegistryAddMember();
 
   console.log("create profile,", createProfile.data);
   if (!isCorrectNetwork) {
@@ -79,26 +78,6 @@ function CheckAlloProfile(props: PropsWithChildren) {
     );
   }
 
-  if (!isMember.data) {
-    return (
-      <Alert variant="info" title="Update Registry member">
-        <p className="mb-8">
-          You must add the Strategy contract as a member to your Allo2 profile
-          before you can create a pool.
-        </p>
-        <IconButton
-          className={"w-full"}
-          icon={addMember.isLoading ? Spinner : null}
-          variant="primary"
-          onClick={() => addMember.mutate()}
-          disabled={addMember.isLoading}
-        >
-          {addMember.isLoading ? <>Updating...</> : <>Update membership</>}
-        </IconButton>
-      </Alert>
-    );
-  }
-
   return props.children;
 }
 
@@ -107,7 +86,7 @@ function CreatePool() {
   const profile = useAlloProfile();
   const approve = useApprove();
   const balance = useTokenBalance();
-  const poolId = usePoolId();
+  const { data: poolId } = usePoolId();
   const allowance = useTokenAllowance();
 
   const token = usePoolToken();
@@ -116,24 +95,8 @@ function CreatePool() {
 
   const profileId = profile.data?.id as unknown as `0x${string}`;
 
-  console.log(poolId.data);
-  if (poolId.data) {
-    return <PoolDetails poolId={Number(poolId.data)} />;
-  }
-
-  console.log(createPool.data);
-  const createdPoolId = createPool.data;
-  if (createPool.data) {
-    return (
-      <Alert title="Pool created!" variant="info">
-        Add this to your environment variables and deploy again.
-        <div>
-          <div className="overflow-auto font-mono text-xs">
-            NEXT_PUBLIC_ALLO2_CUSTOM_STRATEGY="{createPool.data}"
-          </div>
-        </div>
-      </Alert>
-    );
+  if (poolId) {
+    return <PoolDetails poolId={poolId} />;
   }
 
   return (
@@ -160,9 +123,7 @@ function CreatePool() {
         onSubmit={(values) => {
           console.log(values);
 
-          // TODO: If token is ERC20 - approve spending
           const amount = parseUnits(values.amount.toString(), decimals);
-          console.log({ amount });
           const hasAllowance = isNativeToken
             ? true
             : (allowance.data ?? 0) >= amount;
@@ -170,24 +131,22 @@ function CreatePool() {
           if (!hasAllowance) {
             return approve.write({
               args: [allo.alloAddress, amount],
-              // args: [allo.strategyAddress, amount],
             });
           }
 
-          console.log({ profileId });
-          // return createPool.mutate({ profileId, initialFunding: amount });
-          createPool.write({
-            args: [profileId, allo.tokenAddress, amount, config.admins],
-          });
+          return createPool.mutate({ profileId, initialFunding: amount });
         }}
       >
         <FormControl name="tokenAddress" label="Token">
           <Input disabled readOnly value={token.data?.symbol ?? "ETH"} />
         </FormControl>
-        {/* 
         <FormControl name="amount" label="Amount of tokens to fund">
           <AllocationInput tokenAddon />
-        </FormControl> */}
+        </FormControl>
+
+        <div className="-mt-2 mb-2">
+          <TokenBalance />
+        </div>
 
         <FundPoolButton
           buttonText="Create pool"
@@ -236,7 +195,7 @@ function PoolDetails({ poolId = 0 }) {
         schema={z.object({
           amount: z.number(),
         })}
-        onSubmit={async (values) => {
+        onSubmit={async (values, form) => {
           const amount = parseUnits(values.amount.toString(), decimals);
           console.log({ amount });
           const hasAllowance = calcHasAllowance({
@@ -244,27 +203,21 @@ function PoolDetails({ poolId = 0 }) {
             allowance,
             decimals,
           });
-          console.log("FUND pool", { hasAllowance });
 
           if (!hasAllowance) {
             return approve.write({
               args: [allo.alloAddress, amount],
             });
           }
-          fundPool.mutate({ poolId, amount });
+          fundPool.mutate(
+            { poolId, amount },
+            { onSuccess: () => form.reset({ amount: 0 }) },
+          );
         }}
       >
-        <div className="flex justify-between text-sm">
-          <div>Fund pool</div>
-          <div className="flex gap-1">
-            <span className="text-gray-500">Wallet balance:</span>
-            <span className="font-semibold">
-              {balance.data?.formatted.slice(0, 5)}
-            </span>
-          </div>
-        </div>
-        <div className="mb-2">
+        <div className="mb-2 space-y-2">
           <AllocationInput name="amount" tokenAddon />
+          <TokenBalance />
         </div>
 
         <FundPoolButton
@@ -283,6 +236,18 @@ function PoolDetails({ poolId = 0 }) {
   );
 }
 
+function TokenBalance() {
+  const balance = useTokenBalance();
+  return (
+    <div className="flex justify-between text-sm">
+      <div className="text-gray-500">Wallet balance</div>
+      <div>
+        {balance.data?.formatted.slice(0, 5)} {balance.data?.symbol}
+      </div>
+    </div>
+  );
+}
+
 function FundPoolButton({
   buttonText = "",
   isLoading = false,
@@ -296,8 +261,8 @@ function FundPoolButton({
   const amount = BigInt(watch("amount") || 0);
 
   const hasAllowance = calcHasAllowance({ amount, allowance, decimals });
-  console.log({ hasAllowance });
-  const disabled = isLoading || Boolean(formState.errors.amount);
+  console.log({ hasAllowance, amount });
+  const disabled = !amount || isLoading || Boolean(formState.errors.amount);
 
   if (!address || !session) {
     return (

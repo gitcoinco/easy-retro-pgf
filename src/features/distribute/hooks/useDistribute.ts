@@ -1,36 +1,36 @@
 import { useMutation } from "@tanstack/react-query";
-import { type Distribution } from "../types";
 import { useAllo } from "./useAllo";
-import { usePoolId } from "./useAlloPool";
-import { encodeAbiParameters, parseAbiParameters } from "viem";
+import { usePoolId, usePoolToken } from "./useAlloPool";
+import { type Address, encodeAbiParameters, parseAbiParameters } from "viem";
 import { useSendTransaction } from "wagmi";
 
 export function useDistribute() {
   const allo = useAllo();
+  const { data: token } = usePoolToken();
   const { data: poolId } = usePoolId();
+
   const { sendTransactionAsync } = useSendTransaction();
-  return useMutation(async (votes: Distribution[]) => {
-    if (!allo) throw new Error("Allo not initialized");
-
-    const { recipients, amounts } = votes.reduce(
-      (acc, x) => ({
-        recipients: acc.recipients.concat(x.payoutAddress),
-        amounts: acc.amounts.concat(BigInt(x.amount)),
-      }),
-      { recipients: [], amounts: [] } as {
-        recipients: string[];
-        amounts: bigint[];
-      },
-    );
-
-    const { to, data } = allo.distribute(
-      Number(poolId),
+  return useMutation(
+    async ({
       recipients,
-      encodeAmounts(amounts),
-    );
+      amounts,
+    }: {
+      recipients: Address[];
+      amounts: bigint[];
+    }) => {
+      if (!allo) throw new Error("Allo not initialized");
+      if (!token) throw new Error("Token not initialized");
 
-    return sendTransactionAsync({ to, data });
-  });
+      console.log({ recipients, amounts });
+      const { to, data } = allo.distribute(
+        BigInt(poolId),
+        recipients,
+        encodeAmounts(amounts),
+      );
+
+      return sendTransactionAsync({ to, data });
+    },
+  );
 }
 
 function encodeAmounts(amounts: bigint[]) {

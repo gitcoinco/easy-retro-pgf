@@ -162,7 +162,11 @@ export const FormControl = ({
         error: Boolean(error),
         ...register(name, { valueAsNumber }),
       })}
-      {hint && <div className="pt-1 text-xs text-gray-500">{hint}</div>}
+      {hint && (
+        <div className="pt-1 text-xs text-gray-500 dark:text-gray-400">
+          {hint}
+        </div>
+      )}
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </fieldset>
   );

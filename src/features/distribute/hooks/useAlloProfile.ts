@@ -48,30 +48,6 @@ export function useCreateAlloProfile() {
     });
   });
 }
-export function useAlloRegistryAddMember() {
-  const registry = useAlloRegistry();
-  const { address } = useAccount();
-  const client = usePublicClient();
-  const queryClient = useQueryClient();
-  const { sendTransactionAsync } = useSendTransaction();
-  return useMutation(async () => {
-    if (!address) throw new Error("Connect wallet first");
-    if (!registry) throw new Error("Allo Registry not initialized");
-
-    const profileId = getProfileId(address);
-    const { to, data } = registry.addMembers({
-      profileId,
-      members: [allo.strategyAddress],
-    });
-
-    const { hash } = await sendTransactionAsync({ to, data });
-    return waitForLogs(hash, RegistryABI, client).then(async (logs) => {
-      await queryClient.invalidateQueries(["allo/registry/member"]);
-      return logs;
-    });
-  });
-}
-
 export function useAlloIsMemberOfProfile() {
   const registry = useAlloRegistry();
   const { address } = useAccount();

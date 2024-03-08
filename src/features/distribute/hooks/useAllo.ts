@@ -3,6 +3,7 @@ import { Allo, Registry } from "@allo-team/allo-v2-sdk/";
 
 import { decodeEventLog, type Address, type Chain } from "viem";
 import { useMemo } from "react";
+import { type JsonFragment } from "ethers";
 
 const createAlloOpts = (chain: Chain) => ({
   chain: chain.id,
@@ -19,7 +20,7 @@ export function useAlloRegistry() {
 
 export async function waitForLogs(
   hash: Address,
-  abi: unknown[],
+  abi: readonly JsonFragment[],
   client: PublicClient,
 ) {
   return client.waitForTransactionReceipt({ hash }).then(({ logs }) => {
