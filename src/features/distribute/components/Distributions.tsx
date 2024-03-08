@@ -1,5 +1,5 @@
 import { FileDown } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 import { EmptyState } from "~/components/EmptyState";
 import { Button, IconButton } from "~/components/ui/Button";
@@ -16,6 +16,9 @@ import {
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { api } from "~/utils/api";
 import { format } from "~/utils/csv";
+import { usePoolAmount, usePoolToken } from "../hooks/useAlloPool";
+import { Address, formatUnits, parseUnits } from "viem";
+import { cn } from "~/utils/classNames";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -109,8 +112,30 @@ function ConfirmDistributionDialog({
   distribution: Distribution[];
   onOpenChange: () => void;
 }) {
+  const { data: token } = usePoolToken();
+  const { data: balance } = usePoolAmount();
+
   const { isLoading, mutate } = useDistribute();
 
+  const { recipients, amounts } = useMemo(() => {
+    return distribution.reduce(
+      (acc, x) => ({
+        recipients: acc.recipients.concat(x.payoutAddress as Address),
+        amounts: acc.amounts.concat(
+          parseUnits(String(x.amount), token.decimals),
+        ),
+      }),
+      { recipients: [], amounts: [] } as {
+        recipients: Address[];
+        amounts: bigint[];
+      },
+    );
+  }, [distribution]);
+
+  console.log("balance", balance, amounts);
+  const amountDiff = (balance ?? 0n) - amounts.reduce((sum, x) => sum + x, 0n);
+
+  console.log("amountDiff", amountDiff);
   return (
     <Dialog
       isOpen={distribution.length > 0}
@@ -122,13 +147,31 @@ function ConfirmDistributionDialog({
         This will distribute the pools funds to the payout addresses according
         to the table.
       </div>
+
+      <div className="mb-4 flex flex-col items-center">
+        <h3 className="mb-2 text-sm font-semibold uppercase tracking-widest text-gray-500">
+          <div>Pool balance after distribution</div>
+        </h3>
+        <div
+          className={cn("text-2xl", {
+            ["text-red-600"]: amountDiff < 0n,
+          })}
+        >
+          {formatUnits(amountDiff, token.decimals)}
+        </div>
+      </div>
       <div className="space-y-1">
         <IconButton
-          disabled={isLoading}
+          disabled={isLoading || amountDiff < 0}
           icon={isLoading ? Spinner : null}
           className={"w-full"}
           variant="primary"
-          onClick={() => alert("not implemented yet")}
+          onClick={() =>
+            mutate?.(
+              { recipients, amounts },
+              { onSuccess: () => onOpenChange() },
+            )
+          }
         >
           {isLoading ? "Confirming..." : "Confirm"}
         </IconButton>

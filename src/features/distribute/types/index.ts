@@ -1,9 +1,15 @@
+import { type Address, isAddress } from "viem";
 import { z } from "zod";
+
+const EthAddressSchema = z.custom<string>(
+  (val) => isAddress(val as Address),
+  "Invalid address",
+);
 
 export const DistributionSchema = z.object({
   projectId: z.string(),
   amount: z.number(),
-  payoutAddress: z.string(),
+  payoutAddress: EthAddressSchema,
 });
 
 export const CalculationSchema = z.object({
@@ -19,3 +25,4 @@ export const SettingsSchema = z.object({
 
 export type Distribution = z.infer<typeof DistributionSchema>;
 export type Settings = z.infer<typeof SettingsSchema>;
+export type Calculation = z.infer<typeof CalculationSchema>;
