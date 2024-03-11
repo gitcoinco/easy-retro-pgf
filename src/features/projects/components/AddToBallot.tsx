@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useAccount } from "wagmi";
 import { useFormContext } from "react-hook-form";
 import { Check } from "lucide-react";
+import { toast } from "sonner";
 
 import { Alert } from "~/components/ui/Alert";
 import { Button, IconButton } from "~/components/ui/Button";
@@ -30,7 +31,11 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
   const { data: ballot } = useBallot();
-  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
+  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaciSignup(
+    {
+      onError: () => toast.error("Signup error"),
+    },
+  );
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
@@ -48,7 +53,11 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         </Alert>
       )}
 
-      {!isEligibleToVote ? null : !isRegistered ? (
+      {!isEligibleToVote ? null : isLoading ? (
+        <Button className="w-full md:w-auto" variant="primary" disabled>
+          Loading...
+        </Button>
+      ) : !isRegistered ? (
         <Button
           className="w-full md:w-auto"
           variant="primary"

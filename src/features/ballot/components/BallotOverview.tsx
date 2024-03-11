@@ -23,11 +23,16 @@ import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
 import { useMaciVote } from "~/hooks/useMaciVote";
+import { toast } from "sonner";
 
 function BallotOverview() {
   const router = useRouter();
 
-  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
+  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaciSignup(
+    {
+      onError: () => toast.error("Signup error"),
+    },
+  );
   const { data: ballot } = useBallot();
 
   const sum = sumBallot(ballot?.votes);
@@ -108,7 +113,11 @@ function BallotOverview() {
           </div>
         </div>
       </BallotSection>
-      {!isEligibleToVote ? null : !isRegistered ? (
+      {!isEligibleToVote ? null : isLoading ? (
+        <Button className="w-full" variant="primary" disabled>
+          Loading...
+        </Button>
+      ) : !isRegistered ? (
         <Button className="w-full" variant="primary" onClick={onSignup}>
           Signup
         </Button>

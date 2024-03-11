@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
@@ -45,7 +46,9 @@ export const ListEditDistribution = ({
   const [isOpen, setOpen] = useState(false);
   const { data: ballot } = useBallot();
   const add = useAddToBallot();
-  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup();
+  const { isRegistered, isEligibleToVote, onSignup } = useMaciSignup({
+    onError: () => toast.error("Signup error"),
+  });
 
   // What list projects are already in the ballot?
   function itemsInBallot(votes?: Vote[]) {
