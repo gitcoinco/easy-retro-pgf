@@ -19,6 +19,7 @@ import { format } from "~/utils/csv";
 import { usePoolAmount, usePoolToken } from "../hooks/useAlloPool";
 import { Address, formatUnits, parseUnits } from "viem";
 import { cn } from "~/utils/classNames";
+import { formatNumber } from "~/utils/formatNumber";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -132,10 +133,8 @@ function ConfirmDistributionDialog({
     );
   }, [distribution]);
 
-  console.log("balance", balance, amounts);
   const amountDiff = (balance ?? 0n) - amounts.reduce((sum, x) => sum + x, 0n);
 
-  console.log("amountDiff", amountDiff);
   return (
     <Dialog
       isOpen={distribution.length > 0}
@@ -157,7 +156,7 @@ function ConfirmDistributionDialog({
             ["text-red-600"]: amountDiff < 0n,
           })}
         >
-          {formatUnits(amountDiff, token.decimals)}
+          {formatNumber(formatUnits(amountDiff, token.decimals))}
         </div>
       </div>
       <div className="space-y-1">

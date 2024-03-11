@@ -37,11 +37,13 @@ export default function DistributePage() {
       sidebarComponent={
         <div className="space-y-4">
           <ConfigurePool />
-          <Alert variant="info">
-            <VoterCount />
-            {settings.isLoading ? (
-              <div className="h-[86px] w-[394px] animate-pulse rounded-xl bg-gray-200 dark:bg-gray-800" />
-            ) : (
+          {settings.isLoading ? (
+            <div />
+          ) : (
+            <Alert variant="info">
+              <VoterCount />
+              <div />
+
               <Form
                 defaultValues={calculation}
                 schema={CalculationSchema}
@@ -67,8 +69,8 @@ export default function DistributePage() {
                   </Button>
                 </div>
               </Form>
-            )}
-          </Alert>
+            </Alert>
+          )}
         </div>
       }
     >
@@ -116,7 +118,7 @@ function VoterCount() {
       </h3>
       <div className="pt-1 text-center text-2xl">
         <Skeleton
-          className="h-8 w-20"
+          className="h-8 w-20 dark:bg-gray-700"
           isLoading={voters.isLoading || votes.isLoading}
         >
           {votes.data?.totalVoters} / {voters.data?.length}
