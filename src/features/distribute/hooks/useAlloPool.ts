@@ -13,13 +13,17 @@ import { allo, config, isNativeToken, nativeToken } from "~/config";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAllo, waitForLogs } from "./useAllo";
 import { type Address, parseAbi } from "viem";
+import { api } from "~/utils/api";
 
 export function usePoolId() {
-  // TODO: Store in config database
-  return { data: 28 };
+  const config = api.config.get.useQuery();
+  return {
+    ...config,
+    data: config.data?.poolId,
+  };
 }
 
-export function usePool(poolId: number) {
+export function usePool(poolId?: number) {
   const allo = useAllo();
 
   return useQuery(["pool", poolId], async () => allo?.getPool(BigInt(poolId)), {
@@ -41,8 +45,10 @@ export function usePoolAmount() {
 
 export function useCreatePool() {
   const alloSDK = useAllo();
+  const setPool = api.config.setPoolId.useMutation();
   const { sendTransactionAsync } = useSendTransaction();
   const client = usePublicClient();
+  const utils = api.useUtils();
   return useMutation(
     async (params: { profileId: string; initialFunding?: bigint }) => {
       if (!alloSDK) throw new Error("Allo not initialized");
@@ -59,7 +65,21 @@ export function useCreatePool() {
       const value = BigInt(tx.value);
       const { hash } = await sendTransactionAsync({ ...tx, value });
 
-      return waitForLogs(hash, AlloABI, client);
+      return waitForLogs(hash, AlloABI, client).then((logs) => {
+        const { poolId } = (logs.find((log) => log?.eventName === "PoolCreated")
+          ?.args ?? {}) as { poolId?: bigint };
+
+        if (poolId) {
+          setPool.mutate(
+            { poolId: Number(poolId) },
+            {
+              onSuccess() {
+                utils.config.get.invalidate().catch(console.log);
+              },
+            },
+          );
+        }
+      });
     },
   );
 }

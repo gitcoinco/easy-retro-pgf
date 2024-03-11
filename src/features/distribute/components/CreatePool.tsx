@@ -25,11 +25,12 @@ import {
   useTokenAllowance,
   useTokenBalance,
 } from "../hooks/useAlloPool";
-import { allo, config, isNativeToken } from "~/config";
+import { allo, isNativeToken } from "~/config";
 import { ErrorMessage, Form, FormControl, Input } from "~/components/ui/Form";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useFormContext } from "react-hook-form";
 import { MintButton } from "./MintButton";
+import { api } from "~/utils/api";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -86,7 +87,7 @@ function CreatePool() {
   const profile = useAlloProfile();
   const approve = useApprove();
   const balance = useTokenBalance();
-  const { data: poolId } = usePoolId();
+  const poolId = usePoolId();
   const allowance = useTokenAllowance();
 
   const token = usePoolToken();
@@ -95,8 +96,16 @@ function CreatePool() {
 
   const profileId = profile.data?.id as unknown as `0x${string}`;
 
-  if (poolId) {
-    return <PoolDetails poolId={poolId} />;
+  if (poolId.isLoading) {
+    return (
+      <Alert className="flex justify-center">
+        <Spinner />
+      </Alert>
+    );
+  }
+
+  if (poolId.data) {
+    return <PoolDetails poolId={poolId.data} />;
   }
 
   return (
@@ -261,8 +270,7 @@ function FundPoolButton({
   const amount = BigInt(watch("amount") || 0);
 
   const hasAllowance = calcHasAllowance({ amount, allowance, decimals });
-  console.log({ hasAllowance, amount });
-  const disabled = !amount || isLoading || Boolean(formState.errors.amount);
+  const disabled = isLoading || Boolean(formState.errors.amount);
 
   if (!address || !session) {
     return (

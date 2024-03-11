@@ -24,7 +24,6 @@ export async function waitForLogs(
   client: PublicClient,
 ) {
   return client.waitForTransactionReceipt({ hash }).then(({ logs }) => {
-    console.log("logs", logs);
     return logs
       .map(({ data, topics }) => {
         try {

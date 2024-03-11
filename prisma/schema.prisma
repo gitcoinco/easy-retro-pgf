@@ -72,5 +72,6 @@ model Ballot {
 
 model Settings {
     id     String @id @default(cuid())
+    poolId Int?
     config Json
 }

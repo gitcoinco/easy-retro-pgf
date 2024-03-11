@@ -18,6 +18,7 @@ export const CalculationSchema = z.object({
 });
 export const SettingsSchema = z.object({
   id: z.string().optional(),
+  poolId: z.number().optional(),
   config: z.object({
     calculation: CalculationSchema,
   }),

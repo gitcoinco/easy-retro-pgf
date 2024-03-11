@@ -26,4 +26,15 @@ export const configRouter = createTRPCRouter({
           })
         : ctx.db.settings.create({ data: { config } });
     }),
+  setPoolId: adminProcedure
+    .input(z.object({ poolId: z.number() }))
+    .mutation(async ({ input: { poolId }, ctx }) => {
+      const existing = await getSettings(ctx.db);
+      return existing
+        ? ctx.db.settings.update({
+            where: { id: existing.id },
+            data: { poolId },
+          })
+        : ctx.db.settings.create({ data: { poolId } });
+    }),
 });
