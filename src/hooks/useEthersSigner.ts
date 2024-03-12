@@ -31,7 +31,7 @@ export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
         setSigner(walletSigner);
       })
       .catch(console.error);
-  }, [walletClient?.account, walletClient?.chain.id, setSigner]);
+  }, [walletClient?.account, walletClient?.chain?.id, setSigner]);
 
   return signer;
 }
