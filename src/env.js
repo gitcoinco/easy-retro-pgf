@@ -40,6 +40,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CHAIN_NAME: z.enum([
       "ethereum",
       "optimism",
+      "optimismGoerli",
       "optimismSepolia",
       "optimismGoerli",
       "optimismSepolia",
