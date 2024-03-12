@@ -41,6 +41,7 @@ export const env = createEnv({
       "ethereum",
       "optimism",
       "optimismGoerli",
+      "optimismSepolia",
       "arbitrum",
       "linea",
       "sepolia",
