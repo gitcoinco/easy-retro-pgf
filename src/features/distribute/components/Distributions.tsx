@@ -17,7 +17,7 @@ import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { api } from "~/utils/api";
 import { format } from "~/utils/csv";
 import { usePoolAmount, usePoolToken } from "../hooks/useAlloPool";
-import { Address, formatUnits, parseUnits } from "viem";
+import { type Address, formatUnits, parseUnits } from "viem";
 import { cn } from "~/utils/classNames";
 import { formatNumber } from "~/utils/formatNumber";
 
@@ -156,7 +156,7 @@ function ConfirmDistributionDialog({
             ["text-red-600"]: amountDiff < 0n,
           })}
         >
-          {formatNumber(formatUnits(amountDiff, token.decimals))}
+          {formatNumber(Number(formatUnits(amountDiff, token.decimals)))}
         </div>
       </div>
       <div className="space-y-1">
