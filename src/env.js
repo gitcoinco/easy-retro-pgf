@@ -50,8 +50,8 @@ export const env = createEnv({
     ]),
     NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
 
-    NEXT_PUBLIC_MAX_VOTES_TOTAL: z.string().default("30000000"),
-    NEXT_PUBLIC_MAX_VOTES_PROJECT: z.string().default("5000000"),
+    NEXT_PUBLIC_MAX_VOTES_TOTAL: z.string().default("150"),
+    NEXT_PUBLIC_MAX_VOTES_PROJECT: z.string().default("50"),
     NEXT_PUBLIC_VOTING_END_DATE: z
       .string()
       .datetime()
