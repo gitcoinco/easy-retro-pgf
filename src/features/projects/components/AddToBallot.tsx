@@ -36,6 +36,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
       onError: () => toast.error("Signup error"),
     },
   );
+  const { initialVoiceCredits } = useMaciSignup();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
@@ -102,9 +103,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             amount: z
               .number()
               .min(0)
-              .max(
-                Math.min(config.votingMaxProject, config.votingMaxTotal - sum),
-              )
+              .max(Math.min(initialVoiceCredits, initialVoiceCredits - sum))
               .default(0),
           })}
           onSubmit={({ amount }) => {
@@ -141,14 +140,19 @@ const ProjectAllocation = ({
     ? parseFloat(String(formAmount).replace(/,/g, ""))
     : 0;
   const total = amount + current;
+  const { initialVoiceCredits } = useMaciSignup();
 
-  const exceededProjectTokens = amount > config.votingMaxProject;
-  const exceededMaxTokens = total > config.votingMaxTotal;
+  const exceededProjectTokens = amount > initialVoiceCredits;
+  const exceededMaxTokens = total > initialVoiceCredits;
 
   const isError = exceededProjectTokens || exceededMaxTokens;
   return (
     <div>
-      <AllocationInput error={isError} name="amount" />
+      <AllocationInput
+        error={isError}
+        name="amount"
+        votingMaxProject={initialVoiceCredits}
+      />
       <div className="flex justify-between gap-2 pt-2 text-sm">
         <div className="flex gap-2">
           <span className="text-gray-600 dark:text-gray-400">
@@ -172,7 +176,7 @@ const ProjectAllocation = ({
           </span>
           <span className="text-gray-600 dark:text-gray-400">/</span>
           <span className="text-gray-600 dark:text-gray-400">
-            {formatNumber(config.votingMaxProject)}
+            {formatNumber(initialVoiceCredits)}
           </span>
         </div>
       </div>

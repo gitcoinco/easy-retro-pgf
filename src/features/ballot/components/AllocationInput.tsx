@@ -3,13 +3,14 @@ import { NumericFormat } from "react-number-format";
 import { useFormContext, Controller } from "react-hook-form";
 
 import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
-import { config } from "~/config";
 
 export const AllocationInput = ({
+  votingMaxProject,
   name,
   onBlur,
   ...props
 }: {
+  votingMaxProject: number;
   disabled?: boolean;
   error?: boolean;
 } & ComponentPropsWithRef<"input">) => {
@@ -28,7 +29,7 @@ export const AllocationInput = ({
             {...field}
             className="pr-16"
             isAllowed={({ floatValue }) =>
-              (floatValue ?? 0) <= config.votingMaxProject
+              (floatValue ?? 0) <= votingMaxProject
             }
             disabled={props.disabled}
             defaultValue={props.defaultValue as string}

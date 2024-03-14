@@ -1,9 +1,9 @@
 import Link from "next/link";
 import {
   type ComponentPropsWithoutRef,
+  type FunctionComponent,
   createElement,
   useState,
-  type FunctionComponent,
 } from "react";
 import { useAccount } from "wagmi";
 import {
@@ -187,13 +187,14 @@ const TotalAllocationBanner = () => {
 
   // Load existing ballot
   const { data: ballot } = useBallot();
+  const { initialVoiceCredits } = useMaciSignup()
 
   const sum = sumBallot(ballot?.votes);
   const votes = form.watch("votes") ?? [];
 
   const current = sumBallot(votes);
 
-  const exceeds = current + sum - config.votingMaxTotal;
+  const exceeds = current + sum - initialVoiceCredits;
   const isExceeding = exceeds > 0;
 
   return (

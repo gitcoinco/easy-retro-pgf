@@ -10,7 +10,6 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { ballotTypedData } from "~/utils/typedData";
 import type { db } from "~/server/db";
 import { config } from "~/config";
-import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { type Prisma } from "@prisma/client";
 import { fetchApprovedVoter } from "~/utils/fetchAttestations";
 import { z } from "zod";
@@ -124,13 +123,6 @@ export const ballotRouter = createTRPCRouter({
         });
       }
 
-      if (!verifyBallotCount(ballot.votes as Vote[])) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: `Ballot must have a maximum of ${config.votingMaxTotal} votes and ${config.votingMaxProject} per project.`,
-        });
-      }
-
       if (!(await fetchApprovedVoter(voterId))) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -169,14 +161,6 @@ export const ballotRouter = createTRPCRouter({
       });
     }),
 });
-
-function verifyBallotCount(votes: Vote[]) {
-  const sum = sumBallot(votes);
-  const validVotes = votes.every(
-    (vote) => vote.amount <= config.votingMaxProject,
-  );
-  return sum <= config.votingMaxTotal && validVotes;
-}
 
 async function verifyBallotHash(hashed_votes: string, votes: Vote[]) {
   return hashed_votes === keccak256(Buffer.from(JSON.stringify(votes)));

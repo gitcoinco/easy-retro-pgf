@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 export interface IUseMaciSignUpData {
   isLoading: boolean;
   isEligibleToVote: boolean;
+  initialVoiceCredits: number;
   stateIndex?: string;
   isRegistered?: boolean;
   onSignup: () => Promise<void>;
@@ -29,6 +30,7 @@ export const useMaciSignup = (
 
   const [isRegistered, setIsRegistered] = useState<boolean>();
   const [stateIndex, setStateIndex] = useState<string>();
+  const [initialVoiceCredits, setInitialVoiceCredits] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const attestations = api.voters.approvedAttestations.useQuery({
@@ -85,7 +87,7 @@ export const useMaciSignup = (
   ]);
 
   useEffect(() => {
-    if (!isConnected || !signer || !data?.publicKey || !address) {
+    if (!isConnected || !signer || !data?.publicKey || !address || isLoading) {
       return;
     }
 
@@ -94,25 +96,31 @@ export const useMaciSignup = (
       maciAddress: config.maciAddress!,
       signer: signer as unknown as Signer,
     })
-      .then(({ isRegistered: registered, stateIndex: index }) => {
+      .then(({ isRegistered: registered, voiceCredits, stateIndex: index }) => {
         setIsRegistered(registered);
         setStateIndex(index);
+        setInitialVoiceCredits(Number(voiceCredits));
       })
       .catch(console.error);
   }, [
+    isLoading,
     isConnected,
+    isRegistered,
     data?.publicKey,
     address,
     signer,
+    stateIndex,
     setIsRegistered,
     setStateIndex,
+    setInitialVoiceCredits,
   ]);
 
   return {
     isLoading,
     isEligibleToVote,
-    stateIndex,
     isRegistered,
+    stateIndex,
+    initialVoiceCredits,
     onSignup,
   };
 };
