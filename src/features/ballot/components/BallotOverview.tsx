@@ -1,4 +1,8 @@
-import { type PropsWithChildren, type ReactNode, useState } from "react";
+import {
+  type PropsWithChildren,
+  type ReactNode,
+  useState,
+} from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -34,6 +38,7 @@ function BallotOverview() {
     },
   );
   const { data: ballot } = useBallot();
+  const { initialVoiceCredits } = useMaciSignup();
 
   const sum = sumBallot(ballot?.votes);
 
@@ -97,7 +102,7 @@ function BallotOverview() {
             {config.tokenName} allocated:
             <div
               className={clsx("text-gray-900 dark:text-gray-300", {
-                ["text-primary-500"]: sum > config.votingMaxTotal,
+                ["text-primary-500"]: sum > initialVoiceCredits,
               })}
             >
               {formatNumber(sum)} {config.tokenName}
@@ -105,11 +110,11 @@ function BallotOverview() {
           </div>
         }
       >
-        <Progress value={sum} max={config.votingMaxTotal} />
+        <Progress value={sum} max={initialVoiceCredits} />
         <div className="flex justify-between text-xs">
           <div>Total</div>
           <div>
-            {formatNumber(config.votingMaxTotal ?? 0)} {config.tokenName}
+            {formatNumber(initialVoiceCredits)} {config.tokenName}
           </div>
         </div>
       </BallotSection>
@@ -126,7 +131,7 @@ function BallotOverview() {
           View submitted ballot
         </Button>
       ) : canSubmit ? (
-        <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
+        <SubmitBallotButton disabled={sum > initialVoiceCredits} />
       ) : (
         <Button className={"w-full"} variant="primary" disabled>
           No projects added yet

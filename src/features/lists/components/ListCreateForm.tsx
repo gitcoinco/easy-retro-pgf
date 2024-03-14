@@ -13,7 +13,7 @@ import { Dialog } from "~/components/ui/Dialog";
 
 import { Tag } from "~/components/ui/Tag";
 import { useLocalStorage } from "react-use";
-import { config, impactCategories } from "~/config";
+import { impactCategories } from "~/config";
 import { useCreateList } from "../hooks/useCreateList";
 import { toast } from "sonner";
 import { Alert } from "~/components/ui/Alert";
@@ -23,7 +23,8 @@ import { Spinner } from "~/components/ui/Spinner";
 import { AllocationFormWithSearch } from "~/features/ballot/components/AllocationList";
 import { formatNumber } from "~/utils/formatNumber";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
-import { Vote } from "~/features/ballot/types";
+import type { Vote } from "~/features/ballot/types";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 const ListTags = () => {
   const { control, watch } = useFormContext();
@@ -57,9 +58,6 @@ const ListTags = () => {
   );
 };
 
-const createListErrors = {
-  ACTION_REJECTED: "User rejected transaction",
-};
 export function ListForm() {
   const clearDraft = useLocalStorage("list-draft")[2];
 
@@ -76,8 +74,6 @@ export function ListForm() {
   if (create.isSuccess) {
     return <Alert variant="success" title="List created!"></Alert>;
   }
-
-  const { address } = useAccount();
 
   const error = create.error as {
     reason?: string;
@@ -189,10 +185,10 @@ function TotalOP() {
   const form = useFormContext();
 
   const projects = (form.watch("projects") ?? []) as Vote[];
-
+  const { initialVoiceCredits } = useMaciSignup();
   const current = sumBallot(projects);
 
-  const exceeds = current - config.votingMaxTotal;
+  const exceeds = current - initialVoiceCredits;
   const isExceeding = exceeds > 0;
   return (
     <Alert className="mb-6" variant={isExceeding ? "warning" : "info"}>

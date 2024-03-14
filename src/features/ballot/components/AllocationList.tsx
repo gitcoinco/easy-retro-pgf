@@ -14,6 +14,7 @@ import { type Vote } from "../types";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -51,6 +52,7 @@ export function AllocationForm({
   onSave?: (v: { votes: Vote[] }) => void;
 }) {
   const form = useFormContext<{ votes: Vote[] }>();
+  const { initialVoiceCredits } = useMaciSignup();
 
   const { fields, remove } = useFieldArray({
     name: "votes",
@@ -81,6 +83,7 @@ export function AllocationForm({
                       name="compareAmount"
                       defaultValue={listAllocation}
                       disabled={true}
+                      votingMaxProject={initialVoiceCredits}
                     />
                   ) : null}
                 </Td>
@@ -88,6 +91,7 @@ export function AllocationForm({
                   <AllocationInput
                     name={`votes.${idx}.amount`}
                     disabled={disabled}
+                    votingMaxProject={initialVoiceCredits}
                     onBlur={() => onSave?.(form.getValues())}
                   />
                 </Td>
@@ -122,6 +126,7 @@ export function AllocationFormWithSearch() {
     keyName: "key",
     control: form.control,
   });
+  const { initialVoiceCredits } = useMaciSignup();
 
   const { errors } = form.formState;
 
@@ -146,7 +151,10 @@ export function AllocationFormWithSearch() {
                   </Td>
 
                   <Td>
-                    <AllocationInput name={`projects.${i}.amount`} />
+                    <AllocationInput
+                      name={`projects.${i}.amount`}
+                      votingMaxProject={initialVoiceCredits}
+                    />
                   </Td>
                   <Td>
                     <IconButton
