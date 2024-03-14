@@ -24,12 +24,17 @@ export function useSaveBallot(opts?: { onSuccess?: () => void }) {
 }
 
 export function useAddToBallot() {
+  const utils = api.useUtils();
   const { data: ballot } = useBallot();
   const { mutate } = useSaveBallot();
 
   return useMutation(async (votes: Vote[]) => {
     if (ballot) {
-      return mutate(mergeBallot(ballot as unknown as Ballot, votes));
+      return mutate(mergeBallot(ballot as unknown as Ballot, votes), {
+        onSuccess() {
+          utils.ballot.invalidate().catch(console.log);
+        },
+      });
     }
   });
 }
@@ -78,6 +83,7 @@ export function useSubmitBallot({
         project_count: BigInt(ballot?.votes?.length ?? 0),
         hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
       };
+
       const signature = await signTypedDataAsync({
         ...ballotTypedData(chain?.id),
         message,
