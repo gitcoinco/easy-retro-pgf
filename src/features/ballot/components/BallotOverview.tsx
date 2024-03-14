@@ -26,6 +26,7 @@ function BallotOverview() {
   const router = useRouter();
 
   const { data: ballot } = useBallot();
+  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
 
   const sum = sumBallot(ballot?.votes);
 
@@ -105,6 +106,10 @@ function BallotOverview() {
       {ballot?.publishedAt ? (
         <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
           View submitted ballot
+        </Button>
+      ) : isSaving ? (
+        <Button disabled className="w-full" variant="primary">
+          Adding to ballot...
         </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
