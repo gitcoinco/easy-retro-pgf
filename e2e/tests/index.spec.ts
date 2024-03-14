@@ -47,6 +47,23 @@ test("Submit Ballot flow", async ({ page }) => {
 
   await page.waitForTimeout(1000);
   await page.getByRole("button", { name: "Add 2 projects to ballot" }).click();
+
+  await page
+    .locator("a")
+    .filter({ hasText: "Castle CapitalCastle Capital" })
+    .click();
+  await expect(page.getByText("0x516272...82308bEE0")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "https://www.castlecapital.vc/" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Castle Capital" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Add to ballot" }).click();
+  await page.getByLabel("allocation-input").fill("5000");
+  await page.getByLabel("allocation-input").press("Enter");
+
   await page.getByRole("link", { name: "View ballot", exact: true }).click();
 
   // Ballot page
