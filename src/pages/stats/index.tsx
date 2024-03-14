@@ -77,7 +77,7 @@ function Stats() {
         <Stat title="Projects applied">{count.data?.count}</Stat>
         <Stat title="Projects voted for">{Object.keys(projects).length}</Stat>
         <Stat title="People Voting">
-          {pollData?.numSignups.toString() ?? 0}
+          {pollData?.numSignups ? Number(pollData?.numSignups) - 1 : 0}
         </Stat>
         <Stat title="Average votes per project">
           {formatNumber(averageVotes)}
