@@ -92,22 +92,24 @@ export function useSubmitBallot({
 
   const { signTypedDataAsync } = useSignTypedData();
 
-  return useMutation(async () => {
-    if (chainId) {
-      const { data: ballot } = await refetch();
+  return useMutation({
+    mutationFn: async () => {
+      if (chainId) {
+        const { data: ballot } = await refetch();
 
-      const message = {
-        total_votes: BigInt(sumBallot(ballot?.votes)),
-        project_count: BigInt(ballot?.votes?.length ?? 0),
-        hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
-      };
-      const signature = await signTypedDataAsync({
-        ...ballotTypedData(chainId),
-        message,
-      });
+        const message = {
+          total_votes: BigInt(sumBallot(ballot?.votes)),
+          project_count: BigInt(ballot?.votes?.length ?? 0),
+          hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
+        };
+        const signature = await signTypedDataAsync({
+          ...ballotTypedData(chainId),
+          message,
+        });
 
-      return mutateAsync({ signature, message, chainId, pollId: pollId! });
-    }
+        return mutateAsync({ signature, message, chainId, pollId: pollId! });
+      }
+    },
   });
 }
 
