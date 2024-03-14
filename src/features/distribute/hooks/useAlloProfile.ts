@@ -4,7 +4,6 @@ import { type Address, zeroAddress } from "viem";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { solidityPackedKeccak256 } from "ethers";
 import { useAlloRegistry, waitForLogs } from "./useAllo";
-import { allo } from "~/config";
 
 export function useAlloProfile() {
   const registry = useAlloRegistry();
@@ -47,23 +46,6 @@ export function useCreateAlloProfile() {
       return logs;
     });
   });
-}
-export function useAlloIsMemberOfProfile() {
-  const registry = useAlloRegistry();
-  const { address } = useAccount();
-
-  return useQuery(
-    ["allo/registry/member"],
-    async () => {
-      const profileId = getProfileId(address);
-
-      return registry?.isMemberOfProfile({
-        profileId,
-        account: allo.strategyAddress,
-      });
-    },
-    { enabled: Boolean(registry && address) },
-  );
 }
 
 function getProfileId(address?: Address) {

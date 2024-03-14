@@ -10,11 +10,7 @@ import { Button, IconButton } from "~/components/ui/Button";
 import { Alert } from "~/components/ui/Alert";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Spinner } from "~/components/ui/Spinner";
-import {
-  useAlloIsMemberOfProfile,
-  useAlloProfile,
-  useCreateAlloProfile,
-} from "../hooks/useAlloProfile";
+import { useAlloProfile, useCreateAlloProfile } from "../hooks/useAlloProfile";
 import {
   useApprove,
   useCreatePool,
@@ -36,16 +32,12 @@ import {
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useFormContext } from "react-hook-form";
 import { MintButton } from "./MintButton";
-import { api } from "~/utils/api";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
   const profile = useAlloProfile();
   const createProfile = useCreateAlloProfile();
 
-  const isMember = useAlloIsMemberOfProfile();
-
-  console.log("create profile,", createProfile.data);
   if (!isCorrectNetwork) {
     return (
       <Alert variant="info" className="flex items-center gap-2">
@@ -54,7 +46,7 @@ function CheckAlloProfile(props: PropsWithChildren) {
     );
   }
 
-  if (profile.isLoading || isMember.isLoading) {
+  if (profile.isLoading) {
     return (
       <Alert className="flex justify-center">
         <Spinner />
@@ -135,9 +127,7 @@ function CreatePool() {
           strategyAddress: allo.strategyAddress,
           tokenName: "ETH",
         }}
-        onSubmit={(values, form) => {
-          console.log(values);
-
+        onSubmit={(values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
           const hasAllowance = isNativeToken
             ? true
