@@ -17,14 +17,6 @@ import { api } from "~/utils/api";
 export default function DistributePage() {
   const utils = api.useUtils();
   const setConfig = api.config.set.useMutation({
-    onMutate: async (data) => {
-      // Optimistic update
-      utils.config.get.setData(undefined, (prev) => ({
-        id: prev?.id ?? "?",
-        ...data,
-      }));
-    },
-    // Trigger re-fetch of votes (with new calculation settings)
     onSuccess: () => utils.results.votes.invalidate(),
   });
   const settings = api.config.get.useQuery();
