@@ -7,7 +7,7 @@ import {
 
 export function useSelectProjects() {
   const add = useAddToBallot();
-  const { data: ballot } = useBallot();
+  const { data: ballot, isLoading } = useBallot();
 
   const [selected, setSelected] = useState<Record<string, boolean>>({});
 
@@ -21,7 +21,7 @@ export function useSelectProjects() {
 
   return {
     count: toAdd.length,
-    isLoading: add.isLoading,
+    isLoading: isLoading || add.isLoading,
     add: () => {
       add.mutate(toAdd);
       setSelected({});
