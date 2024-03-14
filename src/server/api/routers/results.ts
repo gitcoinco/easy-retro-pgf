@@ -63,7 +63,7 @@ async function calculateBallotResults(db: PrismaClient) {
 
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
-    where: { publishedAt: { not: undefined } },
+    where: { publishedAt: { not: null } },
   });
 
   const projects = calculateVotes(
