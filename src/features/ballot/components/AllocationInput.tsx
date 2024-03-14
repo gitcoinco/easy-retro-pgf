@@ -3,7 +3,6 @@ import { NumericFormat } from "react-number-format";
 import { useFormContext, Controller } from "react-hook-form";
 
 import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
-import { config } from "~/config";
 import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
 
 export const AllocationInput = ({
