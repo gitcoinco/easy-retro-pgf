@@ -33,8 +33,6 @@ export const config = {
 
 export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const allo = {
-  customStrategy: process.env
-    .NEXT_PUBLIC_ALLO2_CUSTOM_STRATEGY as `0x${string}`,
   alloAddress: process.env.NEXT_PUBLIC_ALLO2_ADDRESS as `0x${string}`,
   strategyAddress: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS as `0x${string}`,
   // eslint-disable-next-line
