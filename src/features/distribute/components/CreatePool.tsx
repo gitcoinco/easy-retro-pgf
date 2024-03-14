@@ -235,8 +235,6 @@ function PoolDetails({ poolId = 0 }) {
 
         <ErrorMessage>{(error as { message: string })?.message}</ErrorMessage>
       </Form>
-
-      <MintButton />
     </Alert>
   );
 }
