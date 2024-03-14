@@ -26,7 +26,13 @@ import {
   useTokenBalance,
 } from "../hooks/useAlloPool";
 import { allo, isNativeToken } from "~/config";
-import { ErrorMessage, Form, FormControl, Input } from "~/components/ui/Form";
+import {
+  ErrorMessage,
+  Form,
+  FormControl,
+  Input,
+  Label,
+} from "~/components/ui/Form";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useFormContext } from "react-hook-form";
 import { MintButton } from "./MintButton";
@@ -129,7 +135,7 @@ function CreatePool() {
           strategyAddress: allo.strategyAddress,
           tokenName: "ETH",
         }}
-        onSubmit={(values) => {
+        onSubmit={(values, form) => {
           console.log(values);
 
           const amount = parseUnits(values.amount.toString(), decimals);
@@ -149,11 +155,12 @@ function CreatePool() {
         <FormControl name="tokenAddress" label="Token">
           <Input disabled readOnly value={token.data?.symbol ?? "ETH"} />
         </FormControl>
-        <FormControl name="amount" label="Amount of tokens to fund">
-          <AllocationInput tokenAddon />
-        </FormControl>
+        <Label>
+          Amount of tokens to fund
+          <AllocationInput name="amount" tokenAddon />
+        </Label>
 
-        <div className="-mt-2 mb-2">
+        <div className="mb-2">
           <TokenBalance />
         </div>
 
@@ -206,7 +213,6 @@ function PoolDetails({ poolId = 0 }) {
         })}
         onSubmit={async (values, form) => {
           const amount = parseUnits(values.amount.toString(), decimals);
-          console.log({ amount });
           const hasAllowance = calcHasAllowance({
             amount: BigInt(values.amount),
             allowance,
@@ -214,7 +220,7 @@ function PoolDetails({ poolId = 0 }) {
           });
 
           if (!hasAllowance) {
-            return approve.write({
+            return approve.writeAsync({
               args: [allo.alloAddress, amount],
             });
           }
