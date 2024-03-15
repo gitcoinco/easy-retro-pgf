@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function ListsPage() {
   return (
     <LayoutWithBallot sidebar="left" showBallot eligibilityCheck>
-      <div className="flex justify-end">
+      <div className="mb-2 flex justify-end">
         <Button as={Link} href={`/lists/new`} variant="primary">
           New list
         </Button>

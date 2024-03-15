@@ -81,7 +81,7 @@ export function AllocationFormWithSearch() {
                   </Td>
 
                   <Td>
-                    <AllocationInput name={`projects.${i}.amount`} />
+                    <AllocationInput name={`projects.${i}.amount`} tokenAddon />
                   </Td>
                   <Td>
                     <IconButton
