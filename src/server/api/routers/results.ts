@@ -1,32 +1,34 @@
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
 import type { PrismaClient } from "@prisma/client";
-import { type Vote } from "~/features/ballot/types";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getAppState } from "~/utils/state";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { eas } from "~/config";
+import { calculateVotes } from "~/utils/calculateResults";
+import { type Vote } from "~/features/ballot/types";
+import { getSettings } from "./config";
 
 export const resultsRouter = createTRPCRouter({
-  stats: publicProcedure.query(async ({ ctx }) => calculateResults(ctx.db)),
+  votes: publicProcedure.query(async ({ ctx }) =>
+    calculateBallotResults(ctx.db),
+  ),
   project: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateResults(ctx.db);
+      const { projects } = await calculateBallotResults(ctx.db);
 
       return {
-        amount: projects[input.id],
+        amount: projects?.[input.id]?.votes ?? 0,
       };
     }),
 
   projects: publicProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateResults(ctx.db);
+      const { projects } = await calculateBallotResults(ctx.db);
 
-      const sortedIDs = Object.entries(projects)
-        .sort((a, b) => b[1] - a[1])
+      const sortedIDs = Object.entries(projects ?? {})
+        .sort((a, b) => b[1].votes - a[1].votes)
         .map(([id]) => id)
         .slice(
           input.cursor * input.limit,
@@ -47,57 +49,31 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-type BallotResults = {
-  averageVotes: number;
-  totalVotes: number;
-  totalVoters: number;
-  projects: Record<string, number>;
-};
-
-export async function calculateResults(
-  db: PrismaClient,
-): Promise<BallotResults> {
-  if (getAppState() !== "RESULTS") {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Voting has not ended yet",
-    });
+async function calculateBallotResults(db: PrismaClient) {
+  const settings = await getSettings(db);
+  const calculation = settings?.config?.calculation;
+  if (!calculation) {
+    console.log("No calculation stored");
+    return {};
+  }
+  // When the Minimum Qurom input is empty, return empty
+  if (calculation?.style === "op" && !calculation?.threshold) {
+    return {};
   }
 
-  const ballots = await db.ballot.findMany();
-  let totalVotes = 0;
-  const projects = new Map<string, number>();
+  // Fetch the ballots
+  const ballots = await db.ballot.findMany({
+    where: { publishedAt: { not: null } },
+  });
 
-  ballots
-    .filter((ballot) => ballot.publishedAt)
-    .forEach((ballot) => {
-      ballot.votes.forEach((vote) => {
-        const rewards = projects.get((vote as Vote).projectId) ?? 0;
-        projects.set((vote as Vote).projectId, rewards + (vote as Vote).amount);
-
-        totalVotes += 1;
-      });
-    });
-
-  const averageVotes = calculateAverage(
-    Object.values(Object.fromEntries(projects)),
+  const projects = calculateVotes(
+    ballots as unknown as { voterId: string; votes: Vote[] }[],
+    calculation,
   );
-  return {
-    averageVotes,
-    totalVoters: ballots.length,
-    totalVotes: totalVotes,
-    projects: Object.fromEntries(projects),
-  };
-}
 
-function calculateAverage(votes: number[]) {
-  if (votes.length === 0) {
-    return 0;
-  }
+  const averageVotes = 0;
+  const totalVotes = ballots.reduce((sum, x) => sum + x.votes.length, 0);
+  const totalVoters = ballots.length;
 
-  const sum = votes.reduce((sum, x) => sum + x, 0);
-
-  const average = sum / votes.length;
-
-  return Math.round(average);
+  return { projects, totalVoters, totalVotes, averageVotes };
 }

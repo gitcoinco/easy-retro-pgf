@@ -7,6 +7,7 @@ import { ConnectButton } from "./ConnectButton";
 import { IconButton } from "./ui/Button";
 import { config, metadata } from "~/config";
 import { Menu, X } from "lucide-react";
+import dynamic from "next/dynamic";
 
 const Logo = () => (
   <div className="h-10">
@@ -54,7 +55,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
             <Logo />
           </Link>
         </div>
-        <div className="hidden h-full items-center gap-4 md:flex">
+        <div className="hidden h-full items-center gap-4 overflow-x-auto md:flex">
           {navLinks?.map((link) => (
             <NavLink
               isActive={asPath.startsWith(link.href)}
@@ -99,3 +100,5 @@ const MobileMenu = ({
     ))}
   </div>
 );
+
+export default dynamic(async () => Header, { ssr: false });

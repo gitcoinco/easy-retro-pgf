@@ -5,16 +5,16 @@ import {
   type PropsWithChildren,
   type ReactElement,
   type ComponentPropsWithoutRef,
+  type ReactNode,
   forwardRef,
   cloneElement,
   useEffect,
-  ReactNode,
 } from "react";
 import {
   FormProvider,
   useForm,
   useFormContext,
-  UseFormReturn,
+  type UseFormReturn,
   type UseFormProps,
   type FieldValues,
   useFieldArray,
@@ -22,8 +22,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createComponent } from ".";
-// import { Search } from "../icons";
-import clsx from "clsx";
+import { cn } from "~/utils/classNames";
 import { useInterval, useLocalStorage } from "react-use";
 import { IconButton } from "./Button";
 import { PlusIcon, Search, Trash } from "lucide-react";
@@ -149,7 +148,7 @@ export const FormControl = ({
   ) as unknown as { message: string };
 
   return (
-    <fieldset className={clsx("mb-4", className)}>
+    <fieldset className={cn("mb-4", className)}>
       {label && (
         <Label
           className="mb-1"
@@ -163,7 +162,11 @@ export const FormControl = ({
         error: Boolean(error),
         ...register(name, { valueAsNumber }),
       })}
-      {hint && <div className="pt-1 text-xs text-gray-500">{hint}</div>}
+      {hint && (
+        <div className="pt-1 text-xs text-gray-500 dark:text-gray-400">
+          {hint}
+        </div>
+      )}
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </fieldset>
   );
@@ -226,6 +229,7 @@ export function FieldArray<S extends z.Schema>({
 }
 export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   defaultValues?: UseFormProps<z.infer<S>>["defaultValues"];
+  values?: UseFormProps<z.infer<S>>["values"];
   schema: S;
   persist?: string;
   onSubmit: (values: z.infer<S>, form: UseFormReturn<z.infer<S>>) => void;
@@ -235,12 +239,14 @@ export function Form<S extends z.Schema>({
   schema,
   children,
   persist,
+  values,
   defaultValues,
   onSubmit,
 }: FormProps<S>) {
   // Initialize the form with defaultValues and schema for validation
   const form = useForm({
     defaultValues,
+    values,
     resolver: zodResolver(schema),
     mode: "onBlur",
   });

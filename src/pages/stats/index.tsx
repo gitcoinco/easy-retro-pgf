@@ -57,7 +57,7 @@ function Stats() {
     const data = (projectsResults?.pages?.[0] ?? [])
       .map((project) => ({
         x: project.name,
-        y: projects[project.id],
+        y: projects[project.id]?.votes,
       }))
       .slice(0, 15);
 
@@ -76,9 +76,9 @@ function Stats() {
         <Stat title="Projects voted for">{Object.keys(projects).length}</Stat>
         <Stat title="Votes">{totalVotes}</Stat>
         <Stat title="People Voting">{totalVoters}</Stat>
-        <Stat title="Average votes per project">
+        {/* <Stat title="Average votes per project">
           {formatNumber(averageVotes)}
-        </Stat>
+        </Stat> */}
       </div>
     </div>
   );

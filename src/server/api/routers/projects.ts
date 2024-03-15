@@ -5,6 +5,7 @@ import { fetchAttestations, createDataFilter } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { config, eas } from "~/config";
 import { type Filter, FilterSchema } from "~/features/filter/types";
+import { fetchMetadata } from "~/utils/fetchMetadata";
 
 export const projectsRouter = createTRPCRouter({
   count: publicProcedure.query(async ({}) => {
@@ -67,6 +68,37 @@ export const projectsRouter = createTRPCRouter({
       });
     });
   }),
+
+  // Used for distribution to get the projects' payoutAddress
+  // To get this data we need to fetch all projects and their metadata
+  payoutAddresses: publicProcedure
+    .input(z.object({ ids: z.array(z.string()) }))
+    .query(async ({ input }) => {
+      console.log({ input });
+      return fetchAttestations([eas.schemas.metadata], {
+        where: { id: { in: input.ids } },
+      })
+        .then((attestations) =>
+          Promise.all(
+            attestations.map((attestation) =>
+              fetchMetadata(attestation.metadataPtr).then((data) => {
+                const { payoutAddress } = data as unknown as {
+                  payoutAddress: string;
+                };
+
+                console.log({ payoutAddress });
+                return { projectId: attestation.id, payoutAddress };
+              }),
+            ),
+          ),
+        )
+        .then((projects) =>
+          projects.reduce(
+            (acc, x) => ({ ...acc, [x.projectId]: x.payoutAddress }),
+            {},
+          ),
+        );
+    }),
 });
 
 function createOrderBy(

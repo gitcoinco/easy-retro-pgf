@@ -55,7 +55,7 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
         {projectsData.length ? (
           <Command.List
             className={clsx(
-              "absolute left-0 z-10 mt-1 max-h-[300px] w-full overflow-y-scroll rounded-xl p-2 md:h-auto",
+              "absolute left-0 z-10 mt-1 max-h-[300px] w-full overflow-y-scroll rounded-xl bg-gray-100 p-2 dark:bg-gray-900 md:h-auto",
               { ["hidden"]: !isOpen },
               0,
             )}
@@ -76,7 +76,7 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
                 >
                   <ProjectAvatar
                     className="h-6 w-6"
-                    profileId={item.attester}
+                    profileId={item.recipient}
                   />
                   {item.name}
                 </Command.Item>

@@ -2,7 +2,7 @@ import { AlertCircle, FileDown, FileUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useRef, useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
 import { Button, IconButton } from "~/components/ui/Button";
@@ -17,7 +17,7 @@ import {
 } from "~/features/ballot/hooks/useBallot";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
-import { Layout } from "~/layouts/DefaultLayout";
+import { LayoutWithBallot } from "~/layouts/DefaultLayout";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
@@ -33,7 +33,7 @@ export default function BallotPage() {
 
   const votes = ballot?.votes.sort((a, b) => b.amount - a.amount);
   return (
-    <Layout sidebar="right" requireAuth>
+    <LayoutWithBallot sidebar="right" requireAuth>
       {isLoading ? null : (
         <Form
           schema={BallotSchema}
@@ -44,7 +44,7 @@ export default function BallotPage() {
         </Form>
       )}
       <div className="py-8" />
-    </Layout>
+    </LayoutWithBallot>
   );
 }
 

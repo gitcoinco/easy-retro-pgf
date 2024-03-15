@@ -21,7 +21,9 @@ export function ProjectsResults() {
             className={clsx("relative", { ["animate-pulse"]: isLoading })}
           >
             {!results.isLoading && getAppState() === "RESULTS" ? (
-              <ProjectItemAwarded amount={results.data?.projects?.[item.id]} />
+              <ProjectItemAwarded
+                amount={results.data?.projects?.[item.id]?.votes}
+              />
             ) : null}
             <ProjectItem isLoading={isLoading} attestation={item} />
           </Link>

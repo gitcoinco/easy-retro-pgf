@@ -61,25 +61,28 @@ export function useSubmitBallot({
   onSuccess: () => Promise<void>;
 }) {
   const { chain } = useNetwork();
-  const { data: ballot } = useBallot();
+  const { refetch } = useBallot();
   const { mutateAsync, isLoading } = api.ballot.publish.useMutation({
     onSuccess,
   });
   useBeforeUnload(isLoading, "You have unsaved changes, are you sure?");
 
-  const message = {
-    total_votes: BigInt(sumBallot(ballot?.votes)),
-    project_count: BigInt(ballot?.votes?.length ?? 0),
-    hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
-  };
-  const { signTypedDataAsync } = useSignTypedData({
-    ...ballotTypedData(chain?.id),
-    message,
-  });
+  const { signTypedDataAsync } = useSignTypedData();
 
   return useMutation(async () => {
     if (chain) {
-      const signature = await signTypedDataAsync();
+      const { data: ballot } = await refetch();
+
+      const message = {
+        total_votes: BigInt(sumBallot(ballot?.votes)),
+        project_count: BigInt(ballot?.votes?.length ?? 0),
+        hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
+      };
+      const signature = await signTypedDataAsync({
+        ...ballotTypedData(chain?.id),
+        message,
+      });
+
       return mutateAsync({ signature, message, chainId: chain?.id });
     }
   });

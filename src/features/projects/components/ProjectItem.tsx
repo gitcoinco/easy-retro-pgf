@@ -49,7 +49,7 @@ export function ProjectItem({
 
 export function ProjectItemAwarded({ amount = 0 }) {
   return (
-    <div className="absolute right-2 top-[100px] z-10 -mt-2 rounded bg-gray-900 p-1 text-sm">
+    <div className="absolute right-2 top-[100px] z-10 -mt-2 rounded bg-gray-100 p-1 text-sm dark:bg-gray-900">
       <span className="font-bold">{formatNumber(amount)}</span>{" "}
       {config.tokenName}
     </div>

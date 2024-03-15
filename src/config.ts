@@ -22,10 +22,22 @@ export const config = {
   ),
   tokenName: process.env.NEXT_PUBLIC_TOKEN_NAME!,
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
-  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
+  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(
+    ",",
+  ) as `0x${string}`[],
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
 };
+
+export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const allo = {
+  alloAddress: process.env.NEXT_PUBLIC_ALLO2_ADDRESS as `0x${string}`,
+  strategyAddress: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS as `0x${string}`,
+  // eslint-disable-next-line
+  tokenAddress: (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ||
+    nativeToken) as `0x${string}`,
+};
+export const isNativeToken = allo.tokenAddress === nativeToken;
 
 export const theme = {
   colorMode: "dark",
