@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { tv } from "tailwind-variants";
 import Link from "next/link";
 import { Trash } from "lucide-react";
@@ -18,10 +18,9 @@ import { type Vote } from "../types";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
-import { config } from "~/config";
 import { FormControl, Input } from "~/components/ui/Form";
 import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
+import { useMaciSignup } from "~/hooks/useMaciSignup";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -41,7 +40,7 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
                 <ProjectAvatarWithName link id={project.projectId} />
               </Td>
               <Td className="whitespace-nowrap text-right">
-                {formatNumber(project.amount)} {token.data?.symbol || config.tokenName}
+                {formatNumber(project.amount)} {token.data?.symbol}
               </Td>
             </Tr>
           ))}
@@ -50,84 +49,6 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
     </AllocationListWrapper>
   );
 };
-
-export function AllocationForm({
-  list,
-  disabled,
-  header,
-  onSave,
-}: {
-  list?: Vote[];
-  disabled?: boolean;
-  header?: ReactNode;
-  onSave?: (v: { votes: Vote[] }) => void;
-}) {
-  const form = useFormContext<{ votes: Vote[] }>();
-  const { initialVoiceCredits } = useMaciSignup();
-
-  const { fields, remove } = useFieldArray({
-    name: "votes",
-    keyName: "key",
-    control: form.control,
-  });
-
-  return (
-    <AllocationListWrapper>
-      <Table>
-        {header}
-        <Tbody>
-          {fields.map((project, i) => {
-            const idx = i;
-            // const idx = indexes.get(project.projectId)!;
-            // TODO: Get allocated amount from list
-            const listAllocation =
-              list?.find((p) => p.projectId === project.projectId)?.amount ?? 0;
-
-            return (
-              <Tr key={project.projectId}>
-                <Td className={"w-full"}>
-                  <ProjectAvatarWithName link id={project.projectId} />
-                </Td>
-                <Td>
-                  {listAllocation ? (
-                    <AllocationInput
-                      name="compareAmount"
-                      defaultValue={listAllocation}
-                      disabled={true}
-                      votingMaxProject={initialVoiceCredits}
-                    />
-                  ) : null}
-                </Td>
-                <Td>
-                  <AllocationInput
-                    name={`votes.${idx}.amount`}
-                    disabled={disabled}
-                    votingMaxProject={initialVoiceCredits}
-                    onBlur={() => onSave?.(form.getValues())}
-                  />
-                </Td>
-                <Td>
-                  <IconButton
-                    tabIndex={-1}
-                    type="button"
-                    variant="ghost"
-                    icon={Trash}
-                    disabled={disabled}
-                    onClick={() => {
-                      remove(idx);
-                      onSave?.(form.getValues());
-                    }}
-                  />
-                </Td>
-              </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-      <button type="submit" className="hidden" />
-    </AllocationListWrapper>
-  );
-}
 
 export function AllocationFormWithSearch() {
   const form = useFormContext<{ projects: Vote[] }>();
@@ -163,6 +84,7 @@ export function AllocationFormWithSearch() {
 
                   <Td>
                     <AllocationInput
+                      tokenAddon
                       name={`projects.${i}.amount`}
                       votingMaxProject={initialVoiceCredits}
                     />
@@ -281,7 +203,31 @@ function AllocationFormWrapper({
     </AllocationListWrapper>
   );
 }
+export function AllocationForm({
+  list,
+  ...props
+}: { list?: Vote[] } & AllocationFormProps) {
+  const { initialVoiceCredits } = useMaciSignup();
 
+  return (
+    <AllocationFormWrapper
+      {...props}
+      renderExtraColumn={({ project }) => {
+        const listAllocation =
+          list?.find((p) => p.projectId === project.projectId)?.amount ?? 0;
+
+        return listAllocation ? (
+          <AllocationInput
+            name="compareAmount"
+            defaultValue={listAllocation}
+            votingMaxProject={initialVoiceCredits}
+            disabled={true}
+          />
+        ) : null;
+      }}
+    />
+  );
+}
 export function DistributionForm(props: AllocationFormProps) {
   return (
     <AllocationFormWrapper
