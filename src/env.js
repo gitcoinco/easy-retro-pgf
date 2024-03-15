@@ -46,6 +46,7 @@ export const env = createEnv({
       "arbitrum",
       "linea",
       "sepolia",
+      "base",
       "baseGoerli",
       "localhost",
     ]),
