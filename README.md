@@ -18,6 +18,7 @@
 - [Voting](./docs/04_voting.md)
 - [Lists](./docs/05_lists.md)
 - [Results](./docs/06_results.md)
+- [Distribute](./docs/07_distribute.md)
 
 ## Supported Networks
 
