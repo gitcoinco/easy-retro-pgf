@@ -16,7 +16,7 @@ import {
   safeWallet,
   coinbaseWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { configureChains, Connector, createConfig, WagmiConfig } from "wagmi";
 import * as wagmiChains from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -30,6 +30,19 @@ import {
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
+import { MockConnector } from "wagmi/connectors/mock";
+import {
+  generatePrivateKey,
+  mnemonicToAccount,
+  privateKeyToAccount,
+} from "viem/accounts";
+import { Wallet } from "ethers";
+import { createWalletClient, http } from "viem";
+import {
+  connectorsForTestWallet,
+  createTestWallet,
+  getTestWallet,
+} from "./testWallet";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
@@ -84,11 +97,13 @@ function createWagmiConfig() {
 
   const appInfo = { appName };
 
-  const connectors = projectId
-    ? connectorsForWallets(
-        getDefaultWallets({ appName, chains, projectId }).wallets,
-      )
-    : connectorsForWallets(getInjectedWallets({ appName, chains }));
+  const connectors = connectorsForWallets(
+    process.env.NEXT_PUBLIC_E2E_TEST
+      ? getTestWallet()
+      : projectId
+        ? getDefaultWallets({ appName, chains, projectId }).wallets
+        : getInjectedWallets({ appName, chains }),
+  );
 
   const config = createConfig({
     autoConnect: true,

@@ -56,6 +56,7 @@ export const ConnectButton = () => {
                     onClick={openConnectModal}
                     className="rounded-full"
                     variant="primary"
+                    data-testid="connect-wallet"
                   >
                     {isMobile ? "Connect" : "Connect wallet"}
                   </Button>
