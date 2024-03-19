@@ -13,7 +13,7 @@ import { Dialog } from "~/components/ui/Dialog";
 
 import { Tag } from "~/components/ui/Tag";
 import { useLocalStorage } from "react-use";
-import { impactCategories } from "~/config";
+import { config, impactCategories } from "~/config";
 import { useCreateList } from "../hooks/useCreateList";
 import { toast } from "sonner";
 import { Alert } from "~/components/ui/Alert";
