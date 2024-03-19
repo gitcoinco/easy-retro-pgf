@@ -3,6 +3,7 @@ import { NumericFormat } from "react-number-format";
 import { useFormContext, Controller } from "react-hook-form";
 
 import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
+import { config } from "~/config";
 
 export const AllocationInput = ({
   votingMaxProject,
@@ -42,7 +43,7 @@ export const AllocationInput = ({
           />
         )}
       />
-      <InputAddon disabled={props.disabled}>OP</InputAddon>
+      <InputAddon disabled={props.disabled}>{config.tokenName}</InputAddon>
     </InputWrapper>
   );
 };

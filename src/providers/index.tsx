@@ -2,7 +2,6 @@ import { useMemo, type PropsWithChildren } from "react";
 
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { http, WagmiProvider } from "wagmi";
-import * as wagmiChains from "wagmi/chains";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ThemeProvider } from "next-themes";
@@ -48,13 +47,7 @@ export function Providers({
 function createWagmiConfig() {
   const activeChains: wagmiChains.Chain[] = [
     appConfig.config.network,
-    wagmiChains.mainnet,
   ];
-
-  if (process.env.NEXT_PUBLIC_CHAIN_NAME === "localhost") {
-    wagmiChains.localhost.id = 31337;
-    activeChains.push(wagmiChains.localhost);
-  }
 
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
   const appName = appConfig.metadata.title;
@@ -70,11 +63,8 @@ function createWagmiConfig() {
       ...wagmiChains.Chain[],
     ],
     transports: {
-      [wagmiChains.mainnet.id]: http(
-        `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID!}`,
-      ),
-      [wagmiChains.sepolia.id]: http(
-        `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID!}`,
+      [appConfig.config.network.id]: http(
+        `https://opt-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID!}`,
       ),
     },
   });

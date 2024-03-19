@@ -15,6 +15,7 @@ import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
+import { config } from "~/config";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -31,7 +32,7 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => (
               <ProjectAvatarWithName link id={project.projectId} />
             </Td>
             <Td className="whitespace-nowrap text-right">
-              {formatNumber(project.amount)} OP
+              {formatNumber(project.amount)} {config.tokenName}
             </Td>
           </Tr>
         ))}
