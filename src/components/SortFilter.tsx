@@ -13,8 +13,7 @@ export const SortFilter = () => {
         onChange={async (sort) => {
           const [orderBy, sortOrder] = sort.split("_") as [OrderBy, SortOrder];
 
-          console.log(sort, orderBy, sortOrder);
-          await setFilter({ orderBy, sortOrder });
+          await setFilter({ orderBy, sortOrder }).catch();
         }}
       />
     </div>
