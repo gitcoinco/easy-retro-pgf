@@ -1,32 +1,24 @@
-import {
-  parseAsString,
-  parseAsStringEnum,
-  useQueryStates,
-} from "nuqs";
+import z from "zod";
 
-import { OrderBy, SortOrder } from "../types";
-
-export const sortLabels = {
-  name_asc: "A to Z",
-  name_desc: "Z to A",
-  time_asc: "Oldest",
-  time_desc: "Newest",
-};
-export type SortType = keyof typeof sortLabels;
-
-export function useFilter() {
-  const [filter, setFilter] = useQueryStates(
-    {
-      search: parseAsString.withDefault(""),
-      orderBy: parseAsStringEnum<OrderBy>(Object.values(OrderBy)).withDefault(
-        OrderBy.name,
-      ),
-      sortOrder: parseAsStringEnum<SortOrder>(
-        Object.values(SortOrder),
-      ).withDefault(SortOrder.asc),
-    },
-    { history: "replace" },
-  );
-
-  return { ...filter, setFilter };
+export enum OrderBy {
+  name = "name",
+  time = "time",
 }
+export enum SortOrder {
+  asc = "asc",
+  desc = "desc",
+}
+
+export const FilterSchema = z.object({
+  limit: z.coerce.number().default(3 * 8),
+  cursor: z.coerce.number().default(0),
+  seed: z.coerce.number().default(0),
+  orderBy: z.nativeEnum(OrderBy).default(OrderBy.name),
+  sortOrder: z.nativeEnum(SortOrder).default(SortOrder.asc),
+  search: z.preprocess(
+    (v) => (v === "null" || v === "undefined" ? null : v),
+    z.string().nullish(),
+  ),
+});
+
+export type Filter = z.infer<typeof FilterSchema>;
