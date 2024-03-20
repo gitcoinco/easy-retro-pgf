@@ -127,6 +127,15 @@ const typeMaps = {
   string: (v: string) => v,
 };
 
+export function createSearchFilter(value: string) {
+  const formatter = typeMaps.string;
+  return {
+    decodedDataJson: {
+      contains: `${formatter(value)}`,
+    },
+  };
+}
+
 export function createDataFilter(
   name: string,
   type: "bytes32" | "string",

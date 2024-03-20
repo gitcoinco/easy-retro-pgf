@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { fetchAttestations, createDataFilter } from "~/utils/fetchAttestations";
+import {
+  fetchAttestations,
+  createDataFilter,
+  createSearchFilter,
+} from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { config, eas } from "~/config";
 import { type Filter, FilterSchema } from "~/features/filter/types";
@@ -44,7 +48,7 @@ export const projectsRouter = createTRPCRouter({
     ];
 
     if (input.search) {
-      filters.push(createDataFilter("name", "string", input.search));
+      filters.push(createSearchFilter(input.search));
     }
 
     return fetchAttestations([eas.schemas.approval], {
