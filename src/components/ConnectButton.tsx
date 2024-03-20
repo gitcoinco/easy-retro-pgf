@@ -14,6 +14,7 @@ import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
 import type { Address } from "viem";
+import { config } from "~/config";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -64,7 +65,10 @@ export const ConnectButton = () => {
                 );
               }
 
-              if (chain.unsupported) {
+              if (
+                chain.unsupported ??
+                ![Number(config.network.id)].includes(chain.id)
+              ) {
                 return <Chip onClick={openChainModal}>Wrong network</Chip>;
               }
 

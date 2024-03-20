@@ -13,7 +13,7 @@ import { Dialog } from "~/components/ui/Dialog";
 
 import { Tag } from "~/components/ui/Tag";
 import { useLocalStorage } from "react-use";
-import { impactCategories } from "~/config";
+import { config, impactCategories } from "~/config";
 import { useCreateList } from "../hooks/useCreateList";
 import { toast } from "sonner";
 import { Alert } from "~/components/ui/Alert";
@@ -195,10 +195,10 @@ function TotalOP() {
       <div className={"flex justify-between font-semibold"}>
         <div>
           {isExceeding
-            ? `Total exceeds by ${formatNumber(exceeds)} OP`
+            ? `Total exceeds by ${formatNumber(exceeds)} ${config.tokenName}`
             : "Total"}
         </div>
-        <div>{formatNumber(current)} OP</div>
+        <div>{formatNumber(current)} {config.tokenName}</div>
       </div>
     </Alert>
   );

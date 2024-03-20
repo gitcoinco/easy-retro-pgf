@@ -20,8 +20,9 @@ const ResultsChart = dynamic(
 );
 
 export default function StatsPage() {
-  console.log(ResultsChart);
   const appState = getAppState();
+  const duration = differenceInDays(config.resultsAt, new Date());
+
   return (
     <Layout>
       <Heading as="h1" size="3xl">
@@ -33,9 +34,7 @@ export default function StatsPage() {
       ) : (
         <Alert variant="info" className="mx-auto max-w-sm text-center">
           The results will be revealed in{" "}
-          <div className="text-3xl">
-            {differenceInDays(config.resultsAt, new Date())}
-          </div>
+          <div className="text-3xl">{duration > 0 ? duration : 0}</div>
           days
         </Alert>
       )}
