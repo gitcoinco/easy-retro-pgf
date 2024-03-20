@@ -4,11 +4,12 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   fetchAttestations,
   createDataFilter,
+  createSearchFilter,
   type Attestation,
 } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { config, eas } from "~/config";
-import { type Filter, FilterSchema } from "~/features/filter/types";
+import { type Filter, FilterSchema, OrderBy, SortOrder } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 
 export const projectsRouter = createTRPCRouter({
@@ -50,7 +51,7 @@ export const projectsRouter = createTRPCRouter({
     ];
 
     if (input.search) {
-      filters.push(createDataFilter("name", "string", input.search));
+      filters.push(createSearchFilter(input.search));
     }
 
     return fetchAttestations([eas.schemas.approval], {
@@ -74,8 +75,6 @@ export const projectsRouter = createTRPCRouter({
       });
     });
   }),
-
-  allApproved: publicProcedure.query(async () => getAllApprovedProjects()),
 
   // Used for distribution to get the projects' payoutAddress
   // To get this data we need to fetch all projects and their metadata
@@ -107,6 +106,32 @@ export const projectsRouter = createTRPCRouter({
           ),
         );
     }),
+
+  allApproved: publicProcedure.query(async () => {
+    const filters = [
+      createDataFilter("type", "bytes32", "application"),
+      createDataFilter("round", "bytes32", config.roundId),
+    ];
+
+    return fetchAttestations([eas.schemas.approval], {
+      where: {
+        attester: { in: config.admins },
+        ...createDataFilter("type", "bytes32", "application"),
+      },
+    }).then((attestations = []) => {
+      const approvedIds = attestations
+        .map(({ refUID }) => refUID)
+        .filter(Boolean);
+
+      return fetchAttestations([eas.schemas.metadata], {
+        orderBy: [createOrderBy(OrderBy.time, SortOrder.asc)],
+        where: {
+          id: { in: approvedIds },
+          AND: filters,
+        },
+      });
+    });
+  }),
 });
 
 export async function getAllApprovedProjects(): Promise<Attestation[]> {
@@ -126,7 +151,7 @@ export async function getAllApprovedProjects(): Promise<Attestation[]> {
       .filter(Boolean);
 
     return fetchAttestations([eas.schemas.metadata], {
-      orderBy: [createOrderBy("time", "asc")],
+      orderBy: [createOrderBy(OrderBy.time, SortOrder.asc)],
       where: {
         id: { in: approvedIds },
         AND: filters,
