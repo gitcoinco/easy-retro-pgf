@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EthAddressSchema } from "~/features/distribute/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
 export const MetadataSchema = z.object({
@@ -32,7 +33,7 @@ export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
   websiteUrl: z.string().url().min(1),
-  payoutAddress: z.string().startsWith("0x"),
+  payoutAddress: EthAddressSchema,
   contributionDescription: z.string().min(3),
   impactDescription: z.string().min(3),
   impactCategory: z.array(z.string()).min(1),

@@ -13,6 +13,7 @@ import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import dynamic from "next/dynamic";
+import { EthAddressSchema } from "~/features/distribute/types";
 
 function parseAddresses(addresses: string): Address[] {
   return addresses
@@ -61,7 +62,7 @@ function ApproveVoters() {
         </p>
         <Form
           schema={z.object({
-            voters: z.string().startsWith("0x"),
+            voters: EthAddressSchema,
           })}
           onSubmit={(values) => {
             const voters = parseAddresses(values.voters);

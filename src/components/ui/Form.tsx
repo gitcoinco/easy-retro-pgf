@@ -227,6 +227,23 @@ export function FieldArray<S extends z.Schema>({
     </div>
   );
 }
+
+export function FormSection({
+  title,
+  description,
+  children,
+}: { title: string; description: string } & ComponentProps<"section">) {
+  return (
+    <section className="mb-8">
+      <h3 className="mb-1 text-xl font-semibold">{title}</h3>
+      <p className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
+        {description}
+      </p>
+      {children}
+    </section>
+  );
+}
+
 export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   defaultValues?: UseFormProps<z.infer<S>>["defaultValues"];
   values?: UseFormProps<z.infer<S>>["values"];
