@@ -1,7 +1,7 @@
 import { type Address, isAddress } from "viem";
 import { z } from "zod";
 
-const EthAddressSchema = z.custom<string>(
+export const EthAddressSchema = z.custom<string>(
   (val) => isAddress(val as Address),
   "Invalid address",
 );
