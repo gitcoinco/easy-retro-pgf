@@ -1,36 +1,20 @@
-import { useRouter } from "next/router";
+import type { OrderBy, SortOrder } from "~/features/filter/types";
 import { SortByDropdown } from "./SortByDropdown";
-import { type Filter } from "~/features/filter/types";
-import {
-  type SortType,
-  toURL,
-  useUpdateFilterFromRouter,
-} from "~/features/filter/hooks/useFilter";
+import { useFilter } from "~/features/filter/hooks/useFilter";
 
-type Props = {
-  type: "projects" | "lists";
-  filter: Filter;
-  sortOptions: SortType[];
-};
-
-export const SortFilter = ({ type, filter, sortOptions }: Props) => {
-  const router = useRouter();
-  const query = router.query as unknown as Filter;
-
-  useUpdateFilterFromRouter(type);
+export const SortFilter = () => {
+  const { orderBy, sortOrder, setFilter } = useFilter();
 
   return (
     <div className="mb-2 flex gap-2">
       <SortByDropdown
-        options={sortOptions}
-        value={`${filter?.orderBy}_${filter?.sortOrder}`}
-        onChange={(sort) => {
-          const [orderBy, sortOrder] = sort.split("_");
-          void router.push(
-            `/${type}?${toURL(query, { orderBy, sortOrder })}`,
-            undefined,
-            { scroll: false },
-          );
+        options={["name_asc", "name_desc", "time_asc", "time_desc"]}
+        value={`${orderBy}_${sortOrder}`}
+        onChange={async (sort) => {
+          const [orderBy, sortOrder] = sort.split("_") as [OrderBy, SortOrder];
+
+          console.log(sort, orderBy, sortOrder);
+          await setFilter({ orderBy, sortOrder });
         }}
       />
     </div>

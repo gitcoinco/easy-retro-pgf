@@ -1,22 +1,32 @@
-import z from "zod";
+import {
+  parseAsString,
+  parseAsStringEnum,
+  useQueryStates,
+} from "nuqs";
 
-export const SortEnum = z
-  .enum(["name", "time" /* "shuffle" */])
-  .default("name");
-export const SortOrderEnum = z.enum(["asc", "desc"]).default("asc");
+import { OrderBy, SortOrder } from "../types";
 
-export const FilterSchema = z.object({
-  limit: z.coerce.number().default(3 * 8),
-  cursor: z.coerce.number().default(0),
-  seed: z.coerce.number().default(0),
-  orderBy: SortEnum,
-  sortOrder: SortOrderEnum,
-  search: z.preprocess(
-    (v) => (v === "null" || v === "undefined" ? null : v),
-    z.string().nullish(),
-  ),
-});
+export const sortLabels = {
+  name_asc: "A to Z",
+  name_desc: "Z to A",
+  time_asc: "Oldest",
+  time_desc: "Newest",
+};
+export type SortType = keyof typeof sortLabels;
 
-export type Sort = z.infer<typeof SortEnum>;
-export type SortOrder = z.infer<typeof SortOrderEnum>;
-export type Filter = z.infer<typeof FilterSchema>;
+export function useFilter() {
+  const [filter, setFilter] = useQueryStates(
+    {
+      search: parseAsString.withDefault(""),
+      orderBy: parseAsStringEnum<OrderBy>(Object.values(OrderBy)).withDefault(
+        OrderBy.name,
+      ),
+      sortOrder: parseAsStringEnum<SortOrder>(
+        Object.values(SortOrder),
+      ).withDefault(SortOrder.asc),
+    },
+    { history: "replace" },
+  );
+
+  return { ...filter, setFilter };
+}
