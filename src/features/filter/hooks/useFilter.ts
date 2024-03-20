@@ -1,20 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  parseAsInteger,
+  parseAsString,
+  parseAsStringEnum,
+  useQueryStates,
+} from "nuqs";
 
-import { useRouter } from "next/router";
-import { type Filter } from "../types";
-import { useEffect } from "react";
+import { OrderBy, SortOrder } from "../types";
 import { config } from "~/config";
-
-type FilterType = "projects" | "lists";
-
-export const initialFilter: Filter = {
-  orderBy: "name",
-  sortOrder: "asc",
-  limit: config.pageSize,
-  cursor: 0,
-  seed: 0,
-  search: "",
-};
 
 export const sortLabels = {
   name_asc: "A to Z",
@@ -24,56 +16,21 @@ export const sortLabels = {
 };
 export type SortType = keyof typeof sortLabels;
 
-export function useFilter(type: FilterType) {
-  const client = useQueryClient();
-
-  return useQuery(
-    ["filter", type],
-    () => client.getQueryData<Filter>(["filter", type]) ?? initialFilter,
-    { cacheTime: Infinity },
+export function useFilter() {
+  const [filter, setFilter] = useQueryStates(
+    {
+      search: parseAsString.withDefault(""),
+      limit: parseAsInteger.withDefault(config.pageSize),
+      cursor: parseAsInteger.withDefault(0),
+      orderBy: parseAsStringEnum<OrderBy>(Object.values(OrderBy)).withDefault(
+        OrderBy.name,
+      ),
+      sortOrder: parseAsStringEnum<SortOrder>(
+        Object.values(SortOrder),
+      ).withDefault(SortOrder.asc),
+    },
+    { history: "replace" },
   );
-}
 
-export function useSetFilter(type: FilterType) {
-  const client = useQueryClient();
-
-  return useMutation(async (filter: Filter) =>
-    client.setQueryData<Filter>(["filter", type], (prev = initialFilter) => ({
-      ...prev,
-      ...filter,
-    })),
-  );
-}
-
-export const toURL = (prev: object, next: object = {}) =>
-  new URLSearchParams({ ...prev, ...next } as unknown as Record<
-    string,
-    string
-  >).toString();
-
-export function useUpdateFilterFromRouter(type: FilterType) {
-  const router = useRouter();
-  const query = router.query as unknown as Filter;
-  const { data: filter } = useFilter(type);
-  const { mutate: setFilter } = useSetFilter(type);
-
-  // Update URL when user lands on page
-  useEffect(() => {
-    // Make sure query is not already set
-    if (!router.asPath.includes("?")) {
-      void router.replace(`${router.asPath}?${toURL(filter!)}`);
-    }
-  }, []);
-
-  // Update filter when router query changes
-  useEffect(() => {
-    if (JSON.stringify(filter) !== JSON.stringify(query)) {
-      setFilter({
-        ...query,
-        limit: query.limit ? Number(query.limit) : initialFilter.limit,
-        cursor: query.cursor ? Number(query.cursor) : initialFilter.cursor,
-        seed: query.seed ? Number(query.seed) : initialFilter.seed,
-      });
-    }
-  }, [query, setFilter]);
+  return { ...filter, setFilter };
 }

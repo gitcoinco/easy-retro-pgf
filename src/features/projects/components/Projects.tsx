@@ -10,14 +10,12 @@ import { ProjectSelectButton } from "./ProjectSelectButton";
 import { getAppState } from "~/utils/state";
 import { useResults } from "~/hooks/useResults";
 import { SortFilter } from "~/components/SortFilter";
-import { useFilter } from "~/features/filter/hooks/useFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
 
 export function Projects() {
   const projects = useSearchProjects();
   const select = useSelectProjects();
   const results = useResults();
-  const { data: filter } = useFilter("projects");
 
   return (
     <div>
@@ -43,11 +41,7 @@ export function Projects() {
       </div>
 
       <div className="flex justify-end">
-        <SortFilter
-          type="projects"
-          sortOptions={["name_asc", "name_desc", "time_asc", "time_desc"]}
-          filter={filter!}
-        />
+        <SortFilter />
       </div>
       <InfiniteLoading
         {...projects}
