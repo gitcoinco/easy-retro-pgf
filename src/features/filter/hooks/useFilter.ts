@@ -6,7 +6,6 @@ import {
 } from "nuqs";
 
 import { OrderBy, SortOrder } from "../types";
-import { config } from "~/config";
 
 export const sortLabels = {
   name_asc: "A to Z",
@@ -20,8 +19,6 @@ export function useFilter() {
   const [filter, setFilter] = useQueryStates(
     {
       search: parseAsString.withDefault(""),
-      limit: parseAsInteger.withDefault(config.pageSize),
-      cursor: parseAsInteger.withDefault(0),
       orderBy: parseAsStringEnum<OrderBy>(Object.values(OrderBy)).withDefault(
         OrderBy.name,
       ),
