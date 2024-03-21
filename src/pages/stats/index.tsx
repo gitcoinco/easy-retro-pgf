@@ -1,6 +1,8 @@
 import { differenceInDays } from "date-fns";
 import dynamic from "next/dynamic";
 import { useMemo, type PropsWithChildren } from "react";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "~/components/ConnectButton";
 import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
@@ -47,6 +49,7 @@ function Stats() {
   const count = useProjectCount();
   const { data: projectsResults } = useProjectsResults();
   const { isLoading, pollData } = useMaciPoll();
+  const { isConnected } = useAccount();
 
   const { averageVotes, projects = {} } = results.data ?? {};
 
@@ -63,6 +66,24 @@ function Stats() {
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (!pollData && !isConnected) {
+    return (
+      <Alert variant="info" className="mx-auto max-w-sm text-center">
+        <h3 className="text-lg font-bold">
+          Connect your wallet to see results
+        </h3>
+
+        <div className="mt-4">
+          <ConnectButton />
+        </div>
+      </Alert>
+    );
+  }
+
+  if (!pollData) {
+    return <div>Something went wrong. Try later.</div>;
   }
 
   return (
