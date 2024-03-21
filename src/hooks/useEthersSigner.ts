@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWalletClient } from "wagmi";
-import { BrowserProvider, type Signer } from "ethers";
+import {
+  BrowserProvider,
+  InfuraProvider,
+  type Signer,
+} from "ethers";
 import type { WalletClient } from "viem";
+import { config } from "~/config";
 
 async function walletClientToSigner(
   walletClient: WalletClient,
@@ -34,4 +39,17 @@ export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
   }, [walletClient?.account, walletClient?.chain?.id, setSigner]);
 
   return signer;
+}
+
+export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
+  const provider = useMemo(
+    () =>
+      new InfuraProvider(
+        chainId ?? config.network.id,
+        process.env.NEXT_PUBLIC_INFURA_ID,
+      ),
+    [chainId],
+  );
+
+  return provider;
 }
