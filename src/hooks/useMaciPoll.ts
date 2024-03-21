@@ -2,7 +2,7 @@ import { getPoll, type TallyData, type IGetPollData } from "maci-cli/sdk";
 import { useEffect, useMemo, useState } from "react";
 
 import { config } from "~/config";
-import { useEthersSigner } from "./useEthersSigner";
+import { useEthersProvider, useEthersSigner } from "./useEthersSigner";
 import { isAfter } from "date-fns";
 
 export interface IUseMaciPollData {
@@ -14,6 +14,8 @@ export interface IUseMaciPollData {
 
 export const useMaciPoll = (): IUseMaciPollData => {
   const signer = useEthersSigner();
+  const provider = useEthersProvider();
+
   const [isLoading, setIsLoading] = useState(false);
   const [pollData, setPollData] = useState<IGetPollData>();
   const [tallyData, setTallyData] = useState<TallyData>();
@@ -30,7 +32,7 @@ export const useMaciPoll = (): IUseMaciPollData => {
   );
 
   useEffect(() => {
-    if (!signer) {
+    if (!signer && !provider) {
       return;
     }
 
@@ -39,6 +41,7 @@ export const useMaciPoll = (): IUseMaciPollData => {
       getPoll({
         maciAddress: config.maciAddress!,
         signer,
+        provider,
       })
         .then((data) => {
           setPollData(data);
@@ -61,7 +64,13 @@ export const useMaciPoll = (): IUseMaciPollData => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [signer, votingEndsAt, setIsLoading, setTallyData, setPollData]);
+  }, [
+    Boolean(signer),
+    Boolean(provider),
+    setIsLoading,
+    setTallyData,
+    setPollData,
+  ]);
 
   return {
     isLoading,

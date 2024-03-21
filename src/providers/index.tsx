@@ -1,6 +1,6 @@
 import { useMemo, type PropsWithChildren } from "react";
 
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { type Chain, getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { http, WagmiProvider } from "wagmi";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
@@ -45,9 +45,7 @@ export function Providers({
 }
 
 function createWagmiConfig() {
-  const activeChains: wagmiChains.Chain[] = [
-    appConfig.config.network,
-  ];
+  const activeChains: Chain[] = [appConfig.config.network];
 
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
   const appName = appConfig.metadata.title;
@@ -59,8 +57,8 @@ function createWagmiConfig() {
     projectId,
     ssr: false,
     chains: activeChains as unknown as readonly [
-      wagmiChains.Chain,
-      ...wagmiChains.Chain[],
+      Chain,
+      ...Chain[],
     ],
     transports: {
       [appConfig.config.network.id]: http(
