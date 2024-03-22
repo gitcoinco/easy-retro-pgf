@@ -18,12 +18,18 @@ export function AvatarENS({ address }: { address: Address }) {
   );
 }
 
-export function NameENS({ address }: { address?: string }) {
+export function NameENS({
+  address,
+  truncateLength,
+}: {
+  address?: string;
+  truncateLength?: number;
+}) {
   const { data: name } = useEnsName({
     address: address as Address,
     chainId: 1,
     enabled: Boolean(address),
   });
 
-  return <div>{name ?? truncate(address)}</div>;
+  return <div>{name ?? truncate(address, truncateLength)}</div>;
 }

@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from "react";
+import { useMemo, type PropsWithChildren } from "react";
 
 import {
   RainbowKitProvider,
@@ -6,12 +6,8 @@ import {
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
 import {
-  argentWallet,
-  trustWallet,
-  ledgerWallet,
   frameWallet,
   injectedWallet,
-  metaMaskWallet,
   braveWallet,
   safeWallet,
   coinbaseWallet,
@@ -30,17 +26,23 @@ import {
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
 });
 
-const { config, chains, appInfo } = createWagmiConfig();
-
 export function Providers({
   children,
   session,
 }: PropsWithChildren<{ session?: Session }>) {
+  const { data: round } = useCurrentRound();
+
+  const { config, chains, appInfo } = useMemo(
+    () => createWagmiConfig(round?.network as keyof typeof wagmiChains),
+    [round],
+  );
+
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>
@@ -59,18 +61,11 @@ export function Providers({
   );
 }
 
-function createWagmiConfig() {
-  const activeChains: wagmiChains.Chain[] = [
-    appConfig.config.network,
-    wagmiChains.mainnet,
-  ];
+function createWagmiConfig(network?: keyof typeof wagmiChains) {
+  const activeChains: wagmiChains.Chain[] = [wagmiChains.mainnet];
 
-  // if (configuredChain) {
-  //   activeChains.push(configuredChain);
-  // }
-  if (process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true") {
-    activeChains.push(wagmiChains.optimismGoerli);
-  }
+  if (network) activeChains.push(wagmiChains[network]);
+
   const { chains, publicClient, webSocketPublicClient } = configureChains(
     activeChains,
     [

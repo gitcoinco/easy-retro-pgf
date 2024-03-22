@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 
 import { Button } from "~/components/ui/Button";
-import { Checkbox, Form } from "~/components/ui/Form";
+import { Checkbox, Form, FormSection } from "~/components/ui/Form";
 import { Markdown } from "~/components/ui/Markdown";
 import { useMetadata } from "~/hooks/useMetadata";
 import { useApplications } from "~/features/applications/hooks/useApplications";
@@ -120,44 +120,44 @@ export function ApplicationsToApprove() {
       schema={ApplicationsToApproveSchema}
       onSubmit={(values) => approve.mutate(values.selected)}
     >
-      <Markdown>{`### Review applications
-Select the applications you want to approve. You must be a configured admin to approve applications.
-
-`}</Markdown>
-      <Alert>
-        Newly submitted applications can take 10 minutes to show up.
-      </Alert>
-      <div className="my-2 flex items-center justify-between">
-        <div className="text-gray-300">
-          {applications.data?.length
-            ? `${applications.data?.length} applications found`
-            : ""}
+      <FormSection
+        title="Review applications"
+        description="Select the applications you want to approve. You must be a configured admin to approve applications."
+      >
+        <Alert>
+          Newly submitted applications can take 10 minutes to show up.
+        </Alert>
+        <div className="my-2 flex items-center justify-between">
+          <div className="text-gray-300">
+            {applications.data?.length
+              ? `${applications.data?.length} applications found`
+              : ""}
+          </div>
+          <div className="flex gap-2">
+            <SelectAllButton applications={applicationsToApprove} />
+            <ApproveButton isLoading={approve.isLoading} />
+          </div>
         </div>
-        <div className="flex gap-2">
-          <SelectAllButton applications={applicationsToApprove} />
-          <ApproveButton isLoading={approve.isLoading} />
-        </div>
-      </div>
-
-      {applications.isLoading ? (
-        <div className="flex items-center justify-center py-16">
-          <Spinner />
-        </div>
-      ) : !applications.data?.length ? (
-        <EmptyState title="No applications">
-          <Button variant="primary" as={Link} href={`/applications/new`}>
-            Go to create application
-          </Button>
-        </EmptyState>
-      ) : null}
-      {applications.data?.map((item) => (
-        <ApplicationItem
-          key={item.id}
-          {...item}
-          isLoading={applications.isLoading}
-          isApproved={approvedById?.get(item.id)}
-        />
-      ))}
+        {applications.isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <Spinner />
+          </div>
+        ) : !applications.data?.length ? (
+          <EmptyState title="No applications">
+            <Button variant="primary" as={Link} href={`/applications/new`}>
+              Go to create application
+            </Button>
+          </EmptyState>
+        ) : null}
+        {applications.data?.map((item) => (
+          <ApplicationItem
+            key={item.id}
+            {...item}
+            isLoading={applications.isLoading}
+            isApproved={approvedById?.get(item.id)}
+          />
+        ))}
+      </FormSection>
     </Form>
   );
 }

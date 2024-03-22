@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { config, eas } from "~/config";
+import { eas } from "~/config";
 import { useUploadMetadata } from "~/hooks/useMetadata";
 import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
 import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 import { type List } from "../types";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export function useCreateList(options: {
   onSuccess: () => void;
@@ -12,6 +13,9 @@ export function useCreateList(options: {
   const attestation = useCreateAttestation();
   const attest = useAttest();
   const upload = useUploadMetadata();
+
+  const { data: round } = useCurrentRound();
+  const roundId = String(round?.id);
 
   const mutation = useMutation(
     async (values: List) => {
@@ -27,7 +31,7 @@ export function useCreateList(options: {
               metadataType: 0, // "http"
               metadataPtr,
               type: "list",
-              round: config.roundId,
+              round: roundId,
             },
           });
         })

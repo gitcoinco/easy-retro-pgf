@@ -1,5 +1,7 @@
 import { useController, useFormContext } from "react-hook-form";
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount } from "wagmi";
+import { useLocalStorage } from "react-use";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -8,15 +10,12 @@ import {
   Textarea,
   Label,
 } from "~/components/ui/Form";
-import { Button, IconButton } from "~/components/ui/Button";
-import { Banner } from "~/components/ui/Banner";
+import { IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 
 import { Tag } from "~/components/ui/Tag";
-import { useLocalStorage } from "react-use";
-import { config, impactCategories } from "~/config";
+import { impactCategories } from "~/config";
 import { useCreateList } from "../hooks/useCreateList";
-import { toast } from "sonner";
 import { Alert } from "~/components/ui/Alert";
 import { ListSchema } from "../types";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
@@ -24,7 +23,9 @@ import { Spinner } from "~/components/ui/Spinner";
 import { AllocationFormWithSearch } from "~/features/ballot/components/AllocationList";
 import { formatNumber } from "~/utils/formatNumber";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
-import { Vote } from "~/features/ballot/types";
+import { type Vote } from "~/features/ballot/types";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
 
 const ListTags = () => {
   const { control, watch } = useFormContext();
@@ -77,8 +78,6 @@ export function ListForm() {
   if (create.isSuccess) {
     return <Alert variant="success" title="List created!"></Alert>;
   }
-
-  const { address } = useAccount();
 
   const error = create.error as {
     reason?: string;
@@ -168,7 +167,7 @@ function CreateListButton({
         {!isConnected && <div>You must connect wallet to create a list</div>}
         {!isCorrectNetwork && (
           <div className="flex items-center gap-2">
-            You must be connected to {correctNetwork.name}
+            You must be connected to {correctNetwork?.name}
           </div>
         )}
       </div>
@@ -188,12 +187,12 @@ function CreateListButton({
 
 function TotalAllocation() {
   const form = useFormContext();
-
+  const round = useCurrentRound();
   const projects = (form.watch("projects") ?? []) as Vote[];
-
+  const token = useRoundToken();
   const current = sumBallot(projects);
 
-  const exceeds = current - config.votingMaxTotal;
+  const exceeds = current - (round.data?.maxVotesTotal ?? 0);
   const isExceeding = exceeds > 0;
   return (
     <Alert className="mb-6" variant={isExceeding ? "warning" : "info"}>
@@ -204,7 +203,7 @@ function TotalAllocation() {
             : "Total"}
         </div>
         <div>
-          {formatNumber(current)} {config.tokenName}
+          {formatNumber(current)} {token.data?.symbol}
         </div>
       </div>
     </Alert>

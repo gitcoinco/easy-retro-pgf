@@ -21,7 +21,7 @@ export function useAlloProfile() {
   );
 }
 
-const NONCE = 3;
+const NONCE = 3n;
 export function useCreateAlloProfile() {
   const registry = useAlloRegistry();
   const { address } = useAccount();

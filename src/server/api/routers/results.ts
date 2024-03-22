@@ -1,31 +1,27 @@
 import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  attestationProcedure,
+  createTRPCRouter,
+  roundProcedure,
+} from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
-import { fetchAttestations } from "~/utils/fetchAttestations";
 import { eas } from "~/config";
 import { calculateVotes } from "~/utils/calculateResults";
 import { type Vote } from "~/features/ballot/types";
-import { getSettings } from "./config";
+import { type Calculation } from "~/features/distribute/types";
 
 export const resultsRouter = createTRPCRouter({
-  votes: publicProcedure.query(async ({ ctx }) =>
-    calculateBallotResults(ctx.db),
+  votes: roundProcedure.query(async ({ ctx }) =>
+    calculateBallotResults(String(ctx.round?.id), ctx.db),
   ),
-  project: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const { projects } = await calculateBallotResults(ctx.db);
-
-      return {
-        amount: projects?.[input.id]?.votes ?? 0,
-      };
-    }),
-
-  projects: publicProcedure
+  projects: attestationProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateBallotResults(ctx.db);
+      const { projects } = await calculateBallotResults(
+        String(ctx.round?.id),
+        ctx.db,
+      );
 
       const sortedIDs = Object.entries(projects ?? {})
         .sort((a, b) => b[1].votes - a[1].votes)
@@ -35,35 +31,37 @@ export const resultsRouter = createTRPCRouter({
           input.cursor * input.limit + input.limit,
         );
 
-      return fetchAttestations([eas.schemas.metadata], {
-        where: {
-          id: { in: sortedIDs },
-        },
-      }).then((attestations) =>
-        // Results aren't returned from EAS in the same order as the `where: { in: sortedIDs }`
-        // Sort the attestations based on the sorted array
-        attestations.sort(
-          (a, b) => sortedIDs.indexOf(a.id) - sortedIDs.indexOf(b.id),
-        ),
-      );
+      return ctx
+        .fetchAttestations([eas.schemas.metadata], {
+          where: {
+            id: { in: sortedIDs },
+          },
+        })
+        .then((attestations) =>
+          // Results aren't returned from EAS in the same order as the `where: { in: sortedIDs }`
+          // Sort the attestations based on the sorted array
+          attestations.sort(
+            (a, b) => sortedIDs.indexOf(a.id) - sortedIDs.indexOf(b.id),
+          ),
+        );
     }),
 });
 
-async function calculateBallotResults(db: PrismaClient) {
-  const settings = await getSettings(db);
-  const calculation = settings?.config?.calculation;
+async function calculateBallotResults(roundId: string, db: PrismaClient) {
+  const round = await db.round.findFirstOrThrow({ where: { id: roundId } });
+  const calculation = round.calculation as Calculation;
   if (!calculation) {
     console.log("No calculation stored");
     return {};
   }
   // When the Minimum Qurom input is empty, return empty
-  if (calculation?.style === "op" && !calculation?.threshold) {
+  if (calculation.style === "op" && !calculation.threshold) {
     return {};
   }
 
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
-    where: { publishedAt: { not: null } },
+    where: { roundId, publishedAt: { not: null } },
   });
 
   const projects = calculateVotes(

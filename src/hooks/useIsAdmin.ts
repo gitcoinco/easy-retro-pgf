@@ -1,7 +1,8 @@
 import { useAccount } from "wagmi";
-import { config } from "~/config";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export function useIsAdmin() {
   const { address } = useAccount();
-  return config.admins.includes(address!);
+  const round = useCurrentRound();
+  return round.data?.admins.includes(address!);
 }

@@ -1,12 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAllo } from "./useAllo";
-import { usePoolId, usePoolToken } from "./useAlloPool";
+import { usePoolId } from "./useAlloPool";
 import { type Address, encodeAbiParameters, parseAbiParameters } from "viem";
 import { useSendTransaction } from "wagmi";
 
 export function useDistribute() {
   const allo = useAllo();
-  const { data: token } = usePoolToken();
   const { data: poolId } = usePoolId();
 
   const { sendTransactionAsync } = useSendTransaction();
@@ -19,7 +18,7 @@ export function useDistribute() {
       amounts: bigint[];
     }) => {
       if (!allo) throw new Error("Allo not initialized");
-      if (!token) throw new Error("Token not initialized");
+      if (!poolId) throw new Error("Pool ID not found");
 
       console.log({ recipients, amounts });
       const { to, data } = allo.distribute(

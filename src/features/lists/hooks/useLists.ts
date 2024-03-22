@@ -9,9 +9,7 @@ export function useListById(id: string) {
 export function useLists() {
   return api.lists.search.useInfiniteQuery(
     { limit: config.pageSize },
-    {
-      getNextPageParam: (_, pages) => pages.length,
-    },
+    { getNextPageParam: (_, pages) => pages.length },
   );
 }
 

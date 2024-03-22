@@ -1,35 +1,36 @@
 import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
-import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
+import { Form, FormControl, Input, Select } from "~/components/ui/Form";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
-import { config } from "~/config";
+import { RoundAdminLayout } from "~/features/admin/layouts/AdminLayout";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
 import { Distributions } from "~/features/distribute/components/Distributions";
 import {
   type Calculation,
   CalculationSchema,
 } from "~/features/distribute/types";
-import { Layout } from "~/layouts/DefaultLayout";
+import {
+  useCurrentRound,
+  useUpdateRound,
+} from "~/features/rounds/hooks/useRound";
+import { useVoters } from "~/features/voters/hooks/useApproveVoters";
 import { api } from "~/utils/api";
 
 export default function DistributePage() {
   const utils = api.useUtils();
-  const setConfig = api.config.set.useMutation({
-    onSuccess: () => utils.results.votes.invalidate(),
-  });
-  const settings = api.config.get.useQuery();
+  const round = useCurrentRound();
+  const update = useUpdateRound();
 
-  const calculation = settings.data?.config?.calculation;
+  const calculation = round.data?.calculation as Calculation;
 
   return (
-    <Layout
-      sidebar="left"
+    <RoundAdminLayout
       sidebarComponent={
         <div className="space-y-4">
           <ConfigurePool />
-          {settings.isLoading ? (
+          {round.isLoading ? (
             <div />
           ) : (
             <Alert variant="info">
@@ -40,12 +41,19 @@ export default function DistributePage() {
                 defaultValues={calculation}
                 schema={CalculationSchema}
                 onSubmit={(values) => {
-                  setConfig.mutate({ config: { calculation: values } });
+                  update.mutate(
+                    { calculation: values },
+                    {
+                      async onSuccess() {
+                        return utils.results.votes.invalidate();
+                      },
+                    },
+                  );
                 }}
               >
                 <div className="gap-2">
                   <FormControl name="style" label="Payout style">
-                    <Select disabled={settings.isLoading} className={"w-full"}>
+                    <Select disabled={round.isLoading} className={"w-full"}>
                       <option value="custom">Custom</option>
                       <option value="op">OP-Style</option>
                     </Select>
@@ -55,7 +63,7 @@ export default function DistributePage() {
                     variant="primary"
                     type="submit"
                     className="w-full"
-                    disabled={setConfig.isLoading}
+                    disabled={update.isLoading}
                   >
                     Update calculation
                   </Button>
@@ -66,20 +74,22 @@ export default function DistributePage() {
         </div>
       }
     >
-      {new Date() < config.reviewEndsAt ? (
-        <div>Voting hasn't started yet</div>
-      ) : (
-        <div>
-          {setConfig.isLoading ? (
-            <div className="flex justify-center py-8">
-              <Spinner className="size-6" />
-            </div>
-          ) : (
-            <Distributions />
-          )}
-        </div>
-      )}
-    </Layout>
+      {() =>
+        new Date() < (round.data?.reviewEndsAt ?? new Date()) ? (
+          <div>Voting hasn't started yet</div>
+        ) : (
+          <div className="max-w-screen-md">
+            {update.isLoading ? (
+              <div className="flex justify-center py-8">
+                <Spinner className="size-6" />
+              </div>
+            ) : (
+              <Distributions />
+            )}
+          </div>
+        )
+      }
+    </RoundAdminLayout>
   );
 }
 
@@ -100,7 +110,7 @@ function MinimumQuorum() {
 }
 
 function VoterCount() {
-  const voters = api.voters.list.useQuery({ limit: 1000 });
+  const voters = useVoters();
   const votes = api.results.votes.useQuery();
 
   return (
