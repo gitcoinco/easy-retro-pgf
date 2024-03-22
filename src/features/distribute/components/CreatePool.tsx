@@ -31,7 +31,6 @@ import {
 } from "~/components/ui/Form";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useFormContext } from "react-hook-form";
-import { MintButton } from "./MintButton";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
