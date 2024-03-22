@@ -1,7 +1,7 @@
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
-  title: "EasyRetroPGF",
+  title: "EasyRPGF",
   description: "Open-source Retro Public Goods Funding platform",
   url: "https://easy-retro-pgf.vercel.app",
   image: "/api/og",
@@ -10,43 +10,23 @@ export const metadata = {
 export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
-  startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
-  registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
-  reviewEndsAt: new Date(process.env.NEXT_PUBLIC_REVIEW_END_DATE!),
-  votingEndsAt: new Date(process.env.NEXT_PUBLIC_VOTING_END_DATE!),
-  resultsAt: new Date(process.env.NEXT_PUBLIC_RESULTS_DATE!),
-  votingMaxTotal: Number(process.env.NEXT_PUBLIC_MAX_VOTES_TOTAL),
-  votingMaxProject: Number(process.env.NEXT_PUBLIC_MAX_VOTES_PROJECT),
   skipApprovedVoterCheck: ["true", "1"].includes(
     process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK!,
   ),
-  tokenName: process.env.NEXT_PUBLIC_TOKEN_NAME!,
-  roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
-  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(
-    ",",
-  ) as `0x${string}`[],
-  network:
-    wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
 };
 
 export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const allo = {
   alloAddress: process.env.NEXT_PUBLIC_ALLO2_ADDRESS as `0x${string}`,
   strategyAddress: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS as `0x${string}`,
-  // eslint-disable-next-line
-  tokenAddress: (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ||
-    nativeToken) as `0x${string}`,
 };
-export const isNativeToken = allo.tokenAddress === nativeToken;
 
 export const theme = {
-  colorMode: "dark",
+  colorMode: "light",
 };
 
 export const eas = {
   url: process.env.NEXT_PUBLIC_EASSCAN_URL ?? "",
-  attesterAddress: process.env.NEXT_PUBLIC_APPROVED_APPLICATIONS_ATTESTER ?? "",
-
   contracts: {
     eas:
       process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS ??
@@ -60,6 +40,33 @@ export const eas = {
     approval: process.env.NEXT_PUBLIC_APPROVAL_SCHEMA!,
   },
 };
+
+export const networks = {
+  mainnet: "mainnet",
+  optimism: "optimism",
+  optimismSepolia: "optimismSepolia",
+  arbitrum: "arbitrum",
+  linea: "linea",
+  sepolia: "sepolia",
+  base: "base",
+  baseGoerli: "baseGoerli",
+} as const;
+
+export const supportedNetworks = Object.values(networks).map((chain) => ({
+  ...wagmiChains[chain],
+  chain,
+}));
+
+export const easApiEndpoints = {
+  [networks.mainnet]: "https://easscan.org/graphql",
+  [networks.optimism]: "https://optimism.easscan.org/graphql",
+  [networks.optimismSepolia]: "https://optimism-sepolia.easscan.org/graphql",
+  [networks.arbitrum]: "https://arbitrum.easscan.org/graphql",
+  [networks.linea]: "https://linea.easscan.org/graphql",
+  [networks.sepolia]: "https://sepolia.easscan.org/graphql",
+  [networks.base]: "https://base.easscan.org/graphql",
+  [networks.baseGoerli]: "https://base-goerli.easscan.org/graphql",
+} as const;
 
 export const impactCategories = {
   ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },

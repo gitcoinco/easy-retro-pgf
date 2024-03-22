@@ -1,7 +1,7 @@
-import { fromHex, type Address } from "viem";
-import { config, eas } from "~/config";
-import { createCachedFetch } from "./fetch";
 import { ethers } from "ethers";
+import { fromHex, type Address } from "viem";
+import { config, eas, easApiEndpoints, type networks } from "~/config";
+import { createCachedFetch } from "./fetch";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 
@@ -57,35 +57,47 @@ const AttestationsQuery = `
   }
 `;
 
-export async function fetchAttestations(
+type PartialRound = {
+  id: string | null;
+  startsAt: Date | null;
+  network: string | null;
+};
+export type AttestationFetcher = (
   schema: string[],
   filter?: AttestationsFilter,
-) {
-  const startsAt = Math.floor(+config.startsAt / 1000);
+) => Attestation[];
+export function createAttestationFetcher(round: PartialRound) {
+  return (schema: string[], filter?: AttestationsFilter) => {
+    const startsAt = Math.floor(Number(round?.startsAt ?? new Date()) / 1000);
+    const easURL = easApiEndpoints[round?.network as keyof typeof networks];
+    if (!easURL) throw new Error("Round network not configured");
 
-  return fetch<{ attestations: AttestationWithMetadata[] }>(eas.url, {
-    method: "POST",
-    body: JSON.stringify({
-      query: AttestationsQuery,
-      variables: {
-        ...filter,
-        where: {
-          schemaId: { in: schema },
-          revoked: { equals: false },
-          time: { gte: startsAt },
-          ...filter?.where,
+    return fetch<{ attestations: AttestationWithMetadata[] }>(easURL, {
+      method: "POST",
+      body: JSON.stringify({
+        query: AttestationsQuery,
+        variables: {
+          ...filter,
+          where: {
+            schemaId: { in: schema },
+            revoked: { equals: false },
+            time: { gte: startsAt },
+            ...filter?.where,
+          },
         },
-      },
-    }),
-  }).then((r) => r.data?.attestations.map(parseAttestation));
+      }),
+    }).then((r) => r.data?.attestations.map(parseAttestation));
+  };
 }
 
-export async function fetchApprovedVoter(address: string) {
+export async function fetchApprovedVoter(round: PartialRound, address: string) {
   if (config.skipApprovedVoterCheck) return true;
-  return fetchAttestations([eas.schemas.approval], {
+
+  return createAttestationFetcher(round)([eas.schemas.approval], {
     where: {
       recipient: { equals: address },
       ...createDataFilter("type", "bytes32", "voter"),
+      ...createDataFilter("round", "bytes32", round.id!),
     },
   }).then((attestations) => attestations.length);
 }

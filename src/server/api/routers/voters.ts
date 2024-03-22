@@ -1,30 +1,24 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import {
-  fetchAttestations,
   createDataFilter,
   fetchApprovedVoter,
 } from "~/utils/fetchAttestations";
-import { config, eas } from "~/config";
-
-export const FilterSchema = z.object({
-  limit: z.number().default(3 * 8),
-  cursor: z.number().default(0),
-});
+import { eas } from "~/config";
 
 export const votersRouter = createTRPCRouter({
-  approved: publicProcedure
+  approved: attestationProcedure
     .input(z.object({ address: z.string() }))
-    .query(async ({ input }) => {
-      return fetchApprovedVoter(input.address);
+    .query(async ({ input, ctx }) => {
+      return fetchApprovedVoter(ctx.round!, input.address);
     }),
-  list: publicProcedure.input(FilterSchema).query(async ({}) => {
-    return fetchAttestations([eas.schemas.approval], {
+  list: attestationProcedure.query(async ({ ctx }) => {
+    return ctx.fetchAttestations([eas.schemas.approval], {
       where: {
         AND: [
           createDataFilter("type", "bytes32", "voter"),
-          createDataFilter("round", "bytes32", config.roundId),
+          createDataFilter("round", "bytes32", String(ctx.round?.id)),
         ],
       },
     });

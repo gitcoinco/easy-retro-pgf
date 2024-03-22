@@ -13,10 +13,13 @@ import type { NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { config } from "~/config";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
+import {
+  type AttestationFetcher,
+  createAttestationFetcher,
+} from "~/utils/fetchAttestations";
 
 /**
  * 1. CONTEXT
@@ -28,7 +31,15 @@ import { db } from "~/server/db";
 
 interface CreateContextOptions {
   session: Session | null;
+  domain?: string;
+  round?: {
+    id: string;
+    admins: string[];
+    network: string | null;
+    startsAt: Date | null;
+  } | null;
   res: NextApiResponse;
+  fetchAttestations?: AttestationFetcher;
 }
 
 /**
@@ -43,6 +54,7 @@ interface CreateContextOptions {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
+    ...opts,
     session: opts.session,
     db,
     res: opts.res,
@@ -61,9 +73,13 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
+  // Get the current round domain
+  const domain = req.headers.referer?.split("/")[3];
+
   return createInnerTRPCContext({
     session,
     res,
+    domain,
   });
 };
 
@@ -117,6 +133,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
   return next({
     ctx: {
       // infers the `session` as non-nullable
@@ -125,9 +142,33 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const roundMiddleware = t.middleware(async ({ ctx, next }) => {
+  const domain = ctx.domain;
+
+  const round = domain
+    ? await ctx.db.round.findFirst({
+        where: { domain },
+        select: { id: true, admins: true, network: true, startsAt: true },
+      })
+    : null;
+
+  return next({ ctx: { ...ctx, round } });
+});
+const attestationMiddleware = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.round)
+    throw new TRPCError({ code: "BAD_REQUEST", message: "No round found" });
+
+  return next({
+    ctx: {
+      ...ctx,
+      fetchAttestations: createAttestationFetcher(ctx.round),
+    },
+  });
+});
+
 const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
-  const address = ctx.session?.user.name;
-  if (!config.admins.includes(address as `0x${string}`)) {
+  const address = ctx.session?.user.name as `0x${string}`;
+  if (!ctx.round?.admins.includes(address)) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Must be admin to access this route",
@@ -144,5 +185,14 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
+
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
-export const adminProcedure = protectedProcedure.use(enforceUserIsAdmin);
+export const roundProcedure = publicProcedure.use(roundMiddleware);
+export const protectedRoundProcedure = publicProcedure
+  .use(enforceUserIsAuthed)
+  .use(roundMiddleware);
+export const adminProcedure = protectedProcedure
+  .use(roundMiddleware)
+  .use(enforceUserIsAdmin);
+
+export const attestationProcedure = roundProcedure.use(attestationMiddleware);

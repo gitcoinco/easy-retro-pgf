@@ -1,17 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
-import { config, eas } from "~/config";
+import { eas } from "~/config";
 import { useUploadMetadata } from "~/hooks/useMetadata";
 import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
 import type { Application, Profile } from "../types";
 import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export function useCreateApplication(options: {
   onSuccess: () => void;
   onError: (err: TransactionError) => void;
 }) {
+  const { data: round } = useCurrentRound();
   const attestation = useCreateAttestation();
   const attest = useAttest();
   const upload = useUploadMetadata();
+
+  const roundId = String(round?.id);
 
   const mutation = useMutation(
     async (values: { application: Application; profile: Profile }) => {
@@ -26,7 +30,7 @@ export function useCreateApplication(options: {
               metadataType: 0, // "http"
               metadataPtr,
               type: "application",
-              round: config.roundId,
+              round: roundId,
             },
           });
         }),
@@ -39,7 +43,7 @@ export function useCreateApplication(options: {
               metadataType: 0, // "http"
               metadataPtr,
               type: "profile",
-              round: config.roundId,
+              round: roundId,
             },
           });
         }),

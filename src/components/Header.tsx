@@ -5,19 +5,15 @@ import clsx from "clsx";
 
 import { ConnectButton } from "./ConnectButton";
 import { IconButton } from "./ui/Button";
-import { config, metadata } from "~/config";
+import { metadata } from "~/config";
 import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Logo = () => (
-  <div className="h-10">
-    {config.logoUrl ? (
-      <img className="max-h-full" src={config.logoUrl} />
-    ) : (
-      <div className="flex h-full items-center justify-center rounded-full border-2 border-dashed border-white px-4 text-xs font-medium tracking-wider text-white">
-        {metadata.title}
-      </div>
-    )}
+  <div className="h-12">
+    <div className="flex h-full items-center justify-center rounded-full border-2  border-white px-4 text-base font-medium tracking-wider text-white hover:bg-gray-700">
+      {metadata.title}
+    </div>
   </div>
 );
 
@@ -27,7 +23,7 @@ const NavLink = ({
 }: { isActive: boolean } & ComponentPropsWithRef<typeof Link>) => (
   <Link
     className={clsx(
-      "flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-gray-400 hover:text-white",
+      "flex h-full items-center border-b-[3px] border-transparent p-4 text-lg font-semibold tracking-wider text-gray-300 hover:text-white",
       {
         ["!border-white  !text-white"]: isActive,
       },

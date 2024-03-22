@@ -13,7 +13,6 @@ function ApproveButton({
   const isAdmin = useIsAdmin();
   const approvals = useApprovedApplications(projectIds);
 
-  console.log("approv", approvals.data);
   const approve = useApproveApplication();
   if (approvals.data?.length)
     return (

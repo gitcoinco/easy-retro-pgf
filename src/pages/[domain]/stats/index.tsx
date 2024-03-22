@@ -1,16 +1,12 @@
-import { differenceInDays, formatRelative } from "date-fns";
+import { differenceInDays } from "date-fns";
 import dynamic from "next/dynamic";
 import { useMemo, type PropsWithChildren } from "react";
 import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
-import {
-  useProjectCount,
-  useProjectsResults,
-  useResults,
-} from "~/hooks/useResults";
+import { useProjectCount } from "~/features/projects/hooks/useProjects";
+import { useProjectsResults, useResults } from "~/hooks/useResults";
 import { Layout } from "~/layouts/DefaultLayout";
-import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
 
 const ResultsChart = dynamic(
@@ -19,7 +15,6 @@ const ResultsChart = dynamic(
 );
 
 export default function StatsPage() {
-  console.log(ResultsChart);
   return (
     <Layout>
       <Heading as="h1" size="3xl">

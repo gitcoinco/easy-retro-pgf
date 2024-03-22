@@ -1,11 +1,17 @@
-import { config, eas } from "~/config";
+import { eas } from "~/config";
 import { useAttest } from "~/hooks/useEAS";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { api } from "~/utils/api";
 
 // TODO: Move this to a shared folders
 export type TransactionError = { reason?: string; data?: { message: string } };
+
+export function useVoters() {
+  return api.voters.list.useQuery();
+}
 
 export function useApproveVoters(options: {
   onSuccess: () => void;
@@ -13,14 +19,17 @@ export function useApproveVoters(options: {
 }) {
   const attest = useAttest();
   const signer = useEthersSigner();
+  const { data: round } = useCurrentRound();
+  const roundId = String(round?.id);
 
   return useMutation(async (voters: string[]) => {
     if (!signer) throw new Error("Connect wallet first");
+    if (!roundId) throw new Error("No RoundID found");
     const attestations = await Promise.all(
       voters.map((recipient) =>
         createAttestation(
           {
-            values: { type: "voter", round: config.roundId },
+            values: { type: "voter", round: roundId },
             schemaUID: eas.schemas.approval,
             recipient,
           },

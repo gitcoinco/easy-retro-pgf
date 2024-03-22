@@ -18,20 +18,14 @@ import {
   usePoolAmount,
   usePoolId,
   usePoolToken,
+  useRoundToken,
   useTokenAllowance,
   useTokenBalance,
 } from "../hooks/useAlloPool";
-import { allo, isNativeToken } from "~/config";
-import {
-  ErrorMessage,
-  Form,
-  FormControl,
-  Input,
-  Label,
-} from "~/components/ui/Form";
+import { allo } from "~/config";
+import { ErrorMessage, Form, FormControl, Input } from "~/components/ui/Form";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useFormContext } from "react-hook-form";
-import { MintButton } from "./MintButton";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -41,7 +35,7 @@ function CheckAlloProfile(props: PropsWithChildren) {
   if (!isCorrectNetwork) {
     return (
       <Alert variant="info" className="flex items-center gap-2">
-        You must be connected to {correctNetwork.name}
+        You must be connected to {correctNetwork?.name}
       </Alert>
     );
   }
@@ -88,7 +82,7 @@ function CreatePool() {
   const poolId = usePoolId();
   const allowance = useTokenAllowance();
 
-  const token = usePoolToken();
+  const token = useRoundToken();
 
   const decimals = token.data?.decimals;
 
@@ -129,7 +123,7 @@ function CreatePool() {
         }}
         onSubmit={(values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
-          const hasAllowance = isNativeToken
+          const hasAllowance = token.data?.isNativeToken
             ? true
             : (allowance.data ?? 0) >= amount;
 
@@ -145,21 +139,19 @@ function CreatePool() {
         <FormControl name="tokenAddress" label="Token">
           <Input disabled readOnly value={token.data?.symbol ?? "ETH"} />
         </FormControl>
-        <Label>
-          Amount of tokens to fund
-          <AllocationInput name="amount" tokenAddon />
-        </Label>
-
-        <div className="mb-2">
+        <FormControl name="amount" label="Amount of tokens to fund">
+          <AllocationInput tokenAddon />
+        </FormControl>
+        <div className="-mt-3 mb-2">
           <TokenBalance />
         </div>
 
         <FundPoolButton
           buttonText="Create pool"
           isLoading={createPool.isLoading || approve.isLoading}
-          decimals={decimals}
           allowance={allowance.data}
           balance={balance.data?.value}
+          token={token.data}
         />
       </Form>
     </Alert>
@@ -180,7 +172,10 @@ function PoolDetails({ poolId = 0 }) {
   const balance = useTokenBalance();
   const fundPool = useFundPool();
   const token = usePoolToken();
+  const roundToken = useRoundToken();
   const approve = useApprove();
+
+  const tokenMismatch = token.data.address !== roundToken.data?.address;
 
   const decimals = token.data?.decimals ?? 18;
 
@@ -203,11 +198,13 @@ function PoolDetails({ poolId = 0 }) {
         })}
         onSubmit={async (values, form) => {
           const amount = parseUnits(values.amount.toString(), decimals);
-          const hasAllowance = calcHasAllowance({
-            amount: BigInt(values.amount),
-            allowance,
-            decimals,
-          });
+          const hasAllowance = calcHasAllowance(
+            {
+              amount: BigInt(values.amount),
+              allowance,
+            },
+            token.data,
+          );
 
           if (!hasAllowance) {
             return approve.writeAsync({
@@ -220,18 +217,27 @@ function PoolDetails({ poolId = 0 }) {
           );
         }}
       >
-        <div className="mb-2 space-y-2">
-          <AllocationInput name="amount" tokenAddon />
+        <FormControl name="amount" label="Amount of tokens to fund">
+          <AllocationInput tokenAddon />
+        </FormControl>
+        <div className="-mt-3 mb-2">
           <TokenBalance />
         </div>
-
-        <FundPoolButton
-          buttonText="Fund pool"
-          isLoading={fundPool.isLoading || approve.isLoading}
-          decimals={decimals}
-          allowance={allowance}
-          balance={balance.data?.value}
-        />
+        {tokenMismatch ? (
+          <div className="text-center text-sm">
+            Pool token and configured round token are different
+          </div>
+        ) : (
+          <>
+            <FundPoolButton
+              buttonText="Fund pool"
+              isLoading={fundPool.isLoading || approve.isLoading}
+              token={token.data}
+              allowance={allowance}
+              balance={balance.data?.value}
+            />
+          </>
+        )}
 
         <ErrorMessage>{(error as { message: string })?.message}</ErrorMessage>
       </Form>
@@ -256,14 +262,20 @@ function FundPoolButton({
   isLoading = false,
   allowance = 0n,
   balance = 0n,
-  decimals = 18,
+  token,
+}: {
+  buttonText: string;
+  isLoading?: boolean;
+  allowance?: bigint;
+  balance?: bigint;
+  token: { decimals: number; isNativeToken: boolean };
 }) {
   const { address } = useAccount();
   const session = useSession();
   const { formState, watch } = useFormContext<{ amount: number }>();
   const amount = BigInt(watch("amount") || 0);
 
-  const hasAllowance = calcHasAllowance({ amount, allowance, decimals });
+  const hasAllowance = calcHasAllowance({ amount, allowance }, token);
   const disabled = isLoading || Boolean(formState.errors.amount);
 
   if (!address || !session) {
@@ -309,10 +321,13 @@ function FundPoolButton({
   );
 }
 
-function calcHasAllowance({ allowance = 0n, amount = 0n, decimals = 18 }) {
-  return isNativeToken
+function calcHasAllowance(
+  { allowance = 0n, amount = 0n },
+  token: { decimals: number; isNativeToken: boolean },
+) {
+  return token.isNativeToken
     ? true
-    : allowance >= parseUnits(amount.toString(), decimals);
+    : allowance >= parseUnits(amount.toString(), token.decimals);
 }
 
 export default dynamic(() => Promise.resolve(ConfigurePool), { ssr: false });

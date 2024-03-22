@@ -5,7 +5,11 @@ import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";
-import { config } from "~/config";
+import { useRouter } from "next/router";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+} from "~/features/rounds/hooks/useRound";
 
 type Props = PropsWithChildren<
   {
@@ -15,42 +19,33 @@ type Props = PropsWithChildren<
 >;
 export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
+
+  const domain = useCurrentDomain();
+  const { data: round } = useCurrentRound();
   const navLinks = [
     {
-      href: "/projects",
-      children: "Projects",
+      href: `/${domain}/projects`,
+      children: `Projects`,
     },
     {
-      href: "/lists",
-      children: "Lists",
+      href: `/${domain}/lists`,
+      children: `Lists`,
     },
   ];
 
   if (getAppState() === "RESULTS") {
     navLinks.push({
-      href: "/stats",
-      children: "Stats",
+      href: `/${domain}/stats`,
+      children: `Stats`,
     });
   }
 
-  if (config.admins.includes(address!)) {
+  if (round?.admins.includes(address!)) {
     navLinks.push(
       ...[
         {
-          href: "/applications",
-          children: "Applications",
-        },
-        {
-          href: "/voters",
-          children: "Voters",
-        },
-        {
-          href: "/distribute",
-          children: "Distribute",
-        },
-        {
-          href: "/info",
-          children: "Info",
+          href: `/${domain}/admin`,
+          children: `Admin`,
         },
       ],
     );

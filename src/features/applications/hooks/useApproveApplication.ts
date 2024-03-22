@@ -1,13 +1,18 @@
 import { useAttest } from "~/hooks/useEAS";
 import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
-import { config, eas } from "~/config";
+import { eas } from "~/config";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { toast } from "sonner";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export function useApproveApplication(opts?: { onSuccess?: () => void }) {
   const attest = useAttest();
   const signer = useEthersSigner();
+
+  const { data: round } = useCurrentRound();
+
+  const roundId = String(round?.id);
 
   return useMutation(
     async (applicationIds: string[]) => {
@@ -17,7 +22,7 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
         applicationIds.map((refUID) =>
           createAttestation(
             {
-              values: { type: "application", round: config.roundId },
+              values: { type: "application", round: roundId },
               schemaUID: eas.schemas.approval,
               refUID,
             },

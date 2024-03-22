@@ -1,13 +1,9 @@
 import { EmptyState } from "~/components/EmptyState";
 import { Skeleton } from "~/components/ui/Skeleton";
-import { api } from "~/utils/api";
-
-function useVoters() {
-  return api.voters.list.useQuery({});
-}
+import { useVoters } from "../hooks/useApproveVoters";
 
 export function VotersList() {
-  let { data, isLoading } = useVoters();
+  const { data, isLoading } = useVoters();
   if (!isLoading && !data?.length)
     return (
       <EmptyState title="No voters">

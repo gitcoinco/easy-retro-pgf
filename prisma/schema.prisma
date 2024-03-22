@@ -58,7 +58,9 @@ model VerificationToken {
 }
 
 model Ballot {
+    id      String @id @default(cuid())
     voterId String
+    roundId String
 
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
@@ -67,11 +69,32 @@ model Ballot {
 
     votes Json[]
 
-    @@unique([voterId]) // Only one ballot per voter
+    // Only one ballot per voter and round
+    @@unique([voterId, roundId])
 }
 
-model Settings {
-    id     String @id @default(cuid())
+model Round {
+    id          String  @id @default(cuid())
+    creatorId   String
+    name        String
+    description String?
+    domain      String  @unique
+
+    network String?
+    admins  String[]
+
+    startsAt           DateTime?
+    registrationEndsAt DateTime?
+    reviewEndsAt       DateTime?
+    votingEndsAt       DateTime?
+    resultsAt          DateTime?
+    distributionAt     DateTime?
+
+    maxVotesTotal   Int?
+    maxVotesProject Int?
+    tokenAddress    String?
+
+    calculation Json?
+
     poolId Int?
-    config Json
 }
