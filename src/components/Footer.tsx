@@ -9,12 +9,12 @@ export function Footer() {
         className="group py-4 text-sm hover:text-white"
       >
         <div className="flex">
-          Built with{" "}
+          Built with{"  "}
           <span className="relative -mt-1 w-6 px-1 text-xl text-red-600">
             <span className="absolute">❤️</span>
             <span className="absolute group-hover:animate-ping">❤️</span>
           </span>
-           on EasyRetroPGF.
+          on EasyRetroPGF.
         </div>
       </a>
     </footer>

@@ -8,8 +8,13 @@
 
 <div>
 
-## Key Objects
-- 
+## Key Steps
+- Set round timing variables in the .env. The application only works with one round at the time.
+- Projects applications open
+- Admins review applications and approve if relevant
+- Voting opens by whitelisted addresses (by admins)
+- Results are displayed
+- Distribution can be done
 
 ## Documentation
 
