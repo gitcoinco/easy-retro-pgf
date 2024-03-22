@@ -14,7 +14,7 @@ export function Footer() {
             <span className="absolute">❤️</span>
             <span className="absolute group-hover:animate-ping">❤️</span>
           </span>
-          on EasyRetroPGF.
+          &nbsp;on EasyRetroPGF.
         </div>
       </a>
     </footer>
