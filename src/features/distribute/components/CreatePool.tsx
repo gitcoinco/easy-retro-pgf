@@ -31,7 +31,6 @@ import {
 } from "~/components/ui/Form";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useFormContext } from "react-hook-form";
-import { MintButton } from "./MintButton";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -62,12 +61,12 @@ function CheckAlloProfile(props: PropsWithChildren) {
         </p>
         <IconButton
           className={"w-full"}
-          icon={createProfile.isLoading ? Spinner : null}
+          icon={createProfile.isPending ? Spinner : null}
           variant="primary"
           onClick={() => createProfile.mutate()}
-          disabled={createProfile.isLoading}
+          disabled={createProfile.isPending}
         >
-          {createProfile.isLoading ? (
+          {createProfile.isPending ? (
             <>Creating profile...</>
           ) : (
             <>Create profile</>
@@ -134,9 +133,7 @@ function CreatePool() {
             : (allowance.data ?? 0) >= amount;
 
           if (!hasAllowance) {
-            return approve.write({
-              args: [allo.alloAddress, amount],
-            });
+            return approve.onApprove(allo.alloAddress, amount);
           }
 
           return createPool.mutate({ profileId, initialFunding: amount });
@@ -156,7 +153,7 @@ function CreatePool() {
 
         <FundPoolButton
           buttonText="Create pool"
-          isLoading={createPool.isLoading || approve.isLoading}
+          isLoading={createPool.isPending || approve.isPending}
           decimals={decimals}
           allowance={allowance.data}
           balance={balance.data?.value}
@@ -176,7 +173,7 @@ function ConfigurePool() {
 
 function PoolDetails({ poolId = 0 }) {
   const amount = usePoolAmount();
-  const allowance = useTokenAllowance().data;
+  const { data: allowance } = useTokenAllowance();
   const balance = useTokenBalance();
   const fundPool = useFundPool();
   const token = usePoolToken();
@@ -210,9 +207,7 @@ function PoolDetails({ poolId = 0 }) {
           });
 
           if (!hasAllowance) {
-            return approve.writeAsync({
-              args: [allo.alloAddress, amount],
-            });
+            return approve.onApprove(allo.alloAddress, amount);
           }
           fundPool.mutate(
             { poolId, amount },
@@ -227,7 +222,7 @@ function PoolDetails({ poolId = 0 }) {
 
         <FundPoolButton
           buttonText="Fund pool"
-          isLoading={fundPool.isLoading || approve.isLoading}
+          isLoading={fundPool.isPending || approve.isPending}
           decimals={decimals}
           allowance={allowance}
           balance={balance.data?.value}

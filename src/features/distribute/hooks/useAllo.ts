@@ -1,7 +1,12 @@
-import { type PublicClient, useNetwork } from "wagmi";
 import { Allo, Registry } from "@allo-team/allo-v2-sdk/";
+import { useAccount } from "wagmi";
 
-import { decodeEventLog, type Address, type Chain } from "viem";
+import {
+  decodeEventLog,
+  type Address,
+  type PublicClient,
+  type Chain,
+} from "viem";
 import { useMemo } from "react";
 import { type JsonFragment } from "ethers";
 
@@ -9,12 +14,15 @@ const createAlloOpts = (chain: Chain) => ({
   chain: chain.id,
   rpc: chain.rpcUrls.default.http[0],
 });
+
 export function useAllo() {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
+
   return useMemo(() => chain && new Allo(createAlloOpts(chain)), [chain]);
 }
 export function useAlloRegistry() {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
+
   return useMemo(() => chain && new Registry(createAlloOpts(chain)), [chain]);
 }
 

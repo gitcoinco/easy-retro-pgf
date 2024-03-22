@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { type PropsWithChildren } from "react";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { IconButton } from "~/components/ui/Button";
@@ -14,7 +13,6 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { Heading } from "~/components/ui/Heading";
 import { Spinner } from "~/components/ui/Spinner";
 import { impactCategories } from "~/config";
 import {

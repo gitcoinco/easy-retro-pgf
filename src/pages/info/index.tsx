@@ -18,11 +18,11 @@ const steps = [
   },
   {
     label: "Tallying",
-    date: config.votingEndsAt,
+    date: undefined,
   },
   {
     label: "Distribution",
-    date: config.resultsAt,
+    date: undefined,
   },
 ];
 
@@ -46,7 +46,7 @@ export default function InfoPage() {
             })}
           >
             <h3 className="font-semibold">{step.label}</h3>
-            <div>{formatDate(step.date)}</div>
+            {step.date && <div>{formatDate(step.date)}</div>}
           </div>
         ))}
       </div>
@@ -54,7 +54,7 @@ export default function InfoPage() {
   );
 }
 
-function calculateProgress(steps: { label: string; date: Date }[]) {
+function calculateProgress(steps: { label: string; date?: Date }[]) {
   const now = Number(new Date());
 
   let currentStepIndex = steps.findIndex(

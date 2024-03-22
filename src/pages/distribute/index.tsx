@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
-import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
+import { Form, FormControl, Input, Select } from "~/components/ui/Form";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
@@ -11,6 +11,7 @@ import {
   type Calculation,
   CalculationSchema,
 } from "~/features/distribute/types";
+import { useMaciPoll } from "~/hooks/useMaciPoll";
 import { Layout } from "~/layouts/DefaultLayout";
 import { api } from "~/utils/api";
 
@@ -55,7 +56,7 @@ export default function DistributePage() {
                     variant="primary"
                     type="submit"
                     className="w-full"
-                    disabled={setConfig.isLoading}
+                    disabled={setConfig.isPending}
                   >
                     Update calculation
                   </Button>
@@ -70,7 +71,7 @@ export default function DistributePage() {
         <div>Voting hasn't started yet</div>
       ) : (
         <div>
-          {setConfig.isLoading ? (
+          {setConfig.isPending ? (
             <div className="flex justify-center py-8">
               <Spinner className="size-6" />
             </div>
@@ -101,7 +102,8 @@ function MinimumQuorum() {
 
 function VoterCount() {
   const voters = api.voters.list.useQuery({ limit: 1000 });
-  const votes = api.results.votes.useQuery();
+  const { pollData } = useMaciPoll();
+  const votes = api.results.votes.useQuery({ pollId: pollData?.id.toString() });
 
   return (
     <div className="mb-4 flex flex-col items-center">
@@ -111,9 +113,9 @@ function VoterCount() {
       <div className="pt-1 text-center text-2xl">
         <Skeleton
           className="h-8 w-20 dark:bg-gray-700"
-          isLoading={voters.isLoading || votes.isLoading}
+          isLoading={voters.isPending || votes.isPending}
         >
-          {votes.data?.totalVoters} / {voters.data?.length}
+          {votes.data?.averageVotes}
         </Skeleton>
       </div>
     </div>

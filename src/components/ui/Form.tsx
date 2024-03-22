@@ -6,6 +6,7 @@ import {
   type ReactElement,
   type ComponentPropsWithoutRef,
   type ReactNode,
+  type ComponentProps,
   forwardRef,
   cloneElement,
   useEffect,

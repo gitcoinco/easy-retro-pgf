@@ -12,7 +12,7 @@ export const AllocationInput = ({
   tokenAddon,
   ...props
 }: {
-  votingMaxProject: number;
+  votingMaxProject?: number;
   disabled?: boolean;
   tokenAddon?: boolean;
   error?: boolean;
@@ -36,7 +36,9 @@ export const AllocationInput = ({
             autoComplete="off"
             className="pr-16"
             isAllowed={({ floatValue }) =>
-              (floatValue ?? 0) <= votingMaxProject
+              votingMaxProject !== undefined
+                ? (floatValue ?? 0) <= votingMaxProject
+                : true
             }
             disabled={props.disabled}
             defaultValue={props.defaultValue as string}

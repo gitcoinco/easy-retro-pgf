@@ -20,13 +20,15 @@ import { usePoolAmount, usePoolToken } from "../hooks/useAlloPool";
 import { type Address, formatUnits, parseUnits } from "viem";
 import { cn } from "~/utils/classNames";
 import { formatNumber } from "~/utils/formatNumber";
+import { useMaciPoll } from "~/hooks/useMaciPoll";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
 
-  const votes = api.results.votes.useQuery();
+  const { pollData } = useMaciPoll();
+  const votes = api.results.votes.useQuery({ pollId: pollData?.id.toString() });
   const projectIds = Object.keys(votes.data?.projects ?? {});
 
   const projects = api.projects.payoutAddresses.useQuery(
@@ -116,7 +118,7 @@ function ConfirmDistributionDialog({
   const { data: token } = usePoolToken();
   const { data: balance } = usePoolAmount();
 
-  const { isLoading, mutate } = useDistribute();
+  const { isPending, mutate } = useDistribute();
 
   const { recipients, amounts } = useMemo(() => {
     return distribution.reduce(
@@ -161,8 +163,8 @@ function ConfirmDistributionDialog({
       </div>
       <div className="space-y-1">
         <IconButton
-          disabled={isLoading || amountDiff < 0}
-          icon={isLoading ? Spinner : null}
+          disabled={isPending || amountDiff < 0}
+          icon={isPending ? Spinner : null}
           className={"w-full"}
           variant="primary"
           onClick={() =>
@@ -172,7 +174,7 @@ function ConfirmDistributionDialog({
             )
           }
         >
-          {isLoading ? "Confirming..." : "Confirm"}
+          {isPending ? "Confirming..." : "Confirm"}
         </IconButton>
         <Button className={"w-full"} onClick={onOpenChange}>
           Cancel

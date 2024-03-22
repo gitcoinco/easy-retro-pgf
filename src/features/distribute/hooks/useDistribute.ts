@@ -10,16 +10,17 @@ export function useDistribute() {
   const { data: poolId } = usePoolId();
 
   const { sendTransactionAsync } = useSendTransaction();
-  return useMutation(
-    async ({
+  return useMutation({
+    mutationFn: async ({
       recipients,
       amounts,
     }: {
       recipients: Address[];
       amounts: bigint[];
     }) => {
-      if (!allo) throw new Error("Allo not initialized");
-      if (!token) throw new Error("Token not initialized");
+      if (!allo) throw new Error("Allo is not initialized");
+      if (!token) throw new Error("Token is not initialized");
+      if (!poolId) throw new Error("Pool id is not initialized");
 
       console.log({ recipients, amounts });
       const { to, data } = allo.distribute(
@@ -30,7 +31,7 @@ export function useDistribute() {
 
       return sendTransactionAsync({ to, data });
     },
-  );
+  });
 }
 
 function encodeAmounts(amounts: bigint[]) {

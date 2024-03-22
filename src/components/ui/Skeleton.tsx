@@ -1,5 +1,4 @@
 import { type ComponentProps } from "react";
-import clsx from "clsx";
 import { cn } from "~/utils/classNames";
 
 export const Skeleton = ({
