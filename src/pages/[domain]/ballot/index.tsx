@@ -9,6 +9,7 @@ import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
+import { config } from "~/config";
 import { AllocationForm } from "~/features/ballot/components/AllocationList";
 import {
   useBallot,
@@ -268,5 +269,5 @@ const TotalAllocation = () => {
   const votes = form.watch("votes") ?? [];
   const sum = sumBallot(votes);
 
-  return <div>{formatNumber(sum)} OP</div>;
+  return <div>{formatNumber(sum)} votes</div>;
 };

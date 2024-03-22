@@ -30,7 +30,6 @@ function BallotOverview() {
   const isSaving = useIsMutating(getQueryKey(api.ballot.save));
 
   const round = useCurrentRound();
-  const token = useRoundToken();
   const sum = sumBallot(ballot?.votes);
 
   const allocations = ballot?.votes ?? [];
@@ -38,7 +37,6 @@ function BallotOverview() {
 
   const { data: projectCount } = useProjectCount();
 
-  const tokenName = token.data?.symbol;
   const maxVotesTotal = round.data?.maxVotesTotal ?? 0;
 
   const appState = getAppState();
@@ -90,13 +88,13 @@ function BallotOverview() {
       <BallotSection
         title={
           <div className="flex justify-between">
-            {tokenName} allocated:
+            Votes allocated:
             <div
               className={clsx("text-gray-900 dark:text-gray-300", {
                 ["text-primary-500"]: sum > maxVotesTotal,
               })}
             >
-              {formatNumber(sum)} {tokenName}
+              {formatNumber(sum)} votes
             </div>
           </div>
         }
@@ -104,9 +102,7 @@ function BallotOverview() {
         <Progress value={sum} max={maxVotesTotal} />
         <div className="flex justify-between text-xs">
           <div>Total</div>
-          <div>
-            {formatNumber(maxVotesTotal ?? 0)} {tokenName}
-          </div>
+          <div>{formatNumber(maxVotesTotal ?? 0)} votes</div>
         </div>
       </BallotSection>
       {ballot?.publishedAt ? (

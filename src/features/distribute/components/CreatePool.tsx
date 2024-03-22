@@ -200,7 +200,7 @@ function PoolDetails({ poolId = 0 }) {
           const amount = parseUnits(values.amount.toString(), decimals);
           const hasAllowance = calcHasAllowance(
             {
-              amount: BigInt(values.amount),
+              amount: values.amount,
               allowance,
             },
             token.data,
@@ -273,7 +273,7 @@ function FundPoolButton({
   const { address } = useAccount();
   const session = useSession();
   const { formState, watch } = useFormContext<{ amount: number }>();
-  const amount = BigInt(watch("amount") || 0);
+  const amount = watch("amount") || 0;
 
   const hasAllowance = calcHasAllowance({ amount, allowance }, token);
   const disabled = isLoading || Boolean(formState.errors.amount);
@@ -322,7 +322,7 @@ function FundPoolButton({
 }
 
 function calcHasAllowance(
-  { allowance = 0n, amount = 0n },
+  { allowance = 0n, amount = 0 },
   token: { decimals: number; isNativeToken: boolean },
 ) {
   return token.isNativeToken
