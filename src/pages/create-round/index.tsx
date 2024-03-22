@@ -11,7 +11,7 @@ import { RoundNameSchema } from "~/features/rounds/types";
 export default function CreateRoundPage() {
   return (
     <BaseLayout>
-      <div className="mx-auto max-w-screen-sm">
+      <div className="mx-auto max-w-sm">
         <CreateRound />
       </div>
     </BaseLayout>

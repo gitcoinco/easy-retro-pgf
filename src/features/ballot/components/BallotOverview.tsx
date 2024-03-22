@@ -15,12 +15,13 @@ import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
-import { config } from "~/config";
 import { useIsMutating } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
 import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
+import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 function BallotOverview() {
   const router = useRouter();
@@ -28,12 +29,17 @@ function BallotOverview() {
   const { data: ballot } = useBallot();
   const isSaving = useIsMutating(getQueryKey(api.ballot.save));
 
+  const round = useCurrentRound();
+  const token = useRoundToken();
   const sum = sumBallot(ballot?.votes);
 
   const allocations = ballot?.votes ?? [];
-  const canSubmit = router.route === "/ballot" && allocations.length;
+  const canSubmit = router.route.includes("ballot") && allocations.length;
 
   const { data: projectCount } = useProjectCount();
+
+  const tokenName = token.data?.symbol;
+  const maxVotesTotal = round.data?.maxVotesTotal ?? 0;
 
   const appState = getAppState();
   if (appState === "RESULTS")
@@ -84,22 +90,22 @@ function BallotOverview() {
       <BallotSection
         title={
           <div className="flex justify-between">
-            {config.tokenName} allocated:
+            {tokenName} allocated:
             <div
               className={clsx("text-gray-900 dark:text-gray-300", {
-                ["text-primary-500"]: sum > config.votingMaxTotal,
+                ["text-primary-500"]: sum > maxVotesTotal,
               })}
             >
-              {formatNumber(sum)} {config.tokenName}
+              {formatNumber(sum)} {tokenName}
             </div>
           </div>
         }
       >
-        <Progress value={sum} max={config.votingMaxTotal} />
+        <Progress value={sum} max={maxVotesTotal} />
         <div className="flex justify-between text-xs">
           <div>Total</div>
           <div>
-            {formatNumber(config.votingMaxTotal ?? 0)} {config.tokenName}
+            {formatNumber(maxVotesTotal ?? 0)} {tokenName}
           </div>
         </div>
       </BallotSection>
@@ -112,7 +118,7 @@ function BallotOverview() {
           Adding to ballot...
         </Button>
       ) : canSubmit ? (
-        <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
+        <SubmitBallotButton disabled={sum > maxVotesTotal} />
       ) : allocations.length ? (
         <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
           View ballot

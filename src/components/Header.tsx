@@ -10,8 +10,8 @@ import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Logo = () => (
-  <div className="h-12">
-    <div className="flex h-full items-center justify-center rounded-full border-2  border-white px-4 text-base font-medium tracking-wider text-white hover:bg-gray-700">
+  <div className="">
+    <div className="flex h-full items-center justify-center rounded-full border-2 border-white  bg-gray-800 px-4 py-2 text-base font-medium tracking-wider text-white hover:bg-gray-700">
       {metadata.title}
     </div>
   </div>
@@ -23,9 +23,9 @@ const NavLink = ({
 }: { isActive: boolean } & ComponentPropsWithRef<typeof Link>) => (
   <Link
     className={clsx(
-      "flex h-full items-center border-b-[3px] border-transparent p-4 text-lg font-semibold tracking-wider text-gray-300 hover:text-white",
+      "hover:bg-primary-100 hover:text-primary-800 flex items-center rounded-full border-b-[3px] border-transparent px-6 py-2 font-semibold text-gray-600 transition-colors",
       {
-        ["!border-white  !text-white"]: isActive,
+        ["bg-primary-100 !border-white text-primary-700"]: isActive,
       },
     )}
     {...props}
@@ -38,9 +38,9 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <header className="relative z-[100] bg-gray-900 shadow-md dark:shadow-none">
-      <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center px-2">
-        <div className="mr-4 flex items-center md:mr-16">
+    <header className="relative z-[100]">
+      <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center justify-between px-2">
+        <div className="flex items-center">
           <IconButton
             icon={isOpen ? X : Menu}
             variant="ghost"
@@ -51,7 +51,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
             <Logo />
           </Link>
         </div>
-        <div className="hidden h-full items-center gap-4 overflow-x-auto md:flex">
+        <div className="hidden h-full items-center gap-2 overflow-x-auto md:flex">
           {navLinks?.map((link) => (
             <NavLink
               isActive={asPath.startsWith(link.href)}
@@ -62,10 +62,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
             </NavLink>
           ))}
         </div>
-        <div className="flex-1 md:ml-8"></div>
-        <div className="ml-4 flex gap-4 md:ml-8 xl:ml-32">
-          <ConnectButton />
-        </div>
+        <ConnectButton />
         <MobileMenu isOpen={isOpen} navLinks={navLinks} />
       </div>
     </header>
@@ -89,7 +86,7 @@ const MobileMenu = ({
   >
     {navLinks.map((link) => (
       <Link
-        className={clsx("block p-4 text-2xl  font-semibold")}
+        className={clsx("block p-4 text-2xl font-semibold")}
         key={link.href}
         {...link}
       />

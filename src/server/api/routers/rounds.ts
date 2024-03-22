@@ -3,6 +3,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   adminProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import { convert } from "url-slug";
@@ -41,6 +42,8 @@ export const roundsRouter = createTRPCRouter({
     }),
 
   list: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.round.findMany({});
+    const creatorId = ctx.session.user.name!;
+
+    return ctx.db.round.findMany({ where: { creatorId } });
   }),
 });

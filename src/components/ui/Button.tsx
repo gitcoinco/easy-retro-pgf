@@ -24,7 +24,8 @@ const button = tv({
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",
-      deafult: "px-4 py-2 h-12",
+      md: "px-6 py-2 h-12",
+      lg: "px-6 py-3 text-lg",
       icon: "h-12 w-12",
     },
     disabled: {
@@ -33,7 +34,7 @@ const button = tv({
   },
   defaultVariants: {
     variant: "default",
-    size: "deafult",
+    size: "md",
   },
 });
 

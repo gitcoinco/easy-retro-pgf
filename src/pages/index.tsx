@@ -1,50 +1,55 @@
 import { BaseLayout } from "~/layouts/BaseLayout";
 import { Button } from "~/components/ui/Button";
 import Link from "next/link";
-import { api } from "~/utils/api";
-import { InfiniteLoading } from "~/components/InfiniteLoading";
-import { Heading } from "~/components/ui/Heading";
-import { Skeleton } from "~/components/ui/Skeleton";
-import { Banner } from "~/components/ui/Banner";
+import { ConnectButton } from "~/components/ConnectButton";
 
 export default function ProjectsPage({}) {
-  const rounds = api.rounds.list.useInfiniteQuery(
-    {},
-    { getNextPageParam: (_, pages) => pages.length },
-  );
   return (
-    <BaseLayout>
-      <div className="mb-2 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Active Rounds</h1>
-        <Button variant="primary" as={Link} href={`/create-round`}>
-          Create new round
+    <BaseLayout
+      header={
+        <div className="flex justify-end p-3">
+          <ConnectButton>
+            <Button variant="primary" as={Link} href={"/app"}>
+              Go to app
+            </Button>
+          </ConnectButton>
+        </div>
+      }
+    >
+      <div className="py-16">
+        <h1 className="font-heading mb-2 text-pretty text-center text-7xl leading-[6rem] tracking-tight sm:text-[120px]">
+          Retroactive Public Goods Funding
+        </h1>
+        <h2 className="text-center font-serif text-4xl">for everyone</h2>
+      </div>
+      <div className="mx-auto flex max-w-sm flex-col items-center justify-center gap-2">
+        <Button
+          className="w-full"
+          variant="primary"
+          as={Link}
+          size="lg"
+          href={`/create-round`}
+        >
+          Create a round
+        </Button>
+        <Button
+          className="w-full"
+          as={Link}
+          target="_blank"
+          size="lg"
+          href={`https://github.com/gitcoinco/easy-retro-pgf`}
+        >
+          Self-hosted
+        </Button>
+        <Button
+          size="lg"
+          className="w-full "
+          variant="ghost"
+          onClick={() => alert("where does this link?")}
+        >
+          What is RPGF?
         </Button>
       </div>
-
-      <InfiniteLoading
-        columns={3}
-        {...rounds}
-        renderItem={(item, { isLoading }) => (
-          <Link
-            key={item.id}
-            href={`/${item.domain}`}
-            className="group rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
-          >
-            <Banner />
-            {/* <div className="h-24 bg-gray-800" /> */}
-            <Heading className="truncate" size="lg" as="h3">
-              <Skeleton isLoading={isLoading}>{item?.name}</Skeleton>
-            </Heading>
-            <div className="mb-2">
-              <p className="line-clamp-2 h-10 text-sm dark:text-gray-300">
-                <Skeleton isLoading={isLoading} className="w-full">
-                  {item?.description}
-                </Skeleton>
-              </p>
-            </div>
-          </Link>
-        )}
-      />
     </BaseLayout>
   );
 }

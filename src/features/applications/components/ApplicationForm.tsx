@@ -317,7 +317,7 @@ function CreateApplicationButton({
         {!session && <div>You must connect wallet to create a list</div>}
         {!isCorrectNetwork && (
           <div className="flex items-center gap-2">
-            You must be connected to {correctNetwork.name}
+            You must be connected to {correctNetwork?.name}
           </div>
         )}
       </div>

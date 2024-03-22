@@ -5,7 +5,6 @@ import { useFormContext } from "react-hook-form";
 
 import { Button } from "~/components/ui/Button";
 import { Checkbox, Form, FormSection } from "~/components/ui/Form";
-import { Markdown } from "~/components/ui/Markdown";
 import { useMetadata } from "~/hooks/useMetadata";
 import { useApplications } from "~/features/applications/hooks/useApplications";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
@@ -13,13 +12,11 @@ import { type Application } from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
 import { useApproveApplication } from "../hooks/useApproveApplication";
-import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
 import { formatDate } from "~/utils/time";
 import { ClockIcon } from "lucide-react";
-import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 
@@ -186,8 +183,6 @@ function SelectAllButton({
 }
 
 function ApproveButton({ isLoading = false }) {
-  const isAdmin = useIsAdmin();
-  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
   const form = useFormContext<ApplicationsToApprove>();
   const selectedCount = Object.values(form.watch("selected") ?? {}).filter(
     Boolean,
@@ -195,15 +190,11 @@ function ApproveButton({ isLoading = false }) {
   return (
     <Button
       suppressHydrationWarning
-      disabled={!selectedCount || !isAdmin || isLoading || !isCorrectNetwork}
+      disabled={!selectedCount || isLoading}
       variant="primary"
       type="submit"
     >
-      {!isCorrectNetwork
-        ? `Connect to ${correctNetwork.name}`
-        : isAdmin
-          ? `Approve ${selectedCount} applications`
-          : "You must be an admin"}
+      Approve {selectedCount} applications
     </Button>
   );
 }
