@@ -7,7 +7,7 @@ function useVoters() {
 }
 
 export function VotersList() {
-  let { data, isLoading } = useVoters();
+  const { data, isLoading } = useVoters();
   if (!isLoading && !data?.length)
     return (
       <EmptyState title="No voters">
