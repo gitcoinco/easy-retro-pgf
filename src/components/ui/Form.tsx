@@ -5,16 +5,16 @@ import {
   type PropsWithChildren,
   type ReactElement,
   type ComponentPropsWithoutRef,
+  type ReactNode,
   forwardRef,
   cloneElement,
   useEffect,
-  ReactNode,
 } from "react";
 import {
   FormProvider,
   useForm,
   useFormContext,
-  UseFormReturn,
+  type UseFormReturn,
   type UseFormProps,
   type FieldValues,
   useFieldArray,
@@ -22,8 +22,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createComponent } from ".";
-// import { Search } from "../icons";
-import clsx from "clsx";
+import { cn } from "~/utils/classNames";
 import { useInterval, useLocalStorage } from "react-use";
 import { IconButton } from "./Button";
 import { PlusIcon, Search, Trash } from "lucide-react";
@@ -57,7 +56,7 @@ export const InputWrapper = createComponent(
 export const InputAddon = createComponent(
   "div",
   tv({
-    base: "absolute right-0 text-gray-900 dark:text-gray-300 inline-flex items-center justify-center h-full border-gray-300 dark:border-gray-500 border-l px-4 font-semibold",
+    base: "absolute right-0 text-gray-900 dark:text-gray-300 inline-flex items-center justify-center h-full border-gray-300 dark:border-gray-800 border-l px-4 font-semibold",
     variants: {
       disabled: {
         true: "text-gray-500 dark:text-gray-500",
@@ -107,6 +106,20 @@ export const Textarea = createComponent(
   tv({ base: [...inputBase, "w-full"] }),
 );
 
+export const SearchInput = forwardRef(function SearchInput(
+  { ...props }: ComponentPropsWithRef<typeof Input>,
+  ref,
+) {
+  return (
+    <InputWrapper className="">
+      <InputIcon>
+        <Search />
+      </InputIcon>
+      <Input ref={ref} {...props} className="rounded-full pl-10" />
+    </InputWrapper>
+  );
+});
+
 export const FormControl = ({
   name,
   label,
@@ -135,7 +148,7 @@ export const FormControl = ({
   ) as unknown as { message: string };
 
   return (
-    <fieldset className={clsx("mb-4", className)}>
+    <fieldset className={cn("mb-4", className)}>
       {label && (
         <Label
           className="mb-1"
@@ -149,13 +162,20 @@ export const FormControl = ({
         error: Boolean(error),
         ...register(name, { valueAsNumber }),
       })}
-      {hint && <div className="pt-1 text-xs text-gray-500">{hint}</div>}
-      {error && (
-        <div className="pt-1 text-xs text-red-500">{error.message}</div>
+      {hint && (
+        <div className="pt-1 text-xs text-gray-500 dark:text-gray-400">
+          {hint}
+        </div>
       )}
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </fieldset>
   );
 };
+
+export const ErrorMessage = createComponent(
+  "div",
+  tv({ base: "pt-1 text-xs text-red-500" }),
+);
 
 export function FieldArray<S extends z.Schema>({
   name,
@@ -195,15 +215,38 @@ export function FieldArray<S extends z.Schema>({
         </div>
       ))}
       <div className="flex justify-end">
-        <IconButton size="sm" icon={PlusIcon} onClick={() => append({})}>
+        <IconButton
+          type="button"
+          size="sm"
+          icon={PlusIcon}
+          onClick={() => append({})}
+        >
           Add row
         </IconButton>
       </div>
     </div>
   );
 }
+
+export function FormSection({
+  title,
+  description,
+  children,
+}: { title: string; description: string } & ComponentProps<"section">) {
+  return (
+    <section className="mb-8">
+      <h3 className="mb-1 text-xl font-semibold">{title}</h3>
+      <p className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
+        {description}
+      </p>
+      {children}
+    </section>
+  );
+}
+
 export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   defaultValues?: UseFormProps<z.infer<S>>["defaultValues"];
+  values?: UseFormProps<z.infer<S>>["values"];
   schema: S;
   persist?: string;
   onSubmit: (values: z.infer<S>, form: UseFormReturn<z.infer<S>>) => void;
@@ -213,12 +256,14 @@ export function Form<S extends z.Schema>({
   schema,
   children,
   persist,
+  values,
   defaultValues,
   onSubmit,
 }: FormProps<S>) {
   // Initialize the form with defaultValues and schema for validation
   const form = useForm({
     defaultValues,
+    values,
     resolver: zodResolver(schema),
     mode: "onBlur",
   });

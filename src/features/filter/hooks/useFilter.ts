@@ -1,15 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  parseAsInteger,
+  parseAsString,
+  parseAsStringEnum,
+  useQueryStates,
+} from "nuqs";
 
-import { useRouter } from "next/router";
-import { type Filter } from "../types";
-import { useEffect } from "react";
-
-type FilterType = "projects" | "lists";
-
-export const initialFilter: Partial<Filter> = {
-  orderBy: "name",
-  sortOrder: "asc",
-};
+import { OrderBy, SortOrder } from "../types";
 
 export const sortLabels = {
   name_asc: "A to Z",
@@ -17,51 +13,21 @@ export const sortLabels = {
   time_asc: "Oldest",
   time_desc: "Newest",
 };
-export function useFilter(type: FilterType) {
-  const client = useQueryClient();
+export type SortType = keyof typeof sortLabels;
 
-  return useQuery(
-    ["filter", type],
-    () => client.getQueryData<Filter>(["filter", type]) ?? initialFilter,
-    { cacheTime: Infinity },
+export function useFilter() {
+  const [filter, setFilter] = useQueryStates(
+    {
+      search: parseAsString.withDefault(""),
+      orderBy: parseAsStringEnum<OrderBy>(Object.values(OrderBy)).withDefault(
+        OrderBy.name,
+      ),
+      sortOrder: parseAsStringEnum<SortOrder>(
+        Object.values(SortOrder),
+      ).withDefault(SortOrder.asc),
+    },
+    { history: "replace" },
   );
-}
 
-export function useSetFilter(type: FilterType) {
-  const client = useQueryClient();
-
-  return useMutation(async (filter: Filter) =>
-    client.setQueryData<Filter>(["filter", type], (prev = initialFilter) => ({
-      ...prev,
-      ...filter,
-    })),
-  );
-}
-
-export const toURL = (prev: Partial<Filter>, next: Partial<Filter> = {}) =>
-  new URLSearchParams({ ...prev, ...next } as unknown as Record<
-    string,
-    string
-  >).toString();
-
-export function useUpdateFilterFromRouter(type: FilterType) {
-  const router = useRouter();
-  const query = router.query;
-  const { data: filter } = useFilter(type);
-  const { mutate: setFilter } = useSetFilter(type);
-
-  // Update URL when user lands on page
-  useEffect(() => {
-    // Make sure query is not already set
-    if (!router.asPath.includes("?")) {
-      void router.replace(`${router.asPath}?${toURL(filter!)}`);
-    }
-  }, []);
-
-  // Update filter when router query changes
-  useEffect(() => {
-    if (JSON.stringify(filter) !== JSON.stringify(query)) {
-      setFilter(query);
-    }
-  }, [query, setFilter]);
+  return { ...filter, setFilter };
 }

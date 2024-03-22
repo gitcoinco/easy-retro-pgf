@@ -4,9 +4,11 @@ import { type PropsWithChildren } from "react";
 import { ImageUpload } from "~/components/ImageUpload";
 import { IconButton } from "~/components/ui/Button";
 import {
+  ErrorMessage,
   FieldArray,
   Form,
   FormControl,
+  FormSection,
   Input,
   Label,
   Select,
@@ -15,7 +17,6 @@ import {
 import { Heading } from "~/components/ui/Heading";
 import { Spinner } from "~/components/ui/Spinner";
 import { impactCategories } from "~/config";
-import { useAccount } from "wagmi";
 import {
   ApplicationSchema,
   ProfileSchema,
@@ -27,6 +28,9 @@ import { toast } from "sonner";
 import { useController, useFormContext } from "react-hook-form";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import { useLocalStorage } from "react-use";
+import { Alert } from "~/components/ui/Alert";
+import { useSession } from "next-auth/react";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -34,15 +38,25 @@ const ApplicationCreateSchema = z.object({
 });
 
 export function ApplicationForm({ address = "" }) {
+  const clearDraft = useLocalStorage("application-draft")[2];
+
   const create = useCreateApplication({
     onSuccess: () => {
       toast.success("Application created successfully!");
+      clearDraft();
     },
     onError: (err: { reason?: string; data?: { message: string } }) =>
       toast.error("Application create error", {
         description: err.reason ?? err.data?.message,
       }),
   });
+  if (create.isSuccess) {
+    return (
+      <Alert variant="success" title="Application created!">
+        It will now be reviewed by our admins.
+      </Alert>
+    );
+  }
   const error = create.error;
   return (
     <div>
@@ -62,78 +76,93 @@ export function ApplicationForm({ address = "" }) {
           create.mutate({ application, profile });
         }}
       >
-        <Heading as="h3" size="xl">
-          Profile
-        </Heading>
-        <FormControl name="profile.name" label="Name" required>
-          <Input placeholder="Your name" />
-        </FormControl>
-        <div className="mb-4 gap-4 md:flex">
-          <FormControl required label="Avatar" name="profile.profileImageUrl">
-            <ImageUpload className="h-48 w-48 " />
-          </FormControl>
-          <FormControl
-            required
-            label="Cover image"
-            name="profile.bannerImageUrl"
-            className="flex-1"
-          >
-            <ImageUpload className="h-48 " />
-          </FormControl>
-        </div>
-        <Heading as="h3" size="xl">
-          Application
-        </Heading>
-        <FormControl name="application.name" label="Name" required>
-          <Input placeholder="Project name" />
-        </FormControl>
-
-        <FormControl name="application.bio" label="Description" required>
-          <Input placeholder="Project description" />
-        </FormControl>
-        <div className="gap-4 md:flex">
-          <FormControl
-            className="flex-1"
-            name="application.websiteUrl"
-            label="Website"
-            required
-          >
-            <Input placeholder="https://" />
-          </FormControl>
-
-          <FormControl
-            className="flex-1"
-            name="application.payoutAddress"
-            label="Payout address"
-            required
-          >
-            <Input placeholder="0x..." />
-          </FormControl>
-        </div>
-
-        <FormControl
-          name="application.contributionDescription"
-          label="Contribution description"
-          required
+        <FormSection
+          title="Profile"
+          description="Configure your profile name and choose your avatar and background for your project."
         >
-          <Textarea
-            rows={4}
-            placeholder="What have your project contributed to?"
-          />
-        </FormControl>
-
-        <FormControl
-          name="application.impactDescription"
-          label="Impact description"
-          required
+          <FormControl name="profile.name" label="Profile name" required>
+            <Input placeholder="Your name" />
+          </FormControl>
+          <div className="mb-4 gap-4 md:flex">
+            <FormControl
+              required
+              label="Project avatar"
+              name="profile.profileImageUrl"
+            >
+              <ImageUpload className="h-48 w-48 " />
+            </FormControl>
+            <FormControl
+              required
+              label="Project background image"
+              name="profile.bannerImageUrl"
+              className="flex-1"
+            >
+              <ImageUpload className="h-48 " />
+            </FormControl>
+          </div>
+        </FormSection>
+        <FormSection
+          title="Application"
+          description="Configure your application and the payout address to where tokens will be transferred."
         >
-          <Textarea rows={4} placeholder="What impact has your project had?" />
-        </FormControl>
+          <FormControl name="application.name" label="Name" required>
+            <Input placeholder="Project name" />
+          </FormControl>
 
-        <ImpactTags />
+          <FormControl name="application.bio" label="Description" required>
+            <Textarea rows={4} placeholder="Project description" />
+          </FormControl>
+          <div className="gap-4 md:flex">
+            <FormControl
+              className="flex-1"
+              name="application.websiteUrl"
+              label="Website"
+              required
+            >
+              <Input placeholder="https://" />
+            </FormControl>
 
-        <ApplicationFormSection
-          label="Contribution links"
+            <FormControl
+              className="flex-1"
+              name="application.payoutAddress"
+              label="Payout address"
+              required
+            >
+              <Input placeholder="0x..." />
+            </FormControl>
+          </div>
+        </FormSection>
+
+        <FormSection
+          title="Contribution & Impact"
+          description="Describe the contribution and impact of your project."
+        >
+          <FormControl
+            name="application.contributionDescription"
+            label="Contribution description"
+            required
+          >
+            <Textarea
+              rows={4}
+              placeholder="What have your project contributed to?"
+            />
+          </FormControl>
+
+          <FormControl
+            name="application.impactDescription"
+            label="Impact description"
+            required
+          >
+            <Textarea
+              rows={4}
+              placeholder="What impact has your project had?"
+            />
+          </FormControl>
+          <ImpactTags />
+        </FormSection>
+
+        <FormSection
+          title="Contribution links"
           description="Where can we find your contributions?"
         >
           <FieldArray
@@ -168,10 +197,10 @@ export function ApplicationForm({ address = "" }) {
               </>
             )}
           />
-        </ApplicationFormSection>
+        </FormSection>
 
-        <ApplicationFormSection
-          label="Impact metrics"
+        <FormSection
+          title="Impact metrics"
           description="What kind of impact have your project made?"
         >
           <FieldArray
@@ -201,10 +230,10 @@ export function ApplicationForm({ address = "" }) {
               </>
             )}
           />
-        </ApplicationFormSection>
+        </FormSection>
 
-        <ApplicationFormSection
-          label="Funding sources"
+        <FormSection
+          title="Funding sources"
           description="From what sources have you received funding?"
         >
           <FieldArray
@@ -248,7 +277,7 @@ export function ApplicationForm({ address = "" }) {
               </>
             )}
           />
-        </ApplicationFormSection>
+        </FormSection>
 
         {error ? (
           <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
@@ -279,13 +308,13 @@ function CreateApplicationButton({
   isLoading: boolean;
   buttonText: string;
 }) {
-  const { isConnected } = useAccount();
+  const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
   return (
     <div className="flex items-center justify-between">
       <div>
-        {!isConnected && <div>You must connect wallet to create a list</div>}
+        {!session && <div>You must connect wallet to create a list</div>}
         {!isCorrectNetwork && (
           <div className="flex items-center gap-2">
             You must be connected to {correctNetwork.name}
@@ -295,7 +324,7 @@ function CreateApplicationButton({
 
       <IconButton
         icon={isLoading ? Spinner : null}
-        disabled={isLoading || !isConnected}
+        disabled={isLoading || !session}
         variant="primary"
         type="submit"
         isLoading={isLoading}
@@ -306,31 +335,17 @@ function CreateApplicationButton({
   );
 }
 
-function ApplicationFormSection({
-  label,
-  description,
-  children,
-}: PropsWithChildren<{ label: string; description: string }>) {
-  return (
-    <div>
-      <div>
-        <Heading as="h3" size="xl">
-          {label}
-        </Heading>
-        <p className="mb-4 leading-loose text-gray-400">{description}</p>
-      </div>
-
-      <div>{children}</div>
-    </div>
-  );
-}
-
 function ImpactTags() {
-  const { control, watch } = useFormContext();
-  const { field } = useController({ name: "impactCategory", control });
+  const { control, watch, formState } =
+    useFormContext<z.infer<typeof ApplicationCreateSchema>>();
+  const { field } = useController({
+    name: "application.impactCategory",
+    control,
+  });
 
-  const selected = (watch("impactCategory") ?? []) as string[];
+  const selected = watch("application.impactCategory") ?? [];
 
+  const error = formState.errors.application?.impactCategory;
   return (
     <div className="mb-4">
       <Label>
@@ -345,7 +360,11 @@ function ImpactTags() {
               selected={isSelected}
               key={value}
               onClick={() => {
-                field.onChange([value]);
+                const currentlySelected = isSelected
+                  ? selected.filter((s) => s !== value)
+                  : selected.concat(value);
+
+                field.onChange(currentlySelected);
               }}
             >
               {label}
@@ -353,6 +372,7 @@ function ImpactTags() {
           );
         })}
       </div>
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
   );
 }

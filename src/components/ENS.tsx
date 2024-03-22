@@ -18,9 +18,9 @@ export function AvatarENS({ address }: { address: Address }) {
   );
 }
 
-export function NameENS({ address }: { address?: Address }) {
+export function NameENS({ address }: { address?: string }) {
   const { data: name } = useEnsName({
-    address,
+    address: address as Address,
     chainId: 1,
     enabled: Boolean(address),
   });

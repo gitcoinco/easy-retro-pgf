@@ -37,11 +37,10 @@ export function InfiniteLoading<T>({
     [pages],
   );
 
-  const hasMore = useMemo(
-    () =>
-      !(pages?.length && pages?.[pages.length - 1]?.length < config.pageSize),
-    [pages],
-  );
+  const hasMore = useMemo(() => {
+    if (!pages.length) return false;
+    return (pages[pages.length - 1]?.length ?? 0) === config.pageSize;
+  }, [pages]);
 
   return (
     <div>

@@ -21,6 +21,7 @@ import { formatDate } from "~/utils/time";
 import { ClockIcon } from "lucide-react";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
+import { Alert } from "~/components/ui/Alert";
 
 export function ApplicationItem({
   id,
@@ -35,11 +36,7 @@ export function ApplicationItem({
 
   const form = useFormContext();
 
-  const {
-    description,
-    fundingSources = [],
-    impactMetrics = [],
-  } = metadata.data ?? {};
+  const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
 
   return (
     <div className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800">
@@ -63,18 +60,12 @@ export function ApplicationItem({
               <div>{fundingSources.length} funding sources</div>
               <div>{impactMetrics.length} impact metrics</div>
             </div>
-            <div className="line-clamp-2 text-sm dark:text-gray-300">
-              {description}
-            </div>
+            <div className="line-clamp-2 text-sm dark:text-gray-300">{bio}</div>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
           <ClockIcon className="size-3" />
-          <Skeleton
-            isLoading={isLoading}
-            title={new Date(time)}
-            className="mb-1 min-h-5 min-w-24"
-          >
+          <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
             {formatDate(time * 1000)}
           </Skeleton>
         </div>
@@ -131,8 +122,11 @@ export function ApplicationsToApprove() {
     >
       <Markdown>{`### Review applications
 Select the applications you want to approve. You must be a configured admin to approve applications.
-      `}</Markdown>
 
+`}</Markdown>
+      <Alert>
+        Newly submitted applications can take 10 minutes to show up.
+      </Alert>
       <div className="my-2 flex items-center justify-between">
         <div className="text-gray-300">
           {applications.data?.length

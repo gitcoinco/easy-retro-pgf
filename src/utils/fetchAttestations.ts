@@ -117,15 +117,24 @@ export function parseDecodedMetadata(json: string): Metadata {
 }
 
 export const parseBytes = (hex: string) =>
-  ethers.utils.parseBytes32String(fromHex(hex as Address, "bytes"));
+  ethers.decodeBytes32String(fromHex(hex as Address, "bytes"));
 
 export const formatBytes = (string: string) =>
-  ethers.utils.formatBytes32String(string);
+  ethers.encodeBytes32String(string);
 
 const typeMaps = {
   bytes32: (v: string) => formatBytes(v),
   string: (v: string) => v,
 };
+
+export function createSearchFilter(value: string) {
+  const formatter = typeMaps.string;
+  return {
+    decodedDataJson: {
+      contains: `${formatter(value)}`,
+    },
+  };
+}
 
 export function createDataFilter(
   name: string,

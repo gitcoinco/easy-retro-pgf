@@ -47,6 +47,8 @@ export const BaseLayout = ({
     return null;
   }
 
+  const wrappedSidebar = <Sidebar side={sidebar}>{sidebarComponent}</Sidebar>;
+
   title = title ? `${title} - ${metadata.title}` : metadata.title;
   return (
     <Context.Provider value={{ eligibilityCheck, showBallot }}>
@@ -78,7 +80,7 @@ export const BaseLayout = ({
       >
         {header}
         <div className="mx-auto w-full flex-1 pt-12 2xl:container md:flex">
-          {sidebar === "left" ? sidebarComponent : null}
+          {sidebar === "left" ? wrappedSidebar : null}
           <div
             className={clsx("w-full min-w-0 px-2 pb-24", {
               ["mx-auto max-w-5xl"]: !sidebar,
@@ -86,10 +88,24 @@ export const BaseLayout = ({
           >
             {children}
           </div>
-          {sidebar === "right" ? sidebarComponent : null}
+          {sidebar === "right" ? wrappedSidebar : null}
         </div>
         <Footer />
       </div>
     </Context.Provider>
   );
 };
+
+const Sidebar = ({
+  side,
+  ...props
+}: { side?: "left" | "right" } & PropsWithChildren) => (
+  <div>
+    <div
+      className={clsx("px-2 md:w-[336px] md:px-4", {
+        ["left-0 top-[2rem] md:sticky"]: side === "left",
+      })}
+      {...props}
+    />
+  </div>
+);

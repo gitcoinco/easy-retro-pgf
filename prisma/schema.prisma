@@ -69,3 +69,9 @@ model Ballot {
 
     @@unique([voterId]) // Only one ballot per voter
 }
+
+model Settings {
+    id     String @id @default(cuid())
+    poolId Int?
+    config Json
+}

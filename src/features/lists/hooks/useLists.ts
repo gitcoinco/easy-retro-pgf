@@ -1,13 +1,13 @@
 import { config } from "~/config";
 import { useMetadata } from "~/hooks/useMetadata";
 import { api } from "~/utils/api";
-import { type ListMetadata } from "../types";
+import { type List } from "../types";
 
 export function useListById(id: string) {
   return api.lists.get.useQuery({ id }, { enabled: Boolean(id) });
 }
 export function useLists() {
-  return api.lists.query.useInfiniteQuery(
+  return api.lists.search.useInfiniteQuery(
     { limit: config.pageSize },
     {
       getNextPageParam: (_, pages) => pages.length,
@@ -16,5 +16,5 @@ export function useLists() {
 }
 
 export function useListMetadata(metadataPtr?: string) {
-  return useMetadata<ListMetadata>(metadataPtr);
+  return useMetadata<List>(metadataPtr);
 }

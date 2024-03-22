@@ -1,10 +1,15 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { fetchAttestations, createDataFilter } from "~/utils/fetchAttestations";
+import {
+  fetchAttestations,
+  createDataFilter,
+  createSearchFilter,
+} from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { config, eas } from "~/config";
 import { type Filter, FilterSchema } from "~/features/filter/types";
+import { fetchMetadata } from "~/utils/fetchMetadata";
 
 export const projectsRouter = createTRPCRouter({
   count: publicProcedure.query(async ({}) => {
@@ -26,27 +31,26 @@ export const projectsRouter = createTRPCRouter({
     });
   }),
   get: publicProcedure
-    .input(
-      z.object({
-        id: z.string().optional(),
-        approvedId: z.string().optional(),
-      }),
-    )
-    .query(async ({ input: { id } }) => {
-      if (!id) {
+    .input(z.object({ ids: z.array(z.string()) }))
+    .query(async ({ input: { ids } }) => {
+      if (!ids.length) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
       return fetchAttestations([eas.schemas.metadata], {
-        where: { id: { equals: id } },
-      }).then(([attestation]) => {
-        if (!attestation) {
-          throw new TRPCError({ code: "NOT_FOUND" });
-        }
-        return attestation;
+        where: { id: { in: ids } },
       });
     }),
   search: publicProcedure.input(FilterSchema).query(async ({ input }) => {
+    const filters = [
+      createDataFilter("type", "bytes32", "application"),
+      createDataFilter("round", "bytes32", config.roundId),
+    ];
+
+    if (input.search) {
+      filters.push(createSearchFilter(input.search));
+    }
+
     return fetchAttestations([eas.schemas.approval], {
       where: {
         attester: { in: config.admins },
@@ -56,20 +60,49 @@ export const projectsRouter = createTRPCRouter({
       const approvedIds = attestations
         .map(({ refUID }) => refUID)
         .filter(Boolean);
+
       return fetchAttestations([eas.schemas.metadata], {
         take: input.limit,
         skip: input.cursor * input.limit,
         orderBy: [createOrderBy(input.orderBy, input.sortOrder)],
         where: {
           id: { in: approvedIds },
-          AND: [
-            createDataFilter("type", "bytes32", "application"),
-            createDataFilter("round", "bytes32", config.roundId),
-          ],
+          AND: filters,
         },
       });
     });
   }),
+
+  // Used for distribution to get the projects' payoutAddress
+  // To get this data we need to fetch all projects and their metadata
+  payoutAddresses: publicProcedure
+    .input(z.object({ ids: z.array(z.string()) }))
+    .query(async ({ input }) => {
+      console.log({ input });
+      return fetchAttestations([eas.schemas.metadata], {
+        where: { id: { in: input.ids } },
+      })
+        .then((attestations) =>
+          Promise.all(
+            attestations.map((attestation) =>
+              fetchMetadata(attestation.metadataPtr).then((data) => {
+                const { payoutAddress } = data as unknown as {
+                  payoutAddress: string;
+                };
+
+                console.log({ payoutAddress });
+                return { projectId: attestation.id, payoutAddress };
+              }),
+            ),
+          ),
+        )
+        .then((projects) =>
+          projects.reduce(
+            (acc, x) => ({ ...acc, [x.projectId]: x.payoutAddress }),
+            {},
+          ),
+        );
+    }),
 });
 
 function createOrderBy(

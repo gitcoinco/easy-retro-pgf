@@ -1,7 +1,7 @@
-import { fetchBuilder, MemoryCache } from "node-fetch-cache";
+import NodeFetchCache, { MemoryCache } from "node-fetch-cache";
 
 export function createCachedFetch({ ttl = 1000 * 60 }) {
-  const _fetch = fetchBuilder.withCache(new MemoryCache({ ttl }));
+  const _fetch = NodeFetchCache.create({ cache: new MemoryCache({ ttl }) });
 
   return function fetch<T>(
     url: string,

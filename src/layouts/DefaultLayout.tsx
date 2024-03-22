@@ -1,56 +1,75 @@
-import clsx from "clsx";
-import { type PropsWithChildren } from "react";
+import type { ReactNode, PropsWithChildren } from "react";
 import { useAccount } from "wagmi";
 
-import { Header } from "~/components/Header";
+import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
+import { getAppState } from "~/utils/state";
+import { config } from "~/config";
 
-const navLinks = [
-  {
-    href: "/projects",
-    children: "Projects",
-  },
-  {
-    href: "/lists",
-    children: "Lists",
-  },
-];
-
-export const Layout = ({
-  sidebar,
-  children,
-  ...props
-}: PropsWithChildren<
+type Props = PropsWithChildren<
   {
     sidebar?: "left" | "right";
+    sidebarComponent?: ReactNode;
   } & LayoutProps
->) => {
+>;
+export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
+  const navLinks = [
+    {
+      href: "/projects",
+      children: "Projects",
+    },
+    {
+      href: "/lists",
+      children: "Lists",
+    },
+  ];
 
-  const sidebarComponent = (
-    <Sidebar side={sidebar}>{address ? <BallotOverview /> : null}</Sidebar>
-  );
+  if (getAppState() === "RESULTS") {
+    navLinks.push({
+      href: "/stats",
+      children: "Stats",
+    });
+  }
+
+  if (config.admins.includes(address!)) {
+    navLinks.push(
+      ...[
+        {
+          href: "/applications",
+          children: "Applications",
+        },
+        {
+          href: "/voters",
+          children: "Voters",
+        },
+        {
+          href: "/distribute",
+          children: "Distribute",
+        },
+        {
+          href: "/info",
+          children: "Info",
+        },
+      ],
+    );
+  }
 
   return (
-    <BaseLayout
-      {...props}
-      sidebar={sidebar}
-      sidebarComponent={sidebarComponent}
-      header={<Header navLinks={navLinks} />}
-    >
+    <BaseLayout {...props} header={<Header navLinks={navLinks} />}>
       {children}
     </BaseLayout>
   );
 };
 
-const Sidebar = (props: { side?: "left" | "right" } & PropsWithChildren) => (
-  <div>
-    <div
-      className={clsx("px-2 md:w-[336px] md:px-4", {
-        ["left-0 top-[2rem] md:sticky"]: props.side === "left",
-      })}
+export function LayoutWithBallot(props: Props) {
+  const { address } = useAccount();
+  return (
+    <Layout
+      sidebar="left"
+      sidebarComponent={address && <BallotOverview />}
       {...props}
     />
-  </div>
-);
+  );
+}

@@ -26,6 +26,7 @@ function BallotOverview() {
   const router = useRouter();
 
   const { data: ballot } = useBallot();
+  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
 
   const sum = sumBallot(ballot?.votes);
 
@@ -38,8 +39,18 @@ function BallotOverview() {
   if (appState === "RESULTS")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
+        <BallotHeader>Results are live!</BallotHeader>
+        <BallotSection title="Results are being tallied"></BallotSection>
+        <Button as={Link} href={"/projects/results"}>
+          Go to results
+        </Button>
+      </div>
+    );
+  if (appState === "TALLYING")
+    return (
+      <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Voting has ended</BallotHeader>
-        <BallotSection title="Results are being tallied" />
+        <BallotSection title="Results are being tallied"></BallotSection>
       </div>
     );
   if (appState !== "VOTING")
@@ -96,6 +107,10 @@ function BallotOverview() {
         <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
           View submitted ballot
         </Button>
+      ) : isSaving ? (
+        <Button disabled className="w-full" variant="primary">
+          Adding to ballot...
+        </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
       ) : allocations.length ? (
@@ -132,7 +147,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
         "Once you submit your ballot, you won’t be able to change it. If you are ready, go ahead and submit!",
     },
     error: {
-      title: "Error subitting ballot",
+      title: "Error submitting ballot",
       instructions: (
         <Alert
           variant="warning"

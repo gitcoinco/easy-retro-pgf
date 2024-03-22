@@ -2,7 +2,7 @@ export const suffixNumber = (num: number) => {
   const lookup = [
     { value: 1, symbol: "" },
     { value: 1_000, symbol: "k" },
-    { value: 1_000_000, symbol: "m" },
+    { value: 1_000_000, symbol: "M" },
   ];
   const regexp = /\.0+$|(\.[0-9]*[1-9])0+$/;
   const item = [...lookup].reverse().find((item) => num >= item.value);

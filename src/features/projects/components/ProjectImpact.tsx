@@ -1,10 +1,10 @@
 import { Markdown } from "~/components/ui/Markdown";
 import { Heading } from "~/components/ui/Heading";
-import { type ProjectMetadata } from "../types";
 import { LinkBox } from "./LinkBox";
 import { suffixNumber } from "~/utils/suffixNumber";
+import { type Application } from "~/features/applications/types";
 
-type Props = { isLoading: boolean; project?: ProjectMetadata };
+type Props = { isLoading: boolean; project?: Application };
 
 export default function ProjectImpact({ isLoading, project }: Props) {
   return (

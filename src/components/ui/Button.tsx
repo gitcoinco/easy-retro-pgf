@@ -13,6 +13,7 @@ const button = tv({
         "bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700",
       inverted: "bg-white text-black hover:bg-white/90",
       link: "bg-none hover:underline",
+      outline: "border-2 hover:bg-white/5",
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",

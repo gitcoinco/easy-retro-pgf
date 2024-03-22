@@ -1,9 +1,11 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, FileDown, FileUp } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
-import { Button } from "~/components/ui/Button";
+import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
@@ -14,17 +16,24 @@ import {
   useSaveBallot,
 } from "~/features/ballot/hooks/useBallot";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
-import { Layout } from "~/layouts/DefaultLayout";
+import { useProjectsById } from "~/features/projects/hooks/useProjects";
+import { LayoutWithBallot } from "~/layouts/DefaultLayout";
+import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
+import { getAppState } from "~/utils/state";
 
 export default function BallotPage() {
   const { data: ballot, isLoading } = useBallot();
-
+  const { address, isConnecting } = useAccount();
+  const router = useRouter();
+  if (!address && !isConnecting) {
+    router.push("/").catch(console.log);
+  }
   if (isLoading) return null;
 
   const votes = ballot?.votes.sort((a, b) => b.amount - a.amount);
   return (
-    <Layout sidebar="right" requireAuth>
+    <LayoutWithBallot sidebar="right" requireAuth>
       {isLoading ? null : (
         <Form
           schema={BallotSchema}
@@ -35,7 +44,7 @@ export default function BallotPage() {
         </Form>
       )}
       <div className="py-8" />
-    </Layout>
+    </LayoutWithBallot>
   );
 }
 
@@ -63,14 +72,21 @@ function BallotAllocationForm() {
           variant="warning"
         ></Alert>
       )}
-      <div className="mb-2 flex justify-end">
+      <div className="mb-2 justify-between sm:flex">
+        <div className="flex gap-2">
+          <ImportCSV />
+          <ExportCSV votes={votes} />
+        </div>
         {votes.length ? <ClearBallot /> : null}
       </div>
       <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
         <div className="p-8">
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
-              <AllocationForm onSave={handleSaveBallot} />
+              <AllocationForm
+                disabled={getAppState() === "RESULTS"}
+                onSave={handleSaveBallot}
+              />
             ) : (
               <EmptyBallot />
             )}
@@ -89,18 +105,121 @@ function BallotAllocationForm() {
   );
 }
 
-function ClearBallot() {
-  const [isOpen, setOpen] = useState(false);
-  const { mutate, isLoading } = useSaveBallot({
-    onSuccess: () => setOpen(false),
-  });
+function ImportCSV() {
+  const form = useFormContext();
+  const [votes, setVotes] = useState<Vote[]>([]);
+  const save = useSaveBallot();
+  const csvInputRef = useRef<HTMLInputElement>(null);
+
+  const importCSV = useCallback((csvString: string) => {
+    // Parse CSV and build the ballot data (remove name column)
+    const { data } = parse<Vote>(csvString);
+    const votes = data.map(({ projectId, amount }) => ({
+      projectId,
+      amount: Number(amount),
+    }));
+    console.log(123, votes);
+    setVotes(votes);
+  }, []);
+
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
+      <IconButton
+        size="sm"
+        icon={FileUp}
+        onClick={() => csvInputRef.current?.click()}
+      >
+        Import CSV
+      </IconButton>
+
+      <input
+        ref={csvInputRef}
+        type="file"
+        accept="*.csv"
+        className="hidden"
+        onChange={(e) => {
+          const [file] = e.target.files ?? [];
+          if (!file) return;
+          // CSV parser doesn't seem to work with File
+          // Read the CSV contents as string
+          const reader = new FileReader();
+          reader.readAsText(file);
+          reader.onload = () => importCSV(String(reader.result));
+          reader.onerror = () => console.log(reader.error);
+        }}
+      />
+      <Dialog
+        size="sm"
+        title="Save ballot?"
+        isOpen={votes.length > 0}
+        onOpenChange={() => setVotes([])}
+      >
+        <p className="mb-6 leading-6">
+          This will replace your ballot with the CSV.
+        </p>
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            disabled={save.isLoading}
+            onClick={() => {
+              save
+                .mutateAsync({ votes })
+                .then(() => form.reset({ votes }))
+                .catch(console.log);
+              setVotes([]);
+            }}
+          >
+            Yes I'm sure
+          </Button>
+        </div>
+      </Dialog>
+    </>
+  );
+}
+
+function ExportCSV({ votes }: { votes: Vote[] }) {
+  // Fetch projects for votes to get the name
+  const projects = useProjectsById(votes.map((v) => v.projectId));
+
+  const exportCSV = useCallback(async () => {
+    // Append project name to votes
+    const votesWithProjects = votes.map((vote) => ({
+      ...vote,
+      name: projects.data?.find((p) => p.id === vote.projectId)?.name,
+    }));
+
+    // Generate CSV file
+    const csv = format(votesWithProjects, {
+      columns: ["projectId", "name", "amount"],
+    });
+    window.open(`data:text/csv;charset=utf-8,${csv}`);
+  }, [projects, votes]);
+
+  return (
+    <IconButton size="sm" icon={FileDown} onClick={exportCSV}>
+      Export CSV
+    </IconButton>
+  );
+}
+
+function ClearBallot() {
+  const form = useFormContext();
+  const [isOpen, setOpen] = useState(false);
+  const { mutateAsync, isLoading } = useSaveBallot();
+  if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
+  return (
+    <>
+      <Button variant="outline" onClick={() => setOpen(true)}>
         Remove all projects from ballot
       </Button>
-      <Dialog title="Are you sure?" isOpen={isOpen}>
-        <p className="leading-6">
+
+      <Dialog
+        title="Are you sure?"
+        size="sm"
+        isOpen={isOpen}
+        onOpenChange={setOpen}
+      >
+        <p className="mb-6 leading-6">
           This will empty your ballot and remove all the projects you have
           added.
         </p>
@@ -108,9 +227,14 @@ function ClearBallot() {
           <Button
             variant="primary"
             disabled={isLoading}
-            onClick={() => mutate({ votes: [] })}
+            onClick={() =>
+              mutateAsync({ votes: [] }).then(() => {
+                setOpen(false);
+                form.reset({ votes: [] });
+              })
+            }
           >
-            {isLoading ? <Spinner className="h-4 w-4" /> : "Yes I'm sure"}
+            {isLoading ? <Spinner /> : "Yes I'm sure"}
           </Button>
         </div>
       </Dialog>
@@ -127,11 +251,11 @@ const EmptyBallot = () => (
         through the available projects and lists.
       </p>
       <div className="flex items-center justify-center gap-3">
-        <Button variant="outline" as={Link} href={"/projects"}>
+        <Button as={Link} href={"/projects"}>
           View projects
         </Button>
         <div className="text-gray-700">or</div>
-        <Button variant="outline" as={Link} href={"/lists"}>
+        <Button as={Link} href={"/lists"}>
           View lists
         </Button>
       </div>

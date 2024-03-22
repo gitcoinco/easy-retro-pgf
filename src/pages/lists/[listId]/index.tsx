@@ -1,21 +1,20 @@
 import { type GetServerSideProps } from "next";
 
-import { Layout } from "~/layouts/DefaultLayout";
+import { LayoutWithBallot } from "~/layouts/DefaultLayout";
 import ListDetails from "~/features/lists/components/ListDetails";
 import { useListById } from "~/features/lists/hooks/useLists";
 
-export default function ProjectDetailsPage({ listId = "" }) {
-  const project = useListById(listId);
-
+export default function ListDetailsPage({ listId = "" }) {
+  const list = useListById(listId);
   return (
-    <Layout
+    <LayoutWithBallot
       sidebar="left"
-      title={project.data?.name}
+      title={list.data?.name}
       showBallot
       eligibilityCheck
     >
-      <ListDetails attestation={project.data!} />
-    </Layout>
+      <ListDetails attestation={list.data} />
+    </LayoutWithBallot>
   );
 }
 

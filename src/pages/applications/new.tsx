@@ -9,6 +9,7 @@ import { Alert } from "~/components/ui/Alert";
 export default function NewProjectPage() {
   const { address } = useAccount();
   const state = getAppState();
+
   return (
     <Layout>
       <Markdown className={"mb-8"}>
