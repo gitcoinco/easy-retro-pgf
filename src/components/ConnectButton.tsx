@@ -113,7 +113,7 @@ const ConnectedDetails = ({
         >
           {isMobile ? null : account.displayName}
         </UserInfo>
-        {/* {eligibilityCheck && <EligibilityDialog />} */}
+        {eligibilityCheck && <EligibilityDialog />}
       </div>
     </div>
   );
