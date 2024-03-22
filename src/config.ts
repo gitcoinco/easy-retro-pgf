@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export const config = {
-  logoUrl: "",
+  logoUrl: "https://i.ibb.co/VjHvtHN/Primary-Icon-Circle-Dark-BG.png",
   pageSize: 3 * 4,
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),

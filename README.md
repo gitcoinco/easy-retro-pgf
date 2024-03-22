@@ -8,7 +8,8 @@
 
 <div>
 
-[<img src="./docs/images/screenshot.png">](https://easy-retro-pgf.vercel.app)
+## Key Objects
+- 
 
 ## Documentation
 
