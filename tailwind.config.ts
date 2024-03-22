@@ -30,7 +30,7 @@ const customColors = {
     700: "#C45F1C",
   },
   highlight: {
-    600: "#F3CF00",
+    600: "#2FE4AB",
   },
 };
 
