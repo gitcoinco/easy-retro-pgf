@@ -9,7 +9,7 @@ export function ProjectAwarded({ id = "" }) {
   if (amount.isLoading) return null;
   return (
     <Button variant="primary">
-      {formatNumber(amount.data ?? 0)} {token.data?.symbol}
+      {formatNumber(amount.data?.amount ?? 0)} votes
     </Button>
   );
 }
