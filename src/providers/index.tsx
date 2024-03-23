@@ -65,6 +65,7 @@ function createWagmiConfig(network?: keyof typeof wagmiChains) {
   const activeChains: wagmiChains.Chain[] = [wagmiChains.mainnet];
 
   if (network) activeChains.push(wagmiChains[network]);
+  else activeChains.push(...appConfig.supportedNetworks);
 
   const { chains, publicClient, webSocketPublicClient } = configureChains(
     activeChains,
@@ -76,8 +77,6 @@ function createWagmiConfig(network?: keyof typeof wagmiChains) {
 
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
   const appName = appConfig.metadata.title;
-
-  const appInfo = { appName };
 
   const connectors = projectId
     ? connectorsForWallets(
@@ -92,7 +91,7 @@ function createWagmiConfig(network?: keyof typeof wagmiChains) {
     webSocketPublicClient,
   });
 
-  return { chains, config, appInfo };
+  return { chains, config, appInfo: { appName } };
 }
 
 function getInjectedWallets({
