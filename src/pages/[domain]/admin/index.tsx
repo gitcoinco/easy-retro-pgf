@@ -1,7 +1,3 @@
-import { type z } from "zod";
-import { useToken } from "wagmi";
-import { type Address, isAddress } from "viem";
-import { useFormContext } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -19,6 +15,7 @@ import { supportedNetworks } from "~/config";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
+import { TokenSymbol } from "~/features/admin/components/FormTokenSymbol";
 
 export default function AdminPage() {
   return (
@@ -113,17 +110,17 @@ function RoundForm({ round }: { round: RoundSchema }) {
             name="reviewEndsAt"
             label="Review & Approval ends"
           >
-            <DatePicker name="votingEndsAt" />
+            <DatePicker name="reviewEndsAt" />
           </FormControl>
         </div>
 
         <div className="gap-2 sm:flex">
           <FormControl
             className="flex-1"
-            name="votingEndsAt"
+            name="reviewEndsAt"
             label="Voting starts"
           >
-            <DatePicker name="votingEndsAt" />
+            <DatePicker name="reviewEndsAt" />
           </FormControl>
           <FormControl className="flex-1" name="resultsAt" label="Voting ends">
             <DatePicker name="resultsAt" />
@@ -144,16 +141,4 @@ function RoundForm({ round }: { round: RoundSchema }) {
       </FormSection>
     </Form>
   );
-}
-
-function TokenSymbol() {
-  const address = useFormContext<z.infer<typeof RoundSchema>>().watch(
-    "tokenAddress",
-  ) as Address;
-
-  const token = useToken({
-    address,
-    enabled: isAddress(address),
-  });
-  return <>{token.data?.symbol}</>;
 }

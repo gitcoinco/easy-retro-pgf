@@ -61,6 +61,7 @@ export const projectsRouter = createTRPCRouter({
       if (input.search) {
         filters.push(createSearchFilter(input.search));
       }
+
       return ctx
         .fetchAttestations([eas.schemas.approval], {
           where: {

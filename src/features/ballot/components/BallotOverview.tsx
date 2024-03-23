@@ -18,9 +18,8 @@ import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { useIsMutating } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
-import { getAppState } from "~/utils/state";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import dynamic from "next/dynamic";
-import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 function BallotOverview() {
@@ -39,8 +38,9 @@ function BallotOverview() {
 
   const maxVotesTotal = round.data?.maxVotesTotal ?? 0;
 
-  const appState = getAppState();
-  if (appState === "RESULTS")
+  const roundState = useRoundState();
+
+  if (roundState === "RESULTS")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Results are live!</BallotHeader>
@@ -50,18 +50,18 @@ function BallotOverview() {
         </Button>
       </div>
     );
-  if (appState === "TALLYING")
+  if (roundState === "TALLYING")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Voting has ended</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
       </div>
     );
-  if (appState !== "VOTING")
+  if (roundState !== "VOTING")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Voting hasn't started yet</BallotHeader>
-        {appState === "REVIEWING" ? (
+        {roundState === "REVIEWING" ? (
           <BallotSection title="Applications are being reviewed" />
         ) : (
           <Button as={Link} href={"/applications/new"}>

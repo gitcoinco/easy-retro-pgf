@@ -31,7 +31,8 @@ import { Spinner } from "~/components/ui/Spinner";
 import { AllocationForm } from "~/features/ballot/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
-import { getAppState } from "~/utils/state";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export const ListEditDistribution = ({
   listName,
@@ -44,6 +45,7 @@ export const ListEditDistribution = ({
   const [isOpen, setOpen] = useState(false);
   const { data: ballot } = useBallot();
   const add = useAddToBallot();
+  const round = useCurrentRound();
 
   // What list projects are already in the ballot?
   function itemsInBallot(votes?: Vote[]) {
@@ -53,7 +55,6 @@ export const ListEditDistribution = ({
   // Keep the already in ballot in state because we want to update these when user removes allocations
   const [alreadyInBallot, updateInBallot] = useState(itemsInBallot(votes));
 
-  console.log({ alreadyInBallot });
   function handleAddToBallot(values: { votes: Vote[] }) {
     add.mutate(values.votes);
   }
@@ -71,9 +72,11 @@ export const ListEditDistribution = ({
     return ballotVote ?? vote;
   });
   const showDialogTitle = !(add.isLoading || add.isSuccess);
+
+  const roundState = useRoundState();
   return (
     <div>
-      {getAppState() === "VOTING" && (
+      {roundState === "VOTING" && (
         <Button
           variant="primary"
           onClick={() => {

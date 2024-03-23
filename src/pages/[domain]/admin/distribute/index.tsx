@@ -42,7 +42,7 @@ export default function DistributePage() {
                 schema={CalculationSchema}
                 onSubmit={(values) => {
                   update.mutate(
-                    { calculation: values },
+                    { id: round.data?.id, calculation: values },
                     {
                       async onSuccess() {
                         return utils.results.votes.invalidate();
@@ -74,21 +74,17 @@ export default function DistributePage() {
         </div>
       }
     >
-      {() =>
-        new Date() < (round.data?.reviewEndsAt ?? new Date()) ? (
-          <div>Voting hasn't started yet</div>
-        ) : (
-          <div className="max-w-screen-md">
-            {update.isLoading ? (
-              <div className="flex justify-center py-8">
-                <Spinner className="size-6" />
-              </div>
-            ) : (
-              <Distributions />
-            )}
-          </div>
-        )
-      }
+      {() => (
+        <div className="max-w-screen-md">
+          {update.isLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner className="size-6" />
+            </div>
+          ) : (
+            <Distributions />
+          )}
+        </div>
+      )}
     </RoundAdminLayout>
   );
 }

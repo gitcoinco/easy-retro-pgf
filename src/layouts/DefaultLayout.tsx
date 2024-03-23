@@ -4,12 +4,11 @@ import { useAccount } from "wagmi";
 import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
-import { getAppState } from "~/utils/state";
-import { useRouter } from "next/router";
 import {
   useCurrentDomain,
   useCurrentRound,
 } from "~/features/rounds/hooks/useRound";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 type Props = PropsWithChildren<
   {
@@ -33,7 +32,7 @@ export const Layout = ({ children, ...props }: Props) => {
     },
   ];
 
-  if (getAppState() === "RESULTS") {
+  if (useRoundState() === "RESULTS") {
     navLinks.push({
       href: `/${domain}/stats`,
       children: `Stats`,

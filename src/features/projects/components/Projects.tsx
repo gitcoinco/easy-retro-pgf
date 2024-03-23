@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/Button";
 import { useSearchProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
-import { getAppState } from "~/utils/state";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useResults } from "~/hooks/useResults";
 import { SortFilter } from "~/components/SortFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
@@ -17,6 +17,7 @@ export function Projects() {
   const select = useSelectProjects();
   const results = useResults();
 
+  const roundState = useRoundState();
   return (
     <div>
       <div
@@ -52,7 +53,7 @@ export function Projects() {
               href={`/projects/${item.id}`}
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
-              {!isLoading && getAppState() === "VOTING" ? (
+              {!isLoading && roundState === "VOTING" ? (
                 <div className="absolute right-2 top-[100px] z-10 -mt-2">
                   <ProjectSelectButton
                     state={select.getState(item.id)}
@@ -63,7 +64,7 @@ export function Projects() {
                   />
                 </div>
               ) : null}
-              {!results.isLoading && getAppState() === "RESULTS" ? (
+              {!results.isLoading && roundState === "RESULTS" ? (
                 <ProjectItemAwarded
                   amount={results.data?.projects?.[item.id]?.votes}
                 />

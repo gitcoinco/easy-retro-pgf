@@ -1,7 +1,6 @@
 import { config } from "~/config";
-import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { api } from "~/utils/api";
-import { getAppState } from "~/utils/state";
 
 export function useResults() {
   return api.results.votes.useQuery();
@@ -17,7 +16,7 @@ export function useProjectsResults() {
 
 export function useProjectResults(id: string) {
   const query = api.results.votes.useQuery(undefined, {
-    enabled: getAppState() === "RESULTS",
+    enabled: useRoundState() === "RESULTS",
   });
   const project = query.data?.projects?.[id];
   return {

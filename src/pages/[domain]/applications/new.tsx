@@ -1,15 +1,14 @@
 import { Layout } from "~/layouts/DefaultLayout";
 
 import { ApplicationForm } from "~/features/applications/components/ApplicationForm";
-import { Markdown } from "~/components/ui/Markdown";
 import { useAccount } from "wagmi";
-import { getAppState } from "~/utils/state";
 import { Alert } from "~/components/ui/Alert";
 import { FormSection } from "~/components/ui/Form";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 export default function NewProjectPage() {
   const { address } = useAccount();
-  const state = getAppState();
+  const roundState = useRoundState();
 
   return (
     <Layout>
@@ -28,7 +27,7 @@ export default function NewProjectPage() {
           </>
         }
       >
-        {state !== "APPLICATION" ? (
+        {roundState !== "APPLICATION" ? (
           <Alert variant="info" title="Application period has ended"></Alert>
         ) : (
           <ApplicationForm address={address} />

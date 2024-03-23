@@ -5,9 +5,9 @@ import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useProjectsResults, useResults } from "~/hooks/useResults";
 import { Layout } from "~/layouts/DefaultLayout";
-import { getAppState } from "~/utils/state";
 
 const ResultsChart = dynamic(
   async () => await import("~/features/results/components/Chart"),
@@ -21,7 +21,7 @@ export default function StatsPage() {
         Stats
       </Heading>
 
-      {getAppState() === "RESULTS" ? (
+      {useRoundState() === "RESULTS" ? (
         <Stats />
       ) : (
         <Alert variant="info" className="mx-auto max-w-sm text-center">

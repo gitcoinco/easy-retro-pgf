@@ -18,10 +18,10 @@ import {
 } from "~/features/ballot/hooks/useBallot";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { LayoutWithBallot } from "~/layouts/DefaultLayout";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
-import { getAppState } from "~/utils/state";
 
 export default function BallotPage() {
   const { data: ballot, isLoading } = useBallot();
@@ -59,6 +59,7 @@ function BallotAllocationForm() {
     save.mutate({ votes });
   }
 
+  const roundState = useRoundState();
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
@@ -85,7 +86,7 @@ function BallotAllocationForm() {
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
               <AllocationForm
-                disabled={getAppState() === "RESULTS"}
+                disabled={roundState === "RESULTS"}
                 onSave={handleSaveBallot}
               />
             ) : (
@@ -207,7 +208,10 @@ function ClearBallot() {
   const form = useFormContext();
   const [isOpen, setOpen] = useState(false);
   const { mutateAsync, isLoading } = useSaveBallot();
-  if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
+
+  const roundState = useRoundState();
+  if (["TALLYING", "RESULTS"].includes(roundState)) return null;
+
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>

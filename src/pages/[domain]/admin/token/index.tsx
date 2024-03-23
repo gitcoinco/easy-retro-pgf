@@ -1,6 +1,3 @@
-import { useFormContext } from "react-hook-form";
-import { isAddress } from "viem";
-import { type Address, useToken } from "wagmi";
 import { Button } from "~/components/ui/Button";
 import {
   Form,
@@ -15,6 +12,7 @@ import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { RoundSchema } from "~/features/rounds/types";
 import { supportedNetworks } from "~/config";
 import { api } from "~/utils/api";
+import { TokenSymbol } from "~/features/admin/components/FormTokenSymbol";
 
 export default function AdminTokenPage() {
   const utils = api.useUtils();
@@ -93,15 +91,4 @@ export default function AdminTokenPage() {
       )}
     </RoundAdminLayout>
   );
-}
-function TokenSymbol() {
-  const address = useFormContext<{ tokenAddress: Address }>().watch(
-    "tokenAddress",
-  );
-
-  const token = useToken({
-    address,
-    enabled: isAddress(address),
-  });
-  return <>{token.data?.symbol}</>;
 }

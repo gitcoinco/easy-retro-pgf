@@ -18,7 +18,8 @@ import {
 } from "~/features/ballot/hooks/useBallot";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { config } from "~/config";
-import { getAppState } from "~/utils/state";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 type Props = { id?: string; name?: string };
 
@@ -27,12 +28,13 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const [isOpen, setOpen] = useState(false);
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
+  const round = useCurrentRound();
   const { data: ballot } = useBallot();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
   const sum = sumBallot(allocations.filter((p) => p.projectId !== id));
-  if (getAppState() !== "VOTING") return null;
+  if (useRoundState() !== "VOTING") return null;
   return (
     <div>
       {ballot?.publishedAt ? (
