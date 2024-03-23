@@ -269,9 +269,5 @@ const TotalAllocation = () => {
   const votes = form.watch("votes") ?? [];
   const sum = sumBallot(votes);
 
-  return (
-    <div>
-      {formatNumber(sum)} {config.tokenName}
-    </div>
-  );
+  return <div>{formatNumber(sum)} votes</div>;
 };

@@ -10,7 +10,6 @@ import { ListEditDistribution } from "./ListEditDistribution";
 import { Markdown } from "~/components/ui/Markdown";
 import { useListMetadata } from "../hooks/useLists";
 import { type Attestation } from "~/utils/fetchAttestations";
-import { config } from "~/config";
 import { Button } from "~/components/ui/Button";
 
 export default function ListDetails({
@@ -74,9 +73,7 @@ export default function ListDetails({
           </Skeleton>
           <span>·</span>
           <Skeleton className="w-32" isLoading={metadata.isLoading}>
-            <p className="font-bold">
-              {formatNumber(0)} {config.tokenName} allocated
-            </p>
+            <p className="font-bold">{formatNumber(0)} votes allocated</p>
           </Skeleton>
         </div>
         {!metadata.isLoading && (
