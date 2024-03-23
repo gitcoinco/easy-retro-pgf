@@ -51,11 +51,13 @@ export const networks = {
   base: "base",
   baseGoerli: "baseGoerli",
 } as const;
-
 export const supportedNetworks = Object.values(networks).map((chain) => ({
   ...wagmiChains[chain],
   chain,
 }));
+export const networkNames = Object.fromEntries(
+  supportedNetworks.map((network) => [network.chain, network.name]),
+);
 
 export const easApiEndpoints = {
   [networks.mainnet]: "https://easscan.org/graphql",
