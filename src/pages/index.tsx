@@ -17,7 +17,7 @@ export default function ProjectsPage({}) {
       }
     >
       <div className="py-16">
-        <h1 className="font-heading mb-2 text-pretty text-center text-7xl leading-[6rem] tracking-tight sm:text-[120px]">
+        <h1 className="text-pretty text-center font-heading text-7xl tracking-tight sm:text-[160px] sm:leading-[8rem]">
           Retroactive Public Goods Funding
         </h1>
         <h2 className="text-center font-serif text-4xl">for everyone</h2>

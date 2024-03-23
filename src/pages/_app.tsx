@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { Inter, VT323 } from "next/font/google";
+import { Inter, Teko } from "next/font/google";
 
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
@@ -13,7 +13,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const heading = VT323({
+const heading = Teko({
   weight: ["400"],
   subsets: ["latin"],
   variable: "--font-heading",
