@@ -23,7 +23,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
         <Card>
           <div className="flex flex-col items-center gap-10 sm:flex-row sm:gap-16">
             <div>
-              <h3 className="mb-3 text-2xl font-bold text-gray-900 md:text-4xl dark:text-gray-100">
+              <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">
                 Your vote has been received 🥳
               </h3>
               <p className="mb-10 text-gray-700 dark:text-gray-300">
@@ -56,7 +56,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
           </div>
           <div className="flex items-center justify-between border-b py-3 text-gray-600 dark:border-gray-700 dark:text-gray-300">
             <p>Project name</p>
-            <p>{config.tokenName} allocated by you</p>
+            <p>votes allocated by you</p>
           </div>
 
           <section className="max-h-[480px] overflow-y-scroll">

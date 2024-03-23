@@ -203,9 +203,7 @@ function TotalAllocation() {
             ? `Total exceeds by ${formatNumber(exceeds)} OP`
             : "Total"}
         </div>
-        <div>
-          {formatNumber(current)} {config.tokenName}
-        </div>
+        <div>{formatNumber(current)} votes</div>
       </div>
     </Alert>
   );
