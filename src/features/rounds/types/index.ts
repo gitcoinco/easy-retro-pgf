@@ -20,6 +20,7 @@ export const RoundSchema = z
   .object({
     id: z.string(),
     name: RoundNameSchema,
+    domain: z.string(),
     admins: z.array(EthAddressSchema),
     description: z.string().nullable(),
     network: z.string().nullable(),
@@ -31,7 +32,7 @@ export const RoundSchema = z
     resultsAt: z.date().nullable(),
     distributionAt: z.date().nullable(),
     poolId: z.number().nullable(),
-    calculation: z.record(z.string().or(z.number())),
+    calculation: z.record(z.string().or(z.number())).nullable(),
   })
   .merge(RoundVotes);
 

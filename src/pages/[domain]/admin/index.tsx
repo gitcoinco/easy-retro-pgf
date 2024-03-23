@@ -18,6 +18,7 @@ import { DatePicker } from "~/components/ui/DatePicker";
 import { supportedNetworks } from "~/config";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
+import { useRouter } from "next/router";
 
 export default function AdminPage() {
   return (
@@ -29,13 +30,15 @@ export default function AdminPage() {
 
 function RoundForm({ round }: { round: RoundSchema }) {
   const utils = api.useUtils();
+  const router = useRouter();
   const update = useUpdateRound();
   return (
     <Form
       defaultValues={{ ...round }}
       onSubmit={(values) => {
         update.mutate(values, {
-          async onSuccess() {
+          async onSuccess({ domain }) {
+            if (domain !== round.domain) router.push(`/${domain}/admin`);
             return utils.rounds.invalidate();
           },
         });
