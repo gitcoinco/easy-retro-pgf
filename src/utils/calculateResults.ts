@@ -19,10 +19,8 @@ export type BallotResults = Record<
 >;
 export function calculateVotes(
   ballots: { voterId: string; votes: Vote[] }[],
-  payoutOpts: PayoutOptions = { style: "custom" },
+  payoutOpts: PayoutOptions,
 ): BallotResults {
-  const totalVotes = ballots.reduce((sum, { votes }) => sum + votes.length, 0);
-
   const projectVotes: Record<
     string,
     {

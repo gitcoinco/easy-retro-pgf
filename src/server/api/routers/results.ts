@@ -49,17 +49,10 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
+const defaultCalculation = { style: "custom", threshold: 1 };
 async function calculateBallotResults(db: PrismaClient) {
   const settings = await getSettings(db);
-  const calculation = settings?.config?.calculation;
-  if (!calculation) {
-    console.log("No calculation stored");
-    return {};
-  }
-  // When the Minimum Qurom input is empty, return empty
-  if (calculation?.style === "op" && !calculation?.threshold) {
-    return {};
-  }
+  const calculation = settings?.config?.calculation ?? defaultCalculation;
 
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
@@ -72,7 +65,10 @@ async function calculateBallotResults(db: PrismaClient) {
   );
 
   const averageVotes = 0;
-  const totalVotes = ballots.reduce((sum, x) => sum + x.votes.length, 0);
+  const totalVotes = Object.values(projects).reduce(
+    (sum, x) => sum + x.votes,
+    0,
+  );
   const totalVoters = ballots.length;
 
   return { projects, totalVoters, totalVotes, averageVotes };
