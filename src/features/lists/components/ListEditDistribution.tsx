@@ -131,9 +131,9 @@ export const ListEditDistribution = ({
                 title={`${alreadyInBallot?.length} project(s) in the ${listName} list already exist in your ballot.`}
               >
                 <div className="flex gap-2">
-                  You can change your {config.tokenName} alloaction based on the
-                  list or remove the project(s) from the list to keep your
-                  existing allocation.
+                  You can change your vote allocation based on the list or
+                  remove the project(s) from the list to keep your existing
+                  allocation.
                 </div>
               </Alert>
             ) : null}
@@ -187,12 +187,10 @@ const TotalAllocationBanner = () => {
       <div className={"flex justify-between font-semibold"}>
         <div>
           {isExceeding
-            ? `Total exceeds by ${formatNumber(exceeds)} ${config.tokenName}`
+            ? `Total exceeds by ${formatNumber(exceeds)} votes`
             : "Total"}
         </div>
-        <div>
-          {formatNumber(current)} {config.tokenName}
-        </div>
+        <div>{formatNumber(current)} votes</div>
       </div>
     </div>
   );
