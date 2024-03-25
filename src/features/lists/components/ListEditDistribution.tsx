@@ -173,6 +173,7 @@ export const ListEditDistribution = ({
 };
 const TotalAllocationBanner = () => {
   const form = useFormContext<{ votes: Vote[] }>();
+  const round = useCurrentRound();
 
   // Load existing ballot
   const { data: ballot } = useBallot();
@@ -182,7 +183,7 @@ const TotalAllocationBanner = () => {
 
   const current = sumBallot(votes);
 
-  const exceeds = current + sum - config.votingMaxTotal;
+  const exceeds = current + sum - (round.data?.maxVotesTotal ?? 0);
   const isExceeding = exceeds > 0;
 
   return (
