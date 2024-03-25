@@ -4,7 +4,7 @@ import {
   type SchemaValue,
   type AttestationRequest,
 } from "@ethereum-attestation-service/eas-sdk";
-import { type SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
+import { type TransactionSigner } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
 import { type JsonRpcSigner } from "ethers";
 import * as config from "~/config";
 
@@ -45,7 +45,7 @@ async function encodeData(
     config.eas.contracts.schemaRegistry,
   );
   console.log("Connecting signer to SchemaRegistry...");
-  schemaRegistry.connect(signer as unknown as SignerOrProvider);
+  schemaRegistry.connect(signer as unknown as TransactionSigner);
 
   console.log("Getting schema record...");
   const schemaRecord = await schemaRegistry.getSchema({ uid: schemaUID });

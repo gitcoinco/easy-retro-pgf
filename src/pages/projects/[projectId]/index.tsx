@@ -1,6 +1,6 @@
 import { type GetServerSideProps } from "next";
 
-import { Layout } from "~/layouts/DefaultLayout";
+import { LayoutWithBallot } from "~/layouts/DefaultLayout";
 import ProjectDetails from "~/features/projects/components/ProjectDetails";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { ProjectAddToBallot } from "~/features/projects/components/AddToBallot";
@@ -19,9 +19,9 @@ export default function ProjectDetailsPage({ projectId = "" }) {
       <ProjectAddToBallot id={projectId} name={name} />
     );
   return (
-    <Layout sidebar="left" title={name} showBallot eligibilityCheck>
+    <LayoutWithBallot sidebar="left" title={name} showBallot eligibilityCheck>
       <ProjectDetails attestation={project.data} action={action} />
-    </Layout>
+    </LayoutWithBallot>
   );
 }
 

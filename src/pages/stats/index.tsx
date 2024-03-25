@@ -57,7 +57,7 @@ function Stats() {
     const data = (projectsResults?.pages?.[0] ?? [])
       .map((project) => ({
         x: project.name,
-        y: projects[project.id],
+        y: projects[project.id]?.votes,
       }))
       .slice(0, 15);
 

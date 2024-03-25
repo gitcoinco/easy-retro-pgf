@@ -5,9 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@allo-team/allo-v2-sdk':
+    specifier: ^1.0.39
+    version: 1.0.58(@typechain/ethers-v6@0.5.1)(ethers@6.11.1)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3)(zod@3.22.4)
   '@ethereum-attestation-service/eas-sdk':
-    specifier: ^1.4.0
-    version: 1.4.0(ts-node@10.9.2)(typescript@5.3.3)
+    specifier: ^1.5.0
+    version: 1.5.0(ts-node@10.9.2)(typescript@5.3.3)
   '@hookform/resolvers':
     specifier: ^3.3.4
     version: 3.3.4(react-hook-form@7.49.3)
@@ -104,6 +107,9 @@ dependencies:
   node-fetch-cache:
     specifier: ^4.1.0
     version: 4.1.0
+  nuqs:
+    specifier: ^1.17.1
+    version: 1.17.1(next@14.1.0)
   p-limit:
     specifier: ^5.0.0
     version: 5.0.0
@@ -140,6 +146,9 @@ dependencies:
   superjson:
     specifier: ^2.2.1
     version: 2.2.1
+  tailwind-merge:
+    specifier: ^2.2.1
+    version: 2.2.2
   tailwind-variants:
     specifier: ^0.1.20
     version: 0.1.20(tailwindcss@3.4.1)
@@ -271,6 +280,29 @@ packages:
 
   /@adraffy/ens-normalize@1.10.1:
     resolution: {integrity: sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==}
+    dev: false
+
+  /@allo-team/allo-v2-sdk@1.0.58(@typechain/ethers-v6@0.5.1)(ethers@6.11.1)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-6yf0mwTLP7LG0mFQc3V+2YtJflH6K+9k22xOG9oW7+22rP0YrEEfqRLFVGTilBRyCa2Yn3WTy6BZzWSDqVzJxg==}
+    engines: {node: '>=16.15.0', npm: '>=8.5.5'}
+    dependencies:
+      '@typechain/hardhat': 9.1.0(@typechain/ethers-v6@0.5.1)(ethers@6.11.1)(hardhat@2.22.1)(typechain@8.3.2)
+      dotenv: 16.4.5
+      events: 3.3.0
+      hardhat: 2.22.1(ts-node@10.9.2)(typescript@5.3.3)
+      mocha: 10.3.0
+      viem: 1.21.4(typescript@5.3.3)(zod@3.22.4)
+    transitivePeerDependencies:
+      - '@typechain/ethers-v6'
+      - bufferutil
+      - c-kzg
+      - ethers
+      - supports-color
+      - ts-node
+      - typechain
+      - typescript
+      - utf-8-validate
+      - zod
     dev: false
 
   /@alloc/quick-lru@5.2.0:
@@ -1657,6 +1689,13 @@ packages:
     dependencies:
       regenerator-runtime: 0.14.1
 
+  /@babel/runtime@7.24.1:
+    resolution: {integrity: sha512-+BIznRzyqBf+2wCTxcKE3wDjfGeCoVE61KSHGpkzqrLi8qxqFwBeUFyId2cxkTmm55fzDGnm0+yCxaxygrLUnQ==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.14.1
+    dev: false
+
   /@babel/template@7.23.9:
     resolution: {integrity: sha512-+xrD2BWLpvHKNmX2QbpdpsBaWnRxahMwJjO+KZk2JOElj5nSmKezyS1B4u+QbHMTX69t4ukm6hh9lsYQ7GHCKA==}
     engines: {node: '>=6.9.0'}
@@ -2140,8 +2179,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@ethereum-attestation-service/eas-sdk@1.4.0(ts-node@10.9.2)(typescript@5.3.3):
-    resolution: {integrity: sha512-BmWBCcl3LD0fsoVxOzhuDwUkotvA/gx8DvYzgvtHSD5orItdydyfhpBkVpkCA4IH5B5YiqrCangSmnseBoMKuw==}
+  /@ethereum-attestation-service/eas-sdk@1.5.0(ts-node@10.9.2)(typescript@5.3.3):
+    resolution: {integrity: sha512-n4da0lPUy2PCPLfmaMFoPj0yIPqFC5gcNR8TNziPXapLIBpKBA91Sa+mk+rtP3jbBT5KKyuuPbTNZ/1kJd+Qcw==}
     dependencies:
       '@ethereum-attestation-service/eas-contracts': 1.3.7(ts-node@10.9.2)(typescript@5.3.3)
       ethers: 6.11.1
@@ -2149,7 +2188,7 @@ packages:
       lodash: 4.17.21
       multiformats: 9.9.0
       pako: 2.1.0
-      semver: 7.5.4
+      semver: 7.6.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -4974,7 +5013,7 @@ packages:
       hermes-profile-transformer: 0.0.6
       node-stream-zip: 1.15.0
       ora: 5.4.1
-      semver: 7.5.4
+      semver: 7.6.0
       strip-ansi: 5.2.0
       wcwidth: 1.0.1
       yaml: 2.3.4
@@ -5052,7 +5091,7 @@ packages:
       node-fetch: 2.7.0
       open: 6.4.0
       ora: 5.4.1
-      semver: 7.5.4
+      semver: 7.6.0
       shell-quote: 1.8.1
       sudo-prompt: 9.2.1
     transitivePeerDependencies:
@@ -5087,7 +5126,7 @@ packages:
       fs-extra: 8.1.0
       graceful-fs: 4.2.11
       prompts: 2.4.2
-      semver: 7.5.4
+      semver: 7.6.0
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -9450,7 +9489,7 @@ packages:
       fs-readdir-recursive: 1.1.0
       lodash: 4.17.21
       markdown-table: 1.1.3
-      mocha: 10.2.0
+      mocha: 10.3.0
       req-cwd: 2.0.0
       sha1: 1.1.1
       sync-request: 6.1.0
@@ -10229,6 +10268,17 @@ packages:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
+
+  /glob@8.1.0:
+    resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 5.0.1
+      once: 1.4.0
+    dev: false
 
   /global-modules@2.0.0:
     resolution: {integrity: sha512-NGbfmJBp9x8IxyJSd1P+otYK8vonoJactOogrVfFRIAEY1ukil8RSKDz2Yo7wh1oihl51l/r6W4epkeKJHqL8A==}
@@ -12370,7 +12420,7 @@ packages:
     resolution: {integrity: sha512-21GQVd0pp2nACoK0C2PL8mBsEhIFUFFntYrWRlYNHtPQoqDzddrPEIgkyaABGXGued+dZoBlFQl+LASlmmfkvw==}
     engines: {node: '>=18'}
     dependencies:
-      '@babel/runtime': 7.23.9
+      '@babel/runtime': 7.24.1
     dev: false
 
   /metro-source-map@0.80.6:
@@ -12818,6 +12868,10 @@ packages:
       - zod
     dev: false
 
+  /mitt@3.0.1:
+    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
+    dev: false
+
   /mkdirp@0.5.6:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
@@ -12864,6 +12918,33 @@ packages:
       minimatch: 5.0.1
       ms: 2.1.3
       nanoid: 3.3.3
+      serialize-javascript: 6.0.0
+      strip-json-comments: 3.1.1
+      supports-color: 8.1.1
+      workerpool: 6.2.1
+      yargs: 16.2.0
+      yargs-parser: 20.2.4
+      yargs-unparser: 2.0.0
+    dev: false
+
+  /mocha@10.3.0:
+    resolution: {integrity: sha512-uF2XJs+7xSLsrmIvn37i/wnc91nw7XjOQB8ccyx5aEgdnohr7n+rEiZP23WkCYHjilR6+EboEnbq/ZQDz4LSbg==}
+    engines: {node: '>= 14.0.0'}
+    hasBin: true
+    dependencies:
+      ansi-colors: 4.1.1
+      browser-stdout: 1.3.1
+      chokidar: 3.5.3
+      debug: 4.3.4(supports-color@8.1.1)
+      diff: 5.0.0
+      escape-string-regexp: 4.0.0
+      find-up: 5.0.0
+      glob: 8.1.0
+      he: 1.2.0
+      js-yaml: 4.1.0
+      log-symbols: 4.1.0
+      minimatch: 5.0.1
+      ms: 2.1.3
       serialize-javascript: 6.0.0
       strip-json-comments: 3.1.1
       supports-color: 8.1.1
@@ -13325,6 +13406,15 @@ packages:
     dependencies:
       bn.js: 4.11.6
       strip-hex-prefix: 1.0.0
+    dev: false
+
+  /nuqs@1.17.1(next@14.1.0):
+    resolution: {integrity: sha512-zJPisj8L+SzKzt57c5s3fJW0ikksPr+PyeLyNwvx0i5ggTr5XR5uFhCoX/T+Mkmb6X5UxHB/0nnuZyFiQsh0cA==}
+    peerDependencies:
+      next: '>=13.4 <14.0.2 || ^14.0.3'
+    dependencies:
+      mitt: 3.0.1
+      next: 14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /nwsapi@2.2.7:
@@ -14653,7 +14743,7 @@ packages:
   /regenerator-transform@0.15.2:
     resolution: {integrity: sha512-hfMp2BoF0qOk3uc5V20ALGDS2ddjQaLrdl7xrGXvAIow7qeWRM2VA2HuCHkUKk9slq3VwEwLNK3DFBqDfPGYtg==}
     dependencies:
-      '@babel/runtime': 7.23.9
+      '@babel/runtime': 7.24.1
     dev: false
 
   /regexp.prototype.flags@1.5.1:
@@ -15024,6 +15114,14 @@ packages:
     dependencies:
       lru-cache: 6.0.0
 
+  /semver@7.6.0:
+    resolution: {integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      lru-cache: 6.0.0
+    dev: false
+
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
     engines: {node: '>= 0.8.0'}
@@ -15318,12 +15416,12 @@ packages:
       hardhat: 2.22.1(ts-node@10.9.2)(typescript@5.3.3)
       jsonschema: 1.4.1
       lodash: 4.17.21
-      mocha: 10.2.0
+      mocha: 10.3.0
       node-emoji: 1.11.0
       pify: 4.0.1
       recursive-readdir: 2.2.3
       sc-istanbul: 0.4.6
-      semver: 7.5.4
+      semver: 7.6.0
       shelljs: 0.8.5
       web3-utils: 1.10.4
     dev: false
@@ -15793,6 +15891,12 @@ packages:
 
   /tailwind-merge@1.14.0:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
+    dev: false
+
+  /tailwind-merge@2.2.2:
+    resolution: {integrity: sha512-tWANXsnmJzgw6mQ07nE3aCDkCK4QdT3ThPMCzawoYA2Pws7vSTCvz3Vrjg61jVUGfFZPJzxEP+NimbcW+EdaDw==}
+    dependencies:
+      '@babel/runtime': 7.24.1
     dev: false
 
   /tailwind-variants@0.1.20(tailwindcss@3.4.1):

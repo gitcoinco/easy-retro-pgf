@@ -8,6 +8,14 @@ await import("./src/env.js");
 const config = {
   reactStrictMode: true,
 
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false, net: false, tls: false };
+    config.externals.push("pino-pretty", "lokijs", "encoding", {
+      "node-gyp-build": "commonjs node-gyp-build",
+    });
+    return config;
+  },
+
   eslint: {
     ignoreDuringBuilds: true,
   },

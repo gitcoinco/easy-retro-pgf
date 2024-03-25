@@ -82,7 +82,7 @@ export function useSubmitBallot({
   onSuccess: () => Promise<void>;
 }) {
   const chainId = useChainId();
-  const { data: ballot } = useBallot();
+  const { refetch } = useBallot();
   const { pollData } = useMaciPoll();
   const pollId = pollData?.id.toString();
   const { mutateAsync, isPending } = api.ballot.publish.useMutation({
@@ -90,20 +90,23 @@ export function useSubmitBallot({
   });
   useBeforeUnload(isPending, "You have unsaved changes, are you sure?");
 
-  const message = {
-    total_votes: BigInt(sumBallot(ballot?.votes)),
-    project_count: BigInt(ballot?.votes?.length ?? 0),
-    hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
-  };
   const { signTypedDataAsync } = useSignTypedData();
 
   return useMutation({
     mutationFn: async () => {
       if (chainId) {
+        const { data: ballot } = await refetch();
+
+        const message = {
+          total_votes: BigInt(sumBallot(ballot?.votes)),
+          project_count: BigInt(ballot?.votes?.length ?? 0),
+          hashed_votes: keccak256(Buffer.from(JSON.stringify(ballot?.votes))),
+        };
         const signature = await signTypedDataAsync({
           ...ballotTypedData(chainId),
           message,
         });
+
         return mutateAsync({ signature, message, chainId, pollId: pollId! });
       }
     },

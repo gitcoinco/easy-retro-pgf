@@ -1,5 +1,5 @@
 import { type ComponentProps } from "react";
-import clsx from "clsx";
+import { cn } from "~/utils/classNames";
 
 export const Skeleton = ({
   isLoading = false,
@@ -8,7 +8,7 @@ export const Skeleton = ({
 }: ComponentProps<"span"> & { isLoading?: boolean }) =>
   isLoading ? (
     <span
-      className={clsx(
+      className={cn(
         "inline-flex h-full min-w-[20px] animate-pulse rounded bg-gray-200 dark:bg-gray-800",
         className,
       )}

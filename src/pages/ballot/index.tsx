@@ -18,8 +18,8 @@ import {
 } from "~/features/ballot/hooks/useBallot";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
+import { LayoutWithBallot } from "~/layouts/DefaultLayout";
 import { useMaciPoll } from "~/hooks/useMaciPoll";
-import { Layout } from "~/layouts/DefaultLayout";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
@@ -44,7 +44,7 @@ export default function BallotPage() {
   }
 
   return (
-    <Layout sidebar="right" requireAuth>
+    <LayoutWithBallot sidebar="right" requireAuth>
       {isLoading ? null : (
         <Form
           schema={BallotSchema}
@@ -55,7 +55,7 @@ export default function BallotPage() {
         </Form>
       )}
       <div className="py-8" />
-    </Layout>
+    </LayoutWithBallot>
   );
 }
 

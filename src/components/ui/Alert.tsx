@@ -8,7 +8,7 @@ const alert = tv({
   variants: {
     variant: {
       warning: "bg-red-200 text-red-800",
-      info: "bg-secondary-100 text-gray-900 dark:bg-gray-800 dark:text-gray-300",
+      info: "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-300",
       success: "bg-green-200 text-green-800",
     },
   },
@@ -26,7 +26,7 @@ export const Alert = ({
     <AlertComponent {...props}>
       <div className="flex items-center gap-2">
         {icon ? createElement(icon, { className: "w-4 h-4" }) : null}
-        <div className="font-semibold">{title}</div>
+        <div className="mb-2 text-lg font-semibold">{title}</div>
       </div>
       {children}
     </AlertComponent>

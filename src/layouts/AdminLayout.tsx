@@ -1,30 +1,22 @@
-import { type PropsWithChildren } from "react";
+import type { ReactNode, PropsWithChildren } from "react";
+import { useAccount } from "wagmi";
 
-import { BaseLayout, type LayoutProps } from "./BaseLayout";
-import { Header } from "~/components/Header";
+import { type LayoutProps } from "./BaseLayout";
+import { config } from "~/config";
+import { Layout } from "./DefaultLayout";
 
-const navLinks = [
-  {
-    href: "/applications",
-    children: "Applications",
-  },
-  {
-    href: "/voters",
-    children: "Voters",
-  },
-];
-
-export const AdminLayout = ({
-  children,
-  ...props
-}: PropsWithChildren<
+type Props = PropsWithChildren<
   {
     sidebar?: "left" | "right";
+    sidebarComponent?: ReactNode;
   } & LayoutProps
->) => {
-  return (
-    <BaseLayout {...props} header={<Header navLinks={navLinks} />}>
-      {children}
-    </BaseLayout>
-  );
+>;
+export const AdminLayout = ({ children, ...props }: Props) => {
+  const { address } = useAccount();
+
+  if (config.admins.includes(address!)) {
+    return <div>Only admins can access this page</div>;
+  }
+
+  return <Layout {...props}>{children}</Layout>;
 };

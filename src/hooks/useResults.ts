@@ -7,7 +7,7 @@ export function useResults() {
   const appState = getAppState();
   const { pollData } = useMaciPoll();
 
-  return api.results.stats.useQuery(
+  return api.results.votes.useQuery(
     { pollId: pollData?.id.toString() },
     { enabled: appState === "RESULTS" },
   );

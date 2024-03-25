@@ -5,7 +5,7 @@ import {
   ZERO_ADDRESS,
   getSchemaUID,
 } from "@ethereum-attestation-service/eas-sdk";
-import type { SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
+import type { TransactionSigner } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
 
 import { eas, config } from "~/config";
 
@@ -41,7 +41,7 @@ const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY!).connect(
 );
 
 const schemaRegistry = new SchemaRegistry(eas.contracts.schemaRegistry);
-schemaRegistry.connect(wallet as unknown as SignerOrProvider);
+schemaRegistry.connect(wallet as unknown as TransactionSigner);
 
 export async function registerSchemas() {
   console.log("Balance: ", await provider.getBalance(wallet).then(formatEther));

@@ -7,11 +7,13 @@ import { ConnectButton } from "./ConnectButton";
 import { IconButton } from "./ui/Button";
 import { config, metadata } from "~/config";
 import { Menu, X } from "lucide-react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Logo = () => (
   <div className="h-10">
     {config.logoUrl ? (
-      <img className="max-h-full" src={config.logoUrl} />
+      <Image alt="logo" className="max-h-full" src={config.logoUrl} />
     ) : (
       <div className="flex h-full items-center justify-center rounded-full border-2 border-dashed border-white px-4 text-xs font-medium tracking-wider text-white">
         {metadata.title}
@@ -54,7 +56,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
             <Logo />
           </Link>
         </div>
-        <div className="hidden h-full items-center gap-4 md:flex">
+        <div className="hidden h-full items-center gap-4 overflow-x-auto md:flex">
           {navLinks?.map((link) => (
             <NavLink
               isActive={asPath.startsWith(link.href)}
@@ -99,3 +101,5 @@ const MobileMenu = ({
     ))}
   </div>
 );
+
+export default dynamic(async () => Header, { ssr: false });

@@ -113,7 +113,7 @@ export function ListForm() {
 
         <div className="mb-4 rounded-2xl border border-neutral-300 p-6">
           <AllocationFormWithSearch />
-          <TotalOP />
+          <TotalAllocation />
           {/*
            */}
         </div>
@@ -170,7 +170,7 @@ function CreateListButton({
 
       <IconButton
         icon={isLoading ? Spinner : null}
-        disabled={!isValid || isLoading || !isConnected}
+        disabled={!isValid || isLoading || !isConnected || !isCorrectNetwork}
         variant="primary"
         type="submit"
         isLoading={isLoading}
@@ -181,7 +181,7 @@ function CreateListButton({
   );
 }
 
-function TotalOP() {
+function TotalAllocation() {
   const form = useFormContext();
 
   const projects = (form.watch("projects") ?? []) as Vote[];
@@ -198,7 +198,9 @@ function TotalOP() {
             ? `Total exceeds by ${formatNumber(exceeds)} ${config.tokenName}`
             : "Total"}
         </div>
-        <div>{formatNumber(current)} {config.tokenName}</div>
+        <div>
+          {formatNumber(current)} {config.tokenName}
+        </div>
       </div>
     </Alert>
   );

@@ -1,36 +1,31 @@
-import { useRouter } from "next/router";
+import type { OrderBy, SortOrder } from "~/features/filter/types";
 import { SortByDropdown } from "./SortByDropdown";
-import { type Filter } from "~/features/filter/types";
-import {
-  type SortType,
-  toURL,
-  useUpdateFilterFromRouter,
-} from "~/features/filter/hooks/useFilter";
+import { useFilter } from "~/features/filter/hooks/useFilter";
+import { SearchInput } from "./ui/Form";
+import { useDebounce } from "react-use";
+import { useState } from "react";
 
-type Props = {
-  type: "projects" | "lists";
-  filter: Filter;
-  sortOptions: SortType[];
-};
+export const SortFilter = () => {
+  const { orderBy, sortOrder, setFilter } = useFilter();
 
-export const SortFilter = ({ type, filter, sortOptions }: Props) => {
-  const router = useRouter();
-  const query = router.query as unknown as Filter;
-
-  useUpdateFilterFromRouter(type);
+  const [search, setSearch] = useState("");
+  useDebounce(() => setFilter({ search }), 500, [search]);
 
   return (
-    <div className="mb-2 flex gap-2">
+    <div className="mb-2 flex flex-1 gap-2">
+      <SearchInput
+        className="w-full rounded-full"
+        placeholder="Search project names..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
       <SortByDropdown
-        options={sortOptions}
-        value={`${filter?.orderBy}_${filter?.sortOrder}`}
-        onChange={(sort) => {
-          const [orderBy, sortOrder] = sort.split("_");
-          void router.push(
-            `/${type}?${toURL(query, { orderBy, sortOrder })}`,
-            undefined,
-            { scroll: false },
-          );
+        options={["name_asc", "name_desc", "time_asc", "time_desc"]}
+        value={`${orderBy}_${sortOrder}`}
+        onChange={async (sort) => {
+          const [orderBy, sortOrder] = sort.split("_") as [OrderBy, SortOrder];
+
+          await setFilter({ orderBy, sortOrder }).catch();
         }}
       />
     </div>

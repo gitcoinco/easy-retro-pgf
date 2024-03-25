@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useWalletClient } from "wagmi";
 import {
   BrowserProvider,
+  JsonRpcSigner,
   InfuraProvider,
   type Signer,
 } from "ethers";
@@ -18,8 +19,9 @@ async function walletClientToSigner(
     ensAddress: chain?.contracts?.ensRegistry?.address,
   };
   const provider = new BrowserProvider(transport, network);
+  const signer = new JsonRpcSigner(provider, account!.address);
 
-  return provider.getSigner(account?.address);
+  return signer;
 }
 
 export function useEthersSigner({ chainId }: { chainId?: number } = {}) {

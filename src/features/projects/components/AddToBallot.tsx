@@ -149,6 +149,7 @@ const ProjectAllocation = ({
   return (
     <div>
       <AllocationInput
+        tokenAddon
         error={isError}
         name="amount"
         votingMaxProject={initialVoiceCredits}

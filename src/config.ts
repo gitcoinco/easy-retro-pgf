@@ -22,12 +22,24 @@ export const config = {
   ),
   tokenName: process.env.NEXT_PUBLIC_TOKEN_NAME!,
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
-  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(","),
+  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(
+    ",",
+  ) as `0x${string}`[],
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
   maciAddress: process.env.NEXT_PUBLIC_MACI_ADDRESS,
   tallyUrl: process.env.NEXT_PUBLIC_TALLY_URL,
 };
+
+export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const allo = {
+  alloAddress: process.env.NEXT_PUBLIC_ALLO2_ADDRESS as `0x${string}`,
+  strategyAddress: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS as `0x${string}`,
+  // eslint-disable-next-line
+  tokenAddress: (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ||
+    nativeToken) as `0x${string}`,
+};
+export const isNativeToken = allo.tokenAddress === nativeToken;
 
 export const theme = {
   colorMode: "dark",
@@ -48,15 +60,6 @@ export const eas = {
   schemas: {
     metadata: process.env.NEXT_PUBLIC_METADATA_SCHEMA!,
     approval: process.env.NEXT_PUBLIC_APPROVAL_SCHEMA!,
-
-    // TODO: remove these
-    applicationsSchema: process.env.NEXT_PUBLIC_APPLICATIONS_SCHEMA ?? "",
-    approvedApplicationsSchema:
-      process.env.NEXT_PUBLIC_APPROVED_APPLICATIONS_SCHEMA ?? "",
-    badgeholderAttester: process.env.NEXT_PUBLIC_BADGEHOLDER_ATTESTER ?? "",
-    badgeholder: process.env.NEXT_PUBLIC_BADGEHOLDER_SCHEMA ?? "",
-    profileSchema: process.env.NEXT_PUBLIC_PROFILE_SCHEMA ?? "",
-    listsSchema: process.env.NEXT_PUBLIC_LISTS_SCHEMA ?? "",
   },
 };
 
