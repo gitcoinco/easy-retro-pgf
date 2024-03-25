@@ -21,6 +21,7 @@ import { api } from "~/utils/api";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import dynamic from "next/dynamic";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { Spinner } from "~/components/ui/Spinner";
 
 function BallotOverview() {
   const router = useRouter();
@@ -39,6 +40,14 @@ function BallotOverview() {
   const maxVotesTotal = round.data?.maxVotesTotal ?? 0;
 
   const roundState = useRoundState();
+
+  if (round.isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
 
   if (roundState === "RESULTS")
     return (
