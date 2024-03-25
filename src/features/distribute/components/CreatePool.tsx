@@ -140,7 +140,7 @@ function CreatePool() {
         }}
       >
         <FormControl name="tokenAddress" label="Token">
-          <Input disabled readOnly value={token.data?.symbol ?? "ETH"} />
+          <Input disabled readOnly value={token.data?.symbol} />
         </FormControl>
         <Label>
           Amount of tokens to fund

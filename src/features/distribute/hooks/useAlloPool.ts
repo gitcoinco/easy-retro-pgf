@@ -142,7 +142,7 @@ export function usePoolToken() {
     ...token,
     data: {
       ...(data ?? {}),
-      symbol: isNativeToken ? "ETH" : symbol,
+      symbol: config.tokenName || (isNativeToken ? "ETH" : symbol),
       decimals,
     },
   };

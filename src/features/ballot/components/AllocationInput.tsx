@@ -52,7 +52,7 @@ export const AllocationInput = ({
         )}
       />
       {tokenAddon && (
-        <InputAddon disabled={props.disabled}>{token.data?.symbol || config.tokenName}</InputAddon>
+        <InputAddon disabled={props.disabled}>{token.data?.symbol}</InputAddon>
       )}
     </InputWrapper>
   );
