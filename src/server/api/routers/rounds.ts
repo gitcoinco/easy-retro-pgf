@@ -8,6 +8,7 @@ import {
 import { z } from "zod";
 import { convert } from "url-slug";
 import { RoundNameSchema, RoundSchema } from "~/features/rounds/types";
+import { addDays, addMonths } from "date-fns";
 
 export const roundsRouter = createTRPCRouter({
   get: roundProcedure
@@ -22,13 +23,18 @@ export const roundsRouter = createTRPCRouter({
 
       const creatorId = ctx.session.user.name!;
 
+      const now = new Date();
       return ctx.db.round
         .create({
           data: {
             name,
             domain,
             creatorId,
-            startsAt: new Date(),
+            startsAt: now,
+            reviewAt: addDays(now, 14),
+            votingAt: addMonths(now, 1),
+            resultAt: addMonths(addDays(now, 7), 1),
+            payoutAt: addMonths(addDays(now, 7), 1),
             admins: [creatorId],
           },
         })

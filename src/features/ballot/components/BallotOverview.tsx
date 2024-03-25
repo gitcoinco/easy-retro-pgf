@@ -75,7 +75,7 @@ function BallotOverview() {
     <div className="space-y-6">
       <BallotHeader>Your ballot</BallotHeader>
       <BallotSection title="Voting ends in:">
-        <VotingEndsIn />
+        <VotingEndsIn resultAt={round.data?.resultAt} />
       </BallotSection>
       <BallotSection title="Projects added:">
         <div>

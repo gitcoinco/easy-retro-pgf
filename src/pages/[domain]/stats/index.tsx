@@ -5,6 +5,7 @@ import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useProjectsResults, useResults } from "~/hooks/useResults";
 import { Layout } from "~/layouts/DefaultLayout";
@@ -15,6 +16,7 @@ const ResultsChart = dynamic(
 );
 
 export default function StatsPage() {
+  const round = useCurrentRound();
   return (
     <Layout>
       <Heading as="h1" size="3xl">
@@ -27,7 +29,7 @@ export default function StatsPage() {
         <Alert variant="info" className="mx-auto max-w-sm text-center">
           The results will be revealed in{" "}
           <div className="text-3xl">
-            {differenceInDays(config.resultsAt, new Date())}
+            {differenceInDays(round.data?.resultAt, new Date())}
           </div>
           days
         </Alert>

@@ -83,12 +83,11 @@ model Round {
     network String?
     admins  String[]
 
-    startsAt           DateTime?
-    registrationEndsAt DateTime?
-    reviewEndsAt       DateTime?
-    votingEndsAt       DateTime?
-    resultsAt          DateTime?
-    distributionAt     DateTime?
+    startsAt DateTime?
+    reviewAt DateTime?
+    votingAt DateTime?
+    resultAt DateTime?
+    payoutAt DateTime?
 
     maxVotesTotal   Int?
     maxVotesProject Int?

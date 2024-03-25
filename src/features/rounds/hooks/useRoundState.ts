@@ -1,5 +1,5 @@
 import type { Round } from "@prisma/client";
-import { isAfter, isBefore } from "date-fns";
+import { isBefore } from "date-fns";
 import { useMemo } from "react";
 import { useCurrentRound } from "./useRound";
 
@@ -7,8 +7,8 @@ type AppState =
   | "APPLICATION"
   | "REVIEWING"
   | "VOTING"
-  | "RESULTS"
   | "TALLYING"
+  | "RESULTS"
   | null;
 
 export function useRoundState() {
@@ -19,12 +19,11 @@ export function useRoundState() {
 const getState = (round?: Round | null): AppState => {
   const now = new Date();
 
-  console.log(round);
   if (!round) return null;
-  if (isAfter(round.registrationEndsAt ?? now, now)) return "APPLICATION";
-  if (isAfter(round.reviewEndsAt ?? now, now)) return "REVIEWING";
-  if (isAfter(round.votingEndsAt ?? now, now)) return "VOTING";
-  if (isAfter(round.resultsAt ?? now, now)) return "TALLYING";
+  if (isBefore(now, round.startsAt ?? now)) return "APPLICATION";
+  if (isBefore(now, round.reviewAt ?? now)) return "REVIEWING";
+  if (isBefore(now, round.votingAt ?? now)) return "VOTING";
+  if (isBefore(now, round.resultAt ?? now)) return "TALLYING";
 
   return "RESULTS";
 };

@@ -3,23 +3,19 @@ import { tv } from "tailwind-variants";
 
 import { calculateTimeLeft } from "~/utils/time";
 import { createComponent } from "~/components/ui";
-import { config } from "~/config";
 
 const useEndDate = createGlobalState<[number, number, number, number]>([
   0, 0, 0, 0,
 ]);
-export function useVotingTimeLeft() {
+export function useVotingTimeLeft(date: Date) {
   const [state, setState] = useEndDate();
 
-  useHarmonicIntervalFn(
-    () => setState(calculateTimeLeft(config.votingEndsAt)),
-    1000,
-  );
+  useHarmonicIntervalFn(() => setState(calculateTimeLeft(date)), 1000);
 
   return state;
 }
-export const VotingEndsIn = () => {
-  const [days, hours, minutes, seconds] = useVotingTimeLeft();
+export const VotingEndsIn = ({ resultAt }: { resultAt: Date }) => {
+  const [days, hours, minutes, seconds] = useVotingTimeLeft(resultAt);
 
   if (seconds < 0) {
     return <div>Voting has ended</div>;

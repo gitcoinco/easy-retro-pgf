@@ -31,18 +31,17 @@ export default function RoundPage() {
 
 function RoundProgress({
   startsAt,
-  registrationEndsAt,
-  reviewEndsAt,
-  votingEndsAt,
-  resultsAt,
+  reviewAt,
+  votingAt,
+  resultAt,
+  payoutAt,
 }: Partial<RoundSchema>) {
   const steps = [];
   if (startsAt) steps.push({ label: "Registration", date: startsAt });
-  if (registrationEndsAt)
-    steps.push({ label: "Review & Approval", date: registrationEndsAt });
-  if (reviewEndsAt) steps.push({ label: "Voting", date: reviewEndsAt });
-  if (votingEndsAt) steps.push({ label: "Tallying", date: votingEndsAt });
-  if (resultsAt) steps.push({ label: "Distribution", date: resultsAt });
+  if (reviewAt) steps.push({ label: "Review & Approval", date: reviewAt });
+  if (votingAt) steps.push({ label: "Voting", date: votingAt });
+  if (resultAt) steps.push({ label: "Tallying", date: resultAt });
+  if (payoutAt) steps.push({ label: "Distribution", date: payoutAt });
 
   const { progress, currentStepIndex } = calculateProgress(steps);
 
