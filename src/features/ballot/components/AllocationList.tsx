@@ -19,7 +19,6 @@ import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { FormControl, Input } from "~/components/ui/Form";
-import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -27,8 +26,6 @@ const AllocationListWrapper = createComponent(
 );
 
 export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
-  const token = usePoolToken();
-
   return (
     <AllocationListWrapper>
       <Table>
@@ -39,7 +36,7 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
                 <ProjectAvatarWithName link id={project.projectId} />
               </Td>
               <Td className="whitespace-nowrap text-right">
-                {formatNumber(project.amount)} {token.data?.symbol}
+                {formatNumber(project.amount)}
               </Td>
             </Tr>
           ))}
@@ -81,7 +78,7 @@ export function AllocationFormWithSearch() {
                   </Td>
 
                   <Td>
-                    <AllocationInput name={`projects.${i}.amount`} tokenAddon />
+                    <AllocationInput name={`projects.${i}.amount`} />
                   </Td>
                   <Td>
                     <IconButton
