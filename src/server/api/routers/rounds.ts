@@ -8,6 +8,7 @@ import {
   adminProcedure,
 } from "~/server/api/trpc";
 import { RoundNameSchema, RoundSchema } from "~/features/rounds/types";
+import { networks } from "~/config";
 
 export const roundsRouter = createTRPCRouter({
   get: roundProcedure
@@ -37,6 +38,7 @@ export const roundsRouter = createTRPCRouter({
             maxVotesProject: 10_000,
             maxVotesTotal: 100_000,
             admins: [creatorId],
+            network: networks.optimismSepolia,
             calculationType: "standard",
           },
         })
