@@ -2,7 +2,7 @@ import "~/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import { Inter, Teko } from "next/font/google";
-
+import { Analytics } from "@vercel/analytics/react";
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
 import { Providers } from "~/providers";
@@ -31,6 +31,7 @@ function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
       <main className={`${inter.variable}  min-h-screen font-sans`}>
         <Component {...pageProps} />
       </main>
+      <Analytics />
     </Providers>
   );
 }
