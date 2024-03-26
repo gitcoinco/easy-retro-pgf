@@ -26,7 +26,6 @@ export const theme = {
 };
 
 export const eas = {
-  url: process.env.NEXT_PUBLIC_EASSCAN_URL ?? "",
   contracts: {
     eas:
       process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS ??
