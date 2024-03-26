@@ -1,5 +1,5 @@
 import type { OrderBy, SortOrder } from "~/features/filter/types";
-import { SortByDropdown } from "./SortByDropdown";
+import SortByDropdown from "./SortByDropdown";
 import { useFilter } from "~/features/filter/hooks/useFilter";
 import { SearchInput } from "./ui/Form";
 import { useDebounce } from "react-use";
