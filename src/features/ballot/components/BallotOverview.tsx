@@ -51,13 +51,14 @@ function BallotOverview() {
       </div>
     );
   }
+  const domain = round.data?.domain;
 
   if (roundState === "RESULTS")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Results are live!</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
-        <Button as={Link} href={"/projects/results"}>
+        <Button as={Link} href={`/${domain}/projects/results`}>
           Go to results
         </Button>
       </div>
@@ -76,7 +77,7 @@ function BallotOverview() {
         {roundState === "REVIEWING" ? (
           <BallotSection title="Applications are being reviewed" />
         ) : (
-          <Button as={Link} href={"/applications/new"}>
+          <Button as={Link} href={`/${domain}/applications/new`}>
             Create application
           </Button>
         )}
@@ -118,7 +119,11 @@ function BallotOverview() {
         </div>
       </BallotSection>
       {ballot?.publishedAt ? (
-        <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
+        <Button
+          className="w-full"
+          as={Link}
+          href={`/${domain}/ballot/confirmation`}
+        >
           View submitted ballot
         </Button>
       ) : isSaving ? (
@@ -132,7 +137,7 @@ function BallotOverview() {
           className="w-full"
           variant="primary"
           as={Link}
-          href={`/${round.data.domain}/ballot`}
+          href={`/${domain}/ballot`}
         >
           View ballot
         </Button>
