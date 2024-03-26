@@ -48,7 +48,7 @@ function RoundForm({ round }: { round: RoundSchema }) {
             description="Projects can register up until this point"
           />
           <DateFormItem
-            name="startsAt"
+            name="votingAt"
             label="Voting starts"
             description="Voters can start voting for projects"
           />
