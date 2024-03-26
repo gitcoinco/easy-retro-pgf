@@ -1,6 +1,6 @@
-import { type Round } from "@prisma/client";
 import { type UseTRPCQueryResult } from "@trpc/react-query/shared";
 import {
+  Calendar,
   ChevronLeft,
   Coins,
   Files,
@@ -64,9 +64,15 @@ function RoundConfigSidebar() {
     },
     {
       children: "Round details",
-      description: "Configure name, description & dates",
+      description: "Configure name & description",
       icon: Pencil,
       href: `/${domain}/admin`,
+    },
+    {
+      children: "Round phases",
+      description: "Choose dates for applications, voting...",
+      icon: Calendar,
+      href: `/${domain}/admin/phases`,
     },
     {
       children: "Network & Token",

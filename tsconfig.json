@@ -10,7 +10,7 @@
     "isolatedModules": true,
 
     /* Strictness */
-    // "strict": true,
+    "strict": true,
     "noUncheckedIndexedAccess": true,
     "checkJs": true,
 
@@ -35,9 +35,7 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
-    "**/*.js",
-    ".next/types/**/*.ts",
-    "src/pages/api/indexer/webhook._ts"
+    "**/*.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next"]
 }

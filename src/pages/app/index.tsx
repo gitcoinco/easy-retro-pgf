@@ -6,6 +6,7 @@ import { createComponent } from "~/components/ui";
 import { Button } from "~/components/ui/Button";
 import { Heading } from "~/components/ui/Heading";
 import { networkNames } from "~/config";
+import { RoundSchema } from "~/features/rounds/types";
 import { BaseLayout } from "~/layouts/BaseLayout";
 import { api } from "~/utils/api";
 
