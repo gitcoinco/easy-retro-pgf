@@ -111,15 +111,14 @@ export const SearchInput = forwardRef(function SearchInput(
   ref,
 ) {
   return (
-    <InputWrapper className="">
+    <InputWrapper className="h-12">
       <InputIcon>
         <Search />
       </InputIcon>
-      <Input ref={ref} {...props} className="rounded-full pl-10" />
+      <Input ref={ref} {...props} className="rounded-full pl-12" />
     </InputWrapper>
   );
 });
-
 export const FormControl = ({
   name,
   label,
