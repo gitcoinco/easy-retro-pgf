@@ -11,11 +11,13 @@ import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useResults } from "~/hooks/useResults";
 import { SortFilter } from "~/components/SortFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 
 export function Projects() {
   const projects = useSearchProjects();
   const select = useSelectProjects();
   const results = useResults();
+  const domain = useCurrentDomain();
 
   const roundState = useRoundState();
   return (
@@ -47,7 +49,7 @@ export function Projects() {
           return (
             <Link
               key={item.id}
-              href={`/projects/${item.id}`}
+              href={`/${domain}/projects/${item.id}`}
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
               {!isLoading && roundState === "VOTING" ? (

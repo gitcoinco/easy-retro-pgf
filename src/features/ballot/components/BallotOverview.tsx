@@ -103,7 +103,7 @@ function BallotOverview() {
             Votes allocated:
             <div
               className={clsx("text-gray-900 dark:text-gray-300", {
-                ["text-primary-500"]: sum > maxVotesTotal,
+                ["text-red-500"]: sum > maxVotesTotal,
               })}
             >
               {formatNumber(sum)} votes
@@ -122,8 +122,8 @@ function BallotOverview() {
           View submitted ballot
         </Button>
       ) : isSaving ? (
-        <Button disabled className="w-full" variant="primary">
-          Adding to ballot...
+        <Button isLoading className="w-full" variant="primary">
+          Updating
         </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > maxVotesTotal} />

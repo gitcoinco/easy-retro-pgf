@@ -35,6 +35,8 @@ export const roundsRouter = createTRPCRouter({
             votingAt: addMonths(now, 1),
             resultAt: addMonths(addDays(now, 7), 1),
             payoutAt: addMonths(addDays(now, 7), 1),
+            maxVotesProject: 10_000,
+            maxVotesTotal: 100_000,
             admins: [creatorId],
           },
         })

@@ -134,7 +134,7 @@ const ProjectAllocation = ({
           </span>
           <span
             className={clsx("font-semibold", {
-              ["text-primary-500"]: exceededMaxTokens,
+              ["text-red-500"]: exceededMaxTokens,
             })}
           >
             {formatNumber(total)}
@@ -143,7 +143,7 @@ const ProjectAllocation = ({
         <div className="flex gap-2">
           <span
             className={clsx("font-semibold", {
-              ["text-primary-500"]: exceededProjectTokens,
+              ["text-red-500"]: exceededProjectTokens,
             })}
           >
             {formatNumber(amount)}
