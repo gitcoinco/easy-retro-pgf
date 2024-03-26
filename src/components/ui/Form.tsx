@@ -9,7 +9,7 @@ import {
   forwardRef,
   cloneElement,
   useEffect,
-  ComponentProps,
+  type ComponentProps,
 } from "react";
 import {
   FormProvider,

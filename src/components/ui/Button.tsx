@@ -20,7 +20,7 @@ const button = tv({
         "bg-gray-100 dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800",
       danger:
         "bg-red-600 text-white dark:bg-red-900 hover:bg-red-500 dark:hover:bg-red-700",
-      outline: "border-2 hover:bg-white/5",
+      outline: "border border-gray-300 hover:bg-white/5 hover:border-gray-400",
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",

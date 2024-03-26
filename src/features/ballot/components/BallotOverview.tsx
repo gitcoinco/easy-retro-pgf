@@ -129,7 +129,7 @@ function BallotOverview() {
           View ballot
         </Button>
       ) : (
-        <Button className={"w-full"} variant="primary" disabled>
+        <Button className={"w-full"} disabled>
           No projects added yet
         </Button>
       )}
