@@ -45,54 +45,58 @@ export const ballotRouter = createTRPCRouter({
     .input(BallotSchema)
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session?.user.name as Address;
-      const roundId = ctx.round?.id;
-      const round = await ctx.db.round.findFirstOrThrow({
+      const roundId = String(ctx.round?.id);
+
+      const round = await ctx.db.round.findFirst({
         where: { id: roundId },
         select: {
-          votingEndsAt: true,
+          resultAt: true,
           maxVotesTotal: true,
           maxVotesProject: true,
         },
       });
-      const ballot = await ctx.db.ballot.findFirstOrThrow({
+      const ballot = await ctx.db.ballot.findFirst({
         where: {
           voterId,
           roundId,
         },
       });
-      if (![round.votingEndsAt].every(Boolean)) {
+      if (![round?.resultAt].every(Boolean)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Round not configured properly",
         });
       }
 
-      if (isAfter(new Date(), round.votingEndsAt!)) {
+      if (round?.resultAt && isAfter(new Date(), round.resultAt)) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
       }
-      if (ballot.publishedAt) {
+      if (ballot?.publishedAt) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Ballot already published",
         });
       }
 
-      return ctx.db.ballot.upsert({
-        select: defaultBallotSelect,
-        where: { id: ballot.id },
-        update: input,
-        create: { voterId, ...input },
-      });
+      return ballot
+        ? ctx.db.ballot.update({
+            select: defaultBallotSelect,
+            where: { id: ballot?.id, roundId, voterId },
+            data: input,
+          })
+        : ctx.db.ballot.create({
+            data: { ...input, roundId, voterId },
+          });
     }),
   publish: protectedRoundProcedure
     .input(BallotPublishSchema)
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session?.user.name as Address;
-      const roundId = input.roundId;
+      const roundId = ctx.round?.id;
       const round = await ctx.db.round.findFirstOrThrow({
         where: { id: roundId },
         select: {
-          votingEndsAt: true,
+          resultAt: true,
           maxVotesTotal: true,
           maxVotesProject: true,
         },
@@ -104,14 +108,14 @@ export const ballotRouter = createTRPCRouter({
         },
       });
 
-      if (![round.votingEndsAt, round.maxVotesTotal].every(Boolean)) {
+      if (![round.resultAt, round.maxVotesTotal].every(Boolean)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Round not configured properly",
         });
       }
 
-      if (isAfter(new Date(), round.votingEndsAt!)) {
+      if (isAfter(new Date(), round.resultAt!)) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
       }
 

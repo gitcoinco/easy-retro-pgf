@@ -20,7 +20,10 @@ import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import dynamic from "next/dynamic";
-import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+} from "~/features/rounds/hooks/useRound";
 import { Spinner } from "~/components/ui/Spinner";
 
 function BallotOverview() {
@@ -41,7 +44,7 @@ function BallotOverview() {
 
   const roundState = useRoundState();
 
-  if (round.isLoading) {
+  if (round.isLoading || !round.data) {
     return (
       <div className="flex items-center justify-center py-8">
         <Spinner className="size-4" />
@@ -84,7 +87,7 @@ function BallotOverview() {
     <div className="mb-2 space-y-6">
       <BallotHeader>Your ballot</BallotHeader>
       <BallotSection title="Voting ends in:">
-        <VotingEndsIn resultAt={round.data?.resultAt} />
+        <VotingEndsIn resultAt={round.data.resultAt!} />
       </BallotSection>
       <BallotSection title="Projects added:">
         <div>
@@ -125,7 +128,12 @@ function BallotOverview() {
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > maxVotesTotal} />
       ) : allocations.length ? (
-        <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
+        <Button
+          className="w-full"
+          variant="primary"
+          as={Link}
+          href={`/${round.data.domain}/ballot`}
+        >
           View ballot
         </Button>
       ) : (
@@ -141,9 +149,9 @@ const SubmitBallotButton = ({ disabled = false }) => {
   const isSaving = useIsMutating(getQueryKey(api.ballot.save));
   const router = useRouter();
   const [isOpen, setOpen] = useState(false);
-
+  const domain = useCurrentDomain();
   const submit = useSubmitBallot({
-    onSuccess: async () => void router.push("/ballot/confirmation"),
+    onSuccess: async () => void router.push(`/${domain}/ballot/confirmation`),
   });
 
   const messages = {

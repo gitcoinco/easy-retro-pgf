@@ -37,15 +37,13 @@ export function useAddToBallot() {
 
 export function useRemoveFromBallot() {
   const { data: ballot } = useBallot();
-  const { data: round } = useCurrentRound();
-  const roundId = String(round?.id);
-
   const { mutate } = useSaveBallot();
+
   return useMutation(async (projectId: string) => {
     const votes = (ballot?.votes ?? []).filter(
       (v) => v.projectId !== projectId,
     );
-    return mutate({ ...ballot, votes, roundId });
+    return mutate({ ...ballot, votes });
   });
 }
 
@@ -68,8 +66,6 @@ export function useSubmitBallot({
 }) {
   const { chain } = useNetwork();
   const { refetch } = useBallot();
-  const { data: round } = useCurrentRound();
-  const roundId = String(round?.id);
 
   const { mutateAsync, isLoading } = api.ballot.publish.useMutation({
     onSuccess,
@@ -92,7 +88,7 @@ export function useSubmitBallot({
       message,
     });
 
-    return mutateAsync({ signature, message, chainId: chain.id, roundId });
+    return mutateAsync({ signature, message, chainId: chain.id });
   });
 }
 
