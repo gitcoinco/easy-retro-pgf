@@ -1,5 +1,5 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { IconButton } from "./ui/Button";
+import { Button } from "./ui/Button";
 import { ArrowUpDown, Check } from "lucide-react";
 import { type SortType, sortLabels } from "~/features/filter/hooks/useFilter";
 
@@ -12,15 +12,15 @@ type Props = {
 export const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <IconButton
+      <DropdownMenu.Trigger>
+        <Button
           icon={ArrowUpDown}
           variant="outline"
           aria-label="Sort by"
           className="w-48 justify-start"
         >
           Sort by: {value && sortLabels[value]}
-        </IconButton>
+        </Button>
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
