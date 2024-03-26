@@ -23,9 +23,9 @@ const NavLink = ({
 }: { isActive: boolean } & ComponentPropsWithRef<typeof Link>) => (
   <Link
     className={clsx(
-      "hover:bg-primary-100 hover:text-primary-800 flex items-center rounded-full border-b-[3px] border-transparent px-6 py-2 font-semibold text-gray-600 transition-colors",
+      "flex items-center rounded-full border-b-[3px] border-transparent px-6 py-2 font-semibold text-gray-600 transition-colors hover:bg-primary-100 hover:text-primary-800",
       {
-        ["bg-primary-100 !border-white text-primary-700"]: isActive,
+        ["!border-white bg-primary-100 text-primary-700"]: isActive,
       },
     )}
     {...props}
@@ -38,7 +38,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <header className="relative z-[100]">
+    <header className="relative z-10">
       <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center justify-between px-2">
         <div className="flex items-center">
           <IconButton

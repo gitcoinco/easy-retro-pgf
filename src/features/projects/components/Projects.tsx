@@ -22,13 +22,14 @@ export function Projects() {
     <div>
       <div
         className={clsx(
-          "sticky top-4 z-20 mb-4 mt-4 flex justify-end gap-4 lg:-mt-8",
+          "fixed right-0 top-0 z-20 flex justify-end gap-2 rounded-bl-3xl bg-white px-2 pb-2 pt-4 dark:bg-gray-900",
           {
             ["invisible"]: !select.count,
           },
         )}
       >
         <Button
+          size="sm"
           variant="primary"
           onClick={select.add}
           disabled={!select.count}
@@ -36,14 +37,10 @@ export function Projects() {
         >
           Add {select.count} projects to ballot
         </Button>
-        <Button size="icon" onClick={select.reset}>
-          <XIcon />
-        </Button>
+        <Button icon={XIcon} size="sm" onClick={select.reset} />
       </div>
 
-      <div className="flex justify-end">
-        <SortFilter />
-      </div>
+      <SortFilter />
       <InfiniteLoading
         {...projects}
         renderItem={(item, { isLoading }) => {

@@ -6,8 +6,8 @@ import {
   createElement,
   forwardRef,
 } from "react";
-import { Spinner } from "./Spinner";
 import { cn } from "~/utils/classNames";
+import { Spinner } from "./Spinner";
 
 const button = tv({
   base: "inline-flex items-center justify-center font-semibold text-center transition-colors rounded-full duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-gray-800",
