@@ -16,9 +16,6 @@ import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { TokenSymbol } from "~/features/admin/components/FormTokenSymbol";
-import { createComponent } from "~/components/ui";
-import { tv } from "tailwind-variants";
-import { PropsWithChildren } from "react";
 import { CheckIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { cn } from "~/utils/classNames";
@@ -41,7 +38,8 @@ function RoundForm({ round }: { round: RoundSchema }) {
       onSubmit={(values) => {
         update.mutate(values, {
           async onSuccess({ domain }) {
-            if (domain !== round.domain) router.push(`/${domain}/admin`);
+            if (domain !== round.domain)
+              router.push(`/${domain}/admin`).catch(console.log);
             return utils.rounds.invalidate();
           },
         });

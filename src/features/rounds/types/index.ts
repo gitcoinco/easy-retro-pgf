@@ -46,7 +46,7 @@ export const RoundSchema = z
     payoutAt: z.date().nullable(),
     poolId: z.number().nullable(),
     calculationType: CalculationTypeSchema,
-    calculationConfig: z.record(z.string().or(z.number())).nullable(),
+    calculationConfig: z.record(z.string().or(z.number())).optional(),
   })
   .merge(RoundVotes);
 

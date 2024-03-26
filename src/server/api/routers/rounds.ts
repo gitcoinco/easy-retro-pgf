@@ -14,7 +14,9 @@ export const roundsRouter = createTRPCRouter({
   get: roundProcedure
     .input(z.object({ domain: z.string() }))
     .query(async ({ input: { domain }, ctx }) => {
-      return ctx.db.round.findFirst({ where: { domain } });
+      return (await ctx.db.round.findFirst({
+        where: { domain },
+      })) as RoundSchema | null;
     }),
   create: protectedProcedure
     .input(z.object({ name: RoundNameSchema }))

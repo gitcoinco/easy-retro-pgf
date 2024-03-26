@@ -16,6 +16,7 @@ import { createElement, type ReactNode } from "react";
 import { useAccount } from "wagmi";
 import { Spinner } from "~/components/ui/Spinner";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { type RoundSchema } from "~/features/rounds/types";
 import { Layout } from "~/layouts/DefaultLayout";
 import { cn } from "~/utils/classNames";
 
@@ -27,7 +28,9 @@ export function RoundAdminLayout({
   sidebarComponent?: ReactNode;
   className?: string;
   title?: string;
-  children: (params: UseTRPCQueryResult<Round | null, unknown>) => ReactNode;
+  children: (
+    params: UseTRPCQueryResult<RoundSchema | null, unknown>,
+  ) => ReactNode;
 }) {
   const { address } = useAccount();
   const round = useCurrentRound();
