@@ -1,14 +1,13 @@
+import { z } from "zod";
+import { convert } from "url-slug";
+import { addDays, addMonths } from "date-fns";
 import {
   roundProcedure,
   createTRPCRouter,
   protectedProcedure,
   adminProcedure,
-  publicProcedure,
 } from "~/server/api/trpc";
-import { z } from "zod";
-import { convert } from "url-slug";
 import { RoundNameSchema, RoundSchema } from "~/features/rounds/types";
-import { addDays, addMonths } from "date-fns";
 
 export const roundsRouter = createTRPCRouter({
   get: roundProcedure
@@ -38,6 +37,7 @@ export const roundsRouter = createTRPCRouter({
             maxVotesProject: 10_000,
             maxVotesTotal: 100_000,
             admins: [creatorId],
+            calculationType: "standard",
           },
         })
         .then((r) => r as RoundSchema | undefined);

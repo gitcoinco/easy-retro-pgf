@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EthAddressSchema } from "~/features/distribute/types";
+import { EthAddressSchema } from "~/features/rounds/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
 export const MetadataSchema = z.object({

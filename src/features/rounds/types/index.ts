@@ -1,5 +1,5 @@
+import { isAddress, type Address } from "viem";
 import { z } from "zod";
-import { EthAddressSchema } from "~/features/distribute/types";
 
 export const RoundNameSchema = z.string().max(50);
 
@@ -8,6 +8,11 @@ const RoundVotes = z.object({
   maxVotesProject: z.number().nullable(),
 });
 
+export const EthAddressSchema = z.custom<string>(
+  (val) => isAddress(val as Address),
+  "Invalid address",
+);
+
 export const RoundVotesSchema = RoundVotes.refine(
   (schema) => (schema?.maxVotesTotal ?? 0) >= (schema?.maxVotesProject ?? 0),
   {
@@ -15,6 +20,15 @@ export const RoundVotesSchema = RoundVotes.refine(
     message: "Total votes must be at least equal to votes per project",
   },
 );
+
+export const calculationTypes = {
+  standard: "Standard",
+  op: "OP-style",
+} as const;
+
+export const CalculationTypeSchema = z
+  .enum(Object.keys(calculationTypes) as [string, ...string[]])
+  .default("standard");
 
 export const RoundSchema = z
   .object({
@@ -31,7 +45,8 @@ export const RoundSchema = z
     resultAt: z.date().nullable(),
     payoutAt: z.date().nullable(),
     poolId: z.number().nullable(),
-    calculation: z.record(z.string().or(z.number())).nullable(),
+    calculationType: CalculationTypeSchema,
+    calculationConfig: z.record(z.string().or(z.number())).nullable(),
   })
   .merge(RoundVotes);
 
