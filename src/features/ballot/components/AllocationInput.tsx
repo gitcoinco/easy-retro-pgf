@@ -4,6 +4,7 @@ import { useController, useFormContext } from "react-hook-form";
 
 import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
 import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
+import { cn } from "~/utils/classNames";
 
 export const AllocationInput = forwardRef(function AllocationInput(
   {
@@ -30,7 +31,7 @@ export const AllocationInput = forwardRef(function AllocationInput(
         name={name}
         ref={ref}
         autoComplete="off"
-        className="pr-16"
+        className={cn({ ["pr-16"]: tokenAddon })}
         // isAllowed={({ floatValue }) =>
         //   (floatValue ?? 0) <= config.votingMaxProject
         // }
