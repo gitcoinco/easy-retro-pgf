@@ -44,6 +44,7 @@ function BallotOverview() {
 
   const roundState = useRoundState();
 
+  console.log({ roundState });
   if (round.isLoading || !round.data) {
     return (
       <div className="flex items-center justify-center py-8">
