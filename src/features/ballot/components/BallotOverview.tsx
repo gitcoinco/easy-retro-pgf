@@ -68,7 +68,7 @@ function BallotOverview() {
     );
 
   return (
-    <div className="space-y-6">
+    <div className="mb-2 space-y-6">
       <BallotHeader>Your ballot</BallotHeader>
       <BallotSection title="Voting ends in:">
         <VotingEndsIn />

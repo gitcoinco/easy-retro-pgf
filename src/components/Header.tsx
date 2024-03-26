@@ -42,7 +42,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <header className="relative z-[100] bg-gray-900 shadow-md dark:shadow-none">
+    <header className="relative z-10 bg-gray-900 shadow-md dark:shadow-none">
       <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center px-2">
         <div className="mr-4 flex items-center md:mr-16">
           <IconButton
