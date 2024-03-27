@@ -51,7 +51,7 @@ export const Input = createComponent(
 export const InputWrapper = createComponent(
   "div",
   tv({
-    base: "flex w-full relative -z-10",
+    base: "flex w-full relative",
     variants: {},
   }),
 );

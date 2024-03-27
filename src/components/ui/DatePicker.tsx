@@ -21,9 +21,13 @@ export const DatePicker = forwardRef(function DatePicker({
       <PopoverTrigger>
         <DateInput value={format(field.value, "PPP")} />
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent
+        sideOffset={4}
+        className="relative !z-10 w-auto rounded  border bg-white p-0"
+      >
         <Calendar
           mode="single"
+          defaultMonth={field.value as Date}
           selected={field.value as Date}
           onSelect={field.onChange}
           initialFocus
