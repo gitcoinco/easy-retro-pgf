@@ -1,5 +1,5 @@
 import type { OrderBy, SortOrder } from "~/features/filter/types";
-import { SortByDropdown } from "./SortByDropdown";
+import SortByDropdown from "./SortByDropdown";
 import { useFilter } from "~/features/filter/hooks/useFilter";
 import { SearchInput } from "./ui/Form";
 import { useDebounce } from "react-use";
@@ -12,7 +12,7 @@ export const SortFilter = () => {
   useDebounce(() => setFilter({ search }), 500, [search]);
 
   return (
-    <div className="mb-2 flex flex-1 gap-2">
+    <div className="mb-2 flex flex-1 flex-col items-end gap-2 sm:flex-row">
       <SearchInput
         className="w-full rounded-full"
         placeholder="Search project names..."

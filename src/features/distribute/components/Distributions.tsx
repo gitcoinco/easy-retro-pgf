@@ -32,24 +32,13 @@ export function Distributions() {
   );
 
   const payoutAddresses: Record<string, string> = projects.data ?? {};
-
-  if (!votes.isLoading && !projectIds.length) {
-    return <EmptyState title="No project votes found" />;
-  }
-  if (projects.isLoading ?? votes.isLoading ?? poolAmount.isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner className="size-6" />
-      </div>
-    );
-  }
   const totalVotes = BigInt(votes.data?.totalVotes ?? 0);
   const totalTokens = poolAmount.data ?? totalVotes;
   const projectVotes = votes.data?.projects ?? {};
   const distributions = useMemo(
     () =>
       projectIds
-        .map((projectId) => ({
+        ?.map((projectId) => ({
           projectId,
           payoutAddress: payoutAddresses[projectId] ?? "",
           amount: projectVotes[projectId]?.votes ?? 0,
@@ -65,6 +54,17 @@ export function Distributions() {
         })),
     [projectIds, payoutAddresses, projectVotes, totalVotes, totalTokens],
   );
+
+  if (!votes.isLoading && !projectIds.length) {
+    return <EmptyState title="No project votes found" />;
+  }
+  if (projects.isLoading ?? votes.isLoading ?? poolAmount.isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner className="size-6" />
+      </div>
+    );
+  }
 
   if (!distributions.length) {
     return <EmptyState title="No distribution found" />;

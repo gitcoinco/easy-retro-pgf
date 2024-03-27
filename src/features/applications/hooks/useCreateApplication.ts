@@ -15,6 +15,7 @@ export function useCreateApplication(options: {
 
   const mutation = useMutation(
     async (values: { application: Application; profile: Profile }) => {
+      if (!config.roundId) throw new Error("Round ID must be defined");
       console.log("Uploading profile and application metadata");
       return Promise.all([
         upload.mutateAsync(values.application).then(({ url: metadataPtr }) => {

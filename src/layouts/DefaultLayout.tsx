@@ -6,6 +6,7 @@ import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";
 import { config } from "~/config";
+import { useSession } from "next-auth/react";
 
 type Props = PropsWithChildren<
   {
@@ -65,10 +66,11 @@ export const Layout = ({ children, ...props }: Props) => {
 
 export function LayoutWithBallot(props: Props) {
   const { address } = useAccount();
+  const { data: session } = useSession();
   return (
     <Layout
       sidebar="left"
-      sidebarComponent={address && <BallotOverview />}
+      sidebarComponent={address && session && <BallotOverview />}
       {...props}
     />
   );
