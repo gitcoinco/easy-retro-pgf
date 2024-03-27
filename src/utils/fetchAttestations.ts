@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { fromHex, type Address } from "viem";
-import { config, eas, easApiEndpoints, type networks } from "~/config";
+import { eas, easApiEndpoints, type networks } from "~/config";
 import { createCachedFetch } from "./fetch";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
