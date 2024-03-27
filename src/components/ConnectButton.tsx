@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type ComponentPropsWithRef } from "react";
-import { type Address, useEnsAvatar, useEnsName } from "wagmi";
+import { useEffect, type ComponentPropsWithRef } from "react";
+import { type Address, useEnsAvatar, useEnsName, useAccount } from "wagmi";
 import { FaListCheck } from "react-icons/fa6";
 
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
@@ -12,6 +12,7 @@ import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
+import { signOut } from "next-auth/react";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -92,6 +93,18 @@ const ConnectedDetails = ({
 }) => {
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
+
+  // Invalidate token when changing account
+  const { connector } = useAccount();
+  useEffect(() => {
+    function handleConnectorUpdate() {
+      signOut({ redirect: false }).catch(console.log);
+    }
+    connector?.on("change", handleConnectorUpdate);
+    return () => {
+      connector?.off("change", handleConnectorUpdate);
+    };
+  }, [connector, signOut]);
 
   const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (

@@ -21,6 +21,8 @@ import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
 import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
+import { createComponent } from "~/components/ui";
+import { tv } from "tailwind-variants";
 
 function BallotOverview() {
   const router = useRouter();
@@ -38,24 +40,24 @@ function BallotOverview() {
   const appState = getAppState();
   if (appState === "RESULTS")
     return (
-      <div className="flex flex-col items-center gap-2 pt-8 ">
+      <BallotMessage>
         <BallotHeader>Results are live!</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
         <Button as={Link} href={"/projects/results"}>
           Go to results
         </Button>
-      </div>
+      </BallotMessage>
     );
   if (appState === "TALLYING")
     return (
-      <div className="flex flex-col items-center gap-2 pt-8 ">
+      <BallotMessage>
         <BallotHeader>Voting has ended</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
-      </div>
+      </BallotMessage>
     );
   if (appState !== "VOTING")
     return (
-      <div className="flex flex-col items-center gap-2 pt-8 ">
+      <BallotMessage>
         <BallotHeader>Voting hasn't started yet</BallotHeader>
         {appState === "REVIEWING" ? (
           <BallotSection title="Applications are being reviewed" />
@@ -64,7 +66,7 @@ function BallotOverview() {
             Create application
           </Button>
         )}
-      </div>
+      </BallotMessage>
     );
 
   return (
@@ -199,14 +201,17 @@ const SubmitBallotButton = ({ disabled = false }) => {
   );
 };
 
-function BallotHeader(props: PropsWithChildren) {
-  return (
-    <h3
-      className="text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300"
-      {...props}
-    />
-  );
-}
+const BallotMessage = createComponent(
+  "div",
+  tv({ base: "flex flex-col items-center gap-2 pt-8" }),
+);
+
+const BallotHeader = createComponent(
+  "h3",
+  tv({
+    base: "text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300",
+  }),
+);
 
 function BallotSection({
   title,

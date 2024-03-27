@@ -49,7 +49,6 @@ export function useRemoveFromBallot() {
 export function useBallot() {
   const { address } = useAccount();
   const { data: session } = useSession();
-
   return api.ballot.get.useQuery(undefined, {
     enabled: Boolean(address && session),
   });
