@@ -16,7 +16,6 @@ import { ballotTypedData } from "~/utils/typedData";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import type { Prisma } from "@prisma/client";
 import { fetchApprovedVoter } from "~/utils/fetchAttestations";
-import { z } from "zod";
 
 const defaultBallotSelect = {
   votes: true,
@@ -27,20 +26,19 @@ const defaultBallotSelect = {
 } satisfies Prisma.BallotSelect;
 
 export const ballotRouter = createTRPCRouter({
-  get: protectedProcedure
-    .input(z.object({ roundId: z.string() }))
-    .query(({ input: { roundId }, ctx }) => {
-      const voterId = ctx.session.user.name!;
-      return ctx.db.ballot
-        .findFirst({
-          select: defaultBallotSelect,
-          where: { voterId, roundId },
-        })
-        .then((ballot) => ({
-          ...ballot,
-          votes: (ballot?.votes as Vote[]) ?? [],
-        }));
-    }),
+  get: protectedProcedure.query(({ ctx }) => {
+    const voterId = ctx.session.user.name!;
+    const roundId = ctx.round?.id;
+    return ctx.db.ballot
+      .findFirst({
+        select: defaultBallotSelect,
+        where: { voterId, roundId },
+      })
+      .then((ballot) => ({
+        ...ballot,
+        votes: (ballot?.votes as Vote[]) ?? [],
+      }));
+  }),
   save: protectedRoundProcedure
     .input(BallotSchema)
     .mutation(async ({ input, ctx }) => {

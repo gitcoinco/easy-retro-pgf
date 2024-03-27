@@ -7,7 +7,6 @@ import { ballotTypedData } from "~/utils/typedData";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import { keccak256 } from "viem";
-import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export function useSaveBallot(opts?: { onSuccess?: () => void }) {
   const utils = api.useUtils();
@@ -48,15 +47,11 @@ export function useRemoveFromBallot() {
 }
 
 export function useBallot() {
-  const { data: round } = useCurrentRound();
-  const roundId = String(round?.id);
   const { address } = useAccount();
   const { data: session } = useSession();
-
-  return api.ballot.get.useQuery(
-    { roundId },
-    { enabled: Boolean(address && session && roundId) },
-  );
+  return api.ballot.get.useQuery(undefined, {
+    enabled: Boolean(address && session),
+  });
 }
 
 export function useSubmitBallot({

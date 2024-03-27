@@ -91,13 +91,15 @@ export function createAttestationFetcher(round: PartialRound) {
 }
 
 export async function fetchApprovedVoter(round: PartialRound, address: string) {
-  if (config.skipApprovedVoterCheck) return true;
-
+  // if (config.skipApprovedVoterCheck) return true;
+  if (!round.id) throw new Error("Round ID must be defined");
   return createAttestationFetcher(round)([eas.schemas.approval], {
     where: {
       recipient: { equals: address },
-      ...createDataFilter("type", "bytes32", "voter"),
-      ...createDataFilter("round", "bytes32", round.id!),
+      AND: [
+        createDataFilter("type", "bytes32", "voter"),
+        createDataFilter("round", "bytes32", round.id),
+      ],
     },
   }).then((attestations) => attestations.length);
 }

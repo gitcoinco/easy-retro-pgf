@@ -24,7 +24,7 @@ export function useApproveVoters(options: {
 
   return useMutation(async (voters: string[]) => {
     if (!signer) throw new Error("Connect wallet first");
-    if (!roundId) throw new Error("No RoundID found");
+    if (!roundId) throw new Error("Round ID must be defined");
     const attestations = await Promise.all(
       voters.map((recipient) =>
         createAttestation(

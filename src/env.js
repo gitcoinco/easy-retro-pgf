@@ -48,8 +48,6 @@ export const env = createEnv({
     NEXT_PUBLIC_WALLETCONNECT_ID: z.string().optional(),
     NEXT_PUBLIC_ALCHEMY_ID: z.string().optional(),
 
-    NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK: z.string(),
-
     NEXT_PUBLIC_ALLO2_ADDRESS: z.string().startsWith("0x"),
     NEXT_PUBLIC_STRATEGY_ADDRESS: z.string().startsWith("0x"),
   },
@@ -78,8 +76,6 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS,
     NEXT_PUBLIC_WALLETCONNECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_ID,
     NEXT_PUBLIC_ALCHEMY_ID: process.env.NEXT_PUBLIC_ALCHEMY_ID,
-    NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK:
-      process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK,
 
     NEXT_PUBLIC_APPROVAL_SCHEMA: process.env.NEXT_PUBLIC_APPROVAL_SCHEMA,
     NEXT_PUBLIC_METADATA_SCHEMA: process.env.NEXT_PUBLIC_METADATA_SCHEMA,

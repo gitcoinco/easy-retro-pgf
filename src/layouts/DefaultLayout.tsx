@@ -9,6 +9,7 @@ import {
   useCurrentRound,
 } from "~/features/rounds/hooks/useRound";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { useSession } from "next-auth/react";
 
 type Props = PropsWithChildren<
   {
@@ -59,10 +60,11 @@ export const Layout = ({ children, ...props }: Props) => {
 
 export function LayoutWithBallot(props: Props) {
   const { address } = useAccount();
+  const { data: session } = useSession();
   return (
     <Layout
       sidebar="left"
-      sidebarComponent={address && <BallotOverview />}
+      sidebarComponent={address && session && <BallotOverview />}
       {...props}
     />
   );

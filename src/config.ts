@@ -10,9 +10,6 @@ export const metadata = {
 export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
-  skipApprovedVoterCheck: ["true", "1"].includes(
-    process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK!,
-  ),
 };
 
 export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";

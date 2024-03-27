@@ -25,6 +25,8 @@ import {
   useCurrentRound,
 } from "~/features/rounds/hooks/useRound";
 import { Spinner } from "~/components/ui/Spinner";
+import { createComponent } from "~/components/ui";
+import { tv } from "tailwind-variants";
 
 function BallotOverview() {
   const router = useRouter();
@@ -56,24 +58,24 @@ function BallotOverview() {
 
   if (roundState === "RESULTS")
     return (
-      <div className="flex flex-col items-center gap-2 pt-8 ">
+      <BallotMessage>
         <BallotHeader>Results are live!</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
         <Button as={Link} href={`/${domain}/projects/results`}>
           Go to results
         </Button>
-      </div>
+      </BallotMessage>
     );
   if (roundState === "TALLYING")
     return (
-      <div className="flex flex-col items-center gap-2 pt-8 ">
+      <BallotMessage>
         <BallotHeader>Voting has ended</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
-      </div>
+      </BallotMessage>
     );
   if (roundState !== "VOTING")
     return (
-      <div className="flex flex-col items-center gap-2 pt-8 ">
+      <BallotMessage>
         <BallotHeader>Voting hasn't started yet</BallotHeader>
         {roundState === "REVIEWING" ? (
           <BallotSection title="Applications are being reviewed" />
@@ -82,7 +84,7 @@ function BallotOverview() {
             Create application
           </Button>
         )}
-      </div>
+      </BallotMessage>
     );
 
   return (
@@ -226,14 +228,17 @@ const SubmitBallotButton = ({ disabled = false }) => {
   );
 };
 
-function BallotHeader(props: PropsWithChildren) {
-  return (
-    <h3
-      className="text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300"
-      {...props}
-    />
-  );
-}
+const BallotMessage = createComponent(
+  "div",
+  tv({ base: "flex flex-col items-center gap-2 pt-8" }),
+);
+
+const BallotHeader = createComponent(
+  "h3",
+  tv({
+    base: "text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300",
+  }),
+);
 
 function BallotSection({
   title,
