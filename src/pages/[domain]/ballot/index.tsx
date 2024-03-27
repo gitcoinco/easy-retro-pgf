@@ -41,7 +41,7 @@ export default function BallotPage() {
           defaultValues={{ votes }}
           onSubmit={console.log}
         >
-          <BallotAllocationForm />
+          <BallotAllocationForm isPublished={Boolean(ballot?.publishedAt)} />
         </Form>
       )}
       <div className="py-8" />
@@ -49,7 +49,7 @@ export default function BallotPage() {
   );
 }
 
-function BallotAllocationForm() {
+function BallotAllocationForm({ isPublished = false }) {
   const form = useFormContext<{ votes: Vote[] }>();
 
   const save = useSaveBallot();
@@ -86,7 +86,7 @@ function BallotAllocationForm() {
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
               <AllocationForm
-                disabled={roundState === "RESULTS"}
+                disabled={isPublished || roundState !== "VOTING"}
                 onSave={handleSaveBallot}
               />
             ) : (
