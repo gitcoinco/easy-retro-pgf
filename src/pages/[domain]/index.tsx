@@ -13,8 +13,8 @@ export default function RoundPage() {
 
   return (
     <Layout>
-      <h1 className="text-4xl font-semibold">{round.data?.name}</h1>
-      <div className="my-8 flex items-center justify-center">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-semibold">{round.data?.name}</h1>
         <Button
           as={Link}
           variant="primary"
@@ -47,19 +47,24 @@ function RoundProgress({
 
   return (
     <div className="relative my-4">
-      <div className="absolute hidden h-full w-4/5 overflow-hidden border-y md:block">
+      <div className="absolute hidden h-full w-4/5 overflow-hidden rounded-xl border-y border-yellow-400 md:block">
         <div
-          className={"h-full bg-gray-200 transition-all dark:bg-gray-700"}
+          className={
+            "h-full  bg-gradient-to-r from-yellow-50 to-yellow-200 transition-all dark:bg-yellow-700"
+          }
           style={{ width: `${progress * 100}%` }}
         />
       </div>
-      <div className="border md:flex">
+      <div className="rounded-xl border md:flex">
         {steps.map((step, i) => (
           <div
             key={i}
-            className={cn("z-10 flex-1  border-l p-4 transition-opacity", {
-              ["opacity-50"]: currentStepIndex <= i,
-            })}
+            className={cn(
+              "z-10 flex-1  rounded-xl border-l border-yellow-400 p-4 transition-opacity",
+              {
+                ["opacity-50"]: currentStepIndex <= i,
+              },
+            )}
           >
             <h3 className="font-semibold">{step.label}</h3>
             <div>{formatDate(step.date)}</div>
