@@ -19,6 +19,7 @@ import { formatDate } from "~/utils/time";
 import { ClockIcon } from "lucide-react";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 
 export function ApplicationItem({
   id,
@@ -30,7 +31,7 @@ export function ApplicationItem({
   isLoading,
 }: Attestation & { isApproved?: boolean; isLoading?: boolean }) {
   const metadata = useMetadata<Application>(metadataPtr);
-
+  const domain = useCurrentDomain();
   const form = useFormContext();
 
   const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
@@ -75,7 +76,7 @@ export function ApplicationItem({
           disabled={isLoading}
           as={Link}
           target="_blank"
-          href={`/applications/${id}`}
+          href={`/${domain}/applications/${id}`}
           className="transition-transform group-data-[state=closed]:rotate-180"
           type="button"
           variant=""
@@ -95,6 +96,7 @@ type ApplicationsToApprove = z.infer<typeof ApplicationsToApproveSchema>;
 
 export function ApplicationsToApprove() {
   const applications = useApplications();
+  const domain = useCurrentDomain();
   const approved = useApprovedApplications();
   const approve = useApproveApplication({});
 
@@ -141,7 +143,11 @@ export function ApplicationsToApprove() {
           </div>
         ) : !applications.data?.length ? (
           <EmptyState title="No applications">
-            <Button variant="primary" as={Link} href={`/applications/new`}>
+            <Button
+              variant="primary"
+              as={Link}
+              href={`/${domain}/applications/new`}
+            >
               Go to create application
             </Button>
           </EmptyState>
