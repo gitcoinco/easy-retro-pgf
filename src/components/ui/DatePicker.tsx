@@ -1,30 +1,34 @@
 import { type ComponentPropsWithRef, forwardRef } from "react";
-import { Controller, useFormContext } from "react-hook-form";
-import ReactDatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
+import { useController, useFormContext } from "react-hook-form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
 import { DateInput } from "./Form";
+import { Calendar } from "./Calendar";
+import { format } from "date-fns";
 
 export const DatePicker = forwardRef(function DatePicker({
   name,
   ...props
-}: Partial<ComponentPropsWithRef<typeof ReactDatePicker>>) {
+}: { name: string } & ComponentPropsWithRef<typeof Calendar>) {
   const { control } = useFormContext();
+  const { field } = useController({ name: name, control });
 
   return (
-    <Controller
-      control={control}
-      name={String(name)}
-      render={({ field }) => (
-        <>
-          <ReactDatePicker
-            {...props}
-            {...field}
-            customInput={<DateInput />}
-            selected={field.value as Date}
-          />
-        </>
-      )}
-    />
+    <Popover>
+      <PopoverTrigger>
+        <DateInput value={format(field.value, "PPP")} />
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={field.value as Date}
+          onSelect={field.onChange}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
   );
 });

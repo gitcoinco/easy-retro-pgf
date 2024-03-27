@@ -30,6 +30,13 @@ export const CalculationTypeSchema = z
   .enum(Object.keys(calculationTypes) as [string, ...string[]])
   .default("standard");
 
+export const RoundDatesSchema = z.object({
+  startsAt: z.date().nullable(),
+  reviewAt: z.date().nullable(),
+  votingAt: z.date().nullable(),
+  resultAt: z.date().nullable(),
+  payoutAt: z.date().nullable(),
+});
 export const RoundSchema = z
   .object({
     id: z.string(),
@@ -39,15 +46,10 @@ export const RoundSchema = z
     description: z.string().nullable(),
     network: z.string().nullable(),
     tokenAddress: EthAddressSchema.nullable(),
-    startsAt: z.date().nullable(),
-    reviewAt: z.date().nullable(),
-    votingAt: z.date().nullable(),
-    resultAt: z.date().nullable(),
-    payoutAt: z.date().nullable(),
-    poolId: z.number().nullable(),
     calculationType: CalculationTypeSchema,
     calculationConfig: z.record(z.string().or(z.number())).optional(),
   })
+  .merge(RoundDatesSchema)
   .merge(RoundVotes);
 
 export type RoundSchema = z.infer<typeof RoundSchema>;

@@ -51,7 +51,7 @@ export const Input = createComponent(
 export const InputWrapper = createComponent(
   "div",
   tv({
-    base: "flex w-full relative",
+    base: "flex w-full relative -z-10",
     variants: {},
   }),
 );
@@ -162,13 +162,7 @@ export const DateInput = forwardRef(function DateInput(
       <InputIcon>
         <Calendar className="size-4" />
       </InputIcon>
-      <Input
-        type="search"
-        autocomplete={"off"}
-        ref={ref}
-        {...props}
-        className="pl-10"
-      />
+      <Input autocomplete={"off"} ref={ref} {...props} className="pl-10" />
     </InputWrapper>
   );
 });

@@ -1,7 +1,7 @@
 import { Form, FormControl, FormSection } from "~/components/ui/Form";
 import { RoundAdminLayout } from "~/features/admin/layouts/AdminLayout";
 import { Button } from "~/components/ui/Button";
-import { RoundSchema } from "~/features/rounds/types";
+import { RoundDatesSchema, type RoundSchema } from "~/features/rounds/types";
 import { DatePicker } from "~/components/ui/DatePicker";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
@@ -30,7 +30,7 @@ function RoundForm({ round }: { round: RoundSchema }) {
           },
         });
       }}
-      schema={RoundSchema}
+      schema={RoundDatesSchema}
     >
       <FormSection
         title="Round dates"
@@ -97,7 +97,6 @@ function DateFormItem({
       >
         {isSet && <CheckIcon className="size-3" />}
       </div>
-      {/* <div className="absolute -start-2 mt-1 size-4 rounded-full border border-white bg-gray-200" /> */}
       <FormControl name={name} label={label} hint={description}>
         <DatePicker name={name} />
       </FormControl>
