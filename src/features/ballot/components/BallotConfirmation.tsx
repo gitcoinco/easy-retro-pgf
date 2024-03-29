@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { Lock } from "lucide-react";
 
-import { AllocationList } from "./AllocationList";
+import { AllocationList } from "../../../components/AllocationList";
 import { Button } from "~/components/ui/Button";
 import { createComponent } from "~/components/ui";
 import { type Vote } from "../types";

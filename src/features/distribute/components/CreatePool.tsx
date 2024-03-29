@@ -1,12 +1,12 @@
+import { type PropsWithChildren } from "react";
 import { z } from "zod";
 import dynamic from "next/dynamic";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 import { useSession } from "next-auth/react";
-import { type PropsWithChildren } from "react";
+import { useFormContext } from "react-hook-form";
 
 import { Button, IconButton } from "~/components/ui/Button";
-
 import { Alert } from "~/components/ui/Alert";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Spinner } from "~/components/ui/Spinner";
@@ -23,9 +23,9 @@ import {
   useTokenBalance,
 } from "../hooks/useAlloPool";
 import { allo } from "~/config";
+import { AllocationInput } from "~/components/AllocationInput";
 import { ErrorMessage, Form, FormControl, Input } from "~/components/ui/Form";
-import { AllocationInput } from "~/features/ballot/components/AllocationInput";
-import { useFormContext } from "react-hook-form";
+import { NumberInput } from "~/components/NumberInput";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -140,9 +140,10 @@ function CreatePool() {
           <Input disabled readOnly value={token.data?.symbol} />
         </FormControl>
         <FormControl name="amount" label="Amount of tokens to fund">
-          <AllocationInput tokenAddon />
+          <NumberInput tokenAddon />
         </FormControl>
-        <div className="-mt-3 mb-2">
+
+        <div className="mb-2">
           <TokenBalance />
         </div>
 

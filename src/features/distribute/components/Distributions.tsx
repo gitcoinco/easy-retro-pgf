@@ -1,18 +1,19 @@
 import { useMemo, useState } from "react";
 import { z } from "zod";
+import { formatUnits } from "viem";
+
 import { EmptyState } from "~/components/EmptyState";
 import { Button } from "~/components/ui/Button";
 import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
 import { Th, Thead, Tr } from "~/components/ui/Table";
-import { DistributionForm } from "~/features/ballot/components/AllocationList";
+import { DistributionForm } from "~/components/AllocationList";
 import {
   type Distribution,
   DistributionSchema,
 } from "~/features/distribute/types";
 import { api } from "~/utils/api";
 import { usePoolAmount } from "../hooks/useAlloPool";
-import { formatUnits } from "viem";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
 import { calculatePayout } from "../utils/calculatePayout";

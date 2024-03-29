@@ -16,9 +16,9 @@ import {
   useRemoveFromBallot,
   sumBallot,
 } from "~/features/ballot/hooks/useBallot";
-import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { AllocationInput } from "~/components/AllocationInput";
 
 type Props = { id?: string; name?: string };
 

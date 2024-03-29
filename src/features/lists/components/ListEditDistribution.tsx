@@ -28,7 +28,7 @@ import {
 import { useAddToBallot } from "~/features/ballot/hooks/useBallot";
 import { Spinner } from "~/components/ui/Spinner";
 
-import { AllocationForm } from "~/features/ballot/components/AllocationList";
+import { AllocationForm } from "~/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";

@@ -2,45 +2,33 @@ import { forwardRef, type ComponentPropsWithRef } from "react";
 import { NumericFormat } from "react-number-format";
 import { useController, useFormContext } from "react-hook-form";
 
-import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
-import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
-import { cn } from "~/utils/classNames";
-import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { Input, InputWrapper } from "~/components/ui/Form";
 
-export const AllocationInput = forwardRef(function AllocationInput(
+export const NumberInput = forwardRef(function NumberInput(
   {
     name,
+    children,
     onBlur,
-    tokenAddon,
     ...props
   }: {
     disabled?: boolean;
-    tokenAddon?: boolean;
     error?: boolean;
   } & ComponentPropsWithRef<"input">,
   ref,
 ) {
-  const token = useRoundToken();
-  const { data: round } = useCurrentRound();
   const { control, setValue } = useFormContext();
   const { field } = useController({ name: name!, control });
-
-  const maxVotesProject = round?.maxVotesProject ?? 0;
+  console.log(props.className);
   return (
     <InputWrapper className="min-w-[160px]">
       <NumericFormat
-        aria-label="allocation-input"
+        aria-label="number-input"
         customInput={Input}
         error={props.error}
         name={name}
         ref={ref}
         autoComplete="off"
-        className={cn({
-          ["pr-16"]: tokenAddon,
-          ["border-red-600"]: field.value > maxVotesProject,
-        })}
-        // Enable this to totally stop the number entry if it surpasses max votes for project
-        // isAllowed={({ floatValue }) => (floatValue ?? 0) <= maxVotesProject}
+        className={props.className}
         value={field.value as number}
         disabled={props.disabled}
         defaultValue={props.defaultValue as string}
@@ -51,9 +39,7 @@ export const AllocationInput = forwardRef(function AllocationInput(
         onBlur={onBlur}
         thousandSeparator=","
       />
-      {tokenAddon && (
-        <InputAddon disabled={props.disabled}>{token.data?.symbol}</InputAddon>
-      )}
+      {children}
     </InputWrapper>
   );
 });

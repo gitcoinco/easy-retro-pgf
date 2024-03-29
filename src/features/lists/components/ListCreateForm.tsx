@@ -20,12 +20,11 @@ import { Alert } from "~/components/ui/Alert";
 import { ListSchema } from "../types";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Spinner } from "~/components/ui/Spinner";
-import { AllocationFormWithSearch } from "~/features/ballot/components/AllocationList";
+import { AllocationFormWithSearch } from "~/components/AllocationList";
 import { formatNumber } from "~/utils/formatNumber";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { type Vote } from "~/features/ballot/types";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
-import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
 
 const ListTags = () => {
   const { control, watch } = useFormContext();
@@ -189,7 +188,6 @@ function TotalAllocation() {
   const form = useFormContext();
   const round = useCurrentRound();
   const projects = (form.watch("projects") ?? []) as Vote[];
-  const token = useRoundToken();
   const current = sumBallot(projects);
 
   const exceeds = current - (round.data?.maxVotesTotal ?? 0);
