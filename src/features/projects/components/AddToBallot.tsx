@@ -16,7 +16,7 @@ import {
   useRemoveFromBallot,
   sumBallot,
 } from "~/features/ballot/hooks/useBallot";
-import { AllocationInput } from "~/features/ballot/components/AllocationInput";
+import { AllocationInput } from "~/components/AllocationInput";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 

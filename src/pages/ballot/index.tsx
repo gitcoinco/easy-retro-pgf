@@ -9,8 +9,7 @@ import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
-import { config } from "~/config";
-import { AllocationForm } from "~/features/ballot/components/AllocationList";
+import { AllocationForm } from "~/components/AllocationList";
 import {
   useBallot,
   sumBallot,

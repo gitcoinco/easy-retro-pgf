@@ -1,11 +1,9 @@
 import clsx from "clsx";
 import {
   createElement,
-  type ComponentProps,
-  type ComponentPropsWithRef,
   type ForwardRefExoticComponent,
   type ReactNode,
-  ComponentPropsWithoutRef,
+  type ComponentPropsWithoutRef,
 } from "react";
 import { tv } from "tailwind-variants";
 import Link from "next/link";
@@ -21,7 +19,7 @@ import {
 } from "react-hook-form";
 import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
-import { type Vote } from "../types";
+import { type Vote } from "../features/ballot/types";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";

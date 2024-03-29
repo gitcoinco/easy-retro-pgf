@@ -1,12 +1,12 @@
+import { type PropsWithChildren } from "react";
 import { z } from "zod";
 import dynamic from "next/dynamic";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 import { useSession } from "next-auth/react";
-import { type PropsWithChildren } from "react";
+import { useFormContext } from "react-hook-form";
 
 import { Button, IconButton } from "~/components/ui/Button";
-
 import { Alert } from "~/components/ui/Alert";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Spinner } from "~/components/ui/Spinner";
@@ -29,9 +29,7 @@ import {
   Input,
   Label,
 } from "~/components/ui/Form";
-import { NumberInput } from "~/features/ballot/components/NumberInput";
-import { useFormContext } from "react-hook-form";
-import { NumberInput } from "~/features/ballot/components/NumberInput";
+import { NumberInput } from "~/components/NumberInput";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
