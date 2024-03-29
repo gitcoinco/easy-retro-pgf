@@ -1,8 +1,4 @@
-import {
-  type PropsWithChildren,
-  type ReactNode,
-  useState,
-} from "react";
+import { type PropsWithChildren, type ReactNode, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -27,16 +23,11 @@ import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
 import { useMaciSignup } from "~/hooks/useMaciSignup";
 import { useMaciVote } from "~/hooks/useMaciVote";
-import { toast } from "sonner";
 
 function BallotOverview() {
   const router = useRouter();
 
-  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaciSignup(
-    {
-      onError: () => toast.error("Signup error"),
-    },
-  );
+  const { isRegistered, isEligibleToVote } = useMaciSignup();
   const { data: ballot } = useBallot();
   const { initialVoiceCredits } = useMaciSignup();
 
@@ -117,15 +108,7 @@ function BallotOverview() {
           </div>
         </div>
       </BallotSection>
-      {!isEligibleToVote ? null : isLoading ? (
-        <Button className="w-full" variant="primary" disabled>
-          Loading...
-        </Button>
-      ) : !isRegistered ? (
-        <Button className="w-full" variant="primary" onClick={onSignup}>
-          Signup
-        </Button>
-      ) : ballot?.publishedAt ? (
+      {!isRegistered || !isEligibleToVote ? null : ballot?.publishedAt ? (
         <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
           View submitted ballot
         </Button>

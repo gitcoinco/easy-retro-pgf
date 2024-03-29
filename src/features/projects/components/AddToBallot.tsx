@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { useAccount } from "wagmi";
 import { useFormContext } from "react-hook-form";
 import { Check } from "lucide-react";
-import { toast } from "sonner";
 
 import { Alert } from "~/components/ui/Alert";
 import { Button, IconButton } from "~/components/ui/Button";
@@ -31,11 +30,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
   const { data: ballot } = useBallot();
-  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaciSignup(
-    {
-      onError: () => toast.error("Signup error"),
-    },
-  );
+  const { isRegistered, isEligibleToVote } = useMaciSignup();
   const { initialVoiceCredits } = useMaciSignup();
 
   const inBallot = ballotContains(id!, ballot);
@@ -54,18 +49,8 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         </Alert>
       )}
 
-      {!isEligibleToVote ? null : isLoading ? (
-        <Button className="w-full md:w-auto" variant="primary" disabled>
-          Loading...
-        </Button>
-      ) : !isRegistered ? (
-        <Button
-          className="w-full md:w-auto"
-          variant="primary"
-          onClick={onSignup}
-        >
-          Signup
-        </Button>
+      {!isEligibleToVote || !isRegistered ? (
+        null
       ) : ballot?.publishedAt ? (
         <Button disabled>Ballot published</Button>
       ) : inBallot ? (
@@ -173,7 +158,7 @@ const ProjectAllocation = ({
               ["text-primary-500"]: exceededProjectTokens,
             })}
           >
-            {formatNumber(amount)}
+            {formatNumber(total - amount)}
           </span>
           <span className="text-gray-600 dark:text-gray-400">/</span>
           <span className="text-gray-600 dark:text-gray-400">
