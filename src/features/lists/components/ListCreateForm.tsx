@@ -1,5 +1,5 @@
 import { useController, useFormContext } from "react-hook-form";
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 
 import {
   Form,
@@ -8,8 +8,7 @@ import {
   Textarea,
   Label,
 } from "~/components/ui/Form";
-import { Button, IconButton } from "~/components/ui/Button";
-import { Banner } from "~/components/ui/Banner";
+import { IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 
 import { Tag } from "~/components/ui/Tag";
@@ -21,10 +20,10 @@ import { Alert } from "~/components/ui/Alert";
 import { ListSchema } from "../types";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Spinner } from "~/components/ui/Spinner";
-import { AllocationFormWithSearch } from "~/features/ballot/components/AllocationList";
+import { AllocationFormWithSearch } from "~/components/AllocationList";
 import { formatNumber } from "~/utils/formatNumber";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
-import { Vote } from "~/features/ballot/types";
+import { type Vote } from "~/features/ballot/types";
 
 const ListTags = () => {
   const { control, watch } = useFormContext();

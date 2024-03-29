@@ -3,7 +3,7 @@ import { BookTextIcon, ExternalLinkIcon } from "lucide-react";
 import { ListBanner } from "~/features/lists/components/ListBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
-import { AllocationList } from "~/features/ballot/components/AllocationList";
+import { AllocationList } from "~/components/AllocationList";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { formatNumber } from "~/utils/formatNumber";
 import { ListEditDistribution } from "./ListEditDistribution";
