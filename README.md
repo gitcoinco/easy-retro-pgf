@@ -1,16 +1,18 @@
-# EasyRetroPGF
+# MACI-RPGF
 
 <div style="font-size:18px">
 
-<a href="https://easy-retro-pgf.vercel.app">View demo</a>
+<a href="https://maci-rpgf.vercel.app/">View demo</a>
 <span>|</span>
-<a href="https://t.me/+0oycDCvX3QY1NjEx">Telegram Group</a>
+<a href="https://discord.com/invite/sF5CT5rzrR">Discord (#🗳️-maci channel)</a>
 
 <div>
 
 [<img src="./docs/images/screenshot.png">](https://easy-retro-pgf.vercel.app)
 
 ## Documentation
+
+### MACI-RPGF docs
 
 - [Setup & Deployment](./docs/01_setup.md)
 - [Adding Projects & Approving](./docs/02_adding_projects.md)
@@ -19,6 +21,10 @@
 - [Lists](./docs/05_lists.md)
 - [Results](./docs/06_results.md)
 - [Distribute](./docs/07_distribute.md)
+
+### MACI docs
+
+- [Documentation](https://maci.pse.dev/)
 
 ## Supported Networks
 
@@ -37,7 +43,7 @@ All networks EAS is deployed to are supported
 #### Testnets
 
 - Sepolia
-- Optimism Goerli
+- Optimism Sepolia
 - Base Goerli
 - Arbitrum Goerli
 - Polygon Mumbai
@@ -48,7 +54,7 @@ All networks EAS is deployed to are supported
 To run locally follow these instructions:
 
 ```sh
-git clone https://github.com/gitcoinco/easy-retro-pgf
+git clone https://github.com/privacy-scaling-explorations/maci-rpgf
 
 bun install # (or pnpm / yarn / npm)
 
