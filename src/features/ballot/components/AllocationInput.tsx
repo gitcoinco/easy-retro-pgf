@@ -1,56 +1,45 @@
-import { type ComponentPropsWithRef } from "react";
-import { NumericFormat } from "react-number-format";
-import { useFormContext, Controller } from "react-hook-form";
+import { forwardRef, type ComponentPropsWithRef } from "react";
+import { useFormContext, useController } from "react-hook-form";
 
-import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
+import { InputAddon } from "~/components/ui/Form";
 import { config } from "~/config";
 import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
+import { NumberInput } from "./NumberInput";
+import { cn } from "~/utils/classNames";
 
-export const AllocationInput = ({
-  name,
-  onBlur,
-  tokenAddon,
-  ...props
-}: {
-  disabled?: boolean;
-  tokenAddon?: boolean;
-  error?: boolean;
-} & ComponentPropsWithRef<"input">) => {
-  const form = useFormContext();
-
+export const AllocationInput = forwardRef(function AllocationInput(
+  {
+    name,
+    tokenAddon,
+    ...props
+  }: {
+    disabled?: boolean;
+    tokenAddon?: boolean;
+    error?: boolean;
+  } & ComponentPropsWithRef<"input">,
+  ref,
+) {
   const token = usePoolToken();
+  const { control } = useFormContext();
+  const { field } = useController({ name: name!, control });
+
+  const maxVotesProject = config.votingMaxProject ?? 0;
 
   return (
-    <InputWrapper className="min-w-[160px]">
-      <Controller
-        control={form.control}
-        name={name!}
-        {...props}
-        render={({ field }) => (
-          <NumericFormat
-            aria-label="allocation-input"
-            customInput={Input}
-            error={props.error}
-            {...field}
-            autoComplete="off"
-            className="pr-16"
-            isAllowed={({ floatValue }) =>
-              (floatValue ?? 0) <= config.votingMaxProject
-            }
-            disabled={props.disabled}
-            defaultValue={props.defaultValue as string}
-            onChange={(v) =>
-              // Parse decimal string to number to adhere to AllocationSchema
-              field.onChange(parseFloat(v.target.value.replace(/,/g, "")))
-            }
-            onBlur={onBlur}
-            thousandSeparator=","
-          />
-        )}
-      />
+    <NumberInput
+      name={name}
+      ref={ref}
+      {...props}
+      // Enable this to totally stop the number entry if it surpasses max votes for project
+      // isAllowed={({ floatValue }) => (floatValue ?? 0) <= maxVotesProject}
+      className={cn({
+        ["pr-16"]: tokenAddon,
+        ["border-red-600 dark:border-red-900"]: field.value > maxVotesProject,
+      })}
+    >
       {tokenAddon && (
         <InputAddon disabled={props.disabled}>{token.data?.symbol}</InputAddon>
       )}
-    </InputWrapper>
+    </NumberInput>
   );
-};
+});

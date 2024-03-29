@@ -1,5 +1,12 @@
 import clsx from "clsx";
-import type { ReactNode } from "react";
+import {
+  createElement,
+  type ComponentProps,
+  type ComponentPropsWithRef,
+  type ForwardRefExoticComponent,
+  type ReactNode,
+  ComponentPropsWithoutRef,
+} from "react";
 import { tv } from "tailwind-variants";
 import Link from "next/link";
 import { Trash } from "lucide-react";
@@ -19,6 +26,7 @@ import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { FormControl, Input } from "~/components/ui/Form";
+import { NumberInput } from "./NumberInput";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -127,12 +135,16 @@ type AllocationFormProps = {
     }: { form: UseFormReturn<{ votes: Vote[] }>; project: Vote },
     i: number,
   ) => ReactNode;
+  input: ForwardRefExoticComponent<
+    ComponentPropsWithoutRef<typeof NumberInput>
+  >;
   disabled?: boolean;
   projectIsLink?: boolean;
   onSave?: (v: { votes: Vote[] }) => void;
 };
 
 function AllocationFormWrapper({
+  input = NumberInput,
   disabled,
   projectIsLink,
   renderHeader,
@@ -165,11 +177,11 @@ function AllocationFormWrapper({
                 </Td>
                 <Td>{renderExtraColumn?.({ project, form }, i)}</Td>
                 <Td>
-                  <AllocationInput
-                    name={`votes.${idx}.amount`}
-                    disabled={disabled}
-                    onBlur={() => onSave?.(form.getValues())}
-                  />
+                  {createElement(input, {
+                    name: `votes.${idx}.amount`,
+                    disabled,
+                    onBlur: () => onSave?.(form.getValues()),
+                  })}
                 </Td>
                 <Td>
                   <IconButton
@@ -199,6 +211,7 @@ export function AllocationForm({
   return (
     <AllocationFormWrapper
       {...props}
+      input={AllocationInput}
       renderExtraColumn={({ project }) => {
         const listAllocation =
           list?.find((p) => p.projectId === project.projectId)?.amount ?? 0;

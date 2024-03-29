@@ -29,8 +29,9 @@ import {
   Input,
   Label,
 } from "~/components/ui/Form";
-import { AllocationInput } from "~/features/ballot/components/AllocationInput";
+import { NumberInput } from "~/features/ballot/components/NumberInput";
 import { useFormContext } from "react-hook-form";
+import { NumberInput } from "~/features/ballot/components/NumberInput";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -146,7 +147,7 @@ function CreatePool() {
         </FormControl>
         <Label>
           Amount of tokens to fund
-          <AllocationInput name="amount" tokenAddon />
+          <NumberInput name="amount" />
         </Label>
 
         <div className="mb-2">
@@ -220,7 +221,7 @@ function PoolDetails({ poolId = 0 }) {
         }}
       >
         <div className="mb-2 space-y-2">
-          <AllocationInput name="amount" tokenAddon />
+          <NumberInput name="amount" />
           <TokenBalance />
         </div>
 
