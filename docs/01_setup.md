@@ -1,10 +1,10 @@
 # Setup
 
-Follow these instructions to deploy your own instance of EasyRetroPGF.
+Follow these instructions to deploy your own instance of MACI-RPGF.
 
 ## 1. Fork Repo
 
-[Fork EasyRetroPGF](https://github.com/gitcoinco/easy-retro-pgf/fork)
+[Fork MACI-RPGF](https://github.com/privacy-scaling-explorations/maci-rpgf/tree/main)
 
 1. Click to view the `.env.example` file in your newly created repo
 2. Copy its contents and paste into a text editor
@@ -73,9 +73,9 @@ https://vercel.com/new
   <img width="45%" src="./images/vercel_configure.png">
 </div>
 
-## 4. Deploy maci
+## 4. Deploy MACI
 
-As a coordinator you need to deploy maci instance and poll. See [maci docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
+As a coordinator you need to deploy MACI instance and poll. See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
 
 ## Additional configuration
 

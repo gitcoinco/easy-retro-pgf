@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="flex flex-col items-center justify-center bg-gray-950 p-2 text-gray-400">
       <a
-        href={"https://github.com/gitcoinco/easy-retro-pgf/"}
+        href={"https://github.com/privacy-scaling-explorations/maci-rpgf/"}
         target="_blank"
         className="group py-4 text-sm hover:text-white"
       >
