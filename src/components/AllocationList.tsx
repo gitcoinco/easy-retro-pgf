@@ -133,7 +133,7 @@ type AllocationFormProps = {
     }: { form: UseFormReturn<{ votes: Vote[] }>; project: Vote },
     i: number,
   ) => ReactNode;
-  input: ForwardRefExoticComponent<
+  input?: ForwardRefExoticComponent<
     ComponentPropsWithoutRef<typeof NumberInput>
   >;
   disabled?: boolean;
