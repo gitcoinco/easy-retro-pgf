@@ -18,7 +18,7 @@ export const NumberInput = forwardRef(function NumberInput(
 ) {
   const { control, setValue } = useFormContext();
   const { field } = useController({ name: name!, control });
-  console.log(props.className);
+
   return (
     <InputWrapper className="min-w-[160px]">
       <NumericFormat
