@@ -162,7 +162,7 @@ export const DateInput = forwardRef(function DateInput(
       <InputIcon>
         <Calendar className="size-4" />
       </InputIcon>
-      <Input autocomplete={"off"} ref={ref} {...props} className="pl-10" />
+      <Input autoComplete={"off"} ref={ref} {...props} className="pl-10" />
     </InputWrapper>
   );
 });

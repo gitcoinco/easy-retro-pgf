@@ -11,7 +11,6 @@ import { format } from "date-fns";
 
 export const DatePicker = forwardRef(function DatePicker({
   name,
-  ...props
 }: { name: string } & ComponentPropsWithRef<typeof Calendar>) {
   const { control } = useFormContext();
   const { field } = useController({ name: name, control });
@@ -19,7 +18,7 @@ export const DatePicker = forwardRef(function DatePicker({
   return (
     <Popover>
       <PopoverTrigger>
-        <DateInput value={format(field.value, "PPP")} />
+        <DateInput value={format(field.value, "PPP")} onChange={Function} />
       </PopoverTrigger>
       <PopoverContent
         sideOffset={4}
