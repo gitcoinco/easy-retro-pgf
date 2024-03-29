@@ -8,11 +8,11 @@ import {
   useSendTransaction,
   useToken,
 } from "wagmi";
+import { type Address, parseAbi } from "viem";
 import { abi as AlloABI } from "@allo-team/allo-v2-sdk/dist/Allo/allo.config";
 import { allo, config, isNativeToken, nativeToken } from "~/config";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAllo, waitForLogs } from "./useAllo";
-import { type Address, parseAbi } from "viem";
 import { api } from "~/utils/api";
 
 export function usePoolId() {
@@ -26,9 +26,13 @@ export function usePoolId() {
 export function usePool(poolId?: number) {
   const allo = useAllo();
 
-  return useQuery(["pool", poolId], async () => allo?.getPool(BigInt(poolId)), {
-    enabled: Boolean(allo && poolId),
-  });
+  return useQuery(
+    ["pool", poolId],
+    async () => allo?.getPool(BigInt(poolId!)),
+    {
+      enabled: Boolean(allo && poolId),
+    },
+  );
 }
 export function usePoolAmount() {
   const { data: poolId } = usePoolId();
@@ -118,6 +122,7 @@ export function usePoolToken() {
     ...token,
     data: {
       ...token.data,
+      isNativeToken,
       symbol: isNativeToken ? "ETH" : token.data?.symbol ?? "",
       decimals: token.data?.decimals ?? 18,
     },

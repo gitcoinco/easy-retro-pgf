@@ -39,7 +39,7 @@ function CheckAlloProfile(props: PropsWithChildren) {
   if (!isCorrectNetwork) {
     return (
       <Alert variant="info" className="flex items-center gap-2">
-        You must be connected to {correctNetwork.name}
+        You must be connected to {correctNetwork?.name}
       </Alert>
     );
   }
@@ -155,9 +155,9 @@ function CreatePool() {
         <FundPoolButton
           buttonText="Create pool"
           isLoading={createPool.isLoading || approve.isLoading}
-          decimals={decimals}
           allowance={allowance.data}
           balance={balance.data?.value}
+          token={token.data}
         />
       </Form>
     </Alert>
@@ -201,11 +201,10 @@ function PoolDetails({ poolId = 0 }) {
         })}
         onSubmit={async (values, form) => {
           const amount = parseUnits(values.amount.toString(), decimals);
-          const hasAllowance = calcHasAllowance({
-            amount: values.amount,
-            allowance,
-            decimals,
-          });
+          const hasAllowance = calcHasAllowance(
+            { amount: values.amount, allowance },
+            token.data,
+          );
 
           if (!hasAllowance) {
             return approve.writeAsync({
@@ -226,9 +225,9 @@ function PoolDetails({ poolId = 0 }) {
         <FundPoolButton
           buttonText="Fund pool"
           isLoading={fundPool.isLoading || approve.isLoading}
-          decimals={decimals}
           allowance={allowance}
           balance={balance.data?.value}
+          token={token.data}
         />
 
         <ErrorMessage>{(error as { message: string })?.message}</ErrorMessage>
@@ -254,14 +253,20 @@ function FundPoolButton({
   isLoading = false,
   allowance = 0n,
   balance = 0n,
-  decimals = 18,
+  token,
+}: {
+  buttonText: string;
+  isLoading?: boolean;
+  allowance?: bigint;
+  balance?: bigint;
+  token: { decimals: number; isNativeToken: boolean };
 }) {
   const { address } = useAccount();
   const session = useSession();
   const { formState, watch } = useFormContext<{ amount: number }>();
   const amount = watch("amount") || 0;
 
-  const hasAllowance = calcHasAllowance({ amount, allowance, decimals });
+  const hasAllowance = calcHasAllowance({ amount, allowance }, token);
   const disabled = isLoading || Boolean(formState.errors.amount);
 
   if (!address || !session) {
@@ -306,11 +311,13 @@ function FundPoolButton({
     </IconButton>
   );
 }
-
-function calcHasAllowance({ allowance = 0n, amount = 0, decimals = 18 }) {
-  return isNativeToken
+function calcHasAllowance(
+  { allowance = 0n, amount = 0 },
+  token: { decimals: number; isNativeToken: boolean },
+) {
+  return token.isNativeToken
     ? true
-    : allowance >= parseUnits(amount.toString(), decimals);
+    : allowance >= parseUnits(amount.toString(), token.decimals);
 }
 
 export default dynamic(() => Promise.resolve(ConfigurePool), { ssr: false });
