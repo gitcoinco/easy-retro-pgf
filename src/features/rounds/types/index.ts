@@ -1,3 +1,4 @@
+import { isBefore } from "date-fns";
 import { isAddress, type Address } from "viem";
 import { z } from "zod";
 
@@ -30,13 +31,30 @@ export const CalculationTypeSchema = z
   .enum(Object.keys(calculationTypes) as [string, ...string[]])
   .default("standard");
 
-export const RoundDatesSchema = z.object({
+export const RoundDates = z.object({
   startsAt: z.date().nullable(),
   reviewAt: z.date().nullable(),
   votingAt: z.date().nullable(),
   resultAt: z.date().nullable(),
   payoutAt: z.date().nullable(),
 });
+export const RoundDatesSchema = RoundDates.superRefine(
+  ({ startsAt, reviewAt, votingAt, resultAt, payoutAt }, ctx) => {
+    console.log(reviewAt, votingAt);
+    if (reviewAt && startsAt && isBefore(reviewAt, startsAt)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Review date must be after start date",
+      });
+    }
+    if (votingAt && reviewAt && isBefore(votingAt, reviewAt)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Voting date must be after review date",
+      });
+    }
+  },
+);
 export const RoundSchema = z
   .object({
     id: z.string(),
@@ -49,7 +67,8 @@ export const RoundSchema = z
     calculationType: CalculationTypeSchema,
     calculationConfig: z.record(z.string().or(z.number())).optional(),
   })
-  .merge(RoundDatesSchema)
+  .merge(RoundDates)
   .merge(RoundVotes);
 
 export type RoundSchema = z.infer<typeof RoundSchema>;
+export type RoundDatesSchema = z.infer<typeof RoundDatesSchema>;
