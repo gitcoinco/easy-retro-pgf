@@ -23,8 +23,13 @@ import {
   useTokenBalance,
 } from "../hooks/useAlloPool";
 import { allo } from "~/config";
-import { AllocationInput } from "~/components/AllocationInput";
-import { ErrorMessage, Form, FormControl, Input } from "~/components/ui/Form";
+import {
+  ErrorMessage,
+  Form,
+  FormControl,
+  Input,
+  Label,
+} from "~/components/ui/Form";
 import { NumberInput } from "~/components/NumberInput";
 
 function CheckAlloProfile(props: PropsWithChildren) {
@@ -139,9 +144,10 @@ function CreatePool() {
         <FormControl name="tokenAddress" label="Token">
           <Input disabled readOnly value={token.data?.symbol} />
         </FormControl>
-        <FormControl name="amount" label="Amount of tokens to fund">
-          <NumberInput tokenAddon />
-        </FormControl>
+        <Label>
+          Amount of tokens to fund
+          <NumberInput name="amount" />
+        </Label>
 
         <div className="mb-2">
           <TokenBalance />
@@ -173,10 +179,7 @@ function PoolDetails({ poolId = 0 }) {
   const balance = useTokenBalance();
   const fundPool = useFundPool();
   const token = usePoolToken();
-  const roundToken = useRoundToken();
   const approve = useApprove();
-
-  const tokenMismatch = token.data.address !== roundToken.data?.address;
 
   const decimals = token.data?.decimals ?? 18;
 
@@ -200,10 +203,7 @@ function PoolDetails({ poolId = 0 }) {
         onSubmit={async (values, form) => {
           const amount = parseUnits(values.amount.toString(), decimals);
           const hasAllowance = calcHasAllowance(
-            {
-              amount: values.amount,
-              allowance,
-            },
+            { amount: values.amount, allowance },
             token.data,
           );
 
@@ -218,27 +218,18 @@ function PoolDetails({ poolId = 0 }) {
           );
         }}
       >
-        <FormControl name="amount" label="Amount of tokens to fund">
-          <AllocationInput tokenAddon />
-        </FormControl>
-        <div className="-mt-3 mb-2">
+        <div className="mb-2 space-y-2">
+          <NumberInput name="amount" />
           <TokenBalance />
         </div>
-        {tokenMismatch ? (
-          <div className="text-center text-sm">
-            Pool token and configured round token are different
-          </div>
-        ) : (
-          <>
-            <FundPoolButton
-              buttonText="Fund pool"
-              isLoading={fundPool.isLoading || approve.isLoading}
-              token={token.data}
-              allowance={allowance}
-              balance={balance.data?.value}
-            />
-          </>
-        )}
+
+        <FundPoolButton
+          buttonText="Fund pool"
+          isLoading={fundPool.isLoading || approve.isLoading}
+          allowance={allowance}
+          balance={balance.data?.value}
+          token={token.data}
+        />
 
         <ErrorMessage>{(error as { message: string })?.message}</ErrorMessage>
       </Form>
@@ -321,7 +312,6 @@ function FundPoolButton({
     </IconButton>
   );
 }
-
 function calcHasAllowance(
   { allowance = 0n, amount = 0 },
   token: { decimals: number; isNativeToken: boolean },

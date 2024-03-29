@@ -64,6 +64,7 @@ export const RoundSchema = z
     description: z.string().nullable(),
     network: z.string().nullable(),
     tokenAddress: EthAddressSchema.nullable(),
+    poolId: z.number().nullable(),
     calculationType: CalculationTypeSchema,
     calculationConfig: z.record(z.string().or(z.number())).optional(),
   })
