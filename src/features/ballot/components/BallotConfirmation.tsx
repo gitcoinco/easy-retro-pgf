@@ -51,7 +51,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
             </h5>
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Lock className="h-4 w-4 " />
-              <p>Your vote will be private until the voting period ends</p>
+              <p>Your vote will always be private</p>
             </div>
           </div>
           <div className="flex items-center justify-between border-b py-3 text-gray-600 dark:border-gray-700 dark:text-gray-300">
