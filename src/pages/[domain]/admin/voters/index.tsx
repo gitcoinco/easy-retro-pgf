@@ -10,14 +10,13 @@ import {
   SelectAllButton,
 } from "~/features/admin/components/AddAddresses";
 import { RoundAdminLayout } from "~/features/admin/layouts/AdminLayout";
-import { api } from "~/utils/api";
 
 import {
   useApproveVoters,
   useVoters,
 } from "~/features/voters/hooks/useApproveVoters";
 import { RoundVotesSchema } from "~/features/rounds/types";
-import { AllocationInput } from "~/features/ballot/components/AllocationInput";
+import { AllocationInput } from "~/components/AllocationInput";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 
 export default function AdminAccountsPage() {
