@@ -1,21 +1,25 @@
 import { useMemo, type PropsWithChildren } from "react";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider, createConfig, http } from "wagmi";
 import {
   RainbowKitProvider,
-  getDefaultWallets,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
+
 import {
   frameWallet,
   injectedWallet,
-  braveWallet,
+  metaMaskWallet,
   safeWallet,
   coinbaseWallet,
+  walletConnectWallet,
+  argentWallet,
+  trustWallet,
+  ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import * as wagmiChains from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+import type { Chain } from "wagmi/chains";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ThemeProvider } from "next-themes";
@@ -32,85 +36,85 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
 });
 
+const queryClient = new QueryClient();
+
 export function Providers({
   children,
   session,
 }: PropsWithChildren<{ session?: Session }>) {
   const { data: round } = useCurrentRound();
 
-  const { config, chains, appInfo } = useMemo(
-    () => createWagmiConfig(round?.network as keyof typeof wagmiChains),
+  const config = useMemo(
+    () => createWagmiConfig(round?.network),
     [round],
   );
 
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>
-        <WagmiConfig config={config}>
-          <RainbowKitSiweNextAuthProvider
-            getSiweMessageOptions={getSiweMessageOptions}
-          >
-            <RainbowKitProvider appInfo={appInfo} chains={chains}>
-              {children}
-              <Toaster />
-            </RainbowKitProvider>
-          </RainbowKitSiweNextAuthProvider>
-        </WagmiConfig>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitSiweNextAuthProvider
+              getSiweMessageOptions={getSiweMessageOptions}
+            >
+              <RainbowKitProvider>
+                {children}
+                <Toaster />
+              </RainbowKitProvider>
+            </RainbowKitSiweNextAuthProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
       </SessionProvider>
     </ThemeProvider>
   );
 }
 
-function createWagmiConfig(network?: keyof typeof wagmiChains) {
-  const activeChains: wagmiChains.Chain[] = [wagmiChains.mainnet];
 
-  if (network) activeChains.push(wagmiChains[network]);
-  else activeChains.push(...appConfig.supportedNetworks);
-
-  const { chains, publicClient, webSocketPublicClient } = configureChains(
-    activeChains,
-    [
-      alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ID! }),
-      publicProvider(),
-    ],
-  );
-
-  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
+function createWagmiConfig(network?: string | null) {
   const appName = appConfig.metadata.title;
+  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
 
-  const connectors = projectId
-    ? connectorsForWallets(
-        getDefaultWallets({ appName, chains, projectId }).wallets,
-      )
-    : connectorsForWallets(getInjectedWallets({ appName, chains }));
-
-  const config = createConfig({
-    autoConnect: true,
-    connectors,
-    publicClient,
-    webSocketPublicClient,
-  });
-
-  return { chains, config, appInfo: { appName } };
-}
-
-function getInjectedWallets({
-  appName,
-  chains,
-}: {
-  appName: string;
-  chains: wagmiChains.Chain[];
-}) {
-  return [
+  const wallets = [
     {
       groupName: "Popular",
       wallets: [
-        injectedWallet({ chains }),
-        safeWallet({ chains }),
-        coinbaseWallet({ appName, chains }),
-        braveWallet({ chains }),
-        frameWallet({ chains }),
+        metaMaskWallet,
+        injectedWallet,
+        safeWallet,
+        coinbaseWallet,
+        frameWallet,
+        ledgerWallet,
+        argentWallet,
+        trustWallet,
+        walletConnectWallet,
       ],
     },
   ];
+
+  const connectors = connectorsForWallets(wallets, {
+    projectId,
+    appName,
+    walletConnectParameters: {
+      // TODO: Define these
+      metadata: {
+        name: appName,
+        description: appName,
+        url: global.location?.href,
+        icons: [],
+      },
+    },
+  });
+  
+  const chains = [ wagmiChains.mainnet] as [
+    Chain,
+    ...Chain[],
+  ];
+
+  if (network) chains.push(wagmiChains[network as keyof typeof wagmiChains]);
+  else chains.push(...appConfig.supportedNetworks);
+
+  const transports = Object.fromEntries(
+    chains.map((chain) => [chain.id, http()]),
+  );
+  return createConfig({ connectors, chains, transports });
 }

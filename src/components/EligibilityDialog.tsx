@@ -10,9 +10,9 @@ export const EligibilityDialog = () => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const { data: session } = useSession();
-  const { data, isLoading, error } = useApprovedVoter(address!);
+  const { data, isPending, error } = useApprovedVoter(address!);
 
-  if (isLoading || !address || !session || error) return null;
+  if (isPending || !address || !session || error) return null;
 
   // TODO: Find a smoother UX for this
   if (true) return null;

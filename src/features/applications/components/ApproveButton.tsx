@@ -21,7 +21,7 @@ function ApproveButton({
   return (
     <Button
       variant="primary"
-      disabled={approve.isLoading}
+      disabled={approve.isPending}
       onClick={() => approve.mutate(projectIds)}
     >
       {children}

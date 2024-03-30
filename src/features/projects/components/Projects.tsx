@@ -63,7 +63,7 @@ export function Projects() {
                   />
                 </div>
               ) : null}
-              {!results.isLoading && roundState === "RESULTS" ? (
+              {!results.isPending && roundState === "RESULTS" ? (
                 <ProjectItemAwarded
                   amount={results.data?.projects?.[item.id]?.votes}
                 />

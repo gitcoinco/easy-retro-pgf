@@ -49,7 +49,7 @@ export default function ListDetails({
 
       <div className="flex flex-col gap-3">
         <h3 className="text-lg font-bold">Impact Evaluation</h3>
-        <Skeleton isLoading={metadata.isLoading}>
+        <Skeleton isLoading={metadata.isPending}>
           <p className="whitespace-pre-wrap">{impact?.description}</p>
         </Skeleton>
         {impact?.url && (
@@ -68,15 +68,15 @@ export default function ListDetails({
 
       <div className="mb-2 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
-          <Skeleton isLoading={metadata.isLoading}>
+          <Skeleton isLoading={metadata.isPending}>
             <p className="font-bold">{projects?.length} projects</p>
           </Skeleton>
           <span>·</span>
-          <Skeleton className="w-32" isLoading={metadata.isLoading}>
+          <Skeleton className="w-32" isLoading={metadata.isPending}>
             <p className="font-bold">{formatNumber(0)} votes allocated</p>
           </Skeleton>
         </div>
-        {!metadata.isLoading && (
+        {!metadata.isPending && (
           <ListEditDistribution listName={attestation?.name} votes={projects} />
         )}
       </div>

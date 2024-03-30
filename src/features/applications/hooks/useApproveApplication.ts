@@ -14,8 +14,16 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
 
   const roundId = String(round?.id);
 
-  return useMutation(
-    async (applicationIds: string[]) => {
+  return useMutation({
+    onSuccess: () => {
+      toast.success("Application approved successfully!");
+      opts?.onSuccess?.();
+    },
+    onError: (err: { reason?: string; data?: { message: string } }) =>
+      toast.error("Application approve error", {
+        description: err.reason ?? err.data?.message,
+      }),
+    mutationFn: async (applicationIds: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
 
       const attestations = await Promise.all(
@@ -34,15 +42,5 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
         attestations.map((att) => ({ ...att, data: [att.data] })),
       );
     },
-    {
-      onSuccess: () => {
-        toast.success("Application approved successfully!");
-        opts?.onSuccess?.();
-      },
-      onError: (err: { reason?: string; data?: { message: string } }) =>
-        toast.error("Application approve error", {
-          description: err.reason ?? err.data?.message,
-        }),
-    },
-  );
+  });
 }

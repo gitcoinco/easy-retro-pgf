@@ -4,13 +4,13 @@ import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export function ListBanner({ id = "" }) {
   const { data: project } = useProjectById(id);
-  const { data: metadata, isLoading } = useProfileWithMetadata(
+  const { data: metadata, isPending } = useProfileWithMetadata(
     project?.recipient,
   );
   return (
     <div className="overflow-hidden">
       <BackgroundImage
-        isLoading={isLoading}
+        isLoading={isPending}
         className="h-16"
         src={metadata?.bannerImageUrl}
         fallbackSrc={metadata?.profileImageUrl}

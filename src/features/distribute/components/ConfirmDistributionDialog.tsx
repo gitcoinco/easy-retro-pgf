@@ -19,7 +19,7 @@ export function ConfirmDistributionDialog({
   const { data: token } = usePoolToken();
   const { data: balance } = usePoolAmount();
 
-  const { isLoading, mutate } = useDistribute();
+  const { isPending, mutate } = useDistribute();
 
   const { recipients, amounts } = useMemo(() => {
     return distribution.reduce(
@@ -64,8 +64,8 @@ export function ConfirmDistributionDialog({
       </div>
       <div className="space-y-1">
         <IconButton
-          disabled={isLoading || amountDiff < 0}
-          icon={isLoading ? Spinner : null}
+          disabled={isPending || amountDiff < 0}
+          icon={isPending ? Spinner : null}
           className={"w-full"}
           variant="primary"
           onClick={() =>
@@ -75,7 +75,7 @@ export function ConfirmDistributionDialog({
             )
           }
         >
-          {isLoading ? "Confirming..." : "Confirm"}
+          {isPending ? "Confirming..." : "Confirm"}
         </IconButton>
         <Button className={"w-full"} onClick={onOpenChange}>
           Cancel

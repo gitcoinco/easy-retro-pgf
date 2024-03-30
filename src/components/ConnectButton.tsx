@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  useEffect,
   type PropsWithChildren,
   type ComponentPropsWithRef,
 } from "react";
-import { type Address, useEnsAvatar, useEnsName, useAccount } from "wagmi";
-import { FaListCheck } from "react-icons/fa6";
 
+import { useEnsAvatar, useEnsName } from "wagmi";
+import { getAddress, type Address } from "viem";
+import { normalize } from "viem/ens";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { createBreakpoint } from "react-use";
+import { ListChecks } from "lucide-react";
 
 import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
@@ -17,7 +18,6 @@ import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
-import { signOut } from "next-auth/react";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -70,7 +70,6 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
 
               if (chain.unsupported) {
                 return <Button onClick={openChainModal}>Change network</Button>;
-                return <Chip onClick={openChainModal}>Wrong network</Chip>;
               }
 
               return (
@@ -103,18 +102,6 @@ const ConnectedDetails = ({
   const ballotSize = (ballot?.votes ?? []).length;
   const domain = useCurrentDomain();
 
-  // Invalidate token when changing account
-  const { connector } = useAccount();
-  useEffect(() => {
-    function handleConnectorUpdate() {
-      signOut({ redirect: false }).catch(console.log);
-    }
-    connector?.on("change", handleConnectorUpdate);
-    return () => {
-      connector?.off("change", handleConnectorUpdate);
-    };
-  }, [connector, signOut]);
-
   const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (
     <div>
@@ -123,7 +110,7 @@ const ConnectedDetails = ({
           <Chip>Already submitted</Chip>
         ) : (
           <Chip className="gap-2" as={Link} href={`/${domain}/ballot`}>
-            {isMobile ? <FaListCheck className="h-4 w-4" /> : `View Ballot`}
+            {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
             <div className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold">
               {ballotSize}
             </div>
@@ -131,7 +118,7 @@ const ConnectedDetails = ({
         )}
         <UserInfo
           onClick={openAccountModal}
-          address={account.address as Address}
+          address={getAddress(account.address)}
         >
           {isMobile ? null : account.displayName}
         </UserInfo>
@@ -146,15 +133,15 @@ const UserInfo = ({
   children,
   ...props
 }: { address: Address } & ComponentPropsWithRef<typeof Chip>) => {
-  const ens = useEnsName({ address, chainId: 1, enabled: Boolean(address) });
-  const name = ens.data;
-  const avatar = useEnsAvatar({ name, chainId: 1, enabled: Boolean(name) });
+  const ens = useEnsName({ address, chainId: 1 });
+  const name = ens.data ? normalize(ens.data) : "";
+  const avatar = useEnsAvatar({ name, chainId: 1 });
 
   return (
     <Chip className="gap-2" {...props}>
       <div className="h-6 w-6 overflow-hidden rounded-full">
         {avatar.data ? (
-          <Image width={24} height={24} alt={name!} src={avatar.data} />
+          <Image width={24} height={24} alt={name} src={avatar.data} />
         ) : (
           <div className="h-full bg-gray-700" />
         )}

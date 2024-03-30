@@ -56,10 +56,10 @@ export function Distributions() {
     [projectIds, payoutAddresses, projectVotes, totalVotes, totalTokens],
   );
 
-  if (!votes.isLoading && !projectIds.length) {
+  if (!votes.isPending && !projectIds.length) {
     return <EmptyState title="No project votes found" />;
   }
-  if (projects.isLoading ?? votes.isLoading ?? poolAmount.isLoading) {
+  if (projects.isPending ?? votes.isPending ?? poolAmount.isPending) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner className="size-6" />

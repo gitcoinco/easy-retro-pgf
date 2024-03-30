@@ -92,7 +92,7 @@ export function ListForm() {
         create.mutate(values);
       }}
     >
-      <fieldset disabled={create.isLoading}>
+      <fieldset disabled={create.isPending}>
         <FormControl name="name" label="List name" required>
           <Input autoFocus placeholder="Give your list a name..." />
         </FormControl>
@@ -122,7 +122,7 @@ export function ListForm() {
         </div>
 
         <CreateListButton
-          isLoading={create.isLoading}
+          isLoading={create.isPending}
           buttonText={
             create.isAttesting ? "Creating attestation" : "Create list"
           }
@@ -135,7 +135,7 @@ export function ListForm() {
           </div>
         )}
 
-        <Dialog size="sm" isOpen={create.isLoading}>
+        <Dialog size="sm" isOpen={create.isPending}>
           <Alert variant="info">
             <div className="font-semibold">Your list is being created...</div>
           </Alert>
@@ -159,7 +159,6 @@ function CreateListButton({
     formState: { isValid },
   } = useFormContext();
 
-  console.log({ isValid });
   return (
     <div className="flex items-center justify-between">
       <div>

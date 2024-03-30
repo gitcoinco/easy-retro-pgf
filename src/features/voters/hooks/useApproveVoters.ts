@@ -13,7 +13,10 @@ export function useVoters() {
   return api.voters.list.useQuery();
 }
 
-export function useApproveVoters(options: {
+export function useApproveVoters({
+  onSuccess,
+  onError,
+}: {
   onSuccess: () => void;
   onError: (err: TransactionError) => void;
 }) {
@@ -22,23 +25,28 @@ export function useApproveVoters(options: {
   const { data: round } = useCurrentRound();
   const roundId = String(round?.id);
 
-  return useMutation(async (voters: string[]) => {
-    if (!signer) throw new Error("Connect wallet first");
-    if (!roundId) throw new Error("Round ID must be defined");
-    const attestations = await Promise.all(
-      voters.map((recipient) =>
-        createAttestation(
-          {
-            values: { type: "voter", round: roundId },
-            schemaUID: eas.schemas.approval,
-            recipient,
-          },
-          signer,
+  return useMutation({
+    mutationFn: async (voters: string[]) => {
+      if (!signer) throw new Error("Connect wallet first");
+      if (!roundId) throw new Error("Round ID must be defined");
+
+      const attestations = await Promise.all(
+        voters.map((recipient) =>
+          createAttestation(
+            {
+              values: { type: "voter", round: roundId },
+              schemaUID: eas.schemas.approval,
+              recipient,
+            },
+            signer,
+          ),
         ),
-      ),
-    );
-    return attest.mutateAsync(
-      attestations.map((att) => ({ ...att, data: [att.data] })),
-    );
-  }, options);
+      );
+      return attest.mutateAsync(
+        attestations.map((att) => ({ ...att, data: [att.data] })),
+      );
+    },
+    onSuccess,
+    onError,
+  });
 }

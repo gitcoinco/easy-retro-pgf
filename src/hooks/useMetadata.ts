@@ -14,24 +14,26 @@ export function useMetadata<T>(metadataPtr?: string) {
 }
 
 export function useUploadMetadata() {
-  return useMutation(async (data: Record<string, unknown> | File) => {
-    const formData = new FormData();
+  return useMutation({
+    mutationFn: async (data: Record<string, unknown> | File) => {
+      const formData = new FormData();
 
-    if (!(data instanceof File)) {
-      const blob = new Blob([JSON.stringify(data)], {
-        type: "application/json",
+      if (!(data instanceof File)) {
+        const blob = new Blob([JSON.stringify(data)], {
+          type: "application/json",
+        });
+        data = new File([blob], "metadata.json");
+      }
+
+      formData.append("file", data);
+      return fetch(`/api/blob?filename=${data.name}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: data,
+      }).then(async (r) => {
+        if (!r.ok) throw new Error("Network error");
+        return (await r.json()) as { url: string };
       });
-      data = new File([blob], "metadata.json");
-    }
-
-    formData.append("file", data);
-    return fetch(`/api/blob?filename=${data.name}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: data,
-    }).then(async (r) => {
-      if (!r.ok) throw new Error("Network error");
-      return (await r.json()) as { url: string };
-    });
+    },
   });
 }

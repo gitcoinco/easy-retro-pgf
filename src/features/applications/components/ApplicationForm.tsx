@@ -14,7 +14,6 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { Heading } from "~/components/ui/Heading";
 import { Spinner } from "~/components/ui/Spinner";
 import { impactCategories } from "~/config";
 import {
@@ -287,7 +286,7 @@ export function ApplicationForm({ address = "" }) {
         ) : null}
 
         <CreateApplicationButton
-          isLoading={create.isLoading}
+          isLoading={create.isPending}
           buttonText={
             create.isUploading
               ? "Uploading metadata"

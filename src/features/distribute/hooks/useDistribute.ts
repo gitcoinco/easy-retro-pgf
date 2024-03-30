@@ -9,8 +9,8 @@ export function useDistribute() {
   const { data: poolId } = usePoolId();
 
   const { sendTransactionAsync } = useSendTransaction();
-  return useMutation(
-    async ({
+  return useMutation({
+    mutationFn: async ({
       recipients,
       amounts,
     }: {
@@ -18,7 +18,7 @@ export function useDistribute() {
       amounts: bigint[];
     }) => {
       if (!allo) throw new Error("Allo not initialized");
-      if (!poolId) throw new Error("Pool ID not found");
+      if (!poolId) throw new Error("PoolID is required");
 
       console.log({ recipients, amounts });
       const { to, data } = allo.distribute(
@@ -29,7 +29,7 @@ export function useDistribute() {
 
       return sendTransactionAsync({ to, data });
     },
-  );
+  });
 }
 
 function encodeAmounts(amounts: bigint[]) {
