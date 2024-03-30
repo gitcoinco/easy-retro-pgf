@@ -44,10 +44,12 @@ export function Providers({
 }: PropsWithChildren<{ session?: Session }>) {
   const { data: round } = useCurrentRound();
 
+  const network = round?.network
   const config = useMemo(
-    () => createWagmiConfig(round?.network),
-    [round],
+    () => createWagmiConfig(network),
+    [network],
   );
+
 
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>

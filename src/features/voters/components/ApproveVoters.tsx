@@ -47,7 +47,7 @@ function ApproveVoters() {
         onClick={() => setOpen(true)}
       >
         {!isCorrectNetwork
-          ? `Connect to ${correctNetwork.name}`
+          ? `Connect to ${correctNetwork?.name}`
           : isAdmin
             ? `Add voters`
             : "You must be an admin"}

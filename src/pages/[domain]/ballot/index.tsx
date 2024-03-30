@@ -209,7 +209,7 @@ function ClearBallot() {
   const { mutateAsync, isPending } = useSaveBallot();
 
   const roundState = useRoundState();
-  if (["TALLYING", "RESULTS"].includes(roundState)) return null;
+  if (["TALLYING", "RESULTS"].includes(roundState!)) return null;
 
   return (
     <>
