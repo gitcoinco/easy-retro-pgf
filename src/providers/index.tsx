@@ -1,4 +1,4 @@
-import { useMemo, type PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
@@ -8,18 +8,17 @@ import {
 } from "@rainbow-me/rainbowkit";
 
 import {
+  argentWallet,
+  trustWallet,
+  ledgerWallet,
   frameWallet,
   injectedWallet,
   metaMaskWallet,
   safeWallet,
   coinbaseWallet,
   walletConnectWallet,
-  argentWallet,
-  trustWallet,
-  ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import * as allChains from "viem/chains";
-import type { Chain } from "viem/chains";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ThemeProvider } from "next-themes";
@@ -30,23 +29,18 @@ import {
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
-import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
 });
 
 const queryClient = new QueryClient();
+const config = createWagmiConfig();
 
 export function Providers({
   children,
   session,
 }: PropsWithChildren<{ session?: Session }>) {
-  const { data: round } = useCurrentRound();
-
-  const network = round?.network;
-  const config = useMemo(() => createWagmiConfig(network), [network]);
-
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>
@@ -67,7 +61,7 @@ export function Providers({
   );
 }
 
-function createWagmiConfig(network?: string | null) {
+function createWagmiConfig() {
   const appName = appConfig.metadata.title;
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
 
@@ -83,7 +77,7 @@ function createWagmiConfig(network?: string | null) {
         ledgerWallet,
         argentWallet,
         trustWallet,
-        walletConnectWallet,
+        ...(projectId ? [walletConnectWallet] : []),
       ],
     },
   ];
@@ -101,11 +95,10 @@ function createWagmiConfig(network?: string | null) {
       },
     },
   });
-
-  const chains = [allChains.mainnet] as [Chain, ...Chain[]];
-
-  if (network) chains.push(allChains[network as keyof typeof allChains]);
-  else chains.push(...appConfig.supportedNetworks);
+  const chains = appConfig.supportedNetworks as unknown as [
+    allChains.Chain,
+    ...allChains.Chain[],
+  ];
 
   const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 

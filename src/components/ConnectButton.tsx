@@ -1,9 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  type PropsWithChildren,
-  type ComponentPropsWithRef,
-} from "react";
+import { type PropsWithChildren, type ComponentPropsWithRef } from "react";
 
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { getAddress, type Address } from "viem";
@@ -18,12 +15,14 @@ import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
 export const ConnectButton = ({ children }: PropsWithChildren) => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
+  const correctNetwork = useIsCorrectNetwork();
 
   return (
     <RainbowConnectButton.Custom>
@@ -68,8 +67,15 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                 );
               }
 
-              if (chain.unsupported) {
-                return <Button onClick={openChainModal}>Change network</Button>;
+              if (chain.unsupported || !correctNetwork.isCorrectNetwork) {
+                return (
+                  <Button onClick={openChainModal}>
+                    Change network
+                    {isMobile
+                      ? ""
+                      : `to ${correctNetwork.correctNetwork?.name}`}
+                  </Button>
+                );
               }
 
               return (

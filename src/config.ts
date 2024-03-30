@@ -1,4 +1,4 @@
-import * as wagmiChains from "wagmi/chains";
+import * as allChains from "viem/chains";
 
 export const metadata = {
   title: "EasyRPGF",
@@ -48,7 +48,7 @@ export const networks = {
   baseGoerli: "baseGoerli",
 } as const;
 export const supportedNetworks = Object.values(networks).map((chain) => ({
-  ...wagmiChains[chain],
+  ...allChains[chain],
   chain,
 }));
 export const networkNames = Object.fromEntries(

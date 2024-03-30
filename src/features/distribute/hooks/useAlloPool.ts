@@ -136,10 +136,11 @@ export function useFundPool() {
   });
 }
 
-function useToken(address?: Address) {
-  const isNativeToken = !address || address === nativeToken;
+function useToken(tokenAddress?: Address) {
+  const { address } = useAccount();
+  const isNativeToken = !tokenAddress || tokenAddress === nativeToken;
   const tokenContract = {
-    address: isNativeToken ? undefined : address,
+    address: isNativeToken ? undefined : tokenAddress,
     abi: erc20Abi,
   };
   const { data: balance } = useBalance({
@@ -189,7 +190,6 @@ export function useRoundToken() {
 export function usePoolToken() {
   const { data: poolId } = usePoolId();
   const { data: pool } = usePool(poolId!);
-
   return useToken(pool?.token);
 }
 
