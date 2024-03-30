@@ -3,19 +3,23 @@ import {
   useBalance,
   usePublicClient,
   useReadContract,
+  useReadContracts,
   useSendTransaction,
-  useToken as useWagmiToken,
   useWriteContract,
 } from "wagmi";
 
 import { type Address, parseAbi, erc20Abi, getAddress } from "viem";
 import { abi as AlloABI } from "@allo-team/allo-v2-sdk/dist/Allo/allo.config";
-import { allo,  nativeToken } from "~/config";
+import { allo, nativeToken } from "~/config";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAllo, waitForLogs } from "./useAllo";
 import { api } from "~/utils/api";
 import { useWatch } from "~/hooks/useWatch";
-import { useCurrentDomain, useCurrentRound, useUpdateRound } from "~/features/rounds/hooks/useRound";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+  useUpdateRound,
+} from "~/features/rounds/hooks/useRound";
 
 export function usePoolId() {
   const round = useCurrentRound();
@@ -30,7 +34,7 @@ export function usePool(poolId: number) {
   const domain = useCurrentDomain();
 
   return useQuery({
-    queryKey: ["pool", {domain, poolId}],
+    queryKey: ["pool", { domain, poolId }],
     queryFn: async () => allo?.getPool(BigInt(poolId)),
     enabled: Boolean(allo && poolId),
   });
@@ -133,19 +137,47 @@ export function useFundPool() {
 }
 
 function useToken(address?: Address) {
-  const token = useWagmiToken({ address, enabled: Boolean(address) });
   const isNativeToken = !address || address === nativeToken;
+  const tokenContract = {
+    address: isNativeToken ? undefined : address,
+    abi: erc20Abi,
+  };
+  const { data: balance } = useBalance({
+    address,
+    token: tokenContract.address,
+  });
+
+  const token = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      { ...tokenContract, functionName: "decimals" },
+      { ...tokenContract, functionName: "symbol" },
+      {
+        ...tokenContract,
+        functionName: "allowance",
+        args: [address!, allo.alloAddress],
+      },
+    ],
+  });
+
+  const [decimals = 18, symbol, allowance] = (token.data ?? []) as [
+    number,
+    string,
+    bigint,
+  ];
   return {
     ...token,
     data: {
-      ...token.data,
+      address,
       isNativeToken,
-      address: isNativeToken ? undefined : address,
-      symbol: isNativeToken ? "ETH" : token.data?.symbol ?? "",
-      decimals: token.data?.decimals ?? 18,
+      symbol: isNativeToken ? "ETH" : symbol ?? "",
+      balance: balance?.value ?? 0n,
+      decimals,
+      allowance,
     },
   };
 }
+
 export function useRoundToken() {
   const { data: round } = useCurrentRound();
   const address = round?.tokenAddress
@@ -165,14 +197,13 @@ export function useTokenAllowance() {
   const { address } = useAccount();
   const { data } = useRoundToken();
 
-
   const query = useReadContract({
     //   address: data.address,
     abi: erc20Abi,
     functionName: "allowance",
     args: [address!, allo.alloAddress],
     query: {
-      enabled: Boolean(data.address)
+      enabled: Boolean(data.address),
     },
   });
 
@@ -196,16 +227,4 @@ export function useApprove() {
       });
     },
   });
-}
-export function useTokenBalance() {
-  const { address } = useAccount();
-  const { data } = useRoundToken();
-
-  const query = useBalance({ address,
-    token: data.address
-  });
-
-  useWatch(query.queryKey);
-
-  return query;
 }

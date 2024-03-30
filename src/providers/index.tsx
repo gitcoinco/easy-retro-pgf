@@ -18,8 +18,8 @@ import {
   trustWallet,
   ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import * as wagmiChains from "wagmi/chains";
-import type { Chain } from "wagmi/chains";
+import * as allChains from "viem/chains";
+import type { Chain } from "viem/chains";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ThemeProvider } from "next-themes";
@@ -44,12 +44,8 @@ export function Providers({
 }: PropsWithChildren<{ session?: Session }>) {
   const { data: round } = useCurrentRound();
 
-  const network = round?.network
-  const config = useMemo(
-    () => createWagmiConfig(network),
-    [network],
-  );
-
+  const network = round?.network;
+  const config = useMemo(() => createWagmiConfig(network), [network]);
 
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
@@ -70,7 +66,6 @@ export function Providers({
     </ThemeProvider>
   );
 }
-
 
 function createWagmiConfig(network?: string | null) {
   const appName = appConfig.metadata.title;
@@ -106,17 +101,35 @@ function createWagmiConfig(network?: string | null) {
       },
     },
   });
-  
-  const chains = [ wagmiChains.mainnet] as [
-    Chain,
-    ...Chain[],
-  ];
 
-  if (network) chains.push(wagmiChains[network as keyof typeof wagmiChains]);
+  const chains = [allChains.mainnet] as [Chain, ...Chain[]];
+
+  if (network) chains.push(allChains[network as keyof typeof allChains]);
   else chains.push(...appConfig.supportedNetworks);
 
+  const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_ID;
+
+  const networkMap: Record<string, string> = {
+    [allChains.mainnet.id]: "eth-mainnet",
+    [allChains.optimism.id]: "opt-mainnet",
+    [allChains.optimismSepolia.id]: "opt-sepolia",
+    [allChains.arbitrum.id]: "arb-mainnet",
+    [allChains.base.id]: "base-mainnet",
+    [allChains.baseGoerli.id]: "base-goerli",
+  };
+
   const transports = Object.fromEntries(
-    chains.map((chain) => [chain.id, http()]),
+    chains.map((chain) => {
+      const _network = networkMap[chain.id];
+      return [
+        chain.id,
+        http(
+          alchemyApiKey && _network
+            ? `https://${_network}.g.alchemy.com/v2/${alchemyApiKey}`
+            : undefined,
+        ),
+      ];
+    }),
   );
   return createConfig({ connectors, chains, transports });
 }
