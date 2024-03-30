@@ -43,7 +43,6 @@ export function usePoolAmount() {
     query: { enabled: Boolean(pool?.strategy) },
   });
 
-  console.log("pool amount", query.data);
   useWatch(query.queryKey);
 
   return query;
@@ -116,8 +115,6 @@ export function useFundPool() {
         data,
         value: BigInt(value),
       });
-
-      console.log(hash);
 
       return waitForLogs(hash, AlloABI, client);
     },

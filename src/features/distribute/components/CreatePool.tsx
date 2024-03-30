@@ -176,7 +176,6 @@ function PoolDetails({ poolId = 0 }) {
 
   const error = approve.error ?? fundPool.error;
 
-  console.log(fundPool.status, fundPool.isPending, fundPool.error);
   return (
     <Alert variant="info">
       <div className="mb-4 flex flex-col items-center">
@@ -201,7 +200,6 @@ function PoolDetails({ poolId = 0 }) {
             return approve.mutate(amount);
           }
 
-          console.log({ amount, allowance });
           fundPool.mutate(
             { poolId, amount },
             { onSuccess: () => form.reset({ amount: 0 }) },
