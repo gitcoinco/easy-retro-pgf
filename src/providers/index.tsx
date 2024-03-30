@@ -18,8 +18,8 @@ import {
   coinbaseWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import * as wagmiChains from "wagmi/chains";
-import type { Chain } from "wagmi/chains";
+import * as allChains from "viem/chains";
+import type { Chain } from "viem/chains";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ThemeProvider } from "next-themes";
@@ -96,13 +96,34 @@ function createWagmiConfig() {
       },
     },
   });
-  const chains = [appConfig.config.network, wagmiChains.mainnet] as [
+  const chains = [appConfig.config.network, allChains.mainnet] as [
     Chain,
     ...Chain[],
   ];
 
+  const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_ID;
+
+  const networkMap: Record<string, string> = {
+    [allChains.mainnet.id]: "eth-mainnet",
+    [allChains.optimism.id]: "opt-mainnet",
+    [allChains.optimismSepolia.id]: "opt-sepolia",
+    [allChains.arbitrum.id]: "arb-mainnet",
+    [allChains.base.id]: "base-mainnet",
+    [allChains.baseGoerli.id]: "base-goerli",
+  };
+
   const transports = Object.fromEntries(
-    chains.map((chain) => [chain.id, http()]),
+    chains.map((chain) => {
+      const _network = networkMap[chain.id];
+      return [
+        chain.id,
+        http(
+          alchemyApiKey && _network
+            ? `https://${_network}.g.alchemy.com/v2/${alchemyApiKey}`
+            : undefined,
+        ),
+      ];
+    }),
   );
   return createConfig({ connectors, chains, transports });
 }
