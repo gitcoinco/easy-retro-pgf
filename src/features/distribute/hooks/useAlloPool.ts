@@ -3,8 +3,8 @@ import {
   useBalance,
   usePublicClient,
   useReadContract,
+  useReadContracts,
   useSendTransaction,
-  useToken,
   useWriteContract,
 } from "wagmi";
 import { type Address, parseAbi, erc20Abi } from "viem";
@@ -122,16 +122,21 @@ export function useFundPool() {
 }
 
 export function usePoolToken() {
-  const token = useToken({
-    address: isNativeToken ? undefined : allo.tokenAddress,
+  const token = useReadContracts({
+    allowFailure: false,
+    contracts: ["decimals", "symbol"].map((functionName) => ({
+      address: isNativeToken ? undefined : allo.tokenAddress,
+      abi: erc20Abi,
+      functionName,
+    })),
   });
   return {
     ...token,
     data: {
       ...token.data,
       isNativeToken,
-      symbol: isNativeToken ? "ETH" : token.data?.symbol ?? "",
-      decimals: token.data?.decimals ?? 18,
+      symbol: isNativeToken ? "ETH" : token.data?.[1] ?? "",
+      decimals: token.data?.[0] ?? 18,
     },
   };
 }
