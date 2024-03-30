@@ -43,6 +43,7 @@ export function usePoolAmount() {
     query: { enabled: Boolean(pool?.strategy) },
   });
 
+  console.log("pool amount", query.data);
   useWatch(query.queryKey);
 
   return query;
@@ -116,46 +117,51 @@ export function useFundPool() {
         value: BigInt(value),
       });
 
+      console.log(hash);
+
       return waitForLogs(hash, AlloABI, client);
     },
   });
 }
 
 export function usePoolToken() {
+  const { address } = useAccount();
+  const tokenContract = {
+    address: isNativeToken ? undefined : allo.tokenAddress,
+    abi: erc20Abi,
+  };
+  const { data: balance } = useBalance({
+    address,
+    token: tokenContract.address,
+  });
+
   const token = useReadContracts({
     allowFailure: false,
-    contracts: ["decimals", "symbol"].map((functionName) => ({
-      address: isNativeToken ? undefined : allo.tokenAddress,
-      abi: erc20Abi,
-      functionName,
-    })),
+    contracts: [
+      { ...tokenContract, functionName: "decimals" },
+      { ...tokenContract, functionName: "symbol" },
+      {
+        ...tokenContract,
+        functionName: "allowance",
+        args: [address!, allo.alloAddress],
+      },
+    ],
   });
+  const [decimals = 18, symbol, allowance] = (token.data ?? []) as [
+    number,
+    string,
+    bigint,
+  ];
   return {
     ...token,
     data: {
-      ...token.data,
       isNativeToken,
-      symbol: isNativeToken ? "ETH" : token.data?.[1] ?? "",
-      decimals: token.data?.[0] ?? 18,
+      symbol: isNativeToken ? "ETH" : symbol ?? "",
+      balance: balance?.value ?? 0n,
+      decimals,
+      allowance,
     },
   };
-}
-
-export function useTokenAllowance() {
-  const { address } = useAccount();
-  const query = useReadContract({
-    address: isNativeToken ? undefined : allo.tokenAddress,
-    abi: erc20Abi,
-    functionName: "allowance",
-    args: [address!, allo.alloAddress],
-    query: {
-      enabled: allo.tokenAddress !== nativeToken,
-    },
-  });
-
-  useWatch(query.queryKey);
-
-  return query;
 }
 
 export function useApprove() {
