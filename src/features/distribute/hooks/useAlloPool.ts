@@ -1,19 +1,19 @@
 import {
-  erc20ABI,
   useAccount,
   useBalance,
-  useContractRead,
-  useContractWrite,
   usePublicClient,
+  useReadContract,
   useSendTransaction,
   useToken,
+  useWriteContract,
 } from "wagmi";
-import { type Address, parseAbi } from "viem";
+import { type Address, parseAbi, erc20Abi } from "viem";
 import { abi as AlloABI } from "@allo-team/allo-v2-sdk/dist/Allo/allo.config";
 import { allo, config, isNativeToken, nativeToken } from "~/config";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAllo, waitForLogs } from "./useAllo";
 import { api } from "~/utils/api";
+import { useWatch } from "~/hooks/useWatch";
 
 export function usePoolId() {
   const config = api.config.get.useQuery();
@@ -26,25 +26,26 @@ export function usePoolId() {
 export function usePool(poolId?: number) {
   const allo = useAllo();
 
-  return useQuery(
-    ["pool", poolId],
-    async () => allo?.getPool(BigInt(poolId!)),
-    {
-      enabled: Boolean(allo && poolId),
-    },
-  );
+  return useQuery({
+    queryKey: ["pool", poolId],
+    queryFn: async () => allo?.getPool(BigInt(poolId!)),
+    enabled: Boolean(allo && poolId),
+  });
 }
 export function usePoolAmount() {
   const { data: poolId } = usePoolId();
   const { data: pool } = usePool(poolId);
 
-  return useContractRead({
+  const query = useReadContract({
     address: pool?.strategy as Address,
     abi: parseAbi(["function getPoolAmount() external view returns (uint256)"]),
     functionName: "getPoolAmount",
-    watch: true,
-    enabled: Boolean(pool?.strategy),
+    query: { enabled: Boolean(pool?.strategy) },
   });
+
+  useWatch(query.queryKey);
+
+  return query;
 }
 
 export function useCreatePool() {
@@ -53,8 +54,12 @@ export function useCreatePool() {
   const { sendTransactionAsync } = useSendTransaction();
   const client = usePublicClient();
   const utils = api.useUtils();
-  return useMutation(
-    async (params: { profileId: string; initialFunding?: bigint }) => {
+
+  return useMutation({
+    mutationFn: async (params: {
+      profileId: string;
+      initialFunding?: bigint;
+    }) => {
       if (!alloSDK) throw new Error("Allo not initialized");
 
       const tx = alloSDK.createPool({
@@ -67,11 +72,12 @@ export function useCreatePool() {
         initStrategyData: "0x",
       });
       const value = BigInt(tx.value);
-      const { hash } = await sendTransactionAsync({ ...tx, value });
+      const hash = await sendTransactionAsync({ ...tx, value });
 
       return waitForLogs(hash, AlloABI, client).then((logs) => {
-        const { poolId } = (logs.find((log) => log?.eventName === "PoolCreated")
-          ?.args ?? {}) as { poolId?: bigint };
+        const { poolId } = (logs?.find(
+          (log) => log?.eventName === "PoolCreated",
+        )?.args ?? {}) as { poolId?: bigint };
 
         if (poolId) {
           setPool.mutate(
@@ -85,33 +91,34 @@ export function useCreatePool() {
         }
       });
     },
-  );
+  });
 }
 
 export function useFundPool() {
   const allo = useAllo();
   const { sendTransactionAsync } = useSendTransaction();
-  const queryClient = useQueryClient();
   const client = usePublicClient();
 
-  return useMutation(
-    async ({ amount, poolId }: { amount: bigint; poolId: number }) => {
+  return useMutation({
+    mutationFn: async ({
+      amount,
+      poolId,
+    }: {
+      amount: bigint;
+      poolId: number;
+    }) => {
       if (!allo) throw new Error("Allo not initialized");
 
-      console.log("fund pool, ,", poolId, amount);
       const { to, data, value } = allo.fundPool(BigInt(poolId), amount);
-      const { hash } = await sendTransactionAsync({
+      const hash = await sendTransactionAsync({
         to,
         data,
         value: BigInt(value),
       });
 
-      return waitForLogs(hash, AlloABI, client).then(async (logs) => {
-        await queryClient.invalidateQueries(["allo/registry/member"]);
-        return logs;
-      });
+      return waitForLogs(hash, AlloABI, client);
     },
-  );
+  });
 }
 
 export function usePoolToken() {
@@ -131,28 +138,43 @@ export function usePoolToken() {
 
 export function useTokenAllowance() {
   const { address } = useAccount();
-  return useContractRead({
+  const query = useReadContract({
     address: isNativeToken ? undefined : allo.tokenAddress,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: "allowance",
     args: [address!, allo.alloAddress],
-    enabled: allo.tokenAddress !== nativeToken,
-    watch: true,
+    query: {
+      enabled: allo.tokenAddress !== nativeToken,
+    },
   });
+
+  useWatch(query.queryKey);
+
+  return query;
 }
 
 export function useApprove() {
-  return useContractWrite({
-    address: isNativeToken ? undefined : allo.tokenAddress,
-    abi: erc20ABI,
-    functionName: "approve",
+  const { writeContractAsync } = useWriteContract();
+  return useMutation({
+    mutationFn: async (amount: bigint) => {
+      if (isNativeToken) return null;
+      return writeContractAsync({
+        abi: erc20Abi,
+        address: allo.tokenAddress,
+        functionName: "approve",
+        args: [allo.alloAddress, amount],
+      });
+    },
   });
 }
 export function useTokenBalance() {
   const { address } = useAccount();
-  return useBalance({
+  const query = useBalance({
     address,
-    watch: true,
     token: allo.tokenAddress === nativeToken ? undefined : allo.tokenAddress,
   });
+
+  useWatch(query.queryKey);
+
+  return query;
 }

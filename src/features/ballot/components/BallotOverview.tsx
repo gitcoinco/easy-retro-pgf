@@ -127,7 +127,7 @@ function BallotOverview() {
 }
 
 const SubmitBallotButton = ({ disabled = false }) => {
-  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
+  const isSaving = useIsMutating({ mutationKey: getQueryKey(api.ballot.save) });
   const router = useRouter();
   const [isOpen, setOpen] = useState(false);
 
@@ -161,7 +161,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
   const { title, instructions } =
     messages[
-      submit.isLoading ? "signing" : submit.error ? "error" : "submitting"
+      submit.isPending ? "signing" : submit.error ? "error" : "submitting"
     ];
 
   return (
@@ -178,7 +178,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
         <p className="pb-8">{instructions}</p>
         <div
           className={clsx("flex gap-2", {
-            ["hidden"]: submit.isLoading,
+            ["hidden"]: submit.isPending,
           })}
         >
           <Button

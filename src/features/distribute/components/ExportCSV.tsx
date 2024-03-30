@@ -27,7 +27,7 @@ export function ExportCSV({ votes }: { votes: Distribution[] }) {
     <IconButton
       type="button"
       icon={FileDown}
-      disabled={projects.isLoading}
+      disabled={projects.isPending}
       onClick={exportCSV}
     >
       Export CSV

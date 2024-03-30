@@ -60,7 +60,7 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
               0,
             )}
           >
-            {projects.isLoading ? (
+            {projects.isPending ? (
               <Command.Loading>Loading...</Command.Loading>
             ) : !projectsData.length ? null : (
               projectsData?.map((item) => (

@@ -7,8 +7,8 @@ function useVoters() {
 }
 
 export function VotersList() {
-  const { data, isLoading } = useVoters();
-  if (!isLoading && !data?.length)
+  const { data, isPending } = useVoters();
+  if (!isPending && !data?.length)
     return (
       <EmptyState title="No voters">
         Add voters to allow them to vote
@@ -23,7 +23,7 @@ export function VotersList() {
           .map((_, i) => ({ recipient: i }))
       )?.map((voter) => (
         <div key={voter.recipient}>
-          <Skeleton isLoading={isLoading} className="min-h-4 w-96">
+          <Skeleton isLoading={isPending} className="min-h-4 w-96">
             <div className="font-mono">{voter.recipient}</div>
           </Skeleton>
         </div>

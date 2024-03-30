@@ -10,7 +10,7 @@ export default function VotersPage() {
 
   return (
     <Layout title="Manage voters">
-      {approved.isLoading ? (
+      {approved.isPending ? (
         <Alert className="flex justify-center">
           <Spinner className="size-6" />
         </Alert>

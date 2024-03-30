@@ -29,7 +29,7 @@ export default function DistributePage() {
       sidebarComponent={
         <div className="space-y-4">
           <ConfigurePool />
-          {settings.isLoading ? (
+          {settings.isPending ? (
             <div />
           ) : (
             <Alert variant="info">
@@ -45,7 +45,7 @@ export default function DistributePage() {
               >
                 <div className="gap-2">
                   <FormControl name="style" label="Payout style">
-                    <Select disabled={settings.isLoading} className={"w-full"}>
+                    <Select disabled={settings.isPending} className={"w-full"}>
                       <option value="custom">Custom</option>
                       <option value="op">OP-Style</option>
                     </Select>
@@ -55,7 +55,7 @@ export default function DistributePage() {
                     variant="primary"
                     type="submit"
                     className="w-full"
-                    disabled={setConfig.isLoading}
+                    disabled={setConfig.isPending}
                   >
                     Update calculation
                   </Button>
@@ -70,7 +70,7 @@ export default function DistributePage() {
         <div>Voting hasn't started yet</div>
       ) : (
         <div>
-          {setConfig.isLoading ? (
+          {setConfig.isPending ? (
             <div className="flex justify-center py-8">
               <Spinner className="size-6" />
             </div>
@@ -111,7 +111,7 @@ function VoterCount() {
       <div className="pt-1 text-center text-2xl">
         <Skeleton
           className="h-8 w-20 dark:bg-gray-700"
-          isLoading={voters.isLoading || votes.isLoading}
+          isLoading={voters.isPending || votes.isPending}
         >
           {votes.data?.totalVoters} / {voters.data?.length}
         </Skeleton>
