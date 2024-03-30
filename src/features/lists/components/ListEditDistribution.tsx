@@ -70,7 +70,7 @@ export const ListEditDistribution = ({
     );
     return ballotVote ?? vote;
   });
-  const showDialogTitle = !(add.isLoading || add.isSuccess);
+  const showDialogTitle = !(add.isPending || add.isSuccess);
   return (
     <div>
       {getAppState() === "VOTING" && (

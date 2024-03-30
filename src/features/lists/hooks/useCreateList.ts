@@ -5,7 +5,10 @@ import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
 import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 import { type List } from "../types";
 
-export function useCreateList(options: {
+export function useCreateList({
+  onSuccess,
+  onError,
+}: {
   onSuccess: () => void;
   onError: (err: TransactionError) => void;
 }) {
@@ -13,8 +16,10 @@ export function useCreateList(options: {
   const attest = useAttest();
   const upload = useUploadMetadata();
 
-  const mutation = useMutation(
-    async (values: List) => {
+  const mutation = useMutation({
+    onSuccess,
+    onError,
+    mutationFn: async (values: List) => {
       console.log("Uploading list metadata");
       return upload
         .mutateAsync(values)
@@ -38,14 +43,12 @@ export function useCreateList(options: {
           );
         });
     },
-
-    options,
-  );
+  });
 
   return {
     ...mutation,
     error: attest.error || upload.error || mutation.error,
-    isAttesting: attest.isLoading,
-    isUploading: upload.isLoading,
+    isAttesting: attest.isPending,
+    isUploading: upload.isPending,
   };
 }

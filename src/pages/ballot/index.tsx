@@ -23,18 +23,18 @@ import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
 
 export default function BallotPage() {
-  const { data: ballot, isLoading } = useBallot();
+  const { data: ballot, isPending } = useBallot();
   const { address, isConnecting } = useAccount();
   const router = useRouter();
   if (!address && !isConnecting) {
     router.push("/").catch(console.log);
   }
-  if (isLoading) return null;
+  if (isPending) return null;
 
   const votes = ballot?.votes.sort((a, b) => b.amount - a.amount);
   return (
     <LayoutWithBallot sidebar="right" requireAuth>
-      {isLoading ? null : (
+      {isPending ? null : (
         <Form
           schema={BallotSchema}
           defaultValues={{ votes }}
@@ -96,7 +96,7 @@ function BallotAllocationForm() {
         <div className="flex h-16 items-center justify-between rounded-b-2xl border-t border-gray-300 px-8 py-4 text-lg font-semibold dark:border-gray-800">
           <div>Total votes in ballot</div>
           <div className="flex items-center gap-2">
-            {save.isLoading && <Spinner />}
+            {save.isPending && <Spinner />}
             <TotalAllocation />
           </div>
         </div>
@@ -160,7 +160,7 @@ function ImportCSV() {
         <div className="flex justify-end">
           <Button
             variant="primary"
-            disabled={save.isLoading}
+            disabled={save.isPending}
             onClick={() => {
               save
                 .mutateAsync({ votes })
@@ -205,7 +205,7 @@ function ExportCSV({ votes }: { votes: Vote[] }) {
 function ClearBallot() {
   const form = useFormContext();
   const [isOpen, setOpen] = useState(false);
-  const { mutateAsync, isLoading } = useSaveBallot();
+  const { mutateAsync, isPending } = useSaveBallot();
   if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
   return (
     <>
@@ -226,7 +226,7 @@ function ClearBallot() {
         <div className="flex justify-end">
           <Button
             variant="primary"
-            disabled={isLoading}
+            disabled={isPending}
             onClick={() =>
               mutateAsync({ votes: [] }).then(() => {
                 setOpen(false);
@@ -234,7 +234,7 @@ function ClearBallot() {
               })
             }
           >
-            {isLoading ? <Spinner /> : "Yes I'm sure"}
+            {isPending ? <Spinner /> : "Yes I'm sure"}
           </Button>
         </div>
       </Dialog>

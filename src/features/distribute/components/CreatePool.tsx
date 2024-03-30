@@ -92,7 +92,7 @@ function CreatePool() {
 
   const profileId = profile.data?.id as unknown as `0x${string}`;
 
-  if (poolId.isLoading) {
+  if (poolId.isPending) {
     return (
       <Alert className="flex justify-center">
         <Spinner />

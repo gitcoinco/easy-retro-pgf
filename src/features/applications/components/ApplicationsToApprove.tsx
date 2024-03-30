@@ -135,11 +135,11 @@ Select the applications you want to approve. You must be a configured admin to a
         </div>
         <div className="flex gap-2">
           <SelectAllButton applications={applicationsToApprove} />
-          <ApproveButton isLoading={approve.isLoading} />
+          <ApproveButton isLoading={approve.isPending} />
         </div>
       </div>
 
-      {applications.isLoading ? (
+      {applications.isPending ? (
         <div className="flex items-center justify-center py-16">
           <Spinner />
         </div>
@@ -154,7 +154,7 @@ Select the applications you want to approve. You must be a configured admin to a
         <ApplicationItem
           key={item.id}
           {...item}
-          isLoading={applications.isLoading}
+          isLoading={applications.isPending}
           isApproved={approvedById?.get(item.id)}
         />
       ))}

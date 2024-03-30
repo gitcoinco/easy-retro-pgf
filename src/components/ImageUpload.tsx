@@ -44,9 +44,9 @@ export function ImageUpload({
         return (
           <div className={clsx("relative overflow-hidden", className)}>
             <IconButton
-              disabled={upload.isLoading}
+              disabled={upload.isPending}
               onClick={() => ref.current?.click()}
-              icon={upload.isLoading ? Spinner : ImageIcon}
+              icon={upload.isPending ? Spinner : ImageIcon}
               className="absolute bottom-1 right-1"
             ></IconButton>
 
@@ -54,7 +54,7 @@ export function ImageUpload({
               className={clsx(
                 "h-full rounded-xl bg-gray-200 bg-cover bg-center bg-no-repeat dark:bg-gray-800",
                 {
-                  ["animate-pulse opacity-50"]: upload.isLoading,
+                  ["animate-pulse opacity-50"]: upload.isPending,
                 },
               )}
               style={{
