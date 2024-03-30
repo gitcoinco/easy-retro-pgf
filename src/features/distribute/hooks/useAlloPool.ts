@@ -3,8 +3,8 @@ import {
   useBalance,
   usePublicClient,
   useReadContract,
+  useReadContracts,
   useSendTransaction,
-  useToken,
   useWriteContract,
 } from "wagmi";
 import { type Address, parseAbi, erc20Abi } from "viem";
@@ -122,35 +122,43 @@ export function useFundPool() {
 }
 
 export function usePoolToken() {
-  const token = useToken({
+  const { address } = useAccount();
+  const tokenContract = {
     address: isNativeToken ? undefined : allo.tokenAddress,
+    abi: erc20Abi,
+  };
+  const { data: balance } = useBalance({
+    address,
+    token: tokenContract.address,
   });
+
+  const token = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      { ...tokenContract, functionName: "decimals" },
+      { ...tokenContract, functionName: "symbol" },
+      {
+        ...tokenContract,
+        functionName: "allowance",
+        args: [address!, allo.alloAddress],
+      },
+    ],
+  });
+  const [decimals = 18, symbol, allowance] = (token.data ?? []) as [
+    number,
+    string,
+    bigint,
+  ];
   return {
     ...token,
     data: {
-      ...token.data,
       isNativeToken,
-      symbol: isNativeToken ? "ETH" : token.data?.symbol ?? "",
-      decimals: token.data?.decimals ?? 18,
+      symbol: isNativeToken ? "ETH" : symbol ?? "",
+      balance: balance?.value ?? 0n,
+      decimals,
+      allowance,
     },
   };
-}
-
-export function useTokenAllowance() {
-  const { address } = useAccount();
-  const query = useReadContract({
-    address: isNativeToken ? undefined : allo.tokenAddress,
-    abi: erc20Abi,
-    functionName: "allowance",
-    args: [address!, allo.alloAddress],
-    query: {
-      enabled: allo.tokenAddress !== nativeToken,
-    },
-  });
-
-  useWatch(query.queryKey);
-
-  return query;
 }
 
 export function useApprove() {
