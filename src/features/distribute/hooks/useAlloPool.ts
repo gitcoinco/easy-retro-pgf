@@ -13,6 +13,7 @@ import { allo, config, isNativeToken, nativeToken } from "~/config";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAllo, waitForLogs } from "./useAllo";
 import { api } from "~/utils/api";
+import { useWatch } from "~/hooks/useWatch";
 
 export function usePoolId() {
   const config = api.config.get.useQuery();
@@ -35,13 +36,16 @@ export function usePoolAmount() {
   const { data: poolId } = usePoolId();
   const { data: pool } = usePool(poolId);
 
-  // TODO: Add watch with useBlockNumber (see wagmi docs)
-  return useReadContract({
+  const query = useReadContract({
     address: pool?.strategy as Address,
     abi: parseAbi(["function getPoolAmount() external view returns (uint256)"]),
     functionName: "getPoolAmount",
     query: { enabled: Boolean(pool?.strategy) },
   });
+
+  useWatch(query.queryKey);
+
+  return query;
 }
 
 export function useCreatePool() {
@@ -50,6 +54,7 @@ export function useCreatePool() {
   const { sendTransactionAsync } = useSendTransaction();
   const client = usePublicClient();
   const utils = api.useUtils();
+
   return useMutation({
     mutationFn: async (params: {
       profileId: string;
@@ -133,8 +138,7 @@ export function usePoolToken() {
 
 export function useTokenAllowance() {
   const { address } = useAccount();
-  // TODO: Add watch
-  return useReadContract({
+  const query = useReadContract({
     address: isNativeToken ? undefined : allo.tokenAddress,
     abi: erc20Abi,
     functionName: "allowance",
@@ -143,6 +147,10 @@ export function useTokenAllowance() {
       enabled: allo.tokenAddress !== nativeToken,
     },
   });
+
+  useWatch(query.queryKey);
+
+  return query;
 }
 
 export function useApprove() {
@@ -161,9 +169,12 @@ export function useApprove() {
 }
 export function useTokenBalance() {
   const { address } = useAccount();
-  // TODO: Add watch
-  return useBalance({
+  const query = useBalance({
     address,
     token: allo.tokenAddress === nativeToken ? undefined : allo.tokenAddress,
   });
+
+  useWatch(query.queryKey);
+
+  return query;
 }

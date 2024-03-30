@@ -18,7 +18,6 @@ export function useAllo() {
   const { chains } = useConfig();
   const chainId = useChainId();
   const chain = chains.find((c) => c.id === chainId);
-  console.log(chains, chainId, chain);
   return useMemo(() => chain && new Allo(createAlloOpts(chain)), [chain]);
 }
 export function useAlloRegistry() {
