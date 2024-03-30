@@ -73,7 +73,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                     Change network
                     {isMobile
                       ? ""
-                      : `to ${correctNetwork.correctNetwork?.name}`}
+                      : ` to ${correctNetwork.correctNetwork?.name}`}
                   </Button>
                 );
               }
