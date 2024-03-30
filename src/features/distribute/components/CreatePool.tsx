@@ -277,7 +277,7 @@ function FundPoolButton({
     );
   }
 
-  if (!balance) {
+  if (parseUnits(String(amount), token.decimals) > balance) {
     return (
       <Button className={"w-full"} disabled>
         Not enough funds
@@ -285,7 +285,7 @@ function FundPoolButton({
     );
   }
 
-  if (amount === undefined) {
+  if (!amount) {
     return (
       <Button className="w-full" disabled>
         Enter an amount
