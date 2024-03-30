@@ -47,11 +47,13 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-const defaultCalculation = { style: "custom", threshold: 1 };
 async function calculateBallotResults(roundId: string, db: PrismaClient) {
   const round = await db.round.findFirstOrThrow({ where: { id: roundId } });
-  const calculation = (round.calculation ?? defaultCalculation) as Calculation;
 
+  const calculation = {
+    style: round.calculationType,
+    threshold: (round.calculationConfig as { threshold: number }).threshold,
+  };
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
     where: { roundId, publishedAt: { not: null } },

@@ -9,7 +9,7 @@ OP-style:
 - Median value is counted
 */
 
-export type PayoutOptions = { style: "custom" | "op"; threshold?: number };
+export type PayoutOptions = { style: "standard" | "op"; threshold?: number };
 export type BallotResults = Record<
   string,
   {
@@ -49,7 +49,7 @@ export function calculateVotes(
   for (const projectId in projectVotes) {
     const { total, amounts, voterIds } = projectVotes[projectId]!;
     const voteIsCounted =
-      payoutOpts.style === "custom" ||
+      payoutOpts.style === "standard" ||
       (payoutOpts.threshold && voterIds.size >= payoutOpts.threshold);
 
     if (voteIsCounted) {
