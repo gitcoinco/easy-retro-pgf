@@ -58,7 +58,7 @@ export default function AdminAccountsPage() {
               title="Add admins"
               description="Provide addresses to grant admin access to the round."
               isOpen={isOpen}
-              isLoading={update.isLoading}
+              isLoading={update.isPending}
               onOpenChange={() => setOpen(false)}
               onSubmit={(added) => {
                 // Merge with existing and only unique addresses

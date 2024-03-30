@@ -46,8 +46,7 @@ function BallotOverview() {
 
   const roundState = useRoundState();
 
-  console.log({ roundState });
-  if (round.isLoading || !round.data) {
+  if (round.isPending || !round.data) {
     return (
       <div className="flex items-center justify-center py-8">
         <Spinner className="size-4" />

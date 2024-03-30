@@ -62,10 +62,10 @@ function CreateRound() {
             className="w-full"
             type="submit"
             variant="primary"
-            disabled={!address || create.isLoading}
-            isLoading={create.isLoading}
+            disabled={!address || create.isPending}
+            isLoading={create.isPending}
           >
-            {create.isLoading ? "Creating..." : "Create round"}
+            {create.isPending ? "Creating..." : "Create round"}
           </Button>
 
           {create.error?.message.includes("Unique constraint") &&

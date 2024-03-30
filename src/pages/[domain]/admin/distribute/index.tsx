@@ -20,11 +20,11 @@ export default function DistributePage() {
       sidebarComponent={
         <div className="space-y-4">
           <ConfigurePool />
-          {round.isLoading ? (
+          {round.isPending ? (
             <div />
           ) : (
             <CalculationForm
-              isLoading={update.isLoading}
+              isLoading={update.isPending}
               onUpdate={({ calculationType, ...calculationConfig }) => {
                 update.mutate(
                   { id: round.data?.id, calculationType, calculationConfig },
@@ -42,7 +42,7 @@ export default function DistributePage() {
     >
       {() => (
         <div className="max-w-screen-md">
-          {update.isLoading ? (
+          {update.isPending ? (
             <div className="flex justify-center py-8">
               <Spinner className="size-6" />
             </div>

@@ -69,7 +69,7 @@ export default function AdminTokenPage() {
                   <Input placeholder="0x..." />
                 </FormControl>
                 <Button
-                  isLoading={update.isLoading}
+                  isLoading={update.isPending}
                   type="submit"
                   variant="primary"
                   className={"mt-6 w-24"}

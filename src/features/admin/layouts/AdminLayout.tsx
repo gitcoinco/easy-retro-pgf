@@ -38,7 +38,7 @@ export function RoundAdminLayout({
   return (
     <Layout sidebarComponent={<RoundConfigSidebar />} sidebar="left" {...props}>
       <div className={className}>
-        {round.isLoading ? (
+        {round.isPending ? (
           <div className="flex flex-col items-center gap-2 py-12">
             <div>Loading round...</div>
             <Spinner className="size-6" />

@@ -117,7 +117,7 @@ export const ListEditDistribution = ({
               </Button>
             </div>
           </FeedbackDialog>
-        ) : add.isLoading ? (
+        ) : add.isPending ? (
           <FeedbackDialog variant="info" icon={Spinner}>
             <div className="font-semibold">Adding list to ballot</div>
           </FeedbackDialog>

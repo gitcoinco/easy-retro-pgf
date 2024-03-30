@@ -16,8 +16,9 @@ import {
   useVoters,
 } from "~/features/voters/hooks/useApproveVoters";
 import { RoundVotesSchema } from "~/features/rounds/types";
-import { AllocationInput } from "~/components/AllocationInput";
+import { NumberInput } from "~/components/NumberInput";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
+import { NumberInput } from "~/components/NumberInput";
 
 export default function AdminAccountsPage() {
   const [isOpen, setOpen] = useState(false);
@@ -58,17 +59,17 @@ export default function AdminAccountsPage() {
                   name="maxVotesProject"
                   label="Max votes for each project"
                 >
-                  <AllocationInput />
+                  <NumberInput />
                 </FormControl>
                 <FormControl
                   className="flex-1"
                   name="maxVotesTotal"
                   label="Max votes per voter"
                 >
-                  <AllocationInput />
+                  <NumberInput />
                 </FormControl>
                 <Button
-                  isLoading={update.isLoading}
+                  isLoading={update.isPending}
                   type="submit"
                   variant="primary"
                   className={"mt-6 w-24"}
@@ -104,7 +105,7 @@ export default function AdminAccountsPage() {
                 title="Add voters"
                 description="Provide addresses to add as voters to the round."
                 isOpen={isOpen}
-                isLoading={approve.isLoading}
+                isLoading={approve.isPending}
                 onOpenChange={() => setOpen(false)}
                 onSubmit={(voters) => {
                   approve.mutate(voters);

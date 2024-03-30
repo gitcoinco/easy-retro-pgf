@@ -52,7 +52,7 @@ function ListItem({
           </Skeleton>
 
           <p className="mb-4 mt-4 line-clamp-2 h-12 text-gray-800 dark:text-gray-300">
-            <Skeleton isLoading={metadata.isLoading} className="w-full">
+            <Skeleton isLoading={metadata.isPending} className="w-full">
               {impact?.description}
             </Skeleton>
           </p>

@@ -58,7 +58,7 @@ function RoundForm({ round }: { round: RoundSchema }) {
       </FormSection>
 
       <div className="flex justify-end">
-        <Button variant="primary" type="submit" isLoading={update.isLoading}>
+        <Button variant="primary" type="submit" isLoading={update.isPending}>
           Save round
         </Button>
       </div>

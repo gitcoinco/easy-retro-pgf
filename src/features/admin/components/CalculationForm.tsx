@@ -47,7 +47,7 @@ export function CalculationForm({
       >
         <div className="gap-2">
           <FormControl name="calculationType" label="Payout style">
-            <Select disabled={round.isLoading} className={"w-full"}>
+            <Select disabled={round.isPending} className={"w-full"}>
               {Object.entries(calculationTypes).map(([type, label]) => (
                 <option value={type} key={type}>
                   {label}
@@ -97,7 +97,7 @@ function VoterCount() {
       <div className="pt-1 text-center text-2xl">
         <Skeleton
           className="h-8 w-20 dark:bg-gray-700"
-          isLoading={voters.isLoading || votes.isLoading}
+          isLoading={voters.isPending || votes.isPending}
         >
           {votes.data?.totalVoters} / {voters.data?.length}
         </Skeleton>
