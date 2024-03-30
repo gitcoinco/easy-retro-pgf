@@ -21,7 +21,7 @@ import {
   useTokenAllowance,
   useTokenBalance,
 } from "../hooks/useAlloPool";
-import { allo, isNativeToken } from "~/config";
+import { allo } from "~/config";
 import {
   ErrorMessage,
   Form,
@@ -44,7 +44,7 @@ function CheckAlloProfile(props: PropsWithChildren) {
     );
   }
 
-  if (profile.isLoading) {
+  if (profile.isPending) {
     return (
       <Alert className="flex justify-center">
         <Spinner />
@@ -60,12 +60,12 @@ function CheckAlloProfile(props: PropsWithChildren) {
         </p>
         <IconButton
           className={"w-full"}
-          icon={createProfile.isLoading ? Spinner : null}
+          icon={createProfile.isPending ? Spinner : null}
           variant="primary"
           onClick={() => createProfile.mutate()}
-          disabled={createProfile.isLoading}
+          disabled={createProfile.isPending}
         >
-          {createProfile.isLoading ? (
+          {createProfile.isPending ? (
             <>Creating profile...</>
           ) : (
             <>Create profile</>
@@ -127,14 +127,14 @@ function CreatePool() {
         }}
         onSubmit={(values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
-          const hasAllowance = isNativeToken
-            ? true
-            : (allowance.data ?? 0) >= amount;
+
+          const hasAllowance = calcHasAllowance(
+            { amount: values.amount, allowance },
+            token.data,
+          );
 
           if (!hasAllowance) {
-            return approve.write({
-              args: [allo.alloAddress, amount],
-            });
+            return approve.mutate(amount);
           }
 
           return createPool.mutate({ profileId, initialFunding: amount });
@@ -154,7 +154,7 @@ function CreatePool() {
 
         <FundPoolButton
           buttonText="Create pool"
-          isLoading={createPool.isLoading || approve.isLoading}
+          isLoading={createPool.isPending || approve.isPending}
           allowance={allowance.data}
           balance={balance.data?.value}
           token={token.data}
@@ -207,9 +207,7 @@ function PoolDetails({ poolId = 0 }) {
           );
 
           if (!hasAllowance) {
-            return approve.writeAsync({
-              args: [allo.alloAddress, amount],
-            });
+            return approve.mutate(amount);
           }
           fundPool.mutate(
             { poolId, amount },
@@ -224,7 +222,8 @@ function PoolDetails({ poolId = 0 }) {
 
         <FundPoolButton
           buttonText="Fund pool"
-          isLoading={fundPool.isLoading || approve.isLoading}
+          isLoading={fundPool.isPending}
+          // isLoading={fundPool.isPending || approve.isPending}
           allowance={allowance}
           balance={balance.data?.value}
           token={token.data}

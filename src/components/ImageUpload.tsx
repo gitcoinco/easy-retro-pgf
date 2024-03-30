@@ -20,17 +20,19 @@ export function ImageUpload({
   const { control } = useFormContext();
 
   const upload = useUploadMetadata();
-  const select = useMutation(async (file: File) => {
-    if (file?.size >= maxSize) {
-      toast.error("Image too large", {
-        description: `The image to selected is: ${(file.size / 1024).toFixed(
-          2,
-        )} / ${(maxSize / 1024).toFixed(2)} kb`,
-      });
-      throw new Error("IMAGE_TOO_LARGE");
-    }
+  const select = useMutation({
+    mutationFn: async (file: File) => {
+      if (file?.size >= maxSize) {
+        toast.error("Image too large", {
+          description: `The image to selected is: ${(file.size / 1024).toFixed(
+            2,
+          )} / ${(maxSize / 1024).toFixed(2)} kb`,
+        });
+        throw new Error("IMAGE_TOO_LARGE");
+      }
 
-    return URL.createObjectURL(file);
+      return URL.createObjectURL(file);
+    },
   });
 
   return (

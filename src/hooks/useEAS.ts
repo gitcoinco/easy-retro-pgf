@@ -7,20 +7,25 @@ import { createEAS } from "~/lib/eas/createEAS";
 
 export function useCreateAttestation() {
   const signer = useEthersSigner();
-  return useMutation(
-    async (data: { values: Record<string, unknown>; schemaUID: string }) => {
+  return useMutation({
+    mutationFn: async (data: {
+      values: Record<string, unknown>;
+      schemaUID: string;
+    }) => {
       if (!signer) throw new Error("Connect wallet first");
       return createAttestation(data, signer);
     },
-  );
+  });
 }
 
 export function useAttest() {
   const signer = useEthersSigner();
-  return useMutation((attestations: MultiAttestationRequest[]) => {
-    if (!signer) throw new Error("Connect wallet first");
-    const eas = createEAS(signer);
+  return useMutation({
+    mutationFn: async (attestations: MultiAttestationRequest[]) => {
+      if (!signer) throw new Error("Connect wallet first");
+      const eas = createEAS(signer);
 
-    return eas.multiAttest(attestations);
+      return eas.multiAttest(attestations);
+    },
   });
 }

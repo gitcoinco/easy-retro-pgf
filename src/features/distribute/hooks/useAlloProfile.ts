@@ -9,42 +9,44 @@ export function useAlloProfile() {
   const registry = useAlloRegistry();
   const { address } = useAccount();
 
-  return useQuery(
-    ["allo/profile"],
-    async () => {
+  return useQuery({
+    queryKey: ["allo/profile"],
+    queryFn: async () => {
       const profileId = getProfileId(address);
       const profile = await registry?.getProfileById(profileId);
       if (profile?.anchor === zeroAddress) return null;
       return profile;
     },
-    { enabled: Boolean(registry && address) },
-  );
+    enabled: Boolean(registry && address),
+  });
 }
 
-const NONCE = 3;
+const NONCE = 3n;
 export function useCreateAlloProfile() {
   const registry = useAlloRegistry();
   const { address } = useAccount();
   const client = usePublicClient();
   const { sendTransactionAsync } = useSendTransaction();
   const queryClient = useQueryClient();
-  return useMutation(async () => {
-    if (!address) throw new Error("Connect wallet first");
-    if (!registry) throw new Error("Allo Registry not initialized");
+  return useMutation({
+    mutationFn: async () => {
+      if (!address) throw new Error("Connect wallet first");
+      if (!registry) throw new Error("Allo Registry not initialized");
 
-    const { to, data } = registry.createProfile({
-      nonce: NONCE,
-      members: [address],
-      owner: address,
-      metadata: { protocol: 1n, pointer: "" },
-      name: "",
-    });
+      const { to, data } = registry.createProfile({
+        nonce: NONCE,
+        members: [address],
+        owner: address,
+        metadata: { protocol: 1n, pointer: "" },
+        name: "",
+      });
 
-    const { hash } = await sendTransactionAsync({ to, data });
-    return waitForLogs(hash, RegistryABI, client).then(async (logs) => {
-      await queryClient.invalidateQueries(["allo/profile"]);
-      return logs;
-    });
+      const hash = await sendTransactionAsync({ to, data });
+      return waitForLogs(hash, RegistryABI, client).then(async (logs) => {
+        await queryClient.invalidateQueries({ queryKey: ["allo/profile"] });
+        return logs;
+      });
+    },
   });
 }
 
