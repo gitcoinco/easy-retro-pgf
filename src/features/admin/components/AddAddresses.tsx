@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Checkbox, Form, FormControl, Textarea } from "~/components/ui/Form";
 import { NameENS } from "~/components/ENS";
+import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
 
 type Props = {
   title: string;
@@ -140,15 +141,17 @@ function ApproveButton({ isLoading = false }) {
   );
 
   return (
-    <Button
-      icon={UserRoundPlus}
-      isLoading={isLoading}
-      disabled={!selectedCount || isLoading}
-      variant="primary"
-      type="submit"
-    >
-      Add {selectedCount} addresses
-    </Button>
+    <EnsureCorrectNetwork>
+      <Button
+        icon={UserRoundPlus}
+        isLoading={isLoading}
+        disabled={!selectedCount || isLoading}
+        variant="primary"
+        type="submit"
+      >
+        Add {selectedCount} addresses
+      </Button>
+    </EnsureCorrectNetwork>
   );
 }
 
@@ -156,6 +159,6 @@ function parseAddresses(addresses: string): Address[] {
   return addresses
     .split(",")
     .map((addr) => addr.trim())
-    .filter(isAddress)
+    .filter((addr) => isAddress(addr))
     .filter((addr, i, self) => self.indexOf(addr) === i);
 }

@@ -16,13 +16,13 @@ import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import { EnsureCorrectNetwork } from "./EnureCorrectNetwork";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
 export const ConnectButton = ({ children }: PropsWithChildren) => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
-  const correctNetwork = useIsCorrectNetwork();
 
   return (
     <RainbowConnectButton.Custom>
@@ -30,7 +30,6 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
         account,
         chain,
         openAccountModal,
-        openChainModal,
         openConnectModal,
         mounted,
         authenticationStatus,
@@ -67,24 +66,15 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                 );
               }
 
-              if (chain.unsupported || !correctNetwork.isCorrectNetwork) {
-                return (
-                  <Button onClick={openChainModal}>
-                    Change network
-                    {isMobile
-                      ? ""
-                      : ` to ${correctNetwork.correctNetwork?.name}`}
-                  </Button>
-                );
-              }
-
               return (
                 children ?? (
-                  <ConnectedDetails
-                    account={account}
-                    openAccountModal={openAccountModal}
-                    isMobile={isMobile}
-                  />
+                  <EnsureCorrectNetwork>
+                    <ConnectedDetails
+                      account={account}
+                      openAccountModal={openAccountModal}
+                      isMobile={isMobile}
+                    />
+                  </EnsureCorrectNetwork>
                 )
               );
             })()}

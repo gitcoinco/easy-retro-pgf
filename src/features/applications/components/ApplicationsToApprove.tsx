@@ -20,6 +20,7 @@ import { ClockIcon } from "lucide-react";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
 
 export function ApplicationItem({
   id,
@@ -194,13 +195,15 @@ function ApproveButton({ isLoading = false }) {
     Boolean,
   ).length;
   return (
-    <Button
-      suppressHydrationWarning
-      disabled={!selectedCount || isLoading}
-      variant="primary"
-      type="submit"
-    >
-      Approve {selectedCount} applications
-    </Button>
+    <EnsureCorrectNetwork>
+      <Button
+        suppressHydrationWarning
+        disabled={!selectedCount || isLoading}
+        variant="primary"
+        type="submit"
+      >
+        Approve {selectedCount} applications
+      </Button>
+    </EnsureCorrectNetwork>
   );
 }
