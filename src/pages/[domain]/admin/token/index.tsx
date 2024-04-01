@@ -13,6 +13,7 @@ import { RoundSchema } from "~/features/rounds/types";
 import { supportedNetworks } from "~/config";
 import { api } from "~/utils/api";
 import { TokenSymbol } from "~/features/admin/components/FormTokenSymbol";
+import { isAfter } from "date-fns";
 
 export default function AdminTokenPage() {
   const utils = api.useUtils();
@@ -32,6 +33,18 @@ export default function AdminTokenPage() {
               }}
               schema={RoundSchema.partial()}
               onSubmit={(values) => {
+                const startDateHasPassed = isAfter(
+                  new Date(),
+                  data?.startsAt ?? new Date(),
+                );
+                if (
+                  startDateHasPassed &&
+                  values.network !== data?.network &&
+                  !window.confirm(
+                    "Are you sure?\n\nChanging network in the middle of the round might cause issues.",
+                  )
+                ) {
+                }
                 update.mutate(
                   { id: data?.id, ...values },
                   {
