@@ -32,7 +32,7 @@ export const roundsRouter = createTRPCRouter({
             name,
             domain,
             creatorId,
-            startsAt: now,
+            startsAt: addDays(now, 7),
             reviewAt: addDays(now, 14),
             votingAt: addMonths(now, 1),
             resultAt: addMonths(addDays(now, 7), 1),
@@ -49,8 +49,8 @@ export const roundsRouter = createTRPCRouter({
 
   update: adminProcedure
     .input(RoundSchema.partial())
-    .mutation(async ({ input: { id, ...input }, ctx }) => {
-      return ctx.db.round.update({ where: { id }, data: input });
+    .mutation(async ({ input, ctx }) => {
+      return ctx.db.round.update({ where: { id: ctx.round?.id }, data: input });
     }),
 
   list: protectedProcedure.query(async ({ ctx }) => {

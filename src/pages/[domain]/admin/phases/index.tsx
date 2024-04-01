@@ -8,6 +8,7 @@ import { api } from "~/utils/api";
 import { CheckIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { cn } from "~/utils/classNames";
+import { format, isAfter } from "date-fns";
 
 export default function AdminPhasesPage() {
   return (
@@ -23,14 +24,24 @@ function RoundForm({ round }: { round: RoundSchema }) {
   return (
     <Form
       defaultValues={{ ...round }}
+      schema={RoundDatesSchema}
       onSubmit={(values) => {
+        const startDateHasPassed = isAfter(
+          new Date(),
+          round.startsAt ?? new Date(),
+        );
+        if (
+          startDateHasPassed &&
+          !window.confirm("Are you sure? The round has already started.")
+        ) {
+          return;
+        }
         update.mutate(values, {
           async onSuccess() {
             return utils.rounds.invalidate();
           },
         });
       }}
-      schema={RoundDatesSchema}
     >
       <FormSection
         title="Round dates"

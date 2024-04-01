@@ -38,19 +38,35 @@ export const RoundDates = z.object({
   resultAt: z.date().nullable(),
   payoutAt: z.date().nullable(),
 });
+
 export const RoundDatesSchema = RoundDates.superRefine(
   ({ startsAt, reviewAt, votingAt, resultAt, payoutAt }, ctx) => {
-    console.log(reviewAt, votingAt);
     if (reviewAt && startsAt && isBefore(reviewAt, startsAt)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Review date must be after start date",
+        path: ["reviewAt"],
       });
     }
     if (votingAt && reviewAt && isBefore(votingAt, reviewAt)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Voting date must be after review date",
+        path: ["votingAt"],
+      });
+    }
+    if (resultAt && votingAt && isBefore(resultAt, votingAt)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Voting end date must be after voting start date",
+        path: ["resultAt"],
+      });
+    }
+    if (payoutAt && votingAt && isBefore(payoutAt, votingAt)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Payout date must be after voting date",
+        path: ["payoutAt"],
       });
     }
   },
