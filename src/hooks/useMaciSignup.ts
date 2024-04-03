@@ -94,6 +94,7 @@ export const useMaciSignup = (
     isRegisteredUser({
       maciPubKey: data.publicKey,
       maciAddress: config.maciAddress!,
+      startBlock: config.maciStartBlock,
       signer: signer as unknown as Signer,
     })
       .then(({ isRegistered: registered, voiceCredits, stateIndex: index }) => {

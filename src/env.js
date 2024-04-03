@@ -113,6 +113,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK: z.string(),
 
     NEXT_PUBLIC_MACI_ADDRESS: z.string().startsWith("0x"),
+    NEXT_PUBLIC_MACI_START_BLOCK: z.string().optional(),
 
     NEXT_PUBLIC_TALLY_URL: z.string().url(),
     NEXT_PUBLIC_ALLO2_ADDRESS: z.string().startsWith("0x"),
@@ -173,6 +174,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ROUND_ID: process.env.NEXT_PUBLIC_ROUND_ID,
 
     NEXT_PUBLIC_MACI_ADDRESS: process.env.NEXT_PUBLIC_MACI_ADDRESS,
+    NEXT_PUBLIC_MACI_START_BLOCK: process.env.NEXT_PUBLIC_MACI_START_BLOCK,
 
     NEXT_PUBLIC_TALLY_URL: process.env.NEXT_PUBLIC_TALLY_URL,
     NEXT_PUBLIC_ALLO2_ADDRESS: process.env.NEXT_PUBLIC_ALLO2_ADDRESS,
