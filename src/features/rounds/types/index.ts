@@ -82,7 +82,10 @@ export const RoundSchema = z
     tokenAddress: EthAddressSchema.nullable(),
     poolId: z.number().nullable(),
     calculationType: CalculationTypeSchema,
-    calculationConfig: z.record(z.string().or(z.number())).optional(),
+    calculationConfig: z
+      .record(z.string().or(z.number()))
+      .nullish()
+      .default({}),
   })
   .merge(RoundDates)
   .merge(RoundVotes);

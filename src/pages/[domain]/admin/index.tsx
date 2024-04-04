@@ -25,6 +25,8 @@ function RoundForm({ round }: { round: RoundSchema }) {
   const utils = api.useUtils();
   const router = useRouter();
   const update = useUpdateRound();
+
+  console.group(round);
   return (
     <Form
       defaultValues={{ ...round }}
@@ -38,7 +40,7 @@ function RoundForm({ round }: { round: RoundSchema }) {
           },
         });
       }}
-      schema={RoundSchema}
+      schema={RoundSchema.partial()}
     >
       <FormSection
         title="Round details"
