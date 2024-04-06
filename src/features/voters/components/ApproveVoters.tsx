@@ -16,11 +16,14 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { EthAddressSchema } from "~/features/distribute/types";
 
 function parseAddresses(addresses: string): Address[] {
-  return addresses
-    .split(",")
-    .map((addr) => getAddress(addr.trim()))
-    .filter((addr) => isAddress(addr))
-    .filter((addr, i, self) => self.indexOf(addr) === i);
+  return (
+    addresses
+      .split(",")
+      .filter((addr) => isAddress(addr))
+      .map((addr) => getAddress(addr.trim()))
+      // Remove duplicates
+      .filter((addr, i, self) => self.indexOf(addr) === i)
+  );
 }
 
 function ApproveVoters() {
