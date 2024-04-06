@@ -40,8 +40,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
     NEXT_PUBLIC_FEEDBACK_URL: z.string().default("#"),
 
-    NEXT_PUBLIC_EAS_CONTRACT_ADDRESS: z.string(),
-
     NEXT_PUBLIC_APPROVAL_SCHEMA: z.string().startsWith("0x"),
     NEXT_PUBLIC_METADATA_SCHEMA: z.string().startsWith("0x"),
 
@@ -72,8 +70,6 @@ export const env = createEnv({
 
     NEXT_PUBLIC_FEEDBACK_URL: process.env.NEXT_PUBLIC_FEEDBACK_URL,
 
-    NEXT_PUBLIC_EAS_CONTRACT_ADDRESS:
-      process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS,
     NEXT_PUBLIC_WALLETCONNECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_ID,
     NEXT_PUBLIC_ALCHEMY_ID: process.env.NEXT_PUBLIC_ALCHEMY_ID,
 

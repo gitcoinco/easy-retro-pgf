@@ -1,12 +1,19 @@
-import { type providers } from "ethers";
-import { EAS } from "@ethereum-attestation-service/eas-sdk";
-import { type SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
+import { type JsonRpcSigner } from "ethers";
+import {
+  EAS,
+  type TransactionSigner,
+} from "@ethereum-attestation-service/eas-sdk";
 
 import * as config from "~/config";
 
-export function createEAS(signer: providers.JsonRpcSigner): EAS {
+export function createEAS(signer: JsonRpcSigner, network: string): EAS {
   console.log("Creating EAS instance");
-  const eas = new EAS(config.eas.contracts.eas);
+  const contracts =
+    config.eas.contracts[network as keyof typeof config.eas.contracts] ??
+    config.eas.contracts.default;
+
+  const eas = new EAS(contracts.eas);
+
   console.log("Connecting signer to EAS");
-  return eas.connect(signer as unknown as SignerOrProvider);
+  return eas.connect(signer as unknown as TransactionSigner);
 }

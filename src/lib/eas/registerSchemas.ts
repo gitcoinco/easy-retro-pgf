@@ -39,6 +39,7 @@ const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY!).connect(
   ),
 );
 
+throw new Error("TODO: manually choose network from eas.contracts");
 const schemaRegistry = new SchemaRegistry(eas.contracts.schemaRegistry);
 schemaRegistry.connect(wallet as unknown as SignerOrProvider);
 
