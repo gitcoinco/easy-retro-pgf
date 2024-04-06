@@ -46,6 +46,8 @@ export const env = createEnv({
       "sepolia",
       "base",
       "baseGoerli",
+      "filecoin",
+      "filecoinCalibration",
     ]),
     NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
 

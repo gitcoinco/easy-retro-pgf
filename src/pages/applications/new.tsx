@@ -15,8 +15,7 @@ export default function NewProjectPage() {
       <Markdown className={"mb-8"}>
         {`
 ### New Application
-Fill out this form to create an application for your project. It will
-then be reviewed by our admins. 
+Fill out this form to create an application for your project. It will then be reviewed by our admins.
 
 Your progress is saved locally so you can return to this page to resume your application.
 `}

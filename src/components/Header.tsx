@@ -12,7 +12,7 @@ import dynamic from "next/dynamic";
 const Logo = () => (
   <div className="h-10">
     {config.logoUrl ? (
-      <img className="max-h-full" src={config.logoUrl} />
+      <img className="size-10" src={config.logoUrl} />
     ) : (
       <div className="flex h-full items-center justify-center rounded-full border-2 border-dashed border-white px-4 text-xs font-medium tracking-wider text-white">
         {metadata.title}
@@ -27,9 +27,9 @@ const NavLink = ({
 }: { isActive: boolean } & ComponentPropsWithRef<typeof Link>) => (
   <Link
     className={clsx(
-      "flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-gray-400 hover:text-white",
+      "flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-black/40 hover:text-primary-600",
       {
-        ["!border-white  !text-white"]: isActive,
+        ["!border-white  !text-black"]: isActive,
       },
     )}
     {...props}
@@ -42,7 +42,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <header className="relative z-10 bg-gray-900 shadow-md dark:shadow-none">
+    <header className="relative z-10">
       <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center px-2">
         <div className="mr-4 flex items-center md:mr-16">
           <IconButton

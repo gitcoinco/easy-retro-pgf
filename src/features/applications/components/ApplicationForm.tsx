@@ -127,7 +127,7 @@ export function ApplicationForm({ address = "" }) {
               label="Payout address"
               required
             >
-              <Input placeholder="0x..." />
+              <Input placeholder="f0..." />
             </FormControl>
           </div>
         </FormSection>

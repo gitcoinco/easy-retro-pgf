@@ -5,6 +5,7 @@ import { WagmiProvider, createConfig, http } from "wagmi";
 import {
   RainbowKitProvider,
   connectorsForWallets,
+  lightTheme,
 } from "@rainbow-me/rainbowkit";
 
 import {
@@ -50,7 +51,11 @@ export function Providers({
             <RainbowKitSiweNextAuthProvider
               getSiweMessageOptions={getSiweMessageOptions}
             >
-              <RainbowKitProvider>
+              <RainbowKitProvider
+                theme={lightTheme({
+                  // accentColor: "red",
+                })}
+              >
                 {children}
                 <Toaster />
               </RainbowKitProvider>
