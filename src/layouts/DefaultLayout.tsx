@@ -23,7 +23,7 @@ export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
 
   const domain = useCurrentDomain();
-  const { data: round, isLoading } = useCurrentRound();
+  const { data: round, isPending } = useCurrentRound();
 
   const navLinks = [
     {
@@ -54,7 +54,7 @@ export const Layout = ({ children, ...props }: Props) => {
     );
   }
 
-  if (!isLoading && !round) {
+  if (!isPending && !round) {
     return (
       <BaseLayout>
         <div className="flex flex-col items-center gap-4 py-8">
