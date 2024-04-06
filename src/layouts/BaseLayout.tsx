@@ -60,7 +60,10 @@ export const BaseLayout = ({
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={metadata.description} />
-        <meta property="og:image" content={metadata.image} />
+        <meta
+          property="og:image"
+          content={`${metadata.url}${metadata.image}`}
+        />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta

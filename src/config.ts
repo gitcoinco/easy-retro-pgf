@@ -1,10 +1,10 @@
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
-  title: "EasyRetroPGF",
-  description: "Open-source Retro Public Goods Funding platform",
-  url: "https://easy-retro-pgf.vercel.app",
-  image: "/api/og",
+  title: "FIL RetroPGF",
+  description: "Filecoin Retro Public Goods",
+  url: "https://ezrpgf-filecoin.vercel.app",
+  image: "/filrpgf.jpg",
 };
 
 export const config = {
