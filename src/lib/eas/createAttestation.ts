@@ -20,38 +20,33 @@ export async function createAttestation(
   params: Params,
   signer: Signer,
   network: string,
-): Promise<AttestationRequest | Error> {
-  try {
-    console.log("Getting recipient address");
-    const recipient = params.recipient ?? (await signer.getAddress());
+): Promise<AttestationRequest> {
+  console.log("Getting recipient address");
+  const recipient = params.recipient ?? (await signer.getAddress());
 
-    const contracts = getContracts(network);
+  const contracts = getContracts(network);
 
-    const schemaRegistry = new SchemaRegistry(contracts.registry);
-    console.log("Getting schema record...", params.schemaUID);
-    const schemaRecord = await schemaRegistry.getSchema({
-      uid: params.schemaUID,
-    });
-    console.log("Connecting signer to SchemaRegistry...");
-    schemaRegistry.connect(signer);
+  const schemaRegistry = new SchemaRegistry(contracts.registry);
+  console.log("Connecting signer to SchemaRegistry...");
+  schemaRegistry.connect(signer);
+  console.log("Getting schema record...", params.schemaUID);
+  const schemaRecord = await schemaRegistry.getSchema({
+    uid: params.schemaUID,
+  });
 
-    console.log("Encoding attestation data");
-    const data = await encodeData(params, schemaRecord);
+  console.log("Encoding attestation data");
+  const data = await encodeData(params, schemaRecord);
 
-    return {
-      schema: params.schemaUID,
-      data: {
-        recipient,
-        expirationTime: 0n,
-        revocable: true,
-        data,
-        refUID: params.refUID,
-      },
-    };
-  } catch (error) {
-    console.log(error);
-    return error as Error;
-  }
+  return {
+    schema: params.schemaUID,
+    data: {
+      recipient,
+      expirationTime: 0n,
+      revocable: true,
+      data,
+      refUID: params.refUID,
+    },
+  };
 }
 
 async function encodeData({ values }: Params, schemaRecord: SchemaRecord) {
