@@ -6,10 +6,8 @@ import {
   roundProcedure,
 } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
-import { eas } from "~/config";
 import { calculateVotes } from "~/utils/calculateResults";
 import { type Vote } from "~/features/ballot/types";
-import { type Calculation } from "~/features/distribute/types";
 
 export const resultsRouter = createTRPCRouter({
   votes: roundProcedure.query(async ({ ctx }) =>
@@ -32,7 +30,7 @@ export const resultsRouter = createTRPCRouter({
         );
 
       return ctx
-        .fetchAttestations([eas.schemas.metadata], {
+        .fetchAttestations(["metadata"], {
           where: {
             id: { in: sortedIDs },
           },

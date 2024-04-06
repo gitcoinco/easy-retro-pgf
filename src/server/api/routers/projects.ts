@@ -14,7 +14,7 @@ export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
     const round = ctx.round;
     return ctx
-      .fetchAttestations([eas.schemas.approval], {
+      .fetchAttestations(["approval"], {
         where: {
           attester: { in: round?.admins },
           AND: [
@@ -39,7 +39,7 @@ export const projectsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      return ctx.fetchAttestations([eas.schemas.metadata], {
+      return ctx.fetchAttestations(["metadata"], {
         where: { id: { in: ids } },
       });
     }),
@@ -63,7 +63,7 @@ export const projectsRouter = createTRPCRouter({
       }
 
       return ctx
-        .fetchAttestations([eas.schemas.approval], {
+        .fetchAttestations(["approval"], {
           where: {
             attester: { in: round.admins },
             ...createDataFilter("type", "bytes32", "application"),
@@ -74,7 +74,7 @@ export const projectsRouter = createTRPCRouter({
             .map(({ refUID }) => refUID)
             .filter(Boolean);
 
-          return ctx.fetchAttestations([eas.schemas.metadata], {
+          return ctx.fetchAttestations(["metadata"], {
             take: input.limit,
             skip: input.cursor * input.limit,
             orderBy: [createOrderBy(input.orderBy, input.sortOrder)],
@@ -92,7 +92,7 @@ export const projectsRouter = createTRPCRouter({
     .input(z.object({ ids: z.array(z.string()) }))
     .query(async ({ input, ctx }) => {
       return ctx
-        .fetchAttestations([eas.schemas.metadata], {
+        .fetchAttestations(["metadata"], {
           where: { id: { in: input.ids } },
         })
         .then((attestations) =>

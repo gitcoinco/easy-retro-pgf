@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eas } from "~/config";
 
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { createDataFilter } from "~/utils/fetchAttestations";
@@ -10,7 +9,7 @@ export const profileRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       return ctx
-        .fetchAttestations([eas.schemas.metadata], {
+        .fetchAttestations(["metadata"], {
           where: {
             recipient: { in: [input.id] },
             ...createDataFilter("type", "bytes32", "profile"),

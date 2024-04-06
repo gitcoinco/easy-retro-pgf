@@ -79,7 +79,7 @@ export const RoundSchema = z
     admins: z.array(EthAddressSchema),
     description: z.string().nullable(),
     network: z.string().nullable(),
-    tokenAddress: EthAddressSchema.nullable(),
+    tokenAddress: EthAddressSchema.or(z.string().nullish()),
     poolId: z.number().nullable(),
     calculationType: CalculationTypeSchema,
     calculationConfig: z

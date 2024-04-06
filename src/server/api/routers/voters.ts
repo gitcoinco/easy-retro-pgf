@@ -5,7 +5,6 @@ import {
   createDataFilter,
   fetchApprovedVoter,
 } from "~/utils/fetchAttestations";
-import { eas } from "~/config";
 
 export const votersRouter = createTRPCRouter({
   approved: attestationProcedure
@@ -14,9 +13,10 @@ export const votersRouter = createTRPCRouter({
       return fetchApprovedVoter(ctx.round!, input.address);
     }),
   list: attestationProcedure.query(async ({ ctx }) => {
-    return ctx.fetchAttestations([eas.schemas.approval], {
+    return ctx.fetchAttestations(["approval"], {
       where: {
         AND: [
+          { attester: { in: ctx.round?.admins } },
           createDataFilter("type", "bytes32", "voter"),
           createDataFilter("round", "bytes32", String(ctx.round?.id)),
         ],

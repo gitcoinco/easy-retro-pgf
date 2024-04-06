@@ -79,7 +79,7 @@ export default function AdminTokenPage() {
                   label="Token address"
                   hint={<TokenSymbol />}
                 >
-                  <Input placeholder="0x..." />
+                  <Input placeholder="Enter token address..." />
                 </FormControl>
                 <Button
                   isLoading={update.isPending}
