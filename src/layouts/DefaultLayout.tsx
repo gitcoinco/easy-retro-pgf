@@ -10,6 +10,8 @@ import {
 } from "~/features/rounds/hooks/useRound";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useSession } from "next-auth/react";
+import { Button } from "~/components/ui/Button";
+import Link from "next/link";
 
 type Props = PropsWithChildren<
   {
@@ -21,7 +23,8 @@ export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
 
   const domain = useCurrentDomain();
-  const { data: round } = useCurrentRound();
+  const { data: round, isLoading } = useCurrentRound();
+
   const navLinks = [
     {
       href: `/${domain}/projects`,
@@ -48,6 +51,19 @@ export const Layout = ({ children, ...props }: Props) => {
           children: `Admin`,
         },
       ],
+    );
+  }
+
+  if (!isLoading && !round) {
+    return (
+      <BaseLayout>
+        <div className="flex flex-col items-center gap-4 py-8">
+          Round not found
+          <Button as={Link} href={"/"}>
+            Go home
+          </Button>
+        </div>
+      </BaseLayout>
     );
   }
 
