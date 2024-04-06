@@ -1,3 +1,5 @@
+import { tv } from "tailwind-variants";
+import { createComponent } from "~/components/ui";
 import { config } from "~/config";
 import { Layout } from "~/layouts/DefaultLayout";
 import { cn } from "~/utils/classNames";
@@ -27,32 +29,57 @@ const steps = [
 ];
 
 export default function InfoPage() {
+  return (
+    <Layout>
+      <RoundProgress />
+    </Layout>
+  );
+}
+
+function RoundProgress() {
   const { progress, currentStepIndex } = calculateProgress(steps);
 
   return (
-    <Layout>
-      <div className="hidden h-4 w-4/5 overflow-hidden rounded-full border md:block">
-        <div
-          className={"h-full bg-white transition-all"}
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
-      <div className="px-2 md:flex">
+    <div className="relative my-4">
+      <ProgressWrapper
+        className={cn({
+          ["w-full"]: currentStepIndex === steps.length,
+        })}
+      >
+        <ProgressBar style={{ width: `${progress * 100}%` }} />
+      </ProgressWrapper>
+      <div className="rounded-xl border border-yellow-400 md:flex">
         {steps.map((step, i) => (
           <div
             key={i}
-            className={cn("border-b border-l p-4 transition-opacity md:w-1/5", {
-              ["opacity-50"]: currentStepIndex <= i,
-            })}
+            className={cn(
+              "z-10 flex-1  rounded-xl border-l border-yellow-400 p-4 transition-opacity",
+              {
+                ["opacity-50"]: currentStepIndex <= i,
+              },
+            )}
           >
             <h3 className="font-semibold">{step.label}</h3>
             <div>{formatDate(step.date)}</div>
           </div>
         ))}
       </div>
-    </Layout>
+    </div>
   );
 }
+
+const ProgressWrapper = createComponent(
+  "div",
+  tv({
+    base: "absolute hidden h-full w-4/5 overflow-hidden rounded-xl border-y border-yellow-400 md:block",
+  }),
+);
+const ProgressBar = createComponent(
+  "div",
+  tv({
+    base: "h-full  bg-gradient-to-r from-yellow-50 to-yellow-200 transition-all dark:from-yellow-600 dark:to-yellow-700",
+  }),
+);
 
 function calculateProgress(steps: { label: string; date: Date }[]) {
   const now = Number(new Date());
