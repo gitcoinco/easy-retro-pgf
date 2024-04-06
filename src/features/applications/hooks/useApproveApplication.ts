@@ -25,6 +25,7 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
       }),
     mutationFn: async (applicationIds: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
+      if (!round?.network) throw new Error("Round network not configured");
 
       const attestations = await Promise.all(
         applicationIds.map((refUID) =>
@@ -35,6 +36,7 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
               refUID,
             },
             signer,
+            round.network,
           ),
         ),
       );

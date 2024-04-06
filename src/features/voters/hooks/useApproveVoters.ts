@@ -23,22 +23,22 @@ export function useApproveVoters({
   const attest = useAttest();
   const signer = useEthersSigner();
   const { data: round } = useCurrentRound();
-  const roundId = String(round?.id);
 
   return useMutation({
     mutationFn: async (voters: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
-      if (!roundId) throw new Error("Round ID must be defined");
-
+      if (!round) throw new Error("Round must be defined");
+      if (!round?.network) throw new Error("Round network must be configured");
       const attestations = await Promise.all(
         voters.map((recipient) =>
           createAttestation(
             {
-              values: { type: "voter", round: roundId },
+              values: { type: "voter", round: round.id },
               schemaUID: eas.schemas.approval,
               recipient,
             },
             signer,
+            round.network!,
           ),
         ),
       );

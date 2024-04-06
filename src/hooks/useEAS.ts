@@ -8,13 +8,15 @@ import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export function useCreateAttestation() {
   const signer = useEthersSigner();
+  const { data: round } = useCurrentRound();
   return useMutation({
     mutationFn: async (data: {
       values: Record<string, unknown>;
       schemaUID: string;
     }) => {
       if (!signer) throw new Error("Connect wallet first");
-      return createAttestation(data, signer);
+      if (!round?.network) throw new Error("Round network not configured");
+      return createAttestation(data, signer, round.network);
     },
   });
 }
@@ -27,7 +29,6 @@ export function useAttest() {
       if (!signer) throw new Error("Connect wallet first");
       if (!round?.network) throw new Error("Round network not configured");
       const eas = createEAS(signer, round?.network);
-
       return eas.multiAttest(attestations);
     },
   });

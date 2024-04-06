@@ -3,9 +3,11 @@ import {
   SchemaRegistry,
   type SchemaValue,
   type AttestationRequest,
+  type SchemaRecord,
 } from "@ethereum-attestation-service/eas-sdk";
 import { type Signer } from "ethers";
-import * as config from "~/config";
+
+import { getContracts } from "./createEAS";
 
 type Params = {
   values: Record<string, unknown>;
@@ -17,34 +19,43 @@ type Params = {
 export async function createAttestation(
   params: Params,
   signer: Signer,
-): Promise<AttestationRequest> {
-  console.log("Getting recipient address");
-  const recipient = params.recipient ?? (await signer.getAddress());
+  network: string,
+): Promise<AttestationRequest | Error> {
+  try {
+    console.log("Getting recipient address");
+    const recipient = params.recipient ?? (await signer.getAddress());
 
-  console.log("Encoding attestation data");
-  const data = await encodeData(params, signer);
+    const contracts = getContracts(network);
 
-  return {
-    schema: params.schemaUID,
-    data: {
-      recipient,
-      expirationTime: 0n,
-      revocable: true,
-      data,
-      refUID: params.refUID,
-    },
-  };
+    const schemaRegistry = new SchemaRegistry(contracts.registry);
+    console.log("Getting schema record...", params.schemaUID);
+    const schemaRecord = await schemaRegistry.getSchema({
+      uid: params.schemaUID,
+    });
+    console.log("Connecting signer to SchemaRegistry...");
+    schemaRegistry.connect(signer);
+
+    console.log("Encoding attestation data");
+    const data = await encodeData(params, schemaRecord);
+
+    return {
+      schema: params.schemaUID,
+      data: {
+        recipient,
+        expirationTime: 0n,
+        revocable: true,
+        data,
+        refUID: params.refUID,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    return error as Error;
+  }
 }
 
-async function encodeData({ values, schemaUID }: Params, signer: Signer) {
-  const schemaRegistry = new SchemaRegistry(
-    config.eas.contracts.schemaRegistry,
-  );
-  console.log("Connecting signer to SchemaRegistry...");
-  schemaRegistry.connect(signer);
-
+async function encodeData({ values }: Params, schemaRecord: SchemaRecord) {
   console.log("Getting schema record...");
-  const schemaRecord = await schemaRegistry.getSchema({ uid: schemaUID });
 
   const schemaEncoder = new SchemaEncoder(schemaRecord.schema);
 
