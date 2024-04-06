@@ -1,9 +1,31 @@
 import { tv } from "tailwind-variants";
 import { createComponent } from "~/components/ui";
 import { config } from "~/config";
-import { Layout } from "~/layouts/DefaultLayout";
 import { cn } from "~/utils/classNames";
 import { formatDate } from "~/utils/time";
+
+const steps = [
+  {
+    label: "Registration",
+    date: config.startsAt,
+  },
+  {
+    label: "Review & Approval",
+    date: config.registrationEndsAt,
+  },
+  {
+    label: "Voting",
+    date: config.reviewEndsAt,
+  },
+  {
+    label: "Tallying",
+    date: config.votingEndsAt,
+  },
+  {
+    label: "Distribution",
+    date: config.resultsAt,
+  },
+];
 
 export function RoundProgress() {
   const { progress, currentStepIndex } = calculateProgress(steps);
