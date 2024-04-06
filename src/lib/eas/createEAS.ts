@@ -12,7 +12,6 @@ export function createEAS(signer: JsonRpcSigner, network: string): EAS {
 
   const eas = new EAS(contracts.eas);
 
-  console.log(eas, signer);
   console.log("Connecting signer to EAS");
   return eas.connect(signer as unknown as TransactionSigner);
 }
