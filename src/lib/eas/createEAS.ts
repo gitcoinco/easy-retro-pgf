@@ -12,14 +12,15 @@ export function createEAS(signer: JsonRpcSigner, network: string): EAS {
 
   const eas = new EAS(contracts.eas);
 
-  console.log(contracts);
+  console.log(eas, signer);
   console.log("Connecting signer to EAS");
   return eas.connect(signer as unknown as TransactionSigner);
 }
 
 export function getContracts(network: string) {
-  return (
-    config.eas.contracts[network as keyof typeof config.eas.contracts] ??
-    config.eas.contracts.default
-  );
+  return {
+    ...config.eas.contracts.default,
+    ...(config.eas.contracts[network as keyof typeof config.eas.contracts] ??
+      {}),
+  };
 }

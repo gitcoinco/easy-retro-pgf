@@ -3,7 +3,6 @@ import { z } from "zod";
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { createDataFilter } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
-import { eas } from "~/config";
 import { FilterSchema } from "~/features/filter/types";
 
 export const listsRouter = createTRPCRouter({
@@ -11,7 +10,7 @@ export const listsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       return ctx
-        .fetchAttestations([eas.schemas.metadata], {
+        .fetchAttestations(["metadata"], {
           where: { id: { equals: input.id } },
         })
         .then(([attestation]) => {
@@ -32,7 +31,7 @@ export const listsRouter = createTRPCRouter({
         filters.push(createDataFilter("name", "string", input.search));
       }
 
-      return ctx.fetchAttestations([eas.schemas.metadata], {
+      return ctx.fetchAttestations(["metadata"], {
         take: input.limit,
         skip: input.cursor * input.limit,
         where: {

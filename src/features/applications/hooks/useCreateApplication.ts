@@ -5,6 +5,7 @@ import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
 import type { Application, Profile } from "../types";
 import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { getContracts } from "~/lib/eas/createEAS";
 
 export function useCreateApplication({
   onSuccess,
@@ -29,11 +30,14 @@ export function useCreateApplication({
     }) => {
       if (!roundId) throw new Error("Round ID must be defined");
       console.log("Uploading profile and application metadata");
+      if (!round?.network) throw new Error("Round network must be configured");
+
+      const contracts = getContracts(round.network);
       return Promise.all([
         upload.mutateAsync(values.application).then(({ url: metadataPtr }) => {
           console.log("Creating application attestation data");
           return attestation.mutateAsync({
-            schemaUID: eas.schemas.metadata,
+            schemaUID: contracts.schemas.metadata,
             values: {
               name: values.application.name,
               metadataType: 0, // "http"
@@ -46,7 +50,7 @@ export function useCreateApplication({
         upload.mutateAsync(values.profile).then(({ url: metadataPtr }) => {
           console.log("Creating profile attestation data");
           return attestation.mutateAsync({
-            schemaUID: eas.schemas.metadata,
+            schemaUID: contracts.schemas.metadata,
             values: {
               name: values.profile.name,
               metadataType: 0, // "http"

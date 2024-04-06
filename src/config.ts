@@ -47,6 +47,12 @@ export const eas = {
     [networks.celo]: {
       eas: "0x72E1d8ccf5299fb36fEfD8CC4394B8ef7e98Af92",
       registry: "0x5ece93bE4BDCF293Ed61FA78698B594F2135AF34",
+      schemas: {
+        metadata:
+          "0xf01bd22db2b104f6a7096f3625307b1c03b863b73f08e71557ebf1adc20cf1bf",
+        approval:
+          "0xe2636f31239f7948afdd9a9c477048b7fc2a089c347af60e3aa1251e5bf63e5c",
+      },
     },
     [networks.linea]: {
       eas: "0xaEF4103A04090071165F78D45D83A0C0782c2B2a",
@@ -59,11 +65,13 @@ export const eas = {
     default: {
       eas: "0x4200000000000000000000000000000000000021",
       registry: "0x4200000000000000000000000000000000000020",
+      schemas: {
+        metadata:
+          "0x858e0bc94997c072d762d90440966759b57c8bca892d4c9447d2eeb205f14c69",
+        approval:
+          "0xd00c966351896bd3dc37d22017bf1ef23165f859d7546a2aba12a01623dec912",
+      },
     },
-  },
-  schemas: {
-    metadata: process.env.NEXT_PUBLIC_METADATA_SCHEMA!,
-    approval: process.env.NEXT_PUBLIC_APPROVAL_SCHEMA!,
   },
 };
 

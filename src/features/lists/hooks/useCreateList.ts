@@ -5,6 +5,7 @@ import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
 import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 import { type List } from "../types";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { getContracts } from "~/lib/eas/createEAS";
 
 export function useCreateList({
   onSuccess,
@@ -25,12 +26,14 @@ export function useCreateList({
     onError,
     mutationFn: async (values: List) => {
       console.log("Uploading list metadata");
+      if (!round?.network) throw new Error("Round network must be configured");
+      const contracts = getContracts(round.network);
       return upload
         .mutateAsync(values)
         .then(({ url: metadataPtr }) => {
           console.log("Creating application attestation data");
           return attestation.mutateAsync({
-            schemaUID: eas.schemas.metadata,
+            schemaUID: contracts.schemas.metadata,
             values: {
               name: values.name,
               metadataType: 0, // "http"

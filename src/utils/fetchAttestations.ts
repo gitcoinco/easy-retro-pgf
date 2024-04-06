@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { fromHex, type Address } from "viem";
 import { eas, easApiEndpoints, type networks } from "~/config";
 import { createCachedFetch } from "./fetch";
+import { getContracts } from "~/lib/eas/createEAS";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 
@@ -62,8 +63,9 @@ type PartialRound = {
   startsAt: Date | null;
   network: string | null;
 };
+type SchemaType = "approval" | "metadata";
 export type AttestationFetcher = (
-  schema: string[],
+  schema: SchemaType[],
   filter?: AttestationsFilter,
 ) => Attestation[];
 export function createAttestationFetcher(round: PartialRound) {
@@ -72,6 +74,9 @@ export function createAttestationFetcher(round: PartialRound) {
     const easURL = easApiEndpoints[round?.network as keyof typeof networks];
     if (!easURL) throw new Error("Round network not configured");
 
+    const contracts = getContracts(String(round?.network));
+    const schemas = schema.map((type) => contracts.schemas[type]);
+
     return fetch<{ attestations: AttestationWithMetadata[] }>(easURL, {
       method: "POST",
       body: JSON.stringify({
@@ -79,7 +84,7 @@ export function createAttestationFetcher(round: PartialRound) {
         variables: {
           ...filter,
           where: {
-            schemaId: { in: schema },
+            schemaId: { in: schemas },
             revoked: { equals: false },
             time: { gte: startsAt },
             ...filter?.where,
@@ -93,7 +98,9 @@ export function createAttestationFetcher(round: PartialRound) {
 export async function fetchApprovedVoter(round: PartialRound, address: string) {
   // if (config.skipApprovedVoterCheck) return true;
   if (!round.id) throw new Error("Round ID must be defined");
-  return createAttestationFetcher(round)([eas.schemas.approval], {
+  if (!round.network) throw new Error("Round network must be configured");
+  const contracts = getContracts(round.network);
+  return createAttestationFetcher(round)([contracts.schemas.approval], {
     where: {
       recipient: { equals: address },
       AND: [

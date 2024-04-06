@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
+import { getContracts } from "~/lib/eas/createEAS";
 
 // TODO: Move this to a shared folders
 export type TransactionError = { reason?: string; data?: { message: string } };
@@ -29,12 +30,14 @@ export function useApproveVoters({
       if (!signer) throw new Error("Connect wallet first");
       if (!round) throw new Error("Round must be defined");
       if (!round?.network) throw new Error("Round network must be configured");
+
+      const contracts = getContracts(round.network);
       const attestations = await Promise.all(
         voters.map((recipient) =>
           createAttestation(
             {
               values: { type: "voter", round: round.id },
-              schemaUID: eas.schemas.approval,
+              schemaUID: contracts.schemas.approval,
               recipient,
             },
             signer,

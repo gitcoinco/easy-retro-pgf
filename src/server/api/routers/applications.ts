@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { createDataFilter } from "~/utils/fetchAttestations";
-import { eas } from "~/config";
+import { getContracts } from "~/lib/eas/createEAS";
 
 export const FilterSchema = z.object({
   limit: z.number().default(3 * 8),
@@ -12,7 +12,8 @@ export const applicationsRouter = createTRPCRouter({
   approvals: attestationProcedure
     .input(z.object({ ids: z.array(z.string()).optional() }))
     .query(async ({ input, ctx }) => {
-      return ctx.fetchAttestations([eas.schemas.approval], {
+      const contracts = getContracts(String(ctx.round?.network));
+      return ctx.fetchAttestations([contracts.schemas.approval], {
         where: {
           attester: { in: ctx.round?.admins },
           refUID: input.ids ? { in: input.ids } : undefined,
@@ -26,7 +27,8 @@ export const applicationsRouter = createTRPCRouter({
   list: attestationProcedure
     .input(z.object({ ids: z.array(z.string()).optional() }))
     .query(async ({ ctx }) => {
-      return ctx.fetchAttestations([eas.schemas.metadata], {
+      const contracts = getContracts(String(ctx.round?.network));
+      return ctx.fetchAttestations([contracts.schemas.metadata], {
         orderBy: [{ time: "desc" }],
         where: {
           AND: [
