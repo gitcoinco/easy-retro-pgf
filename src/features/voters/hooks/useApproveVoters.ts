@@ -41,7 +41,7 @@ export function useApproveVoters({
               recipient,
             },
             signer,
-            round.network!,
+            contracts,
           ),
         ),
       );

@@ -37,7 +37,7 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
               refUID,
             },
             signer,
-            round.network,
+            contracts,
           ),
         ),
       );

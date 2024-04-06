@@ -7,7 +7,7 @@ import {
 } from "@ethereum-attestation-service/eas-sdk";
 import { type Signer } from "ethers";
 
-import { getContracts } from "./createEAS";
+import { eas } from "~/config";
 
 type Params = {
   values: Record<string, unknown>;
@@ -19,12 +19,10 @@ type Params = {
 export async function createAttestation(
   params: Params,
   signer: Signer,
-  network: string,
+  contracts: typeof eas.contracts.default,
 ): Promise<AttestationRequest> {
   console.log("Getting recipient address");
   const recipient = params.recipient ?? (await signer.getAddress());
-
-  const contracts = getContracts(network);
 
   const schemaRegistry = new SchemaRegistry(contracts.registry);
   console.log("Connecting signer to SchemaRegistry...");
