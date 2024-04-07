@@ -227,7 +227,12 @@ export function ApplicationForm({ address = "" }) {
                   required
                   valueAsNumber
                 >
-                  <Input type="number" placeholder="Number" />
+                  <Input
+                    type="number"
+                    placeholder="Number"
+                    min={0}
+                    step={0.01}
+                  />
                 </FormControl>
               </>
             )}
@@ -254,7 +259,12 @@ export function ApplicationForm({ address = "" }) {
                   required
                   valueAsNumber
                 >
-                  <Input type="number" placeholder="Amount" />
+                  <Input
+                    type="number"
+                    placeholder="Amount"
+                    min={0}
+                    step={0.01}
+                  />
                 </FormControl>
                 <FormControl
                   name={`application.fundingSources.${i}.currency`}
