@@ -78,6 +78,7 @@ export const RoundSchema = z
     domain: z.string(),
     admins: z.array(EthAddressSchema),
     description: z.string().nullable(),
+    bannerImageUrl: z.string().url(),
     network: z.string().nullable(),
     tokenAddress: EthAddressSchema.or(z.string().nullish()),
     poolId: z.number().nullable(),

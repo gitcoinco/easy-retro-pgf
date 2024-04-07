@@ -5,6 +5,9 @@ import { Button } from "~/components/ui/Button";
 import Link from "next/link";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { RoundProgress } from "~/features/info/components/RoundProgress";
+import Image from "next/image";
+import { cn } from "~/utils/classNames";
+import { Banner } from "~/components/ui/Banner";
 
 export default function RoundPage() {
   const round = useCurrentRound();
@@ -17,9 +20,10 @@ export default function RoundPage() {
   if (resultAt) steps.push({ label: "Tallying", date: resultAt });
   if (payoutAt) steps.push({ label: "Distribution", date: payoutAt });
 
+  const { bannerImageUrl } = round.data ?? {};
   return (
     <Layout>
-      <div className="flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between">
         <h1 className="text-4xl font-semibold">{round.data?.name}</h1>
         <Button
           as={Link}
@@ -29,6 +33,7 @@ export default function RoundPage() {
           Apply with your project
         </Button>
       </div>
+      <Banner size="lg" src={bannerImageUrl} />
       {round.data && <RoundProgress steps={steps} />}
       <Markdown>{round.data?.description}</Markdown>
     </Layout>

@@ -74,11 +74,12 @@ model Ballot {
 }
 
 model Round {
-    id          String  @id @default(cuid())
-    creatorId   String
-    name        String
-    description String?
-    domain      String  @unique
+    id             String  @id @default(cuid())
+    creatorId      String
+    name           String
+    description    String?
+    bannerImageUrl String?
+    domain         String  @unique
 
     network String?
     admins  String[]

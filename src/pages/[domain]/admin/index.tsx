@@ -12,6 +12,7 @@ import { RoundSchema } from "~/features/rounds/types";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
+import { ImageUpload } from "~/components/ImageUpload";
 
 export default function AdminPage() {
   return (
@@ -52,6 +53,10 @@ function RoundForm({ round }: { round: RoundSchema }) {
 
         <FormControl className="flex-1" name="domain" label="Round URL">
           <InputWithAddon addon="https://easy-retro-pgf.vercel.app/" />
+        </FormControl>
+
+        <FormControl required label="Image" name="bannerImageUrl">
+          <ImageUpload className="h-48 " />
         </FormControl>
 
         <FormControl name="description" label="Description">

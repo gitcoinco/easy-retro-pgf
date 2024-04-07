@@ -11,7 +11,7 @@ export function RoundProgress({
   const { progress, currentStepIndex } = calculateProgress(steps);
 
   return (
-    <div className="relative my-4">
+    <div className="relative my-2">
       <ProgressWrapper
         className={cn({
           ["w-full"]: currentStepIndex === steps.length,
