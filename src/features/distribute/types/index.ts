@@ -1,10 +1,17 @@
+import { validateAddressString } from "@glif/filecoin-address";
 import { type Address, isAddress } from "viem";
 import { z } from "zod";
 
-export const EthAddressSchema = z.custom<string>(
-  (val) => isAddress(val as Address),
-  "Invalid address",
+export const FilecoinAddress = z.custom<string>(
+  (val) => validateAddressString(String(val)),
+  "Invalid Filecoin address",
 );
+export const EthAddressSchema = z
+  .custom<string>(
+    (val) => isAddress(val as Address),
+    "Invalid Filecoin or ETH address",
+  )
+  .or(FilecoinAddress);
 
 export const DistributionSchema = z.object({
   projectId: z.string(),
