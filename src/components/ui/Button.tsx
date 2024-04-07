@@ -28,7 +28,7 @@ const button = tv({
       icon: "h-12 w-12",
     },
     disabled: {
-      true: "text-gray-400 pointer-events-none pointer-default opacity-50 border-none",
+      true: "dark:text-gray-400 pointer-events-none pointer-default opacity-50 border-none",
     },
   },
   defaultVariants: {

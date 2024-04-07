@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { type PropsWithChildren } from "react";
 
 import { ImageUpload } from "~/components/ImageUpload";
-import { IconButton } from "~/components/ui/Button";
+import { Button } from "~/components/ui/Button";
 import {
   ErrorMessage,
   FieldArray,
@@ -14,7 +13,6 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { Spinner } from "~/components/ui/Spinner";
 import { impactCategories } from "~/config";
 import {
   ApplicationSchema,
@@ -323,15 +321,14 @@ function CreateApplicationButton({
         )}
       </div>
 
-      <IconButton
-        icon={isLoading ? Spinner : null}
+      <Button
         disabled={isLoading || !session}
         variant="primary"
         type="submit"
         isLoading={isLoading}
       >
         {buttonText}
-      </IconButton>
+      </Button>
     </div>
   );
 }

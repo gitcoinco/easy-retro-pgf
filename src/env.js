@@ -46,6 +46,7 @@ export const env = createEnv({
       "sepolia",
       "base",
       "baseGoerli",
+      "celo",
     ]),
     NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
 
