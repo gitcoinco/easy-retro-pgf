@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { type ReactNode } from "react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
@@ -10,7 +9,7 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 
-export function ProjectDetails({
+export default function ProjectDetails({
   attestation,
   action,
 }: {
@@ -93,5 +92,3 @@ export function ProjectDetails({
     </div>
   );
 }
-
-export default dynamic(async () => ProjectDetails, { ssr: false });
