@@ -316,6 +316,7 @@ export function Form<S extends z.Schema>({
   });
 
   usePersistForm(form, persist);
+
   // Pass the form methods to a FormProvider. This lets us access the form from components with useFormContext
   return (
     <FormProvider {...form}>

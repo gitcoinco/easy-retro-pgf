@@ -82,7 +82,6 @@ function CreatePool() {
   const profile = useAlloProfile();
   const approve = useApprove();
   const poolId = usePoolId();
-
   const token = useRoundToken();
 
   const { decimals, allowance } = token.data ?? {};
@@ -114,7 +113,6 @@ function CreatePool() {
       <Form
         schema={z.object({
           strategyAddress: z.string(),
-          tokenName: z.string(),
           amount: z.number().default(0),
         })}
         defaultValues={{

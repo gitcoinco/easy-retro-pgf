@@ -70,10 +70,9 @@ export function useCreatePool() {
       initialFunding?: bigint;
     }) => {
       if (!alloSDK) throw new Error("Allo not initialized");
-      if (!round?.tokenAddress) throw new Error("Token address not configured");
-
+      if (!round) throw new Error("Round not loaded");
       // This will properly cast the type into address (and also validate)
-      const token = getAddress(round.tokenAddress);
+      const token = getAddress(round.tokenAddress || nativeToken);
       const managers = round.admins.map(getAddress);
 
       const tx = alloSDK.createPool({
@@ -86,6 +85,7 @@ export function useCreatePool() {
         metadata: { protocol: 1n, pointer: "" },
         initStrategyData: "0x",
       });
+
       const value = BigInt(tx.value);
       const hash = await sendTransactionAsync({ ...tx, value });
 

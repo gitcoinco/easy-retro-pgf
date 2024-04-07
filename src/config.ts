@@ -1,3 +1,4 @@
+import { getAddress } from "viem";
 import * as allChains from "viem/chains";
 
 export const metadata = {
@@ -14,8 +15,8 @@ export const config = {
 
 export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const allo = {
-  alloAddress: process.env.NEXT_PUBLIC_ALLO2_ADDRESS as `0x${string}`,
-  strategyAddress: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS as `0x${string}`,
+  alloAddress: getAddress(process.env.NEXT_PUBLIC_ALLO2_ADDRESS!),
+  strategyAddress: getAddress(process.env.NEXT_PUBLIC_STRATEGY_ADDRESS!),
 };
 
 export const theme = {
