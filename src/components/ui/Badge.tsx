@@ -8,10 +8,10 @@ export const Badge = createComponent(
     variants: {
       variant: {
         default: "bg-gray-100 dark:bg-gray-800",
-        success: "dark:bg-green-300 dark:text-green-900",
+        success: "bg-green-100 dark:bg-green-300 text-green-900",
       },
       size: {
-        md: "px-1 ",
+        md: "px-1",
         lg: "px-2 py-1 text-base",
       },
     },
