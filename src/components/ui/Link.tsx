@@ -18,6 +18,7 @@ export const ExternalLink = ({
   ...props
 }: ComponentProps<typeof NextLink>) => (
   <NextLink
+    target="_blank"
     className={clsx("flex items-center gap-2 font-semibold hover:underline")}
     {...props}
   >
