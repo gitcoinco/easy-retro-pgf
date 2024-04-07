@@ -26,7 +26,7 @@ export default function LandingPage({}) {
       <Markdown>
         {`### Welcome to FIL-RetroPGF-1, the Filecoin network’s first Optimism-inspired Retroactive Public Goods Funding round.
 
-The round will allocate FIL tokens to projects that have created an impact toin the Filecoin network between Oct 2023 - Mar 2024. Future impact windows will be rewarded in future rounds.
+The round will allocate FIL tokens to projects that have created an impact to the Filecoin network between Oct 2023 - Mar 2024. Future impact windows will be rewarded in future rounds.
 
 Between Apr 8th and Apr 21st, eligible nominations may submit an application. Projects that are eligible are listed [here](https://fil-retropgf.notion.site/Round-1-Invited-Applications-3fe95da0c9da4aeba9c6420d1efd0bd6?pvs=74).
 
