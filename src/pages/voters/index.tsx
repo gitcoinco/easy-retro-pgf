@@ -14,6 +14,9 @@ export default function VotersPage() {
         </Heading>
         <ApproveVoters />
       </div>
+      <Alert variant="info" className={"mb-2"}>
+        Added voters can take 10 minutes to show up.
+      </Alert>
       {config.skipApprovedVoterCheck ? (
         <Alert variant="warning" className="mb-4 ">
           Configuration has disabled voter approval check. Anyone is an eligible

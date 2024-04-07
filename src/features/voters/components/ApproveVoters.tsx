@@ -55,6 +55,7 @@ function ApproveVoters() {
             ? `Add voters`
             : "You must be an admin"}
       </IconButton>
+
       <Dialog isOpen={isOpen} onOpenChange={setOpen} title={`Approve voters`}>
         <p className="pb-4 leading-relaxed">
           Add voters who will be allowed to vote in the round.
