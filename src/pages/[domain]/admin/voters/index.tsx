@@ -18,6 +18,7 @@ import {
 import { RoundVotesSchema } from "~/features/rounds/types";
 import { NumberInput } from "~/components/NumberInput";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
+import { Alert } from "~/components/ui/Alert";
 
 export default function AdminAccountsPage() {
   const [isOpen, setOpen] = useState(false);
@@ -82,6 +83,9 @@ export default function AdminAccountsPage() {
             title="Approved voters"
             description="Add voter addresses to allow them to participate in voting."
           >
+            <Alert variant="info" className={"mb-2"}>
+              Added voters can take 10 minutes to show up.
+            </Alert>
             <Form
               defaultValues={{ selected: [] }}
               schema={AddressSchema}

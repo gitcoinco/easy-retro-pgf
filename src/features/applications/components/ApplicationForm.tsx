@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { type PropsWithChildren } from "react";
 
 import { ImageUpload } from "~/components/ImageUpload";
-import { IconButton } from "~/components/ui/Button";
+import { Button } from "~/components/ui/Button";
 import {
   ErrorMessage,
   FieldArray,
@@ -14,7 +13,6 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { Spinner } from "~/components/ui/Spinner";
 import { impactCategories } from "~/config";
 import {
   ApplicationSchema,
@@ -224,7 +222,12 @@ export function ApplicationForm({ address = "" }) {
                   required
                   valueAsNumber
                 >
-                  <Input type="number" placeholder="Number" />
+                  <Input
+                    type="number"
+                    placeholder="Number"
+                    min={0}
+                    step={0.01}
+                  />
                 </FormControl>
               </>
             )}
@@ -251,7 +254,12 @@ export function ApplicationForm({ address = "" }) {
                   required
                   valueAsNumber
                 >
-                  <Input type="number" placeholder="Amount" />
+                  <Input
+                    type="number"
+                    placeholder="Amount"
+                    min={0}
+                    step={0.01}
+                  />
                 </FormControl>
                 <FormControl
                   name={`application.fundingSources.${i}.currency`}
@@ -323,15 +331,14 @@ function CreateApplicationButton({
         )}
       </div>
 
-      <IconButton
-        icon={isLoading ? Spinner : null}
+      <Button
         disabled={isLoading || !session}
         variant="primary"
         type="submit"
         isLoading={isLoading}
       >
         {buttonText}
-      </IconButton>
+      </Button>
     </div>
   );
 }

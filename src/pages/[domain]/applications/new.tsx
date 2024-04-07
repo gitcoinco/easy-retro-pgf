@@ -29,8 +29,10 @@ export default function NewProjectPage() {
       >
         {roundState !== "APPLICATION" ? (
           <Alert variant="info" title="Application period has ended"></Alert>
-        ) : (
+        ) : address ? (
           <ApplicationForm address={address} />
+        ) : (
+          <Alert variant="info" title="Connect your wallet to continue"></Alert>
         )}
       </FormSection>
     </Layout>

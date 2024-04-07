@@ -1,7 +1,11 @@
 import clsx from "clsx";
 import { type ComponentProps } from "react";
 import ReactMarkdown from "react-markdown";
+import { Link } from "./Link";
 
+const components = {
+  a: (p: ComponentProps<typeof Link>) => <Link target="_blank" {...p} />,
+};
 export function Markdown({
   isLoading,
   ...props
@@ -13,7 +17,7 @@ export function Markdown({
           isLoading,
       })}
     >
-      <ReactMarkdown {...props} />
+      <ReactMarkdown components={components} {...props} />
     </div>
   );
 }
