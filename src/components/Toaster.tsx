@@ -11,7 +11,7 @@ export function Toaster() {
         unstyled: true,
         classNames: {
           toast:
-            "bg-gray-900 font-sans w-full flex gap-2 p-4 border-2 rounded-xl",
+            "dark:bg-gray-900 bg-white font-sans w-full flex gap-2 p-4 border-2 rounded-xl",
           error: "group-[.toaster]:border-red-950 text-red-500",
           title: "font-bold tracking-wider -mt-1",
           description: "text-sm",
