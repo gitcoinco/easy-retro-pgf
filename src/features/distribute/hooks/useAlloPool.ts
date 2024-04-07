@@ -10,7 +10,7 @@ import {
 
 import { type Address, parseAbi, erc20Abi, getAddress } from "viem";
 import { abi as AlloABI } from "@allo-team/allo-v2-sdk/dist/Allo/allo.config";
-import { allo, nativeToken } from "~/config";
+import { allo, nativeToken, supportedNetworks } from "~/config";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAllo, waitForLogs } from "./useAllo";
 import { api } from "~/utils/api";
@@ -138,6 +138,7 @@ export function useFundPool() {
 
 function useToken(tokenAddress?: Address) {
   const { address } = useAccount();
+  const { data: round } = useCurrentRound();
   const isNativeToken = !tokenAddress || tokenAddress === nativeToken;
   const tokenContract = {
     address: isNativeToken ? undefined : tokenAddress,
@@ -148,6 +149,7 @@ function useToken(tokenAddress?: Address) {
     token: tokenContract.address,
   });
 
+  const network = supportedNetworks.find((n) => n.chain === round?.network);
   const token = useReadContracts({
     allowFailure: false,
     contracts: [
@@ -161,17 +163,14 @@ function useToken(tokenAddress?: Address) {
     ],
   });
 
-  const [decimals = 18, symbol, allowance] = (token.data ?? []) as [
-    number,
-    string,
-    bigint,
-  ];
+  const [decimals = network?.nativeCurrency.decimals ?? 18, symbol, allowance] =
+    (token.data ?? []) as [number, string, bigint];
   return {
     ...token,
     data: {
       address,
       isNativeToken,
-      symbol: isNativeToken ? "ETH" : symbol ?? "",
+      symbol: isNativeToken ? network?.nativeCurrency.name : symbol ?? "",
       balance: balance?.value ?? 0n,
       decimals,
       allowance,

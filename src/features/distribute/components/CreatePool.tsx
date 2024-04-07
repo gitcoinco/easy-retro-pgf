@@ -120,7 +120,6 @@ function CreatePool() {
         defaultValues={{
           amount: 0,
           strategyAddress: allo.strategyAddress,
-          tokenName: "ETH",
         }}
         onSubmit={(values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
