@@ -125,5 +125,5 @@ function createWagmiConfig() {
       ];
     }),
   );
-  return createConfig({ connectors, chains, transports });
+  return createConfig({ connectors, chains, transports, ssr: true });
 }
