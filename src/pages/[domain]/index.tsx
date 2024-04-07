@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { RoundProgress } from "~/features/info/components/RoundProgress";
 import { Banner } from "~/components/ui/Banner";
-import { CircleDollarSign, Globe } from "lucide-react";
+import { CircleDollarSign, Globe, Plus } from "lucide-react";
 import { networkNames } from "~/config";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
@@ -29,8 +29,8 @@ export default function RoundPage() {
       <div className="mb-2 flex items-center justify-between">
         <h1 className="text-4xl font-semibold">{round.data?.name}</h1>
         <Button
+          icon={Plus}
           as={Link}
-          variant="primary"
           href={`/${round.data?.domain}/applications/new`}
         >
           Apply with your project

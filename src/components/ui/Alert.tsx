@@ -16,7 +16,7 @@ const alert = tv({
 
 export const AlertComponent = createComponent("div", alert);
 
-export const rtAlert = ({
+export const Alert = ({
   icon,
   title,
   children,
