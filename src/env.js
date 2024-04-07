@@ -48,6 +48,7 @@ export const env = createEnv({
       "baseGoerli",
       "filecoin",
       "filecoinCalibration",
+      "celo",
     ]),
     NEXT_PUBLIC_SIGN_STATEMENT: z.string().optional(),
 

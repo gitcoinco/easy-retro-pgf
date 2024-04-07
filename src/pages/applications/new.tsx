@@ -25,7 +25,7 @@ Your progress is saved locally so you can return to this page to resume your app
       ) : address ? (
         <ApplicationForm address={address} />
       ) : (
-        <div>Connect your wallet to continue</div>
+        <Alert variant="info" title="Connect your wallet to continue"></Alert>
       )}
     </Layout>
   );

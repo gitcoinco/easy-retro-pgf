@@ -281,14 +281,6 @@ function FundPoolButton({
     );
   }
 
-  if (!amount) {
-    return (
-      <Button className="w-full" disabled>
-        Enter an amount
-      </Button>
-    );
-  }
-
   return (
     <IconButton
       className={"w-full"}
