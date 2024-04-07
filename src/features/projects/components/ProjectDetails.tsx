@@ -1,3 +1,5 @@
+import dynamic from "next/dynamic";
+import { type ReactNode } from "react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
@@ -6,10 +8,9 @@ import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
-import { type ReactNode } from "react";
 import { type Attestation } from "~/utils/fetchAttestations";
 
-export default function ProjectDetails({
+export function ProjectDetails({
   attestation,
   action,
 }: {
@@ -92,3 +93,5 @@ export default function ProjectDetails({
     </div>
   );
 }
+
+export default dynamic(async () => ProjectDetails, { ssr: false });
