@@ -4,7 +4,7 @@ import { cn } from "~/utils/classNames";
 import { formatDate } from "~/utils/time";
 
 export function RoundProgress({
-  steps,
+  steps = [],
 }: {
   steps: { label: string; date: Date }[];
 }) {
