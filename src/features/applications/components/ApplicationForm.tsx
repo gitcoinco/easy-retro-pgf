@@ -129,7 +129,7 @@ export function ApplicationForm({ address = "" }) {
               label="Payout address"
               required
             >
-              <Input placeholder="f0..." />
+              <Input placeholder="Enter your Filecoin address..." />
             </FormControl>
           </div>
         </FormSection>
