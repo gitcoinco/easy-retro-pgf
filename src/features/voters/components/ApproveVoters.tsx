@@ -14,13 +14,22 @@ import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { EthAddressSchema } from "~/features/distribute/types";
+import {
+  ethAddressFromDelegated,
+  newDelegatedEthAddress,
+  validateAddressString,
+} from "@glif/filecoin-address";
 
-function parseAddresses(addresses: string): Address[] {
+function parseAddresses(addresses: string) {
   return (
     addresses
       .split(",")
-      .filter((addr) => isAddress(addr))
-      .map((addr) => getAddress(addr.trim()))
+      .map((addr) => addr.trim() as Address)
+      .map((addr) => {
+        if (isAddress(addr)) return getAddress(addr);
+        if (validateAddressString(addr)) return ethAddressFromDelegated(addr);
+      })
+      .filter(Boolean)
       // Remove duplicates
       .filter((addr, i, self) => self.indexOf(addr) === i)
   );
@@ -41,6 +50,7 @@ function ApproveVoters() {
         description: err.reason ?? err.data?.message,
       }),
   });
+
   return (
     <div>
       <IconButton
