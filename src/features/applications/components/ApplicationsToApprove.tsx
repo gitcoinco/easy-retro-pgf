@@ -124,7 +124,7 @@ export function ApplicationsToApprove() {
 Select the applications you want to approve. You must be a configured admin to approve applications.
 
 `}</Markdown>
-      <Alert>
+      <Alert variant="info">
         Newly submitted applications can take 10 minutes to show up.
       </Alert>
       <div className="my-2 flex items-center justify-between">
