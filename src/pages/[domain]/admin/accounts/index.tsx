@@ -76,10 +76,8 @@ export default function AdminAccountsPage() {
               }}
             />
             <AddressList
-              // Hide the creator address to the user doesn't remove it from admins
-              addresses={data?.admins.filter(
-                (addr) => addr !== data?.creatorId,
-              )}
+              addresses={data?.admins}
+              disabled={data?.creatorId ? [data?.creatorId] : []}
             />
           </FormSection>
         </Form>

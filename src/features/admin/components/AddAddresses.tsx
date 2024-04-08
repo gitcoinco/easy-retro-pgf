@@ -10,6 +10,7 @@ import { Dialog } from "~/components/ui/Dialog";
 import { Checkbox, Form, FormControl, Textarea } from "~/components/ui/Form";
 import { NameENS } from "~/components/ENS";
 import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
+import { cn } from "~/utils/classNames";
 
 type Props = {
   title: string;
@@ -58,7 +59,13 @@ export function AddAddressesModal({
   );
 }
 
-export function AddressList({ addresses = [] }: { addresses?: string[] }) {
+export function AddressList({
+  addresses = [],
+  disabled = [],
+}: {
+  addresses?: string[];
+  disabled?: string[];
+}) {
   const form = useFormContext<{ selected: string[] }>();
   return (
     <div>
@@ -67,17 +74,29 @@ export function AddressList({ addresses = [] }: { addresses?: string[] }) {
           No addresses added yet.
         </div>
       )}
-      {addresses.map((addr) => (
-        <div
-          key={addr}
-          className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800"
-        >
-          <label className="flex flex-1 cursor-pointer items-center gap-4 p-3 font-mono">
-            <Checkbox value={addr} {...form.register(`selected`)} />
-            <NameENS address={addr} truncateLength={100} />
-          </label>
-        </div>
-      ))}
+      {addresses.map((addr) => {
+        const isDisabled = disabled.includes(addr);
+        return (
+          <div
+            key={addr}
+            className={cn(
+              "flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800",
+              {
+                ["opacity-60"]: isDisabled,
+              },
+            )}
+          >
+            <label className="flex flex-1 cursor-pointer items-center gap-4 p-3 font-mono">
+              <Checkbox
+                disabled={isDisabled}
+                value={addr}
+                {...form.register(`selected`)}
+              />
+              <NameENS address={addr} truncateLength={100} />
+            </label>
+          </div>
+        );
+      })}
     </div>
   );
 }

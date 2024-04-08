@@ -76,6 +76,7 @@ export const RoundSchema = z
     id: z.string(),
     name: RoundNameSchema,
     domain: z.string(),
+    creatorId: z.string(),
     admins: z.array(EthAddressSchema),
     description: z.string().nullable(),
     bannerImageUrl: z.string().url(),
