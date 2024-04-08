@@ -2,6 +2,9 @@ import { BaseLayout } from "~/layouts/BaseLayout";
 import { Button } from "~/components/ui/Button";
 import Link from "next/link";
 import { ConnectButton } from "~/components/ConnectButton";
+import { createComponent } from "~/components/ui";
+import { tv } from "tailwind-variants";
+import { Github, Send } from "lucide-react";
 
 export default function ProjectsPage({}) {
   return (
@@ -37,7 +40,7 @@ export default function ProjectsPage({}) {
           as={Link}
           target="_blank"
           size="lg"
-          href={`https://github.com/gitcoinco/easy-retro-pgf`}
+          href={`https://github.com/gitcoinco/easy-rpgf-multiround`}
         >
           Self-hosted
         </Button>
@@ -50,6 +53,33 @@ export default function ProjectsPage({}) {
           What is RPGF?
         </Button>
       </div>
+
+      <div className="flex justify-center gap-12 py-16">
+        <Meta
+          target="_blank"
+          href={"https://github.com/gitcoinco/easy-rpgf-multiround"}
+        >
+          <MetaIcon as={Github} />
+          Github
+        </Meta>
+        <Meta target="_blank" href={"https://t.me/+0oycDCvX3QY1NjEx"}>
+          <MetaIcon as={Send} />
+          Telegram
+        </Meta>
+      </div>
     </BaseLayout>
   );
 }
+
+const Meta = createComponent(
+  Link,
+  tv({
+    base: "flex items-center gap-2 text-xl text-gray-600 hover:text-gray-900",
+  }),
+);
+const MetaIcon = createComponent(
+  "div",
+  tv({
+    base: "size-6",
+  }),
+);
