@@ -68,9 +68,12 @@ export type AttestationFetcher = (
   schema: SchemaType[],
   filter?: AttestationsFilter,
 ) => Attestation[];
+const ONE_WEEK = 60 * 60 * 1000 * 24 * 7;
 export function createAttestationFetcher(round: PartialRound) {
   return (schema: SchemaType[], filter?: AttestationsFilter) => {
-    const startsAt = Math.floor(Number(round?.startsAt ?? new Date()) / 1000);
+    const startsAt = Math.floor(
+      Number(round?.startsAt ?? new Date()) / 1000 - ONE_WEEK,
+    );
     const easURL = easApiEndpoints[round?.network as keyof typeof networks];
     if (!easURL) throw new Error("Round network not configured");
 
