@@ -11,7 +11,7 @@ import { getContracts } from "~/lib/eas/createEAS";
 export type TransactionError = { reason?: string; data?: { message: string } };
 
 export function useVoters() {
-  return api.voters.list.useQuery();
+  return api.voters.list.useQuery(undefined, { refetchInterval: 5000 });
 }
 
 export function useApproveVoters({
