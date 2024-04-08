@@ -106,6 +106,7 @@ export const easApiEndpoints = {
   [networks.celo]: "https://celo.easscan.org/graphql",
 } as const;
 
+// TODO: Remove and move to round config
 export const impactCategories = {
   ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },
   OPEN_SOURCE: { label: "Web3 Open Source Software" },

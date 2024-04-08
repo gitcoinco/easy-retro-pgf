@@ -80,6 +80,7 @@ export const RoundSchema = z
     admins: z.array(EthAddressSchema),
     description: z.string().nullable(),
     bannerImageUrl: z.string().url(),
+    categories: z.array(z.object({ id: z.string(), label: z.string() })),
     network: z.string().nullable(),
     tokenAddress: EthAddressSchema.or(z.string().nullish()),
     poolId: z.number().nullable(),

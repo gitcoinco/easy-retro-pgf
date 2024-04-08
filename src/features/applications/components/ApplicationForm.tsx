@@ -13,7 +13,6 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { impactCategories } from "~/config";
 import {
   ApplicationSchema,
   ProfileSchema,
@@ -28,6 +27,7 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useLocalStorage } from "react-use";
 import { Alert } from "~/components/ui/Alert";
 import { useSession } from "next-auth/react";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -351,6 +351,8 @@ function ImpactTags() {
     control,
   });
 
+  const { data: round } = useCurrentRound();
+
   const selected = watch("application.impactCategory") ?? [];
 
   const error = formState.errors.application?.impactCategory;
@@ -360,17 +362,17 @@ function ImpactTags() {
         Impact categories<span className="text-red-300">*</span>
       </Label>
       <div className="flex flex-wrap gap-2">
-        {Object.entries(impactCategories).map(([value, { label }]) => {
-          const isSelected = selected.includes(value);
+        {round?.categories?.map(({ id, label }) => {
+          const isSelected = selected.includes(id);
           return (
             <Tag
               size="lg"
               selected={isSelected}
-              key={value}
+              key={id}
               onClick={() => {
                 const currentlySelected = isSelected
-                  ? selected.filter((s) => s !== value)
-                  : selected.concat(value);
+                  ? selected.filter((s) => s !== id)
+                  : selected.concat(id);
 
                 field.onChange(currentlySelected);
               }}

@@ -90,6 +90,8 @@ model Round {
     resultAt DateTime?
     payoutAt DateTime?
 
+    categories Json[]
+
     maxVotesTotal   Int?
     maxVotesProject Int?
     tokenAddress    String?

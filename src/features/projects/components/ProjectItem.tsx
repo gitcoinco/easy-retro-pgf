@@ -6,7 +6,6 @@ import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { ImpactCategories } from "./ImpactCategories";
 import { formatNumber } from "~/utils/formatNumber";
-import { config } from "~/config";
 
 export function ProjectItem({
   attestation,

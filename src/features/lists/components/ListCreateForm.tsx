@@ -14,7 +14,6 @@ import { IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 
 import { Tag } from "~/components/ui/Tag";
-import { impactCategories } from "~/config";
 import { useCreateList } from "../hooks/useCreateList";
 import { Alert } from "~/components/ui/Alert";
 import { ListSchema } from "../types";
@@ -26,9 +25,12 @@ import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { type Vote } from "~/features/ballot/types";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
+// TODO: Merge with ApplicationFrom and have a prop for multiSelect
 const ListTags = () => {
   const { control, watch } = useFormContext();
   const { field } = useController({ name: "impactCategory", control });
+
+  const { data: round } = useCurrentRound();
 
   const selected = (watch("impactCategory") ?? []) as string[];
 
@@ -38,15 +40,15 @@ const ListTags = () => {
         Impact categories<span className="text-red-300">*</span>
       </Label>
       <div className="flex flex-wrap gap-1">
-        {Object.entries(impactCategories).map(([value, { label }]) => {
-          const isSelected = selected.includes(value);
+        {round?.categories?.map(({ id, label }) => {
+          const isSelected = selected.includes(id);
           return (
             <Tag
               size="lg"
               selected={isSelected}
-              key={value}
+              key={id}
               onClick={() => {
-                field.onChange([value]);
+                field.onChange([id]);
               }}
             >
               {label}
