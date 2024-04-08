@@ -2,13 +2,18 @@
 
 <div style="font-size:18px">
 
-<a href="https://easy-retro-pgf.vercel.app">View demo</a>
+<a href="https://easyretropgf.xyz">Website</a>
 <span>|</span>
 <a href="https://t.me/+0oycDCvX3QY1NjEx">Telegram Group</a>
 
-<div>
+</div>
 
-[<img src="./docs/images/screenshot.png">](https://easy-retro-pgf.vercel.app)
+<div style="display:flex">
+
+[<img width="49%" src="./docs/images/screenshot_landing_project.png">](https://easy-retro-pgf.vercel.app)
+[<img width="49%" src="./docs/images/screenshot.png">](https://easy-retro-pgf.vercel.app)
+
+</div>
 
 ## Documentation
 
@@ -33,6 +38,8 @@ All networks EAS is deployed to are supported
 - Base
 - Arbitrum One
 - Linea
+- Celo
+- Filecoin
 
 #### Testnets
 
@@ -48,7 +55,7 @@ All networks EAS is deployed to are supported
 To run locally follow these instructions:
 
 ```sh
-git clone https://github.com/gitcoinco/easy-retro-pgf
+git clone https://github.com/gitcoinco/easy-rpgf-multiround
 
 bun install # (or pnpm / yarn / npm)
 
@@ -67,4 +74,4 @@ open localhost:3000
 - **Batched requests with tRPC** - Multiple requests are batched into one (for example when the frontend requests the metadata for 24 projects they are batched into 1 request)
 - **Server-side caching of requests to EAS and IPFS** - Immediately returns the data without calling EAS and locally serving ipfs cids.
 - **SQL database for ballots** - Votes are stored privately in a Postgres database
-  - Could votes be stored on EAS as well? It would need to happen server-side from an admin signer to keep voters anonymous.
+- **Allo2 for token distribution** - Payouts are calculated based on amount of configured tokens in the pool and the vote calculation
