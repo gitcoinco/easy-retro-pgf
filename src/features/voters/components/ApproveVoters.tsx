@@ -7,8 +7,7 @@ import dynamic from "next/dynamic";
 import { type Address, isAddress, getAddress } from "viem";
 import { toast } from "sonner";
 
-import { IconButton } from "~/components/ui/Button";
-import { Spinner } from "~/components/ui/Spinner";
+import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
@@ -16,9 +15,9 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { EthAddressSchema } from "~/features/distribute/types";
 import {
   ethAddressFromDelegated,
-  newDelegatedEthAddress,
   validateAddressString,
 } from "@glif/filecoin-address";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
 function parseAddresses(addresses: string) {
   return (
@@ -79,7 +78,7 @@ function ApproveVoters() {
             voters: EthAddressSchema,
           })}
           onSubmit={(values) => {
-            const voters = parseAddresses(values.voters);
+            const voters = parseAddresses(values.voters) as Address[];
             console.log("Approve voters", { voters });
             approve.mutate(voters);
           }}
@@ -110,15 +109,17 @@ function ApproveButton({ isLoading = false, isAdmin = false }) {
   );
 
   return (
-    <IconButton
-      suppressHydrationWarning
-      icon={isLoading ? Spinner : UserRoundPlus}
-      disabled={!selectedCount || !isAdmin || isLoading}
-      variant="primary"
-      type="submit"
-    >
-      {isAdmin ? `Approve ${selectedCount} voters` : "You must be an admin"}
-    </IconButton>
+    <EnsureCorrectNetwork>
+      <Button
+        suppressHydrationWarning
+        icon={UserRoundPlus}
+        disabled={!selectedCount || !isAdmin || isLoading}
+        variant="primary"
+        type="submit"
+      >
+        {isAdmin ? `Approve ${selectedCount} voters` : "You must be an admin"}
+      </Button>
+    </EnsureCorrectNetwork>
   );
 }
 
