@@ -69,7 +69,7 @@ export type AttestationFetcher = (
   filter?: AttestationsFilter,
 ) => Attestation[];
 export function createAttestationFetcher(round: PartialRound) {
-  return (schema: string[], filter?: AttestationsFilter) => {
+  return (schema: SchemaType[], filter?: AttestationsFilter) => {
     const startsAt = Math.floor(Number(round?.startsAt ?? new Date()) / 1000);
     const easURL = easApiEndpoints[round?.network as keyof typeof networks];
     if (!easURL) throw new Error("Round network not configured");
@@ -99,8 +99,7 @@ export async function fetchApprovedVoter(round: PartialRound, address: string) {
   // if (config.skipApprovedVoterCheck) return true;
   if (!round.id) throw new Error("Round ID must be defined");
   if (!round.network) throw new Error("Round network must be configured");
-  const contracts = getContracts(round.network);
-  return createAttestationFetcher(round)([contracts.schemas.approval], {
+  return createAttestationFetcher(round)(["approval"], {
     where: {
       recipient: { equals: address },
       AND: [

@@ -49,8 +49,8 @@ async function calculateBallotResults(roundId: string, db: PrismaClient) {
   const round = await db.round.findFirstOrThrow({ where: { id: roundId } });
 
   const calculation = {
-    style: round.calculationType,
-    threshold: (round.calculationConfig as { threshold: number }).threshold,
+    style: round.calculationType as "standard" | "op",
+    threshold: (round.calculationConfig as { threshold: number })?.threshold,
   };
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
