@@ -13,16 +13,6 @@ export const config = {
   pageSize: 3 * 4,
 };
 
-export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-export const allo = {
-  alloAddress: getAddress(process.env.NEXT_PUBLIC_ALLO2_ADDRESS!),
-  strategyAddress: getAddress(process.env.NEXT_PUBLIC_STRATEGY_ADDRESS!),
-};
-
-export const theme = {
-  colorMode: "light",
-};
-
 export const networks = {
   mainnet: "mainnet",
   optimism: "optimism",
@@ -34,6 +24,26 @@ export const networks = {
   baseGoerli: "baseGoerli",
   celo: "celo",
 } as const;
+
+export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const allo = {
+  alloAddress: getAddress(process.env.NEXT_PUBLIC_ALLO2_ADDRESS!),
+  strategyAddress: {
+    [networks.mainnet]: "",
+    [networks.optimism]: "0xc7c164fa11dda8b318d8f43d154f644b0ff12703",
+    [networks.optimismSepolia]: "0xa20f3a96f771fc8cc3b44e3a4ac8bcf51654ff0f",
+    [networks.arbitrum]: "",
+    [networks.linea]: "",
+    [networks.sepolia]: "",
+    [networks.base]: "",
+    [networks.baseGoerli]: "",
+    [networks.celo]: "0xd652d4274a155ad0e1d5a1fd7f6ee844d8ec3388",
+  },
+};
+
+export const theme = {
+  colorMode: "light",
+};
 
 export const eas = {
   contracts: {

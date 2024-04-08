@@ -10,7 +10,7 @@ import {
 
 import { type Address, parseAbi, erc20Abi, getAddress } from "viem";
 import { abi as AlloABI } from "@allo-team/allo-v2-sdk/dist/Allo/allo.config";
-import { allo, nativeToken, supportedNetworks } from "~/config";
+import { allo, nativeToken, type networks, supportedNetworks } from "~/config";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAllo, waitForLogs } from "./useAllo";
 import { api } from "~/utils/api";
@@ -71,13 +71,19 @@ export function useCreatePool() {
     }) => {
       if (!alloSDK) throw new Error("Allo not initialized");
       if (!round) throw new Error("Round not loaded");
+      const network = round.network as keyof typeof networks;
+      const strategy = allo.strategyAddress[network];
+
+      if (!strategy) throw new Error("No strategy contract found");
+
       // This will properly cast the type into address (and also validate)
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       const token = getAddress(round.tokenAddress || nativeToken);
       const managers = round.admins.map(getAddress);
 
       const tx = alloSDK.createPool({
         profileId: params.profileId as Address,
-        strategy: allo.strategyAddress,
+        strategy,
         token,
         managers,
         amount: params.initialFunding ?? 0n,

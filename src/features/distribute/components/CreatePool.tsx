@@ -112,13 +112,9 @@ function CreatePool() {
 
       <Form
         schema={z.object({
-          strategyAddress: z.string(),
           amount: z.number().default(0),
         })}
-        defaultValues={{
-          amount: 0,
-          strategyAddress: allo.strategyAddress,
-        }}
+        defaultValues={{ amount: 0 }}
         onSubmit={(values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
 
