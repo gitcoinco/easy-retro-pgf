@@ -20,6 +20,7 @@ import {
   useCurrentRound,
   useUpdateRound,
 } from "~/features/rounds/hooks/useRound";
+import { toast } from "sonner";
 
 export function usePoolId() {
   const round = useCurrentRound();
@@ -65,6 +66,13 @@ export function useCreatePool() {
   const utils = api.useUtils();
 
   return useMutation({
+    onSuccess: () => {
+      toast.success("Pool created successfully!");
+    },
+    onError: (err: { reason?: string; data?: { message: string } }) =>
+      toast.error("Pool creation error", {
+        description: err.reason ?? err.data?.message,
+      }),
     mutationFn: async (params: {
       profileId: string;
       initialFunding?: bigint;
@@ -121,6 +129,13 @@ export function useFundPool() {
   const client = usePublicClient();
 
   return useMutation({
+    onSuccess: () => {
+      toast.success("Pool funded successfully!");
+    },
+    onError: (err: { reason?: string; data?: { message: string } }) =>
+      toast.error("Pool fund error", {
+        description: err.reason ?? err.data?.message,
+      }),
     mutationFn: async ({
       amount,
       poolId,
