@@ -28,6 +28,7 @@ import { useLocalStorage } from "react-use";
 import { Alert } from "~/components/ui/Alert";
 import { useSession } from "next-auth/react";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -315,6 +316,7 @@ function CreateApplicationButton({
   isLoading: boolean;
   buttonText: string;
 }) {
+  const roundState = useRoundState();
   const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
@@ -331,8 +333,12 @@ function CreateApplicationButton({
         )}
       </div>
 
+      {roundState !== "APPLICATION" && (
+        <Alert variant="info" title="Application period has ended" />
+      )}
+
       <Button
-        disabled={isLoading || !session}
+        disabled={roundState !== "APPLICATION" || isLoading || !session}
         variant="primary"
         type="submit"
         isLoading={isLoading}

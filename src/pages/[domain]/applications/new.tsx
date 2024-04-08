@@ -4,11 +4,9 @@ import { ApplicationForm } from "~/features/applications/components/ApplicationF
 import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
 import { FormSection } from "~/components/ui/Form";
-import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 export default function NewProjectPage() {
   const { address } = useAccount();
-  const roundState = useRoundState();
 
   return (
     <Layout>
@@ -27,9 +25,7 @@ export default function NewProjectPage() {
           </>
         }
       >
-        {roundState !== "APPLICATION" ? (
-          <Alert variant="info" title="Application period has ended"></Alert>
-        ) : address ? (
+        {address ? (
           <ApplicationForm address={address} />
         ) : (
           <Alert variant="info" title="Connect your wallet to continue"></Alert>
