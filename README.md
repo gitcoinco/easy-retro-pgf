@@ -10,8 +10,8 @@
 
 <div style="display:flex">
 
-[<img width="49%" src="./docs/images/screenshot_landing_project.png">](https://easy-retro-pgf.vercel.app)
-[<img width="49%" src="./docs/images/screenshot.png">](https://easy-retro-pgf.vercel.app)
+[<img width="49%" src="./docs/images/screenshot_landing_project.png">](https://easyretropgf.xyz/sustainable-urban-development)
+[<img width="49%" src="./docs/images/screenshot.png">](https://easyretropgf.xyz/sustainable-urban-development/projects)
 
 </div>
 
