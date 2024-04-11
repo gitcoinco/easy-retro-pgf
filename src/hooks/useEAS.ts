@@ -1,5 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { type MultiAttestationRequest } from "@ethereum-attestation-service/eas-sdk";
+import {
+  MultiRevocationRequest,
+  type MultiAttestationRequest,
+  RevocationRequest,
+} from "@ethereum-attestation-service/eas-sdk";
 
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { createAttestation } from "~/lib/eas/createAttestation";
@@ -30,6 +34,18 @@ export function useAttest() {
       if (!round?.network) throw new Error("Round network not configured");
       const eas = createEAS(signer, round?.network);
       return eas.multiAttest(attestations);
+    },
+  });
+}
+export function useRevoke() {
+  const signer = useEthersSigner();
+  const { data: round } = useCurrentRound();
+  return useMutation({
+    mutationFn: async (revocations: MultiRevocationRequest[]) => {
+      if (!signer) throw new Error("Connect wallet first");
+      if (!round?.network) throw new Error("Round network not configured");
+      const eas = createEAS(signer, round?.network);
+      return eas.multiRevoke(revocations);
     },
   });
 }

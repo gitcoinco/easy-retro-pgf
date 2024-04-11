@@ -11,7 +11,10 @@ import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { type Application } from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
-import { useApproveApplication } from "../hooks/useApproveApplication";
+import {
+  useApproveApplication,
+  useRevokeApplication,
+} from "../hooks/useApproveApplication";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
@@ -28,15 +31,22 @@ export function ApplicationItem({
   name,
   metadataPtr,
   time,
-  isApproved,
+  approvedBy,
   isLoading,
-}: Attestation & { isApproved?: boolean; isLoading?: boolean }) {
+}: Attestation & {
+  approvedBy?: string;
+  isLoading?: boolean;
+}) {
   const metadata = useMetadata<Application>(metadataPtr);
   const domain = useCurrentDomain();
   const form = useFormContext();
+  const revoke = useRevokeApplication({});
 
   const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
 
+  const isApproved = Boolean(approvedBy);
+
+  console.log({ approvedBy });
   return (
     <div className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800">
       <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
@@ -73,17 +83,34 @@ export function ApplicationItem({
         ) : (
           <Badge>Pending</Badge>
         )}
-        <Button
-          disabled={isLoading}
-          as={Link}
-          target="_blank"
-          href={`/${domain}/applications/${id}`}
-          className="transition-transform group-data-[state=closed]:rotate-180"
-          type="button"
-          variant=""
-        >
-          Review
-        </Button>
+        {isApproved ? (
+          <Button
+            variant="outline"
+            isLoading={revoke.isPending}
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Are you sure? This will revoke the application and must be done by the same person who approved it.",
+                )
+              )
+                revoke.mutate([id]);
+            }}
+          >
+            Revoke
+          </Button>
+        ) : (
+          <Button
+            disabled={isLoading}
+            as={Link}
+            target="_blank"
+            href={`/${domain}/applications/${id}`}
+            className="transition-transform group-data-[state=closed]:rotate-180"
+            type="button"
+            variant=""
+          >
+            Review
+          </Button>
+        )}
       </label>
     </div>
   );
@@ -100,11 +127,10 @@ export function ApplicationsToApprove() {
   const domain = useCurrentDomain();
   const approved = useApprovedApplications();
   const approve = useApproveApplication({});
-
   const approvedById = useMemo(
     () =>
       approved.data?.reduce(
-        (map, x) => (map.set(x.refUID, true), map),
+        (map, x) => (map.set(x.refUID, x.attester), map),
         new Map<string, boolean>(),
       ),
     [approved.data],
@@ -113,6 +139,9 @@ export function ApplicationsToApprove() {
   const applicationsToApprove = applications.data?.filter(
     (application) => !approvedById?.get(application.id),
   );
+
+  // console.log(applications.data);
+  console.log(approved.data);
 
   return (
     <Form
@@ -158,6 +187,7 @@ export function ApplicationsToApprove() {
             key={item.id}
             {...item}
             isLoading={applications.isPending}
+            approvedBy={approvedById?.get(item.id)}
             isApproved={approvedById?.get(item.id)}
           />
         ))}
