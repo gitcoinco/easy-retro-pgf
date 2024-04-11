@@ -2,6 +2,7 @@ import { z } from "zod";
 import { useMemo } from "react";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
+import { Address } from "viem";
 
 import { Button } from "~/components/ui/Button";
 import { Checkbox, Form } from "~/components/ui/Form";
@@ -12,7 +13,10 @@ import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { type Application } from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
-import { useApproveApplication } from "../hooks/useApproveApplication";
+import {
+  useApproveApplication,
+  useRevokeApplication,
+} from "../hooks/useApproveApplication";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
@@ -29,14 +33,18 @@ export function ApplicationItem({
   name,
   metadataPtr,
   time,
-  isApproved,
+  approvedBy,
   isLoading,
-}: Attestation & { isApproved?: boolean; isLoading?: boolean }) {
+}: Attestation & {
+  approvedBy?: { attester: Address; uid: string };
+  isLoading?: boolean;
+}) {
   const metadata = useMetadata<Application>(metadataPtr);
-
   const form = useFormContext();
+  const revoke = useRevokeApplication({});
 
   const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
+  const isApproved = Boolean(approvedBy);
 
   return (
     <div className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800">
@@ -74,17 +82,34 @@ export function ApplicationItem({
         ) : (
           <Badge>Pending</Badge>
         )}
-        <Button
-          disabled={isLoading}
-          as={Link}
-          target="_blank"
-          href={`/applications/${id}`}
-          className="transition-transform group-data-[state=closed]:rotate-180"
-          type="button"
-          variant=""
-        >
-          Review
-        </Button>
+        {isApproved ? (
+          <Button
+            variant="outline"
+            isLoading={revoke.isPending}
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Are you sure? This will revoke the application and must be done by the same person who approved it.",
+                )
+              )
+                revoke.mutate([approvedBy?.uid]);
+            }}
+          >
+            Revoke
+          </Button>
+        ) : (
+          <Button
+            disabled={isLoading}
+            as={Link}
+            target="_blank"
+            href={`/applications/${id}`}
+            className="transition-transform group-data-[state=closed]:rotate-180"
+            type="button"
+            variant=""
+          >
+            Review
+          </Button>
+        )}
       </label>
     </div>
   );
@@ -104,8 +129,10 @@ export function ApplicationsToApprove() {
   const approvedById = useMemo(
     () =>
       approved.data?.reduce(
-        (map, x) => (map.set(x.refUID, true), map),
-        new Map<string, boolean>(),
+        (map, x) => (
+          map.set(x.refUID, { attester: x.attester, uid: x.id }), map
+        ),
+        new Map<string, { attester: Address; uid: string }>(),
       ),
     [approved.data],
   );
@@ -155,7 +182,7 @@ Select the applications you want to approve. You must be a configured admin to a
           key={item.id}
           {...item}
           isLoading={applications.isPending}
-          isApproved={approvedById?.get(item.id)}
+          approvedBy={approvedById?.get(item.id)}
         />
       ))}
     </Form>
