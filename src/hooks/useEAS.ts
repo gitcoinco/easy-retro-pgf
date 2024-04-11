@@ -1,8 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  MultiRevocationRequest,
+  type MultiRevocationRequest,
   type MultiAttestationRequest,
-  RevocationRequest,
 } from "@ethereum-attestation-service/eas-sdk";
 
 import { useEthersSigner } from "~/hooks/useEthersSigner";

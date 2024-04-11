@@ -16,6 +16,7 @@ import {
   useApproveApplication,
   useRevokeApplication,
 } from "../hooks/useApproveApplication";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
@@ -44,7 +45,6 @@ export function ApplicationItem({
   const revoke = useRevokeApplication({});
 
   const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
-
   const isApproved = Boolean(approvedBy);
 
   return (
@@ -166,6 +166,11 @@ export function ApplicationsToApprove() {
             <ApproveButton isLoading={approve.isPending} />
           </div>
         </div>
+        <div className="flex gap-2">
+          <SelectAllButton applications={applicationsToApprove} />
+          <ApproveButton isLoading={approve.isPending} />
+        </div>
+
         {applications.isPending ? (
           <div className="flex items-center justify-center py-16">
             <Spinner />
