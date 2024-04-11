@@ -2,6 +2,7 @@ import { z } from "zod";
 import { useMemo } from "react";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
+import { type Address } from "viem";
 
 import { Button } from "~/components/ui/Button";
 import { Checkbox, Form, FormSection } from "~/components/ui/Form";
@@ -34,7 +35,7 @@ export function ApplicationItem({
   approvedBy,
   isLoading,
 }: Attestation & {
-  approvedBy?: string;
+  approvedBy?: { attester: Address; uid: string };
   isLoading?: boolean;
 }) {
   const metadata = useMetadata<Application>(metadataPtr);
@@ -93,7 +94,7 @@ export function ApplicationItem({
                   "Are you sure? This will revoke the application and must be done by the same person who approved it.",
                 )
               )
-                revoke.mutate([id]);
+                revoke.mutate([approvedBy.uid]);
             }}
           >
             Revoke
@@ -130,8 +131,10 @@ export function ApplicationsToApprove() {
   const approvedById = useMemo(
     () =>
       approved.data?.reduce(
-        (map, x) => (map.set(x.refUID, x.attester), map),
-        new Map<string, boolean>(),
+        (map, x) => (
+          map.set(x.refUID, { attester: x.attester, uid: x.id }), map
+        ),
+        new Map<string, { attester: Address; uid: string }>(),
       ),
     [approved.data],
   );
@@ -139,9 +142,6 @@ export function ApplicationsToApprove() {
   const applicationsToApprove = applications.data?.filter(
     (application) => !approvedById?.get(application.id),
   );
-
-  // console.log(applications.data);
-  console.log(approved.data);
 
   return (
     <Form
@@ -188,7 +188,6 @@ export function ApplicationsToApprove() {
             {...item}
             isLoading={applications.isPending}
             approvedBy={approvedById?.get(item.id)}
-            isApproved={approvedById?.get(item.id)}
           />
         ))}
       </FormSection>

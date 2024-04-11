@@ -72,7 +72,7 @@ export function useRevokeApplication(opts?: { onSuccess?: () => void }) {
 
       return revoke.mutateAsync(
         applicationIds.map((uid) => ({
-          schema: contracts.schemas.metadata,
+          schema: contracts.schemas.approval,
           data: [{ uid }],
         })),
       );
