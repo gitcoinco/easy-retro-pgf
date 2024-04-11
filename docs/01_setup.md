@@ -78,6 +78,9 @@ https://vercel.com/new
 
 As a coordinator you need to deploy MACI instance and poll. See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
 
+> [!IMPORTANT]
+> Make sure that you use the NonQV keys and create the Poll with `--use-quadratic-voting false`
+
 ## Additional configuration
 
 ### Configure theme and metadata
