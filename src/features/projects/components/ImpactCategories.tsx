@@ -7,7 +7,9 @@ export const ImpactCategories = ({ tags }: { tags?: string[] }) => {
 
   const categoriesByKey = useMemo(
     () =>
-      Object.fromEntries(round?.categories?.map((cat) => [cat.id, cat.label])),
+      Object.fromEntries(
+        round?.categories?.map((cat) => [cat.id, cat.label]) ?? [],
+      ),
     [round],
   );
 
