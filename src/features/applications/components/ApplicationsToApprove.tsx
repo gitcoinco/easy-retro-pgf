@@ -47,7 +47,6 @@ export function ApplicationItem({
 
   const isApproved = Boolean(approvedBy);
 
-  console.log({ approvedBy });
   return (
     <div className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800">
       <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
@@ -94,7 +93,7 @@ export function ApplicationItem({
                   "Are you sure? This will revoke the application and must be done by the same person who approved it.",
                 )
               )
-                revoke.mutate([approvedBy.uid]);
+                revoke.mutate([approvedBy?.uid]);
             }}
           >
             Revoke
