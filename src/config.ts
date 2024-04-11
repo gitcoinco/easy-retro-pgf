@@ -30,14 +30,14 @@ export const allo = {
   alloAddress: getAddress(process.env.NEXT_PUBLIC_ALLO2_ADDRESS!),
   strategyAddress: {
     [networks.mainnet]: "",
-    [networks.optimism]: "0xc7c164fa11dda8b318d8f43d154f644b0ff12703",
-    [networks.optimismSepolia]: "0xa20f3a96f771fc8cc3b44e3a4ac8bcf51654ff0f",
+    [networks.optimism]: "0xff22f4ca9332f6e737a5e1522c034a3afc1b29fb",
+    [networks.optimismSepolia]: "0xd652d4274a155ad0e1d5a1fd7f6ee844d8ec3388",
     [networks.arbitrum]: "",
     [networks.linea]: "",
     [networks.sepolia]: "",
     [networks.base]: "",
     [networks.baseGoerli]: "",
-    [networks.celo]: "0xd652d4274a155ad0e1d5a1fd7f6ee844d8ec3388",
+    [networks.celo]: "0x53a27a249518cb777e445a553b5ece124fd1a532",
   },
 };
 
