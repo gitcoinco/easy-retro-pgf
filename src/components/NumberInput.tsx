@@ -1,4 +1,8 @@
-import { forwardRef, type ComponentPropsWithRef } from "react";
+import {
+  forwardRef,
+  type ComponentPropsWithRef,
+  type PropsWithChildren,
+} from "react";
 import { NumericFormat } from "react-number-format";
 import { useController, useFormContext } from "react-hook-form";
 
@@ -13,7 +17,9 @@ export const NumberInput = forwardRef(function NumberInput(
   }: {
     disabled?: boolean;
     error?: boolean;
-  } & ComponentPropsWithRef<"input">,
+    decimalScale?: number;
+  } & PropsWithChildren &
+    ComponentPropsWithRef<"input">,
   ref,
 ) {
   const { control, setValue } = useFormContext();
@@ -29,15 +35,16 @@ export const NumberInput = forwardRef(function NumberInput(
         ref={ref}
         autoComplete="off"
         className={props.className}
-        value={field.value as number}
+        value={field.value}
         disabled={props.disabled}
-        defaultValue={props.defaultValue as string}
+        defaultValue={props.defaultValue}
         onChange={(v) =>
           // Parse decimal string to number to adhere to AllocationSchema
           setValue(name!, parseFloat(v.target.value.replace(/,/g, "")))
         }
         onBlur={onBlur}
         thousandSeparator=","
+        {...props}
       />
       {children}
     </InputWrapper>

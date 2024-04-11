@@ -30,6 +30,7 @@ export const AllocationInput = forwardRef(function AllocationInput(
       name={name}
       ref={ref}
       {...props}
+      decimalScale={0}
       // Enable this to totally stop the number entry if it surpasses max votes for project
       // isAllowed={({ floatValue }) => (floatValue ?? 0) <= maxVotesProject}
       className={cn({
