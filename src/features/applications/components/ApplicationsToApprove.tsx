@@ -166,10 +166,6 @@ export function ApplicationsToApprove() {
             <ApproveButton isLoading={approve.isPending} />
           </div>
         </div>
-        <div className="flex gap-2">
-          <SelectAllButton applications={applicationsToApprove} />
-          <ApproveButton isLoading={approve.isPending} />
-        </div>
 
         {applications.isPending ? (
           <div className="flex items-center justify-center py-16">
@@ -231,6 +227,7 @@ function ApproveButton({ isLoading = false }) {
     <EnsureCorrectNetwork>
       <Button
         suppressHydrationWarning
+        isLoading={isLoading}
         disabled={!selectedCount || isLoading}
         variant="primary"
         type="submit"
