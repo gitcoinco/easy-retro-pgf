@@ -8,6 +8,7 @@ import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
+import { Markdown } from "~/components/ui/Markdown";
 
 export default function ProjectDetails({
   attestation,
@@ -48,7 +49,7 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
-      <p className="text-2xl">{bio}</p>
+      <Markdown>{bio}</Markdown>
       <div>
         <Heading as="h2" size="3xl">
           Impact statements
