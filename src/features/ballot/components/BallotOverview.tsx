@@ -78,36 +78,40 @@ function BallotOverview() {
       <BallotSection title="Voting ends in:">
         <VotingEndsIn />
       </BallotSection>
-      <BallotSection title="Projects added:">
-        <div>
-          <span className="text-gray-900 dark:text-gray-300">
-            {allocations.length}
-          </span>
-          /{projectCount?.count}
-        </div>
-      </BallotSection>
-      <BallotSection
-        title={
-          <div className="flex justify-between">
-            {config.tokenName} allocated:
-            <div
-              className={clsx("text-gray-900 dark:text-gray-300", {
-                ["text-primary-500"]: sum > initialVoiceCredits,
-              })}
-            >
-              {formatNumber(sum)} {config.tokenName}
+      {isRegistered && (
+        <BallotSection title="Projects added:">
+          <div>
+            <span className="text-gray-900 dark:text-gray-300">
+              {allocations.length}
+            </span>
+            /{projectCount?.count}
+          </div>
+        </BallotSection>
+      )}
+      {isRegistered && (
+        <BallotSection
+          title={
+            <div className="flex justify-between">
+              {config.tokenName} allocated:
+              <div
+                className={clsx("text-gray-900 dark:text-gray-300", {
+                  ["text-primary-500"]: sum > initialVoiceCredits,
+                })}
+              >
+                {formatNumber(sum)} {config.tokenName}
+              </div>
+            </div>
+          }
+        >
+          <Progress value={sum} max={initialVoiceCredits} />
+          <div className="flex justify-between text-xs">
+            <div>Total</div>
+            <div>
+              {formatNumber(initialVoiceCredits)} {config.tokenName}
             </div>
           </div>
-        }
-      >
-        <Progress value={sum} max={initialVoiceCredits} />
-        <div className="flex justify-between text-xs">
-          <div>Total</div>
-          <div>
-            {formatNumber(initialVoiceCredits)} {config.tokenName}
-          </div>
-        </div>
-      </BallotSection>
+        </BallotSection>
+      )}
       {!isRegistered || !isEligibleToVote ? null : ballot?.publishedAt ? (
         <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
           View submitted ballot
