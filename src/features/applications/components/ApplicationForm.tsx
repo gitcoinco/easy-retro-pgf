@@ -160,7 +160,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Contribution links"
+          title={
+            <>
+              Contribution links <span className="text-red-300">*</span>
+            </>
+          }
           description="Where can we find your contributions?"
         >
           <FieldArray
@@ -198,7 +202,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Impact metrics"
+          title={
+            <>
+              Impact metrics <span className="text-red-300">*</span>
+            </>
+          }
           description="What kind of impact have your project made?"
         >
           <FieldArray
@@ -236,7 +244,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Funding sources"
+          title={
+            <>
+              Funding sources <span className="text-red-300">*</span>
+            </>
+          }
           description="From what sources have you received funding?"
         >
           <FieldArray
@@ -362,6 +374,7 @@ function ImpactTags() {
   const selected = watch("application.impactCategory") ?? [];
 
   const error = formState.errors.application?.impactCategory;
+  if (!round?.categories?.length) return null;
   return (
     <div className="mb-4">
       <Label>

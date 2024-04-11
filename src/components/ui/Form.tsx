@@ -280,7 +280,7 @@ export function FormSection({
   description,
   children,
 }: {
-  title: string;
+  title: ReactNode | string;
   description: ReactNode | string;
 } & ComponentProps<"section">) {
   return (
