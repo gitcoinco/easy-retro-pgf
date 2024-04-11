@@ -1,3 +1,6 @@
+import { Plus, Trash } from "lucide-react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { isAfter } from "date-fns";
 import {
   Form,
   FormControl,
@@ -60,8 +63,16 @@ function RoundForm({ round }: { round: RoundSchema }) {
         </FormControl>
 
         <FormControl name="description" label="Description">
-          <Textarea rows={14} />
+          <Textarea rows={10} />
         </FormControl>
+      </FormSection>
+      <FormSection
+        title="Impact categories"
+        description="Define your impact categories for the application form. Once the application phase has started you can only rename the category labels (not add or remove)."
+      >
+        <Categories
+          disabled={isAfter(new Date(), round.startsAt ?? new Date())}
+        />
       </FormSection>
 
       <div className="flex justify-end">
@@ -70,5 +81,47 @@ function RoundForm({ round }: { round: RoundSchema }) {
         </Button>
       </div>
     </Form>
+  );
+}
+
+function Categories({ disabled = false }) {
+  const { control, register } = useFormContext();
+  const { fields, append, remove } = useFieldArray({
+    name: "categories",
+    control,
+  });
+
+  return (
+    <div className="flex-1">
+      <div className="space-y-1">
+        {fields.map((field, i) => (
+          <div key={i} className="flex justify-end gap-1">
+            <FormControl name={`categories.${i}.label`}>
+              <Input placeholder={`Impact category...`} />
+            </FormControl>
+            <input
+              type="hidden"
+              {...register(`categories.${i}.id`)}
+              value={i}
+            />
+            <Button
+              disabled={disabled}
+              variant="ghost"
+              icon={Trash}
+              onClick={() => remove(i)}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-end">
+        <Button
+          disabled={disabled}
+          icon={Plus}
+          onClick={() => append({ name: "" })}
+        >
+          Add category
+        </Button>
+      </div>
+    </div>
   );
 }
