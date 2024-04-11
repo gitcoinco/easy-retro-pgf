@@ -1,5 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { type MultiAttestationRequest } from "@ethereum-attestation-service/eas-sdk";
+import {
+  type MultiRevocationRequest,
+  type MultiAttestationRequest,
+} from "@ethereum-attestation-service/eas-sdk";
 
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { createAttestation } from "~/lib/eas/createAttestation";
@@ -26,6 +29,17 @@ export function useAttest() {
       const eas = createEAS(signer);
 
       return eas.multiAttest(attestations);
+    },
+  });
+}
+
+export function useRevoke() {
+  const signer = useEthersSigner();
+  return useMutation({
+    mutationFn: async (revocations: MultiRevocationRequest[]) => {
+      if (!signer) throw new Error("Connect wallet first");
+      const eas = createEAS(signer);
+      return eas.multiRevoke(revocations);
     },
   });
 }
