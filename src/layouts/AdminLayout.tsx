@@ -1,9 +1,8 @@
 import type { ReactNode, PropsWithChildren } from "react";
-import { useAccount } from "wagmi";
 
 import { type LayoutProps } from "./BaseLayout";
-import { config } from "~/config";
 import { Layout } from "./DefaultLayout";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 
 type Props = PropsWithChildren<
   {
@@ -12,11 +11,16 @@ type Props = PropsWithChildren<
   } & LayoutProps
 >;
 export const AdminLayout = ({ children, ...props }: Props) => {
-  const { address } = useAccount();
-
-  if (config.admins.includes(address!)) {
-    return <div>Only admins can access this page</div>;
-  }
-
-  return <Layout {...props}>{children}</Layout>;
+  const isAdmin = useIsAdmin();
+  return (
+    <Layout {...props}>
+      {isAdmin ? (
+        children
+      ) : (
+        <div className="py-16 text-center">
+          Not authorized to view this page
+        </div>
+      )}
+    </Layout>
+  );
 };
