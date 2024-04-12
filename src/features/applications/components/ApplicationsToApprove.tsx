@@ -43,11 +43,11 @@ export function ApplicationItem({
   const form = useFormContext();
   const revoke = useRevokeApplication({});
 
-  const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
+  const { fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
   const isApproved = Boolean(approvedBy);
 
   return (
-    <div className="hover:dark-gray-100 flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800">
+    <div className="flex items-center gap-2 rounded border-b hover:bg-gray-100 dark:border-gray-800 hover:dark:bg-gray-800">
       <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
         <Checkbox
           disabled={isApproved}
