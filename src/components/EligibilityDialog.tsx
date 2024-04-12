@@ -12,6 +12,7 @@ export const EligibilityDialog = () => {
   const { data: session } = useSession();
   const { data, isPending, error } = useApprovedVoter(address!);
 
+  return null;
   if (isPending || !address || !session || error) return null;
 
   return (

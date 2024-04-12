@@ -8,20 +8,27 @@ import { type Address, isAddress, getAddress } from "viem";
 import { toast } from "sonner";
 
 import { Button, IconButton } from "~/components/ui/Button";
-import { Spinner } from "~/components/ui/Spinner";
 import { Dialog } from "~/components/ui/Dialog";
 import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { EthAddressSchema } from "~/features/distribute/types";
+import {
+  ethAddressFromDelegated,
+  validateAddressString,
+} from "@glif/filecoin-address";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
-function parseAddresses(addresses: string): Address[] {
+function parseAddresses(addresses: string) {
   return (
     addresses
       .split(",")
-      .filter((addr) => isAddress(addr))
-      .map((addr) => getAddress(addr.trim()))
+      .map((addr) => addr.trim() as Address)
+      .map((addr) => {
+        if (isAddress(addr)) return getAddress(addr);
+        if (validateAddressString(addr)) return ethAddressFromDelegated(addr);
+      })
+      .filter(Boolean)
       // Remove duplicates
       .filter((addr, i, self) => self.indexOf(addr) === i)
   );
@@ -42,6 +49,7 @@ function ApproveVoters() {
         description: err.reason ?? err.data?.message,
       }),
   });
+
   return (
     <div>
       <IconButton
@@ -70,7 +78,7 @@ function ApproveVoters() {
             voters: EthAddressSchema,
           })}
           onSubmit={(values) => {
-            const voters = parseAddresses(values.voters);
+            const voters = parseAddresses(values.voters) as Address[];
             console.log("Approve voters", { voters });
             approve.mutate(voters);
           }}

@@ -9,10 +9,10 @@ const steps = [
     label: "Registration",
     date: config.startsAt,
   },
-  {
+  /* {
     label: "Review & Approval",
     date: config.registrationEndsAt,
-  },
+  }, */
   {
     label: "Voting",
     date: config.reviewEndsAt,

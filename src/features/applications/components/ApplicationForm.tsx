@@ -5,6 +5,8 @@ import { useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
 import { useAccount, useBalance } from "wagmi";
+import { newDelegatedEthAddress } from "@glif/filecoin-address";
+import { getAddress } from "viem";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
@@ -31,6 +33,7 @@ import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 
+
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
   application: ApplicationSchema,
@@ -56,13 +59,16 @@ export function ApplicationForm({ address }: { address: Address }) {
       </Alert>
     );
   }
+
   const error = create.error;
   return (
     <div>
       <Form
         defaultValues={{
           application: {
-            payoutAddress: address,
+            payoutAddress: newDelegatedEthAddress(
+              getAddress(address),
+            ).toString(),
             contributionLinks: [{}],
             impactMetrics: [{}],
             fundingSources: [{}],
@@ -127,7 +133,7 @@ export function ApplicationForm({ address }: { address: Address }) {
               label="Payout address"
               required
             >
-              <Input placeholder="0x..." />
+              <Input placeholder="Enter your Filecoin address..." />
             </FormControl>
           </div>
         </FormSection>

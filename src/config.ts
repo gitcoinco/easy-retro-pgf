@@ -1,14 +1,14 @@
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
-  title: "EasyRetroPGF",
-  description: "Open-source Retro Public Goods Funding platform",
-  url: "https://easy-retro-pgf.vercel.app",
-  image: "/api/og",
+  title: "FIL RetroPGF",
+  description: "Filecoin Retro Public Goods",
+  url: "https://ezrpgf-filecoin.vercel.app",
+  image: "/filrpgf.jpg",
 };
 
 export const config = {
-  logoUrl: "",
+  logoUrl: "https://filecoin.io/images/filecoin-logo.svg",
   pageSize: 3 * 4,
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
@@ -40,7 +40,7 @@ export const allo = {
 export const isNativeToken = allo.tokenAddress === nativeToken;
 
 export const theme = {
-  colorMode: "dark",
+  colorMode: "light",
 };
 
 export const eas = {
@@ -62,11 +62,11 @@ export const eas = {
 };
 
 export const impactCategories = {
-  ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },
-  OPEN_SOURCE: { label: "Web3 Open Source Software" },
-  COMMUNITY_EDUCATION: { label: "Web3 Community & Education" },
-  COLLECTIVE_GOVERNANCE: { label: "Collective Governance" },
-  OP_STACK: { label: "OP Stack" },
-  DEVELOPER_ECOSYSTEM: { label: "Developer Ecosystem" },
-  END_USER_EXPERIENCE_AND_ADOPTION: { label: "End user UX" },
+  INFRASTRUCTURE: { label: "Infrastructure & Dependencies" },
+  TOOLING: { label: "Tooling & Utilities" },
+  COMMUNITY_EDUCATION: { label: "Education & Outreach" },
+  RESEARCH_AND_DEVELOPMENT: { label: "Protocol Research & Development" },
+  GOVERNANCE: { label: "Collective Governance" },
+  END_USER_EXPERIENCE: { label: "Products & End User UX" },
+  Other: { label: "Other" },
 } as const;

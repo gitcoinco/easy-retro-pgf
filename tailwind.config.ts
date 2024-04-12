@@ -5,10 +5,10 @@ import theme from "tailwindcss/defaultTheme";
 
 const customColors = {
   primary: {
-    400: "#648fe4",
-    500: "#698dff",
-    600: "#346ddb",
-    700: "#395794",
+    "400": "#1ebfff",
+    "500": "#06a3ff",
+    "600": "#0090ff",
+    "700": "#086dc5",
   },
   secondary: {
     100: "#EDF4FC",
