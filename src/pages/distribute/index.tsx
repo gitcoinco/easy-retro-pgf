@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
-import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
+import { Form, FormControl, Input, Select } from "~/components/ui/Form";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
@@ -11,7 +11,7 @@ import {
   type Calculation,
   CalculationSchema,
 } from "~/features/distribute/types";
-import { Layout } from "~/layouts/DefaultLayout";
+import { AdminLayout } from "~/layouts/AdminLayout";
 import { api } from "~/utils/api";
 
 export default function DistributePage() {
@@ -24,7 +24,7 @@ export default function DistributePage() {
   const calculation = settings.data?.config?.calculation;
 
   return (
-    <Layout
+    <AdminLayout
       sidebar="left"
       sidebarComponent={
         <div className="space-y-4">
@@ -79,7 +79,7 @@ export default function DistributePage() {
           )}
         </div>
       )}
-    </Layout>
+    </AdminLayout>
   );
 }
 
