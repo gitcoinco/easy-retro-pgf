@@ -1,4 +1,10 @@
 import { z } from "zod";
+import { type Address } from "viem";
+import { toast } from "sonner";
+import { useController, useFormContext } from "react-hook-form";
+import { useLocalStorage } from "react-use";
+import { useSession } from "next-auth/react";
+import { useAccount, useBalance } from "wagmi";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
@@ -21,20 +27,16 @@ import {
   fundingSourceTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
-import { toast } from "sonner";
-import { useController, useFormContext } from "react-hook-form";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
-import { useLocalStorage } from "react-use";
 import { Alert } from "~/components/ui/Alert";
-import { useSession } from "next-auth/react";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
   application: ApplicationSchema,
 });
 
-export function ApplicationForm({ address = "" }) {
+export function ApplicationForm({ address }: { address: Address }) {
   const clearDraft = useLocalStorage("application-draft")[2];
 
   const create = useCreateApplication({
@@ -288,8 +290,9 @@ export function ApplicationForm({ address = "" }) {
 
         {error ? (
           <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
-            Make sure you&apos;re not connected to a VPN since this can cause
-            problems with the RPC and your wallet.
+            Make sure you have funds in your wallet and that you&apos;re not
+            connected to a VPN since this can cause problems with the RPC and
+            your wallet.
           </div>
         ) : null}
 
@@ -315,9 +318,14 @@ function CreateApplicationButton({
   isLoading: boolean;
   buttonText: string;
 }) {
+  const { address } = useAccount();
+  const balance = useBalance({ address });
+
   const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
+  if (balance.isPending) return null;
+  const hasBalance = (balance.data?.value ?? 0n) > 0;
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -331,14 +339,18 @@ function CreateApplicationButton({
         )}
       </div>
 
-      <Button
-        disabled={isLoading || !session}
-        variant="primary"
-        type="submit"
-        isLoading={isLoading}
-      >
-        {buttonText}
-      </Button>
+      {hasBalance ? (
+        <Button
+          disabled={isLoading || !session}
+          variant="primary"
+          type="submit"
+          isLoading={isLoading}
+        >
+          {buttonText}
+        </Button>
+      ) : (
+        <Button disabled>Not enough funds</Button>
+      )}
     </div>
   );
 }
