@@ -30,6 +30,7 @@ import { useCreateApplication } from "../hooks/useCreateApplication";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -324,7 +325,6 @@ function CreateApplicationButton({
   const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
-  if (balance.isPending) return null;
   const hasBalance = (balance.data?.value ?? 0n) > 0;
   return (
     <div className="flex items-center justify-between">
@@ -338,19 +338,22 @@ function CreateApplicationButton({
           </div>
         )}
       </div>
-
-      {hasBalance ? (
-        <Button
-          disabled={isLoading || !session}
-          variant="primary"
-          type="submit"
-          isLoading={isLoading}
-        >
-          {buttonText}
-        </Button>
-      ) : (
-        <Button disabled>Not enough funds</Button>
-      )}
+      <EnsureCorrectNetwork>
+        {hasBalance ? (
+          <Button
+            disabled={isLoading || !session}
+            variant="primary"
+            type="submit"
+            isLoading={isLoading}
+          >
+            {buttonText}
+          </Button>
+        ) : (
+          <Button disabled isLoading={balance.isPending}>
+            Not enough funds
+          </Button>
+        )}
+      </EnsureCorrectNetwork>
     </div>
   );
 }
