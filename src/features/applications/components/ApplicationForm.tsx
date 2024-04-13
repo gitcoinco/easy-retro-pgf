@@ -134,7 +134,7 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title="Contribution & Impact"
+          title={"Contribution & Impact"}
           description="Describe the contribution and impact of your project."
         >
           <FormControl
@@ -162,7 +162,11 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title="Contribution links"
+          title={
+            <>
+              Contribution links <span className="text-red-300">*</span>
+            </>
+          }
           description="Where can we find your contributions?"
         >
           <FieldArray
@@ -200,7 +204,11 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title="Impact metrics"
+          title={
+            <>
+              Impact metrics <span className="text-red-300">*</span>
+            </>
+          }
           description="What kind of impact have your project made?"
         >
           <FieldArray
@@ -238,7 +246,11 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title="Funding sources"
+          title={
+            <>
+              Funding sources <span className="text-red-300">*</span>
+            </>
+          }
           description="From what sources have you received funding?"
         >
           <FieldArray

@@ -98,7 +98,6 @@ export const Label = createComponent(
   "label",
   tv({
     base: "block tracking-wider dark:text-gray-300 font-semibold",
-    variants: { required: { true: "after:content-['*']" } },
   }),
 );
 export const Textarea = createComponent(
@@ -149,12 +148,10 @@ export const FormControl = ({
   return (
     <fieldset className={cn("mb-4", className)}>
       {label && (
-        <Label
-          className="mb-1"
-          htmlFor={name}
-          required={required}
-          children={label}
-        />
+        <Label className="mb-1" htmlFor={name}>
+          {label}
+          {required && <span className="text-red-300">*</span>}
+        </Label>
       )}
       {cloneElement(children as ReactElement, {
         id: name,
