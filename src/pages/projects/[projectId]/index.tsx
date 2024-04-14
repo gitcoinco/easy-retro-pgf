@@ -6,6 +6,7 @@ import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { ProjectAddToBallot } from "~/features/projects/components/AddToBallot";
 import { getAppState } from "~/utils/state";
 import { ProjectAwarded } from "~/features/projects/components/ProjectAwarded";
+import { ProjectComments } from "~/features/comments/components/ProjectComments";
 
 export default function ProjectDetailsPage({ projectId = "" }) {
   const project = useProjectById(projectId);
@@ -20,6 +21,7 @@ export default function ProjectDetailsPage({ projectId = "" }) {
   return (
     <LayoutWithBallot sidebar="left" title={name} showBallot eligibilityCheck>
       <ProjectDetails attestation={project.data} action={action} />
+      <ProjectComments projectId={projectId} />
     </LayoutWithBallot>
   );
 }
