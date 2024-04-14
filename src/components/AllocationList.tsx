@@ -202,28 +202,8 @@ function AllocationFormWrapper({
     </AllocationListWrapper>
   );
 }
-export function AllocationForm({
-  list,
-  ...props
-}: { list?: Vote[] } & AllocationFormProps) {
-  return (
-    <AllocationFormWrapper
-      {...props}
-      input={AllocationInput}
-      renderExtraColumn={({ project }) => {
-        const listAllocation =
-          list?.find((p) => p.projectId === project.projectId)?.amount ?? 0;
-
-        return listAllocation ? (
-          <AllocationInput
-            name="compareAmount"
-            defaultValue={listAllocation}
-            disabled={true}
-          />
-        ) : null;
-      }}
-    />
-  );
+export function AllocationForm({ ...props }: AllocationFormProps) {
+  return <AllocationFormWrapper {...props} input={AllocationInput} />;
 }
 export function DistributionForm(props: AllocationFormProps) {
   return (
