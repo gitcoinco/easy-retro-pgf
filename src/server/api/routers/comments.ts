@@ -21,7 +21,21 @@ export const commentsRouter = createTRPCRouter({
         data: { content, creatorId, projectId },
       });
     }),
-
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input: { id }, ctx }) => {
+      const creatorId = String(ctx.session.user.name);
+      return ctx.db.comment.delete({ where: { id, creatorId } });
+    }),
+  update: protectedProcedure
+    .input(z.object({ id: z.string(), content: z.string() }))
+    .mutation(async ({ input: { id, content }, ctx }) => {
+      const creatorId = String(ctx.session.user.name);
+      return ctx.db.comment.update({
+        where: { id, creatorId },
+        data: { content },
+      });
+    }),
   list: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input: { projectId }, ctx }) => {
