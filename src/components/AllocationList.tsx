@@ -21,10 +21,10 @@ import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
 import { type Vote } from "../features/ballot/types";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
-import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { FormControl, Input } from "~/components/ui/Form";
 import { NumberInput } from "./NumberInput";
+import { ProjectsSearch } from "~/features/projects/components/ProjectsSearch";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -65,7 +65,7 @@ export function AllocationFormWithSearch() {
 
   return (
     <AllocationListWrapper>
-      <SearchProjects
+      <ProjectsSearch
         addedProjects={fields}
         onSelect={(projectId) => append({ projectId, amount: 0 })}
       />
