@@ -135,7 +135,7 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title="Contribution & Impact"
+          title={"Contribution & Impact"}
           description="Describe the contribution and impact of your project."
         >
           <FormControl
