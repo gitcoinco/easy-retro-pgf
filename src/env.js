@@ -85,11 +85,6 @@ export const env = createEnv({
       .default(
         "0xac4c92fc5c7babed88f78a917cdbcdc1c496a8f4ab2d5b2ec29402736b2cf929",
       ),
-    NEXT_PUBLIC_LISTS_SCHEMA: z
-      .string()
-      .default(
-        "0x3e3e2172aebb902cf7aa6e1820809c5b469af139e7a4265442b1c22b97c6b2a5",
-      ),
 
     NEXT_PUBLIC_EAS_CONTRACT_ADDRESS: z
       .string()
@@ -150,7 +145,6 @@ export const env = createEnv({
     NEXT_PUBLIC_BADGEHOLDER_ATTESTER:
       process.env.NEXT_PUBLIC_BADGEHOLDER_ATTESTER,
     NEXT_PUBLIC_PROFILE_SCHEMA: process.env.NEXT_PUBLIC_PROFILE_SCHEMA,
-    NEXT_PUBLIC_LISTS_SCHEMA: process.env.NEXT_PUBLIC_LISTS_SCHEMA,
 
     NEXT_PUBLIC_EAS_CONTRACT_ADDRESS:
       process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS,

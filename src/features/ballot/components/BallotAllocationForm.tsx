@@ -217,15 +217,11 @@ const EmptyBallot = () => (
       <h3 className="text-center text-lg font-bold">Your ballot is empty</h3>
       <p className="text-center text-sm text-gray-700">
         Your ballot currently doesn&apos;t have any projects added. Browse
-        through the available projects and lists.
+        through the available projects.
       </p>
       <div className="flex items-center justify-center gap-3">
         <Button as={Link} href={"/projects"}>
           View projects
-        </Button>
-        <div className="text-gray-700">or</div>
-        <Button as={Link} href={"/lists"}>
-          View lists
         </Button>
       </div>
     </div>
