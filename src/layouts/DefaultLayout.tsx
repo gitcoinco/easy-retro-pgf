@@ -30,10 +30,6 @@ export const Layout = ({ children, ...props }: Props) => {
       href: `/${domain}/projects`,
       children: `Projects`,
     },
-    {
-      href: `/${domain}/lists`,
-      children: `Lists`,
-    },
   ];
 
   if (useRoundState() === "RESULTS") {

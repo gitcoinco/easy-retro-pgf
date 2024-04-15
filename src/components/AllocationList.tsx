@@ -21,10 +21,10 @@ import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
 import { type Vote } from "../features/ballot/types";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
-import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { FormControl, Input } from "~/components/ui/Form";
 import { NumberInput } from "./NumberInput";
+import { ProjectsSearch } from "~/features/projects/components/ProjectsSearch";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -65,7 +65,7 @@ export function AllocationFormWithSearch() {
 
   return (
     <AllocationListWrapper>
-      <SearchProjects
+      <ProjectsSearch
         addedProjects={fields}
         onSelect={(projectId) => append({ projectId, amount: 0 })}
       />
@@ -202,28 +202,8 @@ function AllocationFormWrapper({
     </AllocationListWrapper>
   );
 }
-export function AllocationForm({
-  list,
-  ...props
-}: { list?: Vote[] } & AllocationFormProps) {
-  return (
-    <AllocationFormWrapper
-      {...props}
-      input={AllocationInput}
-      renderExtraColumn={({ project }) => {
-        const listAllocation =
-          list?.find((p) => p.projectId === project.projectId)?.amount ?? 0;
-
-        return listAllocation ? (
-          <AllocationInput
-            name="compareAmount"
-            defaultValue={listAllocation}
-            disabled={true}
-          />
-        ) : null;
-      }}
-    />
-  );
+export function AllocationForm({ ...props }: AllocationFormProps) {
+  return <AllocationFormWrapper {...props} input={AllocationInput} />;
 }
 export function DistributionForm(props: AllocationFormProps) {
   return (
