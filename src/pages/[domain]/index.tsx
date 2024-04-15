@@ -11,11 +11,12 @@ import { networkNames } from "~/config";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
+import { Skeleton } from "~/components/ui/Skeleton";
 
 export default function RoundPage() {
-  const round = useCurrentRound();
+  const { data, isPending } = useCurrentRound();
 
-  const { startsAt, reviewAt, votingAt, resultAt, payoutAt } = round.data ?? {};
+  const { startsAt, reviewAt, votingAt, resultAt, payoutAt } = data ?? {};
   const steps = [];
   if (startsAt) steps.push({ label: "Registration", date: startsAt });
   if (reviewAt) steps.push({ label: "Review & Approval", date: reviewAt });
@@ -23,15 +24,17 @@ export default function RoundPage() {
   if (resultAt) steps.push({ label: "Tallying", date: resultAt });
   if (payoutAt) steps.push({ label: "Distribution", date: payoutAt });
 
-  const { bannerImageUrl, network } = round.data ?? {};
+  const { bannerImageUrl, network } = data ?? {};
   return (
     <Layout>
-      <div className="mb-2 flex items-center justify-between">
-        <h1 className="text-4xl font-semibold">{round.data?.name}</h1>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <Skeleton className="h-12 w-full" isLoading={isPending}>
+          <h1 className="text-4xl font-semibold">{data?.name}</h1>
+        </Skeleton>
         <Button
           icon={Plus}
           as={Link}
-          href={`/${round.data?.domain}/applications/new`}
+          href={`/${data?.domain}/applications/new`}
         >
           Apply with your project
         </Button>
@@ -39,20 +42,26 @@ export default function RoundPage() {
       <div className="mb-4 flex gap-16">
         <Meta>
           <MetaLabel>Network</MetaLabel>
-          <div>{network ? networkNames[network] : "not set"}</div>
+          <Skeleton isLoading={isPending}>
+            <div>{network && networkNames[network]}</div>
+          </Skeleton>
         </Meta>
         <Meta>
           <MetaLabel>Token</MetaLabel>
-          <TokenSymbol />
+          <Skeleton isLoading={isPending}>
+            <TokenSymbol />
+          </Skeleton>
         </Meta>
         <Meta>
           <MetaLabel>Calculation</MetaLabel>
-          {round.data?.calculationType?.toUpperCase()}
+          <Skeleton isLoading={isPending} className="h-7">
+            {data?.calculationType?.toUpperCase()}
+          </Skeleton>
         </Meta>
       </div>
       <Banner size="lg" src={bannerImageUrl} />
-      {round.data && <RoundProgress steps={steps} />}
-      <Markdown>{round.data?.description}</Markdown>
+      {data && <RoundProgress steps={steps} />}
+      <Markdown>{data?.description}</Markdown>
     </Layout>
   );
 }
