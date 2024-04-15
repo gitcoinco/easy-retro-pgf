@@ -14,7 +14,7 @@ type Props = {
   onSelect: (path: string) => void;
 };
 
-export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
+export const ProjectsSearch = ({ addedProjects, onSelect }: Props) => {
   const searchRef = useRef(null);
   const [isOpen, setOpen] = useState(false);
   const [search, setSearch] = useState("");
