@@ -23,7 +23,7 @@ export default function ProjectDetails({
     metadata.data ?? {};
 
   return (
-    <div className="relative">
+    <div className="relative mb-24">
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
