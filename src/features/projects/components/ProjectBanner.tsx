@@ -4,10 +4,11 @@ import { type Address } from "viem";
 import { Banner } from "~/components/ui/Banner";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
 
-export function ProjectBanner(
-  props: { profileId?: Address } & ComponentProps<typeof Banner>,
-) {
-  const profile = useProfileWithMetadata(props.profileId);
+export function ProjectBanner({
+  profileId,
+  ...props
+}: { profileId?: Address } & ComponentProps<typeof Banner>) {
+  const profile = useProfileWithMetadata(profileId);
   const { profileImageUrl, bannerImageUrl } = profile.data ?? {};
 
   return (
