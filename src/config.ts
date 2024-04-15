@@ -2,9 +2,9 @@ import { getAddress } from "viem";
 import * as allChains from "viem/chains";
 
 export const metadata = {
-  title: "EasyRPGF",
+  title: "EasyRetroFunding",
   description: "Open-source Retro Public Goods Funding platform",
-  url: "https://easy-retro-pgf.vercel.app",
+  url: "https://easyretropgf.xyz",
   image: "/api/og",
 };
 
