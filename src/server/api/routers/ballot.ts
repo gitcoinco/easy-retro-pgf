@@ -42,8 +42,8 @@ export const ballotRouter = createTRPCRouter({
   save: protectedRoundProcedure
     .input(BallotSchema)
     .mutation(async ({ input, ctx }) => {
-      const voterId = ctx.session?.user.name as Address;
-      const roundId = String(ctx.round?.id);
+      const voterId = ctx.session.user.name!;
+      const roundId = ctx.round.id;
 
       const round = await ctx.db.round.findFirst({
         where: { id: roundId },
@@ -90,7 +90,7 @@ export const ballotRouter = createTRPCRouter({
     .input(BallotPublishSchema)
     .mutation(async ({ input, ctx }) => {
       const voterId = ctx.session?.user.name as Address;
-      const roundId = ctx.round?.id;
+      const roundId = ctx.round.id;
       const round = await ctx.db.round.findFirstOrThrow({
         where: { id: roundId },
         select: {
@@ -130,7 +130,7 @@ export const ballotRouter = createTRPCRouter({
         });
       }
 
-      if (!(await fetchApprovedVoter(ctx.round!, voterId))) {
+      if (!(await fetchApprovedVoter(ctx.round, voterId))) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Voter is not approved",

@@ -192,8 +192,8 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 export const roundProcedure = publicProcedure.use(roundMiddleware);
 export const protectedRoundProcedure = publicProcedure
-  .use(enforceUserIsAuthed)
-  .use(roundMiddleware);
+  .use(roundMiddleware)
+  .use(enforceUserIsAuthed);
 export const adminProcedure = protectedProcedure
   .use(roundMiddleware)
   .use(enforceUserIsAdmin);
