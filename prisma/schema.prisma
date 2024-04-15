@@ -74,7 +74,10 @@ model Ballot {
 }
 
 model Round {
-    id             String  @id @default(cuid())
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
     creatorId      String
     name           String
     description    String?
@@ -100,6 +103,8 @@ model Round {
     calculationConfig Json?
 
     poolId Int?
+
+    comments Comment[]
 }
 
 model Comment {
@@ -109,4 +114,7 @@ model Comment {
     content   String
     creatorId String
     projectId String
+
+    roundId String
+    round   Round  @relation(fields: [roundId], references: [id])
 }

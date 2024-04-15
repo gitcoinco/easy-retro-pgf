@@ -1,24 +1,28 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  protectedRoundProcedure,
+} from "~/server/api/trpc";
 import { CommentSchema } from "~/features/comments/types";
 import { fetchApprovedVoter } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const commentsRouter = createTRPCRouter({
-  create: protectedProcedure
+  create: protectedRoundProcedure
     .input(CommentSchema)
     .mutation(async ({ input: { content, projectId }, ctx }) => {
       const creatorId = String(ctx.session?.user.name);
 
-      if (!(await fetchApprovedVoter(creatorId))) {
+      if (!(await fetchApprovedVoter(ctx.round, creatorId))) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Must be an approved voter to comment",
         });
       }
-      1;
+      const roundId = ctx.round.id;
       return ctx.db.comment.create({
-        data: { content, creatorId, projectId },
+        data: { content, creatorId, projectId, roundId },
       });
     }),
   delete: protectedProcedure
@@ -36,9 +40,10 @@ export const commentsRouter = createTRPCRouter({
         data: { content },
       });
     }),
-  list: protectedProcedure
+  list: protectedRoundProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input: { projectId }, ctx }) => {
-      return ctx.db.comment.findMany({ where: { projectId } });
+      const roundId = ctx.round.id;
+      return ctx.db.comment.findMany({ where: { projectId, roundId } });
     }),
 });
