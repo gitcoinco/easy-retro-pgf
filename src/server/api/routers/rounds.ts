@@ -9,6 +9,7 @@ import {
 } from "~/server/api/trpc";
 import { RoundNameSchema, RoundSchema } from "~/features/rounds/types";
 import { networks } from "~/config";
+import { type PrismaClient } from "@prisma/client";
 
 export const roundsRouter = createTRPCRouter({
   get: roundProcedure
@@ -21,7 +22,7 @@ export const roundsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: RoundNameSchema }))
     .mutation(async ({ input: { name }, ctx }) => {
-      const domain = convert(name);
+      const domain = await createDomain(name, ctx.db);
 
       const creatorId = ctx.session.user.name!;
 
@@ -59,3 +60,16 @@ export const roundsRouter = createTRPCRouter({
     return ctx.db.round.findMany({ where: { creatorId } });
   }),
 });
+
+const blacklistedDomains = ["api", "app", "create-round"];
+async function createDomain(name: string, db: PrismaClient) {
+  let domain = convert(name);
+  // If domain already exist or one of the not allowed - append a random string
+  if (
+    blacklistedDomains.includes(domain) ||
+    (await db.round.findFirst({ where: { domain } }))
+  ) {
+    domain = domain + `_${Math.random().toString(16).slice(2, 5)}`;
+  }
+  return domain;
+}
