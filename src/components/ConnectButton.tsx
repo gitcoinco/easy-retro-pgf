@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type ComponentPropsWithRef } from "react";
+import { type ComponentPropsWithRef, useCallback } from "react";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { FaListCheck } from "react-icons/fa6";
 
@@ -12,7 +12,7 @@ import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
+import { useMaci } from "~/contexts/Maci";
 import type { Address } from "viem";
 import { config } from "~/config";
 
@@ -98,13 +98,13 @@ const ConnectedDetails = ({
 }) => {
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
-  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaciSignup(
-    {
-      onError: () => toast.error("Signup error"),
-    },
-  );
+  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaci();
 
   const { showBallot } = useLayoutOptions();
+
+  const onError = useCallback(() => toast.error("Signup error"), []);
+  const handleSignup = useCallback(() => onSignup(onError), [onSignup, onError]);
+
   return (
     <div>
       <div className="flex gap-2 text-white">
@@ -113,7 +113,7 @@ const ConnectedDetails = ({
         {isEligibleToVote && !isRegistered && (
           <SignupButton
             loading={isRegistered === undefined || isLoading}
-            onClick={onSignup}
+            onClick={handleSignup}
           />
         )}
         {isRegistered && showBallot && ballot?.publishedAt && (

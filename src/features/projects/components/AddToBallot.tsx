@@ -20,7 +20,7 @@ import {
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
+import { useMaci } from "~/contexts/Maci";
 
 type Props = { id?: string; name?: string };
 
@@ -30,8 +30,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
   const { data: ballot } = useBallot();
-  const { isRegistered, isEligibleToVote } = useMaciSignup();
-  const { initialVoiceCredits } = useMaciSignup();
+  const { isRegistered, isEligibleToVote, initialVoiceCredits } = useMaci();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
@@ -125,7 +124,7 @@ const ProjectAllocation = ({
     ? parseFloat(String(formAmount).replace(/,/g, ""))
     : 0;
   const total = amount + current;
-  const { initialVoiceCredits } = useMaciSignup();
+  const { initialVoiceCredits } = useMaci();
 
   const exceededProjectTokens = amount > initialVoiceCredits;
   const exceededMaxTokens = total > initialVoiceCredits;

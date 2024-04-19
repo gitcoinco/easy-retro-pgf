@@ -24,7 +24,7 @@ import { AllocationFormWithSearch } from "~/features/ballot/components/Allocatio
 import { formatNumber } from "~/utils/formatNumber";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import type { Vote } from "~/features/ballot/types";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
+import { useMaci } from "~/contexts/Maci";
 
 const ListTags = () => {
   const { control, watch } = useFormContext();
@@ -185,7 +185,7 @@ function TotalAllocation() {
   const form = useFormContext();
 
   const projects = (form.watch("projects") ?? []) as Vote[];
-  const { initialVoiceCredits } = useMaciSignup();
+  const { initialVoiceCredits } = useMaci();
   const current = sumBallot(projects);
 
   const exceeds = current - initialVoiceCredits;

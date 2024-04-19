@@ -3,7 +3,7 @@ import { tv } from "tailwind-variants";
 
 import { calculateTimeLeft } from "~/utils/time";
 import { createComponent } from "~/components/ui";
-import { useMaciPoll } from "~/hooks/useMaciPoll";
+import { useMaci } from "~/contexts/Maci";
 
 const useEndDate = createGlobalState<[number, number, number, number]>([
   0, 0, 0, 0,
@@ -17,7 +17,7 @@ export function useVotingTimeLeft(votingEndsAt: Date) {
   return state;
 }
 export const VotingEndsIn = () => {
-  const { isLoading, votingEndsAt } = useMaciPoll();
+  const { isLoading, votingEndsAt } = useMaci();
   const [days, hours, minutes, seconds] = useVotingTimeLeft(votingEndsAt);
 
   if (isLoading) {

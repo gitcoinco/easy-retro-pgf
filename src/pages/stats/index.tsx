@@ -6,7 +6,7 @@ import { ConnectButton } from "~/components/ConnectButton";
 import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
-import { useMaciPoll } from "~/hooks/useMaciPoll";
+import { useMaci } from "~/contexts/Maci";
 import {
   useProjectCount,
   useProjectsResults,
@@ -45,10 +45,10 @@ export default function StatsPage() {
 }
 
 function Stats() {
-  const results = useResults();
+  const { isLoading, pollData } = useMaci();
+  const results = useResults(pollData);
   const count = useProjectCount();
-  const { data: projectsResults } = useProjectsResults();
-  const { isLoading, pollData } = useMaciPoll();
+  const { data: projectsResults } = useProjectsResults(pollData);
   const { isConnected } = useAccount();
 
   const { averageVotes, projects = {} } = results.data ?? {};

@@ -11,7 +11,7 @@ import {
   type Calculation,
   CalculationSchema,
 } from "~/features/distribute/types";
-import { useMaciPoll } from "~/hooks/useMaciPoll";
+import { useMaci } from "~/contexts/Maci";
 import { Layout } from "~/layouts/DefaultLayout";
 import { api } from "~/utils/api";
 
@@ -102,7 +102,7 @@ function MinimumQuorum() {
 
 function VoterCount() {
   const voters = api.voters.list.useQuery({ limit: 1000 });
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const votes = api.results.votes.useQuery({ pollId: pollData?.id.toString() });
 
   return (

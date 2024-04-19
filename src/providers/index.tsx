@@ -14,6 +14,8 @@ import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { MaciProvider } from "~/contexts/Maci";
+
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
 });
@@ -25,22 +27,25 @@ export function Providers({
   const { config, queryClient } = useMemo(() => createWagmiConfig(), []);
 
   return (
-    <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
-      <SessionProvider refetchInterval={0} session={session}>
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <RainbowKitSiweNextAuthProvider
-              getSiweMessageOptions={getSiweMessageOptions}
-            >
-              <RainbowKitProvider>
-                {children}
-                <Toaster />
-              </RainbowKitProvider>
-            </RainbowKitSiweNextAuthProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </SessionProvider>
-    </ThemeProvider>
+    
+      <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
+        <SessionProvider refetchInterval={0} session={session}>
+          <WagmiProvider config={config}>
+            <QueryClientProvider client={queryClient}>
+              <RainbowKitSiweNextAuthProvider
+                getSiweMessageOptions={getSiweMessageOptions}
+              >
+                <RainbowKitProvider>
+                <MaciProvider>
+                  {children}
+                  <Toaster />
+                  </MaciProvider>
+                </RainbowKitProvider>
+              </RainbowKitSiweNextAuthProvider>
+            </QueryClientProvider>
+          </WagmiProvider>
+        </SessionProvider>
+      </ThemeProvider>
   );
 }
 

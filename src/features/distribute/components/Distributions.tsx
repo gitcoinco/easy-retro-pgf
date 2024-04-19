@@ -20,14 +20,14 @@ import { usePoolAmount, usePoolToken } from "../hooks/useAlloPool";
 import { type Address, formatUnits, parseUnits } from "viem";
 import { cn } from "~/utils/classNames";
 import { formatNumber } from "~/utils/formatNumber";
-import { useMaciPoll } from "~/hooks/useMaciPoll";
+import { useMaci } from "~/contexts/Maci";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
 
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const votes = api.results.votes.useQuery({ pollId: pollData?.id.toString() });
   const projectIds = Object.keys(votes.data?.projects ?? {});
 

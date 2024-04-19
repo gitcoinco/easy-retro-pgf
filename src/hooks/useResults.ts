@@ -1,11 +1,11 @@
+import { type IGetPollData } from "maci-cli/sdk";
+
 import { config } from "~/config";
 import { api } from "~/utils/api";
 import { getAppState } from "~/utils/state";
-import { useMaciPoll } from "./useMaciPoll";
 
-export function useResults() {
+export function useResults(pollData?: IGetPollData) {
   const appState = getAppState();
-  const { pollData } = useMaciPoll();
 
   return api.results.votes.useQuery(
     { pollId: pollData?.id.toString() },
@@ -14,9 +14,7 @@ export function useResults() {
 }
 
 const seed = 0;
-export function useProjectsResults() {
-  const { pollData } = useMaciPoll();
-
+export function useProjectsResults(pollData?: IGetPollData) {
   return api.results.projects.useInfiniteQuery(
     { limit: config.pageSize, seed, pollId: pollData?.id.toString() },
     {
@@ -29,9 +27,8 @@ export function useProjectCount() {
   return api.projects.count.useQuery();
 }
 
-export function useProjectResults(id: string) {
+export function useProjectResults(id: string, pollData?: IGetPollData) {
   const appState = getAppState();
-  const { pollData } = useMaciPoll();
 
   return api.results.project.useQuery(
     { id, pollId: pollData?.id.toString() },
