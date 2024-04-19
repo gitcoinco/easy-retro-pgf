@@ -153,7 +153,7 @@ export function usePoolToken() {
     ...token,
     data: {
       isNativeToken,
-      symbol: isNativeToken ? "ETH" : symbol ?? "",
+      symbol: isNativeToken ? "FIL" : symbol ?? "",
       balance: balance?.value ?? 0n,
       decimals,
       allowance,
