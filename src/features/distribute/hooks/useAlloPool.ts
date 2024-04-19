@@ -145,11 +145,11 @@ export function useFundPool() {
     }) => {
       if (!allo) throw new Error("Allo not initialized");
 
-      const { to, data, value } = allo.fundPool(BigInt(poolId), amount);
+      const { to, data } = allo.fundPool(BigInt(poolId), amount);
       const hash = await sendTransactionAsync({
         to,
         data,
-        value: BigInt(value),
+        value: BigInt(amount),
       });
 
       return waitForLogs(hash, AlloABI, client);
