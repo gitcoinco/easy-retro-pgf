@@ -34,7 +34,6 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
-
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
   application: ApplicationSchema,
@@ -61,6 +60,7 @@ export function ApplicationForm({ address }: { address: Address }) {
     );
   }
 
+  console.log(create.error);
   const error = create.error;
   return (
     <div>

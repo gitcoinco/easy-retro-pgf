@@ -46,17 +46,24 @@ export function useRevokeApplication(opts?: { onSuccess?: () => void }) {
 
   return useMutation({
     onSuccess: () => {
-      toast.success("Application approved successfully!");
+      toast.success("Application revoked successfully!");
       opts?.onSuccess?.();
     },
     onError: (err: { reason?: string; data?: { message: string } }) => {
-      toast.error("Application approve error", {
+      console.log(err);
+      toast.error("Application revoke error", {
         description: err.reason ?? err.data?.message,
       });
     },
     mutationFn: async (applicationIds: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
 
+      console.log(
+        applicationIds.map((uid) => ({
+          schema: eas.schemas.approval,
+          data: [{ uid }],
+        })),
+      );
       return revoke.mutateAsync(
         applicationIds.map((uid) => ({
           schema: eas.schemas.approval,
