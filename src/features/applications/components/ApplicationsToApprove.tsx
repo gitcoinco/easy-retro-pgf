@@ -26,6 +26,7 @@ import { ClockIcon } from "lucide-react";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
+import { useAccount } from "wagmi";
 
 export function ApplicationItem({
   id,
@@ -39,6 +40,7 @@ export function ApplicationItem({
   approvedBy?: { attester: Address; uid: string };
   isLoading?: boolean;
 }) {
+  const { address } = useAccount();
   const metadata = useMetadata<Application>(metadataPtr);
   const form = useFormContext();
   const revoke = useRevokeApplication({});
@@ -85,6 +87,7 @@ export function ApplicationItem({
           <Button
             size="sm"
             variant="outline"
+            disabled={approvedBy !== address}
             isLoading={revoke.isPending}
             onClick={() => {
               if (
