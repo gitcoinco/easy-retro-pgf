@@ -10,3 +10,8 @@
     -ms-overflow-style: none;
     scrollbar-width: 0;
 }
+
+input::placeholder, textarea::placeholder {
+    color: #C4C5D5;
+    opacity: 1;
+}

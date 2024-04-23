@@ -110,7 +110,7 @@ export function AllocationFormWithSearch() {
                   <h3 className="text-center text-lg font-bold">
                     List is empty
                   </h3>
-                  <p className="text-center text-sm text-gray-700">
+                  <p className="text-center text-sm text-onSurfaceVariant-dark">
                     Search projects to add them to the list.
                   </p>
                 </div>

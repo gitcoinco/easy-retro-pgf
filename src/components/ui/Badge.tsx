@@ -7,7 +7,7 @@ export const Badge = createComponent(
     base: "inline-flex items-center rounded font-semibold text-gray-500 text-sm",
     variants: {
       variant: {
-        default: "bg-gray-100 dark:bg-gray-800",
+        default: "bg-gray-100 dark:bg-surfaceContainerLow-dark",
         success: "bg-green-100 dark:bg-green-300 text-green-900",
       },
       size: {

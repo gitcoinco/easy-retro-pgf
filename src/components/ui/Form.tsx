@@ -28,12 +28,12 @@ import { IconButton } from "./Button";
 import { PlusIcon, Search, Trash } from "lucide-react";
 
 const inputBase = [
-  "dark:bg-gray-900",
-  "dark:text-gray-300",
-  "dark:border-gray-700",
+  "dark:bg-transparent",
+  "dark:text-onSurfaceVariant-dark",
+  "dark:border-outline-dark",
   "rounded",
   "disabled:opacity-30",
-  "checked:bg-gray-800",
+  "checked:bg-surfaceContainerLow-dark",
 ];
 export const Input = createComponent(
   "input",
@@ -56,7 +56,7 @@ export const InputWrapper = createComponent(
 export const InputAddon = createComponent(
   "div",
   tv({
-    base: "absolute right-0 text-gray-900 dark:text-gray-300 inline-flex items-center justify-center h-full border-gray-300 dark:border-gray-800 border-l px-4 font-semibold",
+    base: "absolute right-0 text-gray-900 placeholder:text-onSurfaceVariant-dark dark:text-onSurfaceVariant-dark inline-flex items-center justify-center h-full border-gray-300 dark:border-gray-800 border-l px-4 font-semibold",
     variants: {
       disabled: {
         true: "text-gray-500 dark:text-gray-500",
@@ -89,7 +89,7 @@ export const Checkbox = createComponent(
   tv({
     base: [
       ...inputBase,
-      "checked:focus:dark:bg-gray-700 checked:hover:dark:bg-gray-700",
+      "checked:focus:dark:bg-onSurfaceVariant-dark checked:hover:dark:bg-onSurfaceVariant-dark",
     ],
   }),
 );
@@ -98,7 +98,6 @@ export const Label = createComponent(
   "label",
   tv({
     base: "block tracking-wider dark:text-gray-300 font-semibold",
-    variants: { required: { true: "after:content-['*']" } },
   }),
 );
 export const Textarea = createComponent(
@@ -149,12 +148,10 @@ export const FormControl = ({
   return (
     <fieldset className={cn("mb-4", className)}>
       {label && (
-        <Label
-          className="mb-1"
-          htmlFor={name}
-          required={required}
-          children={label}
-        />
+        <Label className="mb-1" htmlFor={name}>
+          {label}
+          {required && <span className="text-red-300">*</span>}
+        </Label>
       )}
       {cloneElement(children as ReactElement, {
         id: name,
@@ -234,8 +231,10 @@ export function FormSection({
 }: { title: string; description: string } & ComponentProps<"section">) {
   return (
     <section className="mb-8">
-      <h3 className="mb-1 text-xl font-semibold">{title}</h3>
-      <p className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
+      <h3 className="mb-3 text-xl font-bold text-surfaceVariant-light">
+        {title}
+      </h3>
+      <p className="mb-6 text-sm font-normal leading-loose text-onSurfaceVariant-dark">
         {description}
       </p>
       {children}
@@ -249,6 +248,7 @@ export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   schema: S;
   persist?: string;
   onSubmit: (values: z.infer<S>, form: UseFormReturn<z.infer<S>>) => void;
+  isEditMode?: boolean;
 }
 
 export function Form<S extends z.Schema>({
@@ -258,6 +258,7 @@ export function Form<S extends z.Schema>({
   values,
   defaultValues,
   onSubmit,
+  isEditMode = false,
 }: FormProps<S>) {
   // Initialize the form with defaultValues and schema for validation
   const form = useForm({
@@ -267,7 +268,7 @@ export function Form<S extends z.Schema>({
     mode: "onBlur",
   });
 
-  usePersistForm(form, persist);
+  usePersistForm(form, persist, defaultValues, isEditMode);
 
   // Pass the form methods to a FormProvider. This lets us access the form from components with useFormContext
   return (
@@ -279,9 +280,16 @@ export function Form<S extends z.Schema>({
   );
 }
 
-function usePersistForm(form: UseFormReturn<FieldValues>, persist?: string) {
+function usePersistForm<S extends z.Schema>(
+  form: UseFormReturn<FieldValues>,
+  persist?: string,
+  defaultValues?: UseFormProps<z.infer<S>>["defaultValues"],
+  isEditMode?: boolean,
+) {
   // useLocalStorage needs a string to be initialized
-  const [draft, saveDraft] = useLocalStorage(persist ?? "not-set");
+  const [draft, saveDraft] = useLocalStorage(
+    persist && !isEditMode ? persist : "not-set",
+  );
 
   useInterval(() => {
     if (persist) saveDraft(form?.getValues());
@@ -289,5 +297,6 @@ function usePersistForm(form: UseFormReturn<FieldValues>, persist?: string) {
 
   useEffect(() => {
     if (persist && draft) form?.reset(draft);
-  }, [persist]);
+    else if (isEditMode) form?.reset(defaultValues);
+  }, [persist, defaultValues]);
 }

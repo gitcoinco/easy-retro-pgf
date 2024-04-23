@@ -23,7 +23,7 @@ export default function ListDetails({
 
   return (
     <div className="relative">
-      <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
+      <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-surfaceContainerLow-dark">
         <div className="flex items-center justify-between">
           <Heading as="h1" size="xl">
             {attestation?.name}

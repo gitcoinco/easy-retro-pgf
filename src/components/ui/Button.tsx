@@ -14,13 +14,13 @@ const button = tv({
   variants: {
     variant: {
       primary:
-        "bg-primary-600 hover:bg-primary-700 dark:bg-white dark:hover:bg-primary-500 dark:text-gray-900 text-white dark:disabled:bg-gray-500",
-      ghost: "hover:bg-gray-100 dark:hover:bg-gray-800",
+        "bg-primary-600 hover:bg-primary-700 dark:bg-primary-dark dark:hover:bg-primary-500 dark:text-onPrimary-dark text-white dark:disabled:bg-surfaceContainerLow-dark",
+      ghost: "hover:bg-gray-100 dark:hover:bg-surfaceContainerLow-dark",
       default:
-        "bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700",
+        "bg-gray-100 dark:bg-surfaceContainerLow-dark hover:bg-gray-200 dark:hover:bg-onSurfaceVariant-dark",
       inverted: "bg-white text-black hover:bg-white/90",
       link: "bg-none hover:underline",
-      outline: "border-2 hover:bg-white/5",
+      outline: "border text-primary-dark border-outline-dark hover:bg-primary-dark/15 ",
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",
@@ -28,7 +28,7 @@ const button = tv({
       icon: "h-12 w-12",
     },
     disabled: {
-      true: "dark:text-gray-400 pointer-events-none pointer-default opacity-50 border-none",
+      true: "dark:text-onSurfaceVariant-dark pointer-events-none pointer-default opacity-50 border-none",
     },
   },
   defaultVariants: {

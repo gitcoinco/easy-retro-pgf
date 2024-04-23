@@ -13,7 +13,7 @@ const feedbackUrl = process.env.NEXT_PUBLIC_FEEDBACK_URL;
 
 const Card = createComponent(
   "div",
-  tv({ base: "rounded-3xl border p-8 dark:border-gray-700" }),
+  tv({ base: "rounded-3xl border p-8 dark:border-onSurfaceVariant-dark" }),
 );
 
 export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
@@ -26,7 +26,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
               <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">
                 Your vote has been received 🥳
               </h3>
-              <p className="mb-10 text-gray-700 dark:text-gray-300">
+              <p className="mb-10 text-onSurfaceVariant-dark dark:text-gray-300">
                 Thank you for participating in RetroPGF 3. Please help us
                 improve the process by providing feedback on your experience as
                 a badgeholder!
@@ -54,7 +54,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
               <p>Your vote will be private until the voting period ends</p>
             </div>
           </div>
-          <div className="flex items-center justify-between border-b py-3 text-gray-600 dark:border-gray-700 dark:text-gray-300">
+          <div className="flex items-center justify-between border-b py-3 text-gray-600 dark:border-onSurfaceVariant-dark dark:text-gray-300">
             <p>Project name</p>
             <p>votes allocated by you</p>
           </div>
@@ -68,7 +68,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
             <h5 className="mb-3 text-2xl font-bold">
               Help us improve next round of RetroPGF
             </h5>
-            <p className="mb-6 text-gray-700 dark:text-gray-300">
+            <p className="mb-6 text-onSurfaceVariant-dark dark:text-gray-300">
               Your anonymized feedback will be influential to help us iterate on
               Optimism&apos;s RetroPGF process.
             </p>

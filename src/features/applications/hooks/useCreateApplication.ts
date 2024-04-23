@@ -22,6 +22,7 @@ export function useCreateApplication({
     mutationFn: async (values: {
       application: Application;
       profile: Profile;
+      refUID?: string;
     }) => {
       if (!config.roundId) throw new Error("Round ID must be defined");
       console.log("Uploading profile and application metadata");
@@ -37,6 +38,7 @@ export function useCreateApplication({
               type: "application",
               round: config.roundId,
             },
+            refUID: values.refUID,
           });
         }),
         upload.mutateAsync(values.profile).then(({ url: metadataPtr }) => {
@@ -50,6 +52,7 @@ export function useCreateApplication({
               type: "profile",
               round: config.roundId,
             },
+            refUID: values.refUID,
           });
         }),
       ]).then((attestations) => {

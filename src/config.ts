@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export const config = {
-  logoUrl: "",
+  logoUrl: "/logo.svg",
   pageSize: 3 * 4,
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
@@ -62,11 +62,19 @@ export const eas = {
 };
 
 export const impactCategories = {
-  ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },
-  OPEN_SOURCE: { label: "Web3 Open Source Software" },
-  COMMUNITY_EDUCATION: { label: "Web3 Community & Education" },
-  COLLECTIVE_GOVERNANCE: { label: "Collective Governance" },
-  OP_STACK: { label: "OP Stack" },
-  DEVELOPER_ECOSYSTEM: { label: "Developer Ecosystem" },
-  END_USER_EXPERIENCE_AND_ADOPTION: { label: "End user UX" },
+  Protocol: {
+    label: "Protocol",
+    description:
+      "recognising contributions to the POKT stack itself, either through contribution to main code sources such as Morse and Shannon, or through other dependencies and POKT- related repos.",
+  },
+  Ecosystem: {
+    label: "Ecosystem",
+    description:
+      "recognising tools and applications using or enhancing the experience of working with the POKT stack and may include wallets, explorers or other associated tech. It's all about making an impact on the broader POKT ecosystem through your creations.",
+  },
+  Adoption: {
+    label: "Adoption",
+    description:
+      "recognising activities that drove awareness and adoption of the POKT Network, whether through discussions, referrals, content or any other meaningful contribution.",
+  },
 } as const;

@@ -39,7 +39,7 @@ export function ApplicationItem({
   const { bio, fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
 
   return (
-    <div className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800">
+    <div className="flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-surfaceContainerLow-dark">
       <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
         <Checkbox
           disabled={isApproved}
@@ -63,7 +63,7 @@ export function ApplicationItem({
             <div className="line-clamp-2 text-sm dark:text-gray-300">{bio}</div>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-onSurfaceVariant-dark dark:text-gray-400">
           <ClockIcon className="size-3" />
           <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
             {formatDate(time * 1000)}
