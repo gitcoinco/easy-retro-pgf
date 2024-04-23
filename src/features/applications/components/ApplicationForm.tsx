@@ -1,5 +1,6 @@
 import { z } from "zod";
-
+import { type Address } from "viem";
+import { useEffect, useState } from "react";
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
 import {
@@ -19,33 +20,78 @@ import {
   ProfileSchema,
   contributionTypes,
   fundingSourceTypes,
+  socialMediaTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
 import { toast } from "sonner";
-import { useController, useFormContext } from "react-hook-form";
+import { useController, useFormContext, useForm } from "react-hook-form";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import { useProjectMetadata } from "../../projects/hooks/useProjects";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
 import { useLocalStorage } from "react-use";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import { Alert } from "~/components/ui/Alert";
 import { useSession } from "next-auth/react";
+import { type Attestation } from "~/utils/fetchAttestations";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
   application: ApplicationSchema,
 });
 
-export function ApplicationForm({ address = "" }) {
+export function ApplicationForm({
+  address = "",
+  projectInfo,
+  isEditMode = false,
+}: {
+  address: string;
+  projectInfo?: Attestation;
+  isEditMode?: boolean;
+}) {
+  const metadata = useProjectMetadata(projectInfo?.metadataPtr);
+  const profile = useProfileWithMetadata(projectInfo?.recipient);
+
   const clearDraft = useLocalStorage("application-draft")[2];
+
+  const [defaultValues, setDefaultValues] = useState();
+
+  useEffect(() => {
+    if (isEditMode && projectInfo && metadata?.data && profile?.data)
+      setDefaultValues({
+        profile: {
+          name: projectInfo?.name,
+          profileImageUrl: profile?.data?.profileImageUrl,
+          bannerImageUrl: profile?.data?.bannerImageUrl,
+        },
+        application: {
+          name: metadata?.data?.name,
+          bio: metadata?.data?.bio,
+          websiteUrl: metadata?.data?.websiteUrl,
+          wPOKTReceivingAddress: metadata?.data?.wPOKTReceivingAddress,
+          arbReceivingAddress: metadata?.data?.arbReceivingAddress,
+          opReceivingAddress: metadata?.data?.opReceivingAddress,
+          contributionDescription: metadata?.data?.contributionDescription,
+          impactDescription: metadata?.data?.impactDescription,
+          impactCategory: metadata?.data?.impactCategory,
+          contributionLinks: metadata?.data?.contributionLinks,
+          impactMetrics: metadata?.data?.impactMetrics,
+          fundingSources: metadata?.data?.fundingSources,
+          socialMedias: metadata?.data?.socialMedias,
+        },
+      });
+  }, [isEditMode, projectInfo, metadata?.data, profile?.data]);
 
   const create = useCreateApplication({
     onSuccess: () => {
       toast.success("Application created successfully!");
-      clearDraft();
+      if (!isEditMode) clearDraft();
     },
-    onError: (err: { reason?: string; data?: { message: string } }) =>
+    onError: (err: { reason?: string; data?: { message: string } }) => {
       toast.error("Application create error", {
         description: err.reason ?? err.data?.message,
-      }),
+      });
+    },
   });
   if (create.isSuccess) {
     return (
@@ -55,22 +101,21 @@ export function ApplicationForm({ address = "" }) {
     );
   }
   const error = create.error;
+
   return (
     <div>
       <Form
-        defaultValues={{
-          application: {
-            payoutAddress: address,
-            contributionLinks: [{}],
-            impactMetrics: [{}],
-            fundingSources: [{}],
-          },
-        }}
-        persist="application-draft"
+        isEditMode={isEditMode}
+        defaultValues={isEditMode ? defaultValues : undefined}
+        persist={!isEditMode ? "application-draft" : undefined}
         schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application }) => {
           console.log(application, profile);
-          create.mutate({ application, profile });
+          create.mutate({
+            application,
+            profile,
+            refUID: projectInfo?.id ?? undefined,
+          });
         }}
       >
         <FormSection
@@ -105,33 +150,48 @@ export function ApplicationForm({ address = "" }) {
           <FormControl name="application.name" label="Name" required>
             <Input placeholder="Project name" />
           </FormControl>
-
           <FormControl name="application.bio" label="Description" required>
             <Textarea rows={4} placeholder="Project description" />
           </FormControl>
+          <FormControl
+            className="flex-1"
+            name="application.websiteUrl"
+            label="Website"
+            required
+          >
+            <Input placeholder="https://" />
+          </FormControl>
+
           <div className="gap-4 md:flex">
             <FormControl
               className="flex-1"
-              name="application.websiteUrl"
-              label="Website"
+              name="application.wPOKTReceivingAddress"
+              label="wPOKT receiving address"
               required
             >
-              <Input placeholder="https://" />
+              <Input placeholder="0XfAd....aseqw3wcf97" />
             </FormControl>
-
             <FormControl
               className="flex-1"
-              name="application.payoutAddress"
-              label="Payout address"
+              name="application.arbReceivingAddress"
+              label="ARB receiving address"
               required
             >
-              <Input placeholder="0x..." />
+              <Input placeholder="0XfAd....aseqw3wcf97" />
+            </FormControl>
+            <FormControl
+              className="flex-1"
+              name="application.opReceivingAddress"
+              label="OP receiving address"
+              required
+            >
+              <Input placeholder="0XfAd....aseqw3wcf97" />
             </FormControl>
           </div>
         </FormSection>
 
         <FormSection
-          title="Contribution & Impact"
+          title={"Contribution & Impact"}
           description="Describe the contribution and impact of your project."
         >
           <FormControl
@@ -159,7 +219,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Contribution links"
+          title={
+            <>
+              Contribution links <span className="text-red-300">*</span>
+            </>
+          }
           description="Where can we find your contributions?"
         >
           <FieldArray
@@ -197,7 +261,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Impact metrics"
+          title={
+            <>
+              Impact metrics <span className="text-red-300">*</span>
+            </>
+          }
           description="What kind of impact have your project made?"
         >
           <FieldArray
@@ -235,7 +303,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Funding sources"
+          title={
+            <>
+              Funding sources <span className="text-red-300">*</span>
+            </>
+          }
           description="From what sources have you received funding?"
         >
           <FieldArray
@@ -286,6 +358,43 @@ export function ApplicationForm({ address = "" }) {
           />
         </FormSection>
 
+        <FormSection
+          title={
+            <>
+              Social media <span className="text-red-300">*</span>
+            </>
+          }
+          description="Please add any related social media link"
+        >
+          <FieldArray
+            name="application.socialMedias"
+            renderField={(field, i) => (
+              <>
+                <FormControl
+                  className=" w-2/4"
+                  name={`application.socialMedias.${i}.type`}
+                  required
+                >
+                  <Select className="w-full">
+                    {Object.entries(socialMediaTypes).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl
+                  className="w-2/4	"
+                  name={`application.socialMedias.${i}.url`}
+                  required
+                >
+                  <Input />
+                </FormControl>
+              </>
+            )}
+          />
+        </FormSection>
+
         {error ? (
           <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
             Make sure you&apos;re not connected to a VPN since this can cause
@@ -300,7 +409,7 @@ export function ApplicationForm({ address = "" }) {
               ? "Uploading metadata"
               : create.isAttesting
                 ? "Creating attestation"
-                : "Create application"
+                : `${!projectInfo ? "Create" : "Edit"} application`
           }
         />
       </Form>
@@ -360,25 +469,47 @@ function ImpactTags() {
         Impact categories<span className="text-red-300">*</span>
       </Label>
       <div className="flex flex-wrap gap-2">
-        {Object.entries(impactCategories).map(([value, { label }]) => {
-          const isSelected = selected.includes(value);
-          return (
-            <Tag
-              size="lg"
-              selected={isSelected}
-              key={value}
-              onClick={() => {
-                const currentlySelected = isSelected
-                  ? selected.filter((s) => s !== value)
-                  : selected.concat(value);
+        {Object.entries(impactCategories).map(
+          ([value, { label, description }]) => {
+            const isSelected = selected.includes(value);
+            return (
+              <Tag
+                size="lg"
+                selected={isSelected}
+                key={value}
+                onClick={() => {
+                  const currentlySelected = isSelected
+                    ? selected.filter((s) => s !== value)
+                    : selected.concat(value);
 
-                field.onChange(currentlySelected);
-              }}
-            >
-              {label}
-            </Tag>
-          );
-        })}
+                  field.onChange(currentlySelected);
+                }}
+              >
+                {label}
+                <span
+                  className=" flex items-center rounded-full border-[1.5px] border-onSurfaceVariant px-[0.375rem] text-xs font-bold text-onSurfaceVariant"
+                  data-tooltip-id={label}
+                >
+                  i
+                </span>
+                <ReactTooltip
+                  id={label}
+                  place="bottom"
+                  className="max-h-full max-w-[20rem]"
+                  multiline={true}
+                  content={
+                    <div className="flex flex-col text-wrap">
+                      <span>What is a {label} impact?</span>
+                      <div className=" flex h-full  w-full break-all ">
+                        {description}
+                      </div>
+                    </div>
+                  }
+                />
+              </Tag>
+            );
+          },
+        )}
       </div>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>

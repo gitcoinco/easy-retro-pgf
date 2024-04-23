@@ -2,7 +2,7 @@ import { GithubIcon } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="flex flex-col items-center justify-center bg-gray-950 p-2 text-gray-400">
+    <footer className="flex flex-col items-center justify-center bg-surfaceContainerLow-dark p-2 text-onSurfaceVariant-dark">
       <a
         href={"https://github.com/gitcoinco/easy-retro-pgf/"}
         target="_blank"
@@ -15,10 +15,6 @@ export function Footer() {
             <span className="absolute group-hover:animate-ping">❤️</span>
           </span>
           on EasyRetroPGF.
-        </div>
-        <div className="inline-flex">
-          Run your own RPGF Round
-          <GithubIcon className="ml-1 mt-0.5 h-4 w-4" />
         </div>
       </a>
     </footer>

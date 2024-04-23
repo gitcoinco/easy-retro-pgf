@@ -17,11 +17,25 @@ export function Projects() {
   const select = useSelectProjects();
   const results = useResults();
 
+  const refUIDs = projects.data?.pages.flatMap((arr) =>
+    arr
+      .filter(
+        (item) =>
+          item.refUID !==
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      )
+      .map((item) => item.refUID),
+  );
+
+  const filteredData = projects.data?.pages?.map((arr) =>
+    arr.filter((item) => !refUIDs?.includes(item.id)),
+  );
+
   return (
     <div>
       <div
         className={clsx(
-          "fixed right-0 top-0 z-20 flex justify-end gap-2 rounded-bl-3xl bg-white px-2 pb-2 pt-4 dark:bg-gray-900",
+          "fixed right-0 top-0 z-20 flex justify-end gap-2 rounded-bl-3xl bg-white px-2 pb-2 pt-4 dark:bg-surfaceContainerHighest-dark",
           {
             ["invisible"]: !select.count,
           },
@@ -41,7 +55,10 @@ export function Projects() {
 
       <SortFilter />
       <InfiniteLoading
-        {...projects}
+        {...{
+          ...projects,
+          data: { pageParams: projects?.data?.pageParams, pages: filteredData },
+        }}
         renderItem={(item, { isLoading }) => {
           return (
             <Link

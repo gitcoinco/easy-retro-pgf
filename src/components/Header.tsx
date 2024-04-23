@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { type ComponentPropsWithRef, useState } from "react";
 import clsx from "clsx";
@@ -10,14 +11,14 @@ import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Logo = () => (
-  <div className="h-10">
-    {config.logoUrl ? (
-      <img className="max-h-full" src={config.logoUrl} />
-    ) : (
-      <div className="flex h-full items-center justify-center rounded-full border-2 border-dashed border-white px-4 text-xs font-medium tracking-wider text-white">
-        {metadata.title}
-      </div>
-    )}
+  <div>
+    <Image
+      className="max-h-full"
+      width={72}
+      height={24}
+      alt="logo"
+      src={config.logoUrl}
+    />
   </div>
 );
 
@@ -27,7 +28,7 @@ const NavLink = ({
 }: { isActive: boolean } & ComponentPropsWithRef<typeof Link>) => (
   <Link
     className={clsx(
-      "flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-gray-400 hover:text-white",
+      "flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold  text-onSurfaceVariant-dark hover:text-white",
       {
         ["!border-white  !text-white"]: isActive,
       },
@@ -42,7 +43,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <header className="relative z-10 bg-gray-900 shadow-md dark:shadow-none">
+    <header className="relative z-10 bg-surfaceContainerLow-dark shadow-md dark:shadow-none">
       <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center px-2">
         <div className="mr-4 flex items-center md:mr-16">
           <IconButton
@@ -51,7 +52,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
             className="mr-1 text-gray-600 md:hidden"
             onClick={() => setOpen(!isOpen)}
           />
-          <Link href={"/"} className="py-4">
+          <Link href={"/"}>
             <Logo />
           </Link>
         </div>
@@ -85,7 +86,7 @@ const MobileMenu = ({
 }) => (
   <div
     className={clsx(
-      "fixed left-0 top-16 z-10 h-full w-full bg-white transition-transform duration-150 dark:bg-gray-900",
+      "fixed left-0 top-16 z-10 h-full w-full bg-white transition-transform duration-150 dark:bg-surfaceContainerLow-dark",
       {
         ["translate-x-full"]: !isOpen,
       },

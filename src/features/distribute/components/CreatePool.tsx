@@ -106,7 +106,7 @@ function CreatePool() {
         Before you can distribute funds to the projects you need to create a
         pool.
       </p>
-      <h3 className="mb-2 text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300">
+      <h3 className="mb-2 text-sm font-semibold uppercase tracking-widest text-onSurfaceVariant-dark dark:text-gray-300">
         Pool configuration
       </h3>
 

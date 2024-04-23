@@ -39,12 +39,12 @@ function ListItem({
       href={`/lists/${attestation?.id}`}
       className={clsx({ ["animate-pulse"]: isLoading })}
     >
-      <div className="rounded-2xl border border-gray-200 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500">
+      <div className="rounded-2xl border border-gray-200 hover:border-primary-500 dark:border-onSurfaceVariant-dark dark:hover:border-primary-500">
         <div className="p-2">
           <Heading className="truncate" size="md" as="h3">
             {attestation?.name}
           </Heading>
-          <div className="mb-2 mt-1 flex text-sm text-gray-700 dark:text-gray-300">
+          <div className="mb-2 mt-1 flex text-sm text-onSurfaceVariant-dark dark:text-gray-300">
             <AvatarENS address={attestation?.attester} />
           </div>
           <Skeleton isLoading={isLoading} className="w-[100px]">
@@ -56,7 +56,7 @@ function ListItem({
               {impact?.description}
             </Skeleton>
           </p>
-          <div className="ml-1 flex items-center text-gray-700 dark:text-gray-300">
+          <div className="ml-1 flex items-center text-onSurfaceVariant-dark dark:text-gray-300">
             {projects
               .slice(0, 4)
               ?.map((p) => (

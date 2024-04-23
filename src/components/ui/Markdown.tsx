@@ -13,7 +13,7 @@ export function Markdown({
   return (
     <div
       className={clsx("prose prose-xl max-w-none dark:prose-invert", {
-        ["h-96 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"]:
+        ["h-96 animate-pulse rounded-xl bg-gray-100 dark:bg-surfaceContainerLow-dark"]:
           isLoading,
       })}
     >

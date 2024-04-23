@@ -5,14 +5,18 @@ import { type Config, useConnectorClient } from "wagmi";
 
 export function clientToSigner(client: Client<Transport, Chain, Account>) {
   const { account, chain, transport } = client;
+
   if (!chain) return null;
   const network = {
     chainId: chain.id,
     name: chain.name,
     ensAddress: chain.contracts?.ensRegistry?.address,
   };
+
+  // Create a JsonRpcProvider with the RPC URL
   const provider = new BrowserProvider(transport, network);
   const signer = new JsonRpcSigner(provider, account.address);
+
   return signer;
 }
 

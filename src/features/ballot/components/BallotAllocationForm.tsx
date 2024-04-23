@@ -215,7 +215,7 @@ const EmptyBallot = () => (
   <div className="flex flex-1 items-center justify-center">
     <div className=" max-w-[360px] space-y-4">
       <h3 className="text-center text-lg font-bold">Your ballot is empty</h3>
-      <p className="text-center text-sm text-gray-700">
+      <p className="text-center text-sm text-onSurfaceVariant-dark">
         Your ballot currently doesn&apos;t have any projects added. Browse
         through the available projects and lists.
       </p>
@@ -223,7 +223,7 @@ const EmptyBallot = () => (
         <Button as={Link} href={"/projects"}>
           View projects
         </Button>
-        <div className="text-gray-700">or</div>
+        <div className="text-onSurfaceVariant-dark">or</div>
         <Button as={Link} href={"/lists"}>
           View lists
         </Button>

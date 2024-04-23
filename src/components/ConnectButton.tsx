@@ -103,7 +103,7 @@ const ConnectedDetails = ({
         ) : (
           <Chip className="gap-2" as={Link} href={"/ballot"}>
             {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-surfaceContainerLow-dark text-xs">
               {ballotSize}
             </div>
           </Chip>
