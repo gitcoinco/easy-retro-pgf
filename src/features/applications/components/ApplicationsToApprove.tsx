@@ -87,7 +87,7 @@ export function ApplicationItem({
           <Button
             size="sm"
             variant="outline"
-            disabled={approvedBy !== address}
+            disabled={approvedBy?.attester !== address}
             isLoading={revoke.isPending}
             onClick={() => {
               if (
