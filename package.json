@@ -40,11 +40,15 @@
     "clsx": "^2.1.0",
     "cmdk": "^0.2.0",
     "date-fns": "^3.3.1",
-    "ethers": "^6.11.1",
+    "ethers": "^6.11.2",
     "formidable": "^3.5.1",
     "graphql-request": "^6.1.0",
+    "lowdb": "^1.0.0",
     "lucide-react": "^0.316.0",
+    "maci-circuits": "0.0.0-ci.753ded3",
     "maci-cli": "0.0.0-ci.753ded3",
+    "maci-contracts": "0.0.0-ci.753ded3",
+    "maci-domainobjs": "0.0.0-ci.753ded3",
     "next": "^14.1.0",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
@@ -74,6 +78,7 @@
     "@testing-library/jest-dom": "^6.3.0",
     "@types/eslint": "^8.56.2",
     "@types/formidable": "^3.4.5",
+    "@types/lowdb": "^1.0.15",
     "@types/node": "^20.11.10",
     "@types/node-fetch-cache": "^3.0.5",
     "@types/papaparse": "^5.3.14",
@@ -108,5 +113,26 @@
   },
   "msw": {
     "workerDirectory": "public"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testRegex": ".*\\.test\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s",
+      "!<rootDir>/ts/main.ts"
+    ],
+    "coverageDirectory": "<rootDir>/coverage",
+    "testEnvironment": "node"
   }
 }
