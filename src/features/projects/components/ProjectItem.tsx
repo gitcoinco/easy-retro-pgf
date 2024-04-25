@@ -20,7 +20,7 @@ export function ProjectItem({
   return (
     <article
       data-testid={`project-${attestation.id}`}
-      className="group rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-onSurfaceVariant-dark dark:hover:border-primary-500"
+      className="group rounded-2xl border border-gray-200 px-5 py-6 hover:border-primary-500 dark:border-outlineVariant-dark dark:hover:border-primary-500"
     >
       <div className="opacity-70 transition-opacity group-hover:opacity-100">
         <ProjectBanner profileId={attestation?.recipient} />
@@ -30,11 +30,11 @@ export function ProjectItem({
           profileId={attestation?.recipient}
         />
       </div>
-      <Heading className="truncate" size="lg" as="h3">
+      <Heading className="truncate mt-5 mb-2 text-onSurface-dark" size="lg" as="h3">
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
       </Heading>
-      <div className="mb-2">
-        <p className="line-clamp-2 h-10 text-sm dark:text-gray-300">
+      <div className="mb-5">
+        <p className="line-clamp-2 text-sm dark:text-onSurface-dark">
           <Skeleton isLoading={isLoading} className="w-full">
             {metadata.data?.bio}
           </Skeleton>

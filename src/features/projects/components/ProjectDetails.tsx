@@ -81,34 +81,39 @@ export default function ProjectDetails({
         />
 
         <ProjectImpact isLoading={metadata.isPending} project={metadata.data} />
-        <Heading as="h3" size="2xl">
-          Past grants and funding
-        </Heading>
-        <div className="space-y-4">
-          {fundingSources?.map((source, i) => {
-            const type =
-              {
-                OTHER: "Other",
-                RETROPGF_2: "RetroPGF2",
-                GOVERNANCE_FUND: "Governance Fund",
-                PARTNER_FUND: "Partner Fund",
-                REVENUE: "Revenue",
-              }[source.type] ?? source.type;
-            return (
-              <div key={i} className="flex items-center gap-4">
-                <div className="flex-1 truncate text-xl">
-                  {source.description}
-                </div>
-                <div className="text-sm tracking-widest text-onSurfaceVariant-dark dark:text-gray-400">
-                  {type}
-                </div>
-                <div className="w-32 text-xl font-medium">
-                  {suffixNumber(source.amount)} {source.currency}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {fundingSources?.length > 0 && (
+          <>
+            <Heading as="h3" size="2xl">
+              Past grants and funding
+            </Heading>
+            <div className="space-y-4">
+              {fundingSources?.map((source, i) => {
+                const type =
+                  {
+                    OTHER: "Other",
+                    RETROPGF_2: "RetroPGF2",
+                    GOVERNANCE_FUND: "Governance Fund",
+                    PARTNER_FUND: "Partner Fund",
+                    REVENUE: "Revenue",
+                  }[source.type] ?? source.type;
+                return (
+                  <div key={i} className="flex items-center gap-4">
+                    <div className="flex-1 truncate text-xl">
+                      {source.description}
+                    </div>
+                    <div className="text-sm tracking-widest text-onSurfaceVariant-dark dark:text-gray-400">
+                      {type}
+                    </div>
+                    <div className="w-32 text-xl font-medium">
+                      {suffixNumber(source.amount)} {source.currency}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
         <div className="mt-10 flex items-baseline justify-between">
           {metadata?.data?.socialMedias.length > 0 && (
             <div className="md:w-1/3">

@@ -29,8 +29,8 @@ import { PlusIcon, Search, Trash } from "lucide-react";
 
 const inputBase = [
   "dark:bg-transparent",
-  "dark:text-onSurfaceVariant-dark",
-  "dark:border-outline-dark",
+  "dark:text-onSurface-dark",
+  "dark:border-outline-dark dark:hover:border-onSurface-dark dark:focus:outline-none dark:focus:ring-0 dark:focus:ring-offset-0 dark:focus:border-2 dark:focus:border-primary-dark dark:focus:shadow-none",
   "rounded",
   "disabled:opacity-30",
   "checked:bg-surfaceContainerLow-dark",
@@ -41,7 +41,7 @@ export const Input = createComponent(
     base: ["w-full", ...inputBase],
     variants: {
       error: {
-        true: "!border-red-900",
+        true: "!border-error-dark",
       },
     },
   }),
@@ -78,7 +78,7 @@ export const Select = createComponent(
     base: [...inputBase],
     variants: {
       error: {
-        true: "!border-red-900",
+        true: "!border-error-dark",
       },
     },
   }),
@@ -97,7 +97,7 @@ export const Checkbox = createComponent(
 export const Label = createComponent(
   "label",
   tv({
-    base: "block tracking-wider dark:text-gray-300 font-semibold",
+    base: "block mb-3 tracking-wider text-base dark:text-onSurface-dark font-semibold",
   }),
 );
 export const Textarea = createComponent(
@@ -146,11 +146,11 @@ export const FormControl = ({
   ) as unknown as { message: string };
 
   return (
-    <fieldset className={cn("mb-4", className)}>
+    <fieldset className={cn("mb-6", className)}>
       {label && (
-        <Label className="mb-1" htmlFor={name}>
+        <Label className="mb-3" htmlFor={name}>
           {label}
-          {required && <span className="text-red-300">*</span>}
+          {required && <span className="text-onSurface-dark"> *</span>}
         </Label>
       )}
       {cloneElement(children as ReactElement, {
@@ -170,7 +170,7 @@ export const FormControl = ({
 
 export const ErrorMessage = createComponent(
   "div",
-  tv({ base: "pt-1 text-xs text-red-500" }),
+  tv({ base: "pt-1 text-xs text-error-dark" }),
 );
 
 export function FieldArray<S extends z.Schema>({
@@ -191,7 +191,7 @@ export function FieldArray<S extends z.Schema>({
   return (
     <div className="mb-8">
       {error && (
-        <div className="border border-red-900 p-2 dark:text-red-500">
+        <div className="border border-error-dark p-2 dark:text-error-dark">
           {String(error)}
         </div>
       )}
@@ -231,7 +231,7 @@ export function FormSection({
 }: { title: string; description: string } & ComponentProps<"section">) {
   return (
     <section className="mb-8">
-      <h3 className="mb-3 text-xl font-bold text-surfaceVariant-light">
+      <h3 className="mb-3 text-xl font-bold text-onSurface-dark">
         {title}
       </h3>
       <p className="mb-6 text-sm font-normal leading-loose text-onSurfaceVariant-dark">

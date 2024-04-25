@@ -106,11 +106,19 @@ export function ApplicationForm({
     <div>
       <Form
         isEditMode={isEditMode}
-        defaultValues={isEditMode ? defaultValues : undefined}
+        defaultValues={
+          isEditMode
+            ? defaultValues
+            : {
+                application: {
+                  contributionLinks: [{}],
+                  impactMetrics: [{}],
+                },
+              }
+        }
         persist={!isEditMode ? "application-draft" : undefined}
         schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application }) => {
-          console.log(application, profile);
           create.mutate({
             application,
             profile,
@@ -125,7 +133,7 @@ export function ApplicationForm({
           <FormControl name="profile.name" label="Profile name" required>
             <Input placeholder="Your name" />
           </FormControl>
-          <div className="mb-4 gap-4 md:flex">
+          <div className="mb-1 gap-4 md:flex">
             <FormControl
               required
               label="Project avatar"
@@ -221,7 +229,7 @@ export function ApplicationForm({
         <FormSection
           title={
             <>
-              Contribution links <span className="text-red-300">*</span>
+              Contribution links <span className="text-onSurface-dark"> *</span>
             </>
           }
           description="Where can we find your contributions?"
@@ -263,7 +271,7 @@ export function ApplicationForm({
         <FormSection
           title={
             <>
-              Impact metrics <span className="text-red-300">*</span>
+              Impact metrics <span className="text-onSurface-dark"> *</span>
             </>
           }
           description="What kind of impact have your project made?"
@@ -303,11 +311,7 @@ export function ApplicationForm({
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Funding sources <span className="text-red-300">*</span>
-            </>
-          }
+          title="Funding sources"
           description="From what sources have you received funding?"
         >
           <FieldArray
@@ -359,11 +363,7 @@ export function ApplicationForm({
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Social media <span className="text-red-300">*</span>
-            </>
-          }
+          title="Social media"
           description="Please add any related social media link"
         >
           <FieldArray
@@ -428,7 +428,7 @@ function CreateApplicationButton({
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="mt-8 flex items-center justify-between">
       <div>
         {!session && (
           <div>You must connect wallet to create an application</div>
@@ -461,12 +461,11 @@ function ImpactTags() {
   });
 
   const selected = watch("application.impactCategory") ?? [];
-
   const error = formState.errors.application?.impactCategory;
   return (
     <div className="mb-4">
       <Label>
-        Impact categories<span className="text-red-300">*</span>
+        Impact categories<span className="text-onSurface-dark"> *</span>
       </Label>
       <div className="flex flex-wrap gap-2">
         {Object.entries(impactCategories).map(
@@ -479,8 +478,8 @@ function ImpactTags() {
                 key={value}
                 onClick={() => {
                   const currentlySelected = isSelected
-                    ? selected.filter((s) => s !== value)
-                    : selected.concat(value);
+                    ? selected?.filter((s) => s !== value)
+                    : [value];
 
                   field.onChange(currentlySelected);
                 }}

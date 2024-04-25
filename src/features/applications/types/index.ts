@@ -55,6 +55,7 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
+
   impactMetrics: z
     .array(
       z.object({
@@ -64,22 +65,20 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
-  fundingSources: z
-    .array(
-      z.object({
-        description: z.string().min(3),
-        amount: z.number(),
-        currency: z.string().min(3).max(4),
-        type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
-      }),
-    )
-    .min(1),
+  fundingSources: z.array(
+    z.object({
+      description: z.string().min(3),
+      amount: z.number(),
+      currency: z.string().min(3).max(4),
+      type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
+    }),
+  ),
   socialMedias: z.array(
     z.object({
       url: z.string().min(1),
       type: z.nativeEnum(reverseKeys(socialMediaTypes)),
     }),
-  ).min(1),
+  ),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;

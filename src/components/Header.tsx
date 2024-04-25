@@ -14,8 +14,8 @@ const Logo = () => (
   <div>
     <Image
       className="max-h-full"
-      width={72}
-      height={24}
+      width={144}
+      height={48}
       alt="logo"
       src={config.logoUrl}
     />

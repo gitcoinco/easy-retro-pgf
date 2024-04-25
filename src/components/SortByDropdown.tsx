@@ -18,7 +18,7 @@ const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
           icon={ArrowUpDown}
           variant="outline"
           aria-label="Sort by"
-          className="w-48 justify-start"
+          className="w-48 justify-center"
         >
           Sort by: {value && sortLabels[value]}
         </Button>
