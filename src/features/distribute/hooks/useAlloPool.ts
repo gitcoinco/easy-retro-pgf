@@ -189,7 +189,7 @@ function useToken(tokenAddress?: Address) {
   return {
     ...token,
     data: {
-      address,
+      address: tokenAddress,
       isNativeToken,
       symbol: isNativeToken ? network?.nativeCurrency.name : symbol ?? "",
       balance: balance?.value ?? 0n,
