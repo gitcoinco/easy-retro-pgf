@@ -48,7 +48,7 @@ export function InfiniteLoading<T>({
         <EmptyState title="No results found" />
       ) : null}
       <div
-        className={`mb-16 flex flex-col sm:grid ${columnMap[columns]} gap-2 sm:gap-4`}
+        className={`mb-16 flex flex-col sm:grid ${columnMap[columns]} gap-2 sm:gap-4 lg:gap-5`}
       >
         {items.map((item) => renderItem(item, { isLoading }))}
         {(isLoading || isFetchingNextPage) &&

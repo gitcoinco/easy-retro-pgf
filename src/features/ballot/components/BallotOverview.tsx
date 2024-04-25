@@ -203,7 +203,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
 const BallotMessage = createComponent(
   "div",
-  tv({ base: "flex flex-col items-center gap-2 pt-8" }),
+  tv({ base: "flex flex-col items-center gap-2 pt-3" }),
 );
 
 const BallotHeader = createComponent(
