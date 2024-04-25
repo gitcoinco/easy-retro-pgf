@@ -16,7 +16,6 @@ import {
   useApproveApplication,
   useRevokeApplication,
 } from "../hooks/useApproveApplication";
-import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
@@ -26,6 +25,7 @@ import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
+import { useAccount } from "wagmi";
 
 export function ApplicationItem({
   id,
@@ -39,6 +39,7 @@ export function ApplicationItem({
   approvedBy?: { attester: Address; uid: string };
   isLoading?: boolean;
 }) {
+  const { address } = useAccount();
   const metadata = useMetadata<Application>(metadataPtr);
   const domain = useCurrentDomain();
   const form = useFormContext();
@@ -86,6 +87,7 @@ export function ApplicationItem({
           <Button
             size="sm"
             variant="outline"
+            disabled={approvedBy?.attester !== address}
             isLoading={revoke.isPending}
             onClick={() => {
               if (

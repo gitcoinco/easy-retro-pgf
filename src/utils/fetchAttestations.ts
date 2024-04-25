@@ -154,7 +154,8 @@ export function createSearchFilter(value: string) {
   const formatter = typeMaps.string;
   return {
     decodedDataJson: {
-      contains: `${formatter(value)}`,
+      contains: `%${formatter(value)}%`,
+      mode: "insensitive",
     },
   };
 }

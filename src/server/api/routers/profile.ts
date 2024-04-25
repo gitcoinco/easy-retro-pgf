@@ -14,6 +14,7 @@ export const profileRouter = createTRPCRouter({
             recipient: { in: [input.id] },
             ...createDataFilter("type", "bytes32", "profile"),
           },
+          orderBy: [{ time: "desc" }],
         })
         .then(([attestation]) => {
           if (!attestation) {
