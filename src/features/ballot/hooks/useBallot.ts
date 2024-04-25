@@ -7,7 +7,7 @@ import { ballotTypedData } from "~/utils/typedData";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import { keccak256 } from "viem";
-import { useMaciPoll } from "~/hooks/useMaciPoll";
+import { useMaci } from "~/contexts/Maci";
 
 export function useSaveBallot(opts?: { onSuccess?: () => void }) {
   const utils = api.useUtils();
@@ -34,7 +34,7 @@ export function useLockBallot() {
 export function useAddToBallot() {
   const { data: ballot } = useBallot();
   const { mutate } = useSaveBallot();
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
 
   return useMutation({
@@ -48,7 +48,7 @@ export function useAddToBallot() {
 
 export function useRemoveFromBallot() {
   const { data: ballot } = useBallot();
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
 
   const { mutate } = useSaveBallot();
@@ -65,7 +65,7 @@ export function useRemoveFromBallot() {
 export function useBallot() {
   const { address } = useAccount();
   const { data: session } = useSession();
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
 
   return api.ballot.get.useQuery(
@@ -83,7 +83,7 @@ export function useSubmitBallot({
 }) {
   const chainId = useChainId();
   const { refetch } = useBallot();
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
   const { mutateAsync, isPending } = api.ballot.publish.useMutation({
     onSuccess,

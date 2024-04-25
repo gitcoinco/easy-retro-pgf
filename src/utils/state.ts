@@ -1,6 +1,6 @@
 import { isAfter } from "date-fns";
 import { config } from "~/config";
-import { useMaciPoll } from "~/hooks/useMaciPoll";
+import { useMaci } from "~/contexts/Maci";
 
 type AppState =
   | "LOADING"
@@ -12,7 +12,7 @@ type AppState =
 
 export const getAppState = (): AppState => {
   const now = new Date();
-  const { isLoading, votingEndsAt, pollData, tallyData } = useMaciPoll();
+  const { isLoading, votingEndsAt, pollData, tallyData } = useMaci();
 
   if (isLoading) {
     return "LOADING";

@@ -20,7 +20,7 @@ import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { FormControl, Input } from "~/components/ui/Form";
 import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
+import { useMaci } from "~/contexts/Maci";
 
 const AllocationListWrapper = createComponent(
   "div",
@@ -58,7 +58,7 @@ export function AllocationFormWithSearch() {
     keyName: "key",
     control: form.control,
   });
-  const { initialVoiceCredits } = useMaciSignup();
+  const { initialVoiceCredits } = useMaci();
 
   const { errors } = form.formState;
 
@@ -149,7 +149,7 @@ function AllocationFormWrapper({
   onSave,
 }: AllocationFormProps) {
   const form = useFormContext<{ votes: Vote[] }>();
-  const { initialVoiceCredits } = useMaciSignup();
+  const { initialVoiceCredits } = useMaci();
 
   const { fields, remove } = useFieldArray({
     name: "votes",
@@ -207,7 +207,7 @@ export function AllocationForm({
   list,
   ...props
 }: { list?: Vote[] } & AllocationFormProps) {
-  const { initialVoiceCredits } = useMaciSignup();
+  const { initialVoiceCredits } = useMaci();
 
   return (
     <AllocationFormWrapper

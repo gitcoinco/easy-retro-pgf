@@ -21,15 +21,13 @@ import {
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
-import { useMaciVote } from "~/hooks/useMaciVote";
+import { useMaci } from "~/contexts/Maci";
 
 function BallotOverview() {
   const router = useRouter();
 
-  const { isRegistered, isEligibleToVote } = useMaciSignup();
   const { data: ballot } = useBallot();
-  const { initialVoiceCredits } = useMaciSignup();
+  const { isRegistered, isEligibleToVote, initialVoiceCredits } = useMaci();
 
   const sum = sumBallot(ballot?.votes);
 
@@ -129,7 +127,7 @@ function BallotOverview() {
 
 const SubmitBallotButton = ({ disabled = false }) => {
   const [isOpen, setOpen] = useState(false);
-  const { isLoading, pollId, error, onVote } = useMaciVote();
+  const { isLoading, pollId, error, onVote } = useMaci();
   const { data: ballot } = useBallot();
   const { lock, unlock } = useLockBallot();
 

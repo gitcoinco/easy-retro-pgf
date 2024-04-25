@@ -32,7 +32,7 @@ import { AllocationForm } from "~/features/ballot/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
+import { useMaci } from "~/contexts/Maci";
 
 export const ListEditDistribution = ({
   listName,
@@ -45,7 +45,7 @@ export const ListEditDistribution = ({
   const [isOpen, setOpen] = useState(false);
   const { data: ballot } = useBallot();
   const add = useAddToBallot();
-  const { isRegistered } = useMaciSignup();
+  const { isRegistered } = useMaci();
 
   // What list projects are already in the ballot?
   function itemsInBallot(votes?: Vote[]) {
@@ -179,7 +179,7 @@ const TotalAllocationBanner = () => {
 
   // Load existing ballot
   const { data: ballot } = useBallot();
-  const { initialVoiceCredits } = useMaciSignup()
+  const { initialVoiceCredits } = useMaci()
 
   const sum = sumBallot(ballot?.votes);
   const votes = form.watch("votes") ?? [];

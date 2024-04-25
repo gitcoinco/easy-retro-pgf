@@ -11,16 +11,16 @@ import { ProjectSelectButton } from "./ProjectSelectButton";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import { useResults } from "~/hooks/useResults";
-import { useMaciSignup } from "~/hooks/useMaciSignup";
 import { SortFilter } from "~/components/SortFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
+import { useMaci } from "~/contexts/Maci";
 
 export function Projects() {
   const projects = useSearchProjects();
   const select = useSelectProjects();
-  const results = useResults();
   const appState = getAppState();
-  const { isRegistered } = useMaciSignup();
+  const { isRegistered, pollData } = useMaci();
+  const results = useResults(pollData);
 
   return (
     <div>

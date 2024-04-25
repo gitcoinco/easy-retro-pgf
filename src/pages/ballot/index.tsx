@@ -19,7 +19,7 @@ import {
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { LayoutWithBallot } from "~/layouts/DefaultLayout";
-import { useMaciPoll } from "~/hooks/useMaciPoll";
+import { useMaci } from "~/contexts/Maci";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
@@ -61,7 +61,7 @@ export default function BallotPage() {
 
 function BallotAllocationForm() {
   const form = useFormContext<{ votes: Vote[] }>();
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
 
   const save = useSaveBallot();
@@ -124,7 +124,7 @@ function ImportCSV() {
   const [votes, setVotes] = useState<Vote[]>([]);
   const save = useSaveBallot();
   const csvInputRef = useRef<HTMLInputElement>(null);
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
 
   const importCSV = useCallback((csvString: string) => {
@@ -223,7 +223,7 @@ function ClearBallot() {
   const form = useFormContext();
   const [isOpen, setOpen] = useState(false);
   const { mutateAsync, isPending } = useSaveBallot();
-  const { pollData } = useMaciPoll();
+  const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
 
   if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
