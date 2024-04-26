@@ -3,8 +3,8 @@ import { useWalletClient } from "wagmi";
 import {
   BrowserProvider,
   JsonRpcSigner,
-  InfuraProvider,
   type Signer,
+  AlchemyProvider,
 } from "ethers";
 import type { WalletClient } from "viem";
 import { config } from "~/config";
@@ -46,9 +46,9 @@ export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   const provider = useMemo(
     () =>
-      new InfuraProvider(
+      new AlchemyProvider(
         chainId ?? config.network.id,
-        process.env.NEXT_PUBLIC_INFURA_ID,
+        process.env.NEXT_PUBLIC_ALCHEMY_ID,
       ),
     [chainId],
   );
