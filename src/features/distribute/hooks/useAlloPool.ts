@@ -125,6 +125,7 @@ export function useCreatePool() {
 
 export function useFundPool() {
   const allo = useAllo();
+  const { data: token } = usePoolToken();
   const { sendTransactionAsync } = useSendTransaction();
   const client = usePublicClient();
 
@@ -149,7 +150,7 @@ export function useFundPool() {
       const hash = await sendTransactionAsync({
         to,
         data,
-        value: BigInt(amount),
+        value: token.isNativeToken ? BigInt(amount) : 0n,
       });
 
       return waitForLogs(hash, AlloABI, client);
