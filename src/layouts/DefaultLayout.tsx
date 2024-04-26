@@ -62,11 +62,10 @@ export const Layout = ({ children, ...props }: Props) => {
 };
 
 export function LayoutWithBallot(props: Props) {
-  const { address } = useAccount();
   return (
     <Layout
       sidebar="left"
-      sidebarComponent={address && <BallotOverview />}
+      sidebarComponent={<BallotOverview />}
       {...props}
     />
   );
