@@ -12,10 +12,7 @@ import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { type Application } from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
-import {
-  useApproveApplication,
-  useRevokeApplication,
-} from "../hooks/useApproveApplication";
+import { useApproveApplication } from "../hooks/useApproveApplication";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
@@ -26,6 +23,7 @@ import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
 import { useAccount } from "wagmi";
+import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
 
 export function ApplicationItem({
   id,
@@ -43,7 +41,7 @@ export function ApplicationItem({
   const metadata = useMetadata<Application>(metadataPtr);
   const domain = useCurrentDomain();
   const form = useFormContext();
-  const revoke = useRevokeApplication({});
+  const revoke = useRevokeAttestations({});
 
   const { fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
   const isApproved = Boolean(approvedBy);

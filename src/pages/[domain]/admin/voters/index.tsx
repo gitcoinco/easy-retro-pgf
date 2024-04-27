@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/Button";
 import { Form, FormControl, FormSection } from "~/components/ui/Form";
@@ -19,12 +19,14 @@ import { RoundVotesSchema } from "~/features/rounds/types";
 import { NumberInput } from "~/components/NumberInput";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { Alert } from "~/components/ui/Alert";
+import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
+import { useAccount } from "wagmi";
 
 export default function AdminAccountsPage() {
   const [isOpen, setOpen] = useState(false);
-
+  const { address } = useAccount();
   const update = useUpdateRound();
-  const { data } = useVoters();
+  const { data: voterList } = useVoters();
   const approve = useApproveVoters({
     onSuccess: () => {
       toast.success("Voters approved successfully!");
@@ -36,7 +38,17 @@ export default function AdminAccountsPage() {
       }),
   });
 
-  const voters = data?.map((v) => v.recipient) ?? [];
+  const revoke = useRevokeAttestations({});
+
+  const voters = voterList?.map((v) => v.recipient) ?? [];
+
+  const attestedByOthers = useMemo(
+    () =>
+      voterList
+        ?.filter((voter) => voter.attester !== address)
+        .map((voter) => voter.recipient),
+    [voterList],
+  );
   return (
     <RoundAdminLayout title="Manage voters" className="max-w-screen-md">
       {({ data }) => (
@@ -99,7 +111,15 @@ export default function AdminAccountsPage() {
                   <SelectAllButton addresses={voters} />
                   <DeleteSelectedButton
                     onDelete={(removed) => {
-                      alert("Revoking of attestations not implemented yet");
+                      // Find the attestation IDs for the addresses
+                      const attestations = removed
+                        .map((addr) =>
+                          voterList?.find((voter) => voter.recipient === addr),
+                        )
+                        .map((v) => v?.id)
+                        .filter(Boolean) as string[];
+
+                      revoke.mutate(attestations);
                     }}
                   />
                 </div>
@@ -114,7 +134,7 @@ export default function AdminAccountsPage() {
                   approve.mutate(voters);
                 }}
               />
-              <AddressList addresses={voters} />
+              <AddressList addresses={voters} disabled={attestedByOthers} />
             </Form>
           </FormSection>
         </>
