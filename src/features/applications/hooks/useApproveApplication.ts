@@ -1,4 +1,4 @@
-import { useAttest, useRevoke } from "~/hooks/useEAS";
+import { useAttest } from "~/hooks/useEAS";
 import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
 import { config, eas } from "~/config";
@@ -35,40 +35,6 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
       );
       return attest.mutateAsync(
         attestations.map((att) => ({ ...att, data: [att.data] })),
-      );
-    },
-  });
-}
-
-export function useRevokeApplication(opts?: { onSuccess?: () => void }) {
-  const revoke = useRevoke();
-  const signer = useEthersSigner();
-
-  return useMutation({
-    onSuccess: () => {
-      toast.success("Application revoked successfully!");
-      opts?.onSuccess?.();
-    },
-    onError: (err: { reason?: string; data?: { message: string } }) => {
-      console.log(err);
-      toast.error("Application revoke error", {
-        description: err.reason ?? err.data?.message,
-      });
-    },
-    mutationFn: async (applicationIds: string[]) => {
-      if (!signer) throw new Error("Connect wallet first");
-
-      console.log(
-        applicationIds.map((uid) => ({
-          schema: eas.schemas.approval,
-          data: [{ uid }],
-        })),
-      );
-      return revoke.mutateAsync(
-        applicationIds.map((uid) => ({
-          schema: eas.schemas.approval,
-          data: [{ uid }],
-        })),
       );
     },
   });

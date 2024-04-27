@@ -1,11 +1,9 @@
-import { useMemo } from "react";
-import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { NameENS } from "~/components/ENS";
 import { EmptyState } from "~/components/EmptyState";
 import { Button } from "~/components/ui/Button";
 import { Skeleton } from "~/components/ui/Skeleton";
-import { useRevokeApplication } from "~/features/applications/hooks/useApproveApplication";
+import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
 import { api } from "~/utils/api";
 
 function useVoters() {
@@ -15,7 +13,7 @@ function useVoters() {
 export function VotersList() {
   const { address } = useAccount();
   const { data, isPending } = useVoters();
-  const revoke = useRevokeApplication({});
+  const revoke = useRevokeAttestations({});
 
   if (!isPending && !data?.length)
     return (
@@ -30,7 +28,11 @@ export function VotersList() {
         data ??
         Array(5)
           .fill(0)
-          .map((_, i) => ({ recipient: String(i) }))
+          .map((_, i) => ({
+            id: String(i),
+            recipient: String(i),
+            attester: String(i),
+          }))
       )?.map((voter, i) => {
         return (
           <div
@@ -43,7 +45,7 @@ export function VotersList() {
             <Button
               size="sm"
               variant="outline"
-              disabled={voter?.attester !== address}
+              disabled={voter.attester !== address}
               isLoading={
                 revoke.isPending && revoke.variables.includes(voter.id)
               }
