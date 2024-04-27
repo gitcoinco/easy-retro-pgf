@@ -43,7 +43,7 @@ export function ApplicationItem({
   const { address } = useAccount();
   const metadata = useMetadata<Application>(metadataPtr);
   const form = useFormContext();
-  const revoke = useRevokeApplication({});
+  const revoke = useRevokeAttestations({});
 
   const { fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
   const isApproved = Boolean(approvedBy);
