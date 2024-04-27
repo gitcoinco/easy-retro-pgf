@@ -2,7 +2,7 @@ import { z } from "zod";
 import { useMemo } from "react";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
-import { Address } from "viem";
+import { type Address } from "viem";
 
 import { Button } from "~/components/ui/Button";
 import { Checkbox, Form } from "~/components/ui/Form";
@@ -13,10 +13,7 @@ import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { type Application } from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
-import {
-  useApproveApplication,
-  useRevokeApplication,
-} from "../hooks/useApproveApplication";
+import { useApproveApplication } from "../hooks/useApproveApplication";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
@@ -27,6 +24,7 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useAccount } from "wagmi";
+import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
 
 export function ApplicationItem({
   id,
