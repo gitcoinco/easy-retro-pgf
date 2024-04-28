@@ -1,7 +1,7 @@
 import { isAfter, isBefore } from "date-fns";
 import { config } from "~/config";
 
-type AppState = "APPLICATION" | "REVIEWING" | "VOTING" | "RESULTS" | "TALLYING";
+export type AppState = "APPLICATION" | "REVIEWING" | "VOTING" | "RESULTS" | "TALLYING";
 
 export const getAppState = (): AppState => {
   const now = new Date();

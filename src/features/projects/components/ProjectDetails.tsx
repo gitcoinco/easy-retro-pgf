@@ -1,5 +1,4 @@
 import { type ReactNode } from "react";
-import { useAccount } from "wagmi";
 import Link from "next/link";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
@@ -8,7 +7,7 @@ import ProjectContributions from "./ProjectContributions";
 import ProjectImpact from "./ProjectImpact";
 // import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
-import { getAppState } from "~/utils/state";
+import { type AppState } from "~/utils/state";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { LinkBox } from "./LinkBox";
@@ -17,13 +16,15 @@ import { Button } from "~/components/ui/Button";
 export default function ProjectDetails({
   attestation,
   action,
+  address,
+  state,
 }: {
   action: ReactNode;
   attestation?: Attestation;
+  address?: string;
+  state?: AppState;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
-  const { address } = useAccount();
-  const state = getAppState();
 
   const {
     bio,
@@ -60,15 +61,17 @@ export default function ProjectDetails({
       </div>
       <div className="flex flex-row items-center justify-between">
         <p className="text-2xl">{bio}</p>
-        {address === attestation?.attester && state === "APPLICATION" && (
-          <Button
-            as={Link}
-            href={`/projects/${attestation?.id}/edit`}
-            variant="outline"
-          >
-            Edit submitted project
-          </Button>
-        )}
+        {address &&
+          address === attestation?.attester &&
+          state && state === "APPLICATION" && (
+            <Button
+              as={Link}
+              href={`/projects/${attestation?.id}/edit`}
+              variant="outline"
+            >
+              Edit submitted project
+            </Button>
+          )}
       </div>
       <div>
         <Heading as="h2" size="3xl">
