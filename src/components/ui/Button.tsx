@@ -20,7 +20,8 @@ const button = tv({
         "bg-gray-100 dark:bg-surfaceContainerLow-dark hover:bg-gray-200 dark:hover:bg-onSurfaceVariant-dark",
       inverted: "bg-white text-black hover:bg-white/90",
       link: "bg-none hover:underline",
-      outline: "border text-primary-dark border-outline-dark hover:bg-primary-dark/15 ",
+      outline:
+        "border text-primary-dark border-outline-dark hover:bg-primary-dark/15 dark:disabled:text-onSurface-dark dark-disabled:border dark-disabled:border-solid dark:disabled:border-onSurface-dark-[0.12]",
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",
@@ -28,7 +29,7 @@ const button = tv({
       icon: "h-12 w-12",
     },
     disabled: {
-      true: "dark:text-onSurfaceVariant-dark pointer-events-none pointer-default opacity-50 border-none",
+      true: "dark:text-onSurfaceVariant-dark pointer-events-none pointer-default opacity-50",
     },
   },
   defaultVariants: {
@@ -53,7 +54,7 @@ export const IconButton = forwardRef(function IconButton(
     <Button ref={ref} {...props} size={children ? size : "icon"}>
       {icon
         ? createElement(icon, {
-            className: `w-4 h-4 ${children ? "mr-2" : ""}`,
+            className: `w-4 h-4 bo ${children ? "mr-2" : ""}`,
           })
         : null}
       {children}

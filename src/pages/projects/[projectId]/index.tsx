@@ -1,4 +1,5 @@
 import { type GetServerSideProps } from "next";
+import { useAccount } from "wagmi";
 
 import { LayoutWithBallot } from "~/layouts/DefaultLayout";
 import ProjectDetails from "~/features/projects/components/ProjectDetails";
@@ -6,20 +7,29 @@ import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { ProjectAddToBallot } from "~/features/projects/components/AddToBallot";
 import { getAppState } from "~/utils/state";
 import { ProjectAwarded } from "~/features/projects/components/ProjectAwarded";
+import { Feedback } from "~/features/projects/components/discussion";
 
 export default function ProjectDetailsPage({ projectId = "" }) {
   const project = useProjectById(projectId);
   const { name } = project.data ?? {};
+  const { address } = useAccount();
+  const state = getAppState();
 
   const action =
-    getAppState() === "RESULTS" ? (
+    state === "RESULTS" ? (
       <ProjectAwarded id={projectId} />
     ) : (
       <ProjectAddToBallot id={projectId} name={name} />
     );
   return (
     <LayoutWithBallot sidebar="left" title={name} showBallot eligibilityCheck>
-      <ProjectDetails attestation={project.data} action={action} />
+      <ProjectDetails
+        address={address}
+        attestation={project.data}
+        action={action}
+        state={state}
+      />
+      <Feedback state={state} address={address} />
     </LayoutWithBallot>
   );
 }

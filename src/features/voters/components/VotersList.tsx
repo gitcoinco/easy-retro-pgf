@@ -2,9 +2,9 @@ import { EmptyState } from "~/components/EmptyState";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { api } from "~/utils/api";
 
-function useVoters() {
+export const useVoters = () => {
   return api.voters.list.useQuery({});
-}
+};
 
 export function VotersList() {
   const { data, isPending } = useVoters();
