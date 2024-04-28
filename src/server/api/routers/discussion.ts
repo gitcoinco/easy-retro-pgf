@@ -1,17 +1,16 @@
 import { createTRPCRouter, discussionProcedure } from "../trpc";
 import { z } from "zod";
 import { map, omit } from "lodash";
+import {
+  CreateDiscussionSchema,
+  ReplySchema,
+  ListSchema,
+  ReactSchema,
+} from "~/features/projects/types/discussion";
 
 export const discussionRouter = createTRPCRouter({
   create: discussionProcedure
-    .input(
-      z.object({
-        isAnonymous: z.boolean(),
-        type: z.enum(["concern", "question", "strength"]),
-        content: z.string().min(1).max(1024),
-        projectId: z.string(),
-      }),
-    )
+    .input(CreateDiscussionSchema)
     .mutation(async ({ input, ctx }) => {
       const userId: string = ctx.session!.user.id;
 
@@ -40,14 +39,7 @@ export const discussionRouter = createTRPCRouter({
     }),
 
   reply: discussionProcedure
-    .input(
-      z.object({
-        isAnonymous: z.boolean(),
-        content: z.string().min(1).max(1024),
-        discussionId: z.string().uuid(),
-        projectId: z.string(),
-      }),
-    )
+    .input(ReplySchema)
     .mutation(async ({ input, ctx }) => {
       const userId: string = ctx.session!.user.id;
 
@@ -74,64 +66,53 @@ export const discussionRouter = createTRPCRouter({
       });
     }),
 
-  get: discussionProcedure
-    .input(
-      z.object({
-        projectId: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const discussions = await ctx.db.discussion.findMany({
-        select: {
-          id: true,
-          content: true,
-          type: true,
-          isAnonymous: true,
-          thumbsUp: true,
-          thumbsDown: true,
-          createdAt: true,
-          user: { select: { id: true, name: true, image: true } },
-          replies: {
-            select: {
-              id: true,
-              content: true,
-              isAnonymous: true,
-              thumbsUp: true,
-              thumbsDown: true,
-              createdAt: true,
-              user: { select: { id: true, name: true, image: true } },
-            },
+  get: discussionProcedure.input(ListSchema).query(async ({ input, ctx }) => {
+    const discussions = await ctx.db.discussion.findMany({
+      select: {
+        id: true,
+        content: true,
+        type: true,
+        isAnonymous: true,
+        thumbsUp: true,
+        thumbsDown: true,
+        createdAt: true,
+        user: { select: { id: true, name: true, image: true } },
+        replies: {
+          select: {
+            id: true,
+            content: true,
+            isAnonymous: true,
+            thumbsUp: true,
+            thumbsDown: true,
+            createdAt: true,
+            user: { select: { id: true, name: true, image: true } },
           },
         },
-        where: { projectId: input.projectId, parentId: null },
-      });
+      },
+      where: { projectId: input.projectId, parentId: null },
+    });
 
-      return map(discussions, (discussion) => {
-        const updatedReplies = map(discussion.replies, (reply) => {
-          if (reply.isAnonymous) {
-            return omit(reply, ["user"]);
-          }
-
-          return reply;
-        });
-
-        (discussion.replies as unknown as Array<unknown>) = updatedReplies;
-
-        if (discussion.isAnonymous) {
-          return omit(discussion, ["user"]);
+    return map(discussions, (discussion) => {
+      const updatedReplies = map(discussion.replies, (reply) => {
+        if (reply.isAnonymous) {
+          return omit(reply, ["user"]);
         }
 
-        return discussion;
+        return reply;
       });
-    }),
+
+      (discussion.replies as unknown as Array<unknown>) = updatedReplies;
+
+      if (discussion.isAnonymous) {
+        return omit(discussion, ["user"]);
+      }
+
+      return discussion;
+    });
+  }),
 
   react: discussionProcedure
-    .input(
-      z.object({
-        reaction: z.enum(["thumbsUp", "ThumbsDown"]),
-        discussionId: z.string().uuid(),
-      }),
-    )
+    .input(ReactSchema)
     .mutation(async ({ ctx, input }) => {
       const isThumbsUp = input.reaction === "thumbsUp" ? true : false;
 
