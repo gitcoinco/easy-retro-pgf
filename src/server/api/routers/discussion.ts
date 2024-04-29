@@ -1,5 +1,4 @@
 import { createTRPCRouter, discussionProcedure } from "../trpc";
-import { z } from "zod";
 import { map, omit } from "lodash";
 import {
   CreateDiscussionSchema,
@@ -7,12 +6,28 @@ import {
   ListSchema,
   ReactSchema,
 } from "~/features/projects/types/discussion";
+import { type PrismaClient } from "@prisma/client";
+
+async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
+  const userInstance = await ctx.db.user.findFirst({
+    where: {
+      name: walletAddr,
+    },
+  });
+
+  if (userInstance) {
+    return userInstance;
+  }
+  // TODO: fetch user image from wallet provider
+  return ctx.db.user.create({ data: { name: walletAddr } });
+}
 
 export const discussionRouter = createTRPCRouter({
   create: discussionProcedure
     .input(CreateDiscussionSchema)
     .mutation(async ({ input, ctx }) => {
-      const userId: string = ctx.session!.user.id;
+      const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
+      const userId = userInstance.id;
 
       return await ctx.db.discussion.create({
         data: {
@@ -41,7 +56,8 @@ export const discussionRouter = createTRPCRouter({
   reply: discussionProcedure
     .input(ReplySchema)
     .mutation(async ({ input, ctx }) => {
-      const userId: string = ctx.session!.user.id;
+      const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
+      const userId = userInstance.id;
 
       return await ctx.db.discussion.create({
         data: {

@@ -24,7 +24,6 @@ export function useCreateDiscussion({
         type: discussionData.type,
         content: discussionData.content,
         projectId: discussionData.projectId,
-        userId: discussionData.userId,
       });
     },
   });
