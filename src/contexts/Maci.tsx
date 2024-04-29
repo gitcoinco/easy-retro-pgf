@@ -11,7 +11,6 @@ import { useAccount } from "wagmi";
 import { isAfter } from "date-fns";
 import {
   signup,
-  type Signer,
   isRegisteredUser,
   publishBatch,
   type TallyData,
@@ -143,11 +142,11 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       setIsLoading(true);
       await publishBatch({
         messages,
-        maciContractAddress: config.maciAddress!,
+        maciAddress: config.maciAddress!,
         publicKey: data.publicKey,
         privateKey: data.privateKey,
         pollId: BigInt(pollData.id),
-        signer: signer as unknown as Signer,
+        signer,
       })
         .then(() => onSuccess())
         .catch((error: Error) => {
@@ -179,7 +178,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       maciPubKey: data.publicKey,
       maciAddress: config.maciAddress!,
       startBlock: config.maciStartBlock,
-      signer: signer as unknown as Signer,
+      signer,
     })
       .then(({ isRegistered: registered, voiceCredits, stateIndex: index }) => {
         setIsRegistered(registered);

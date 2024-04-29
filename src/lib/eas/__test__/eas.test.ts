@@ -4,7 +4,6 @@ import type { Transaction } from "@ethereum-attestation-service/eas-sdk/dist/tra
 import { ethers, type JsonRpcSigner } from "ethers";
 import type {
   AttestationRequest,
-  GetSchemaParams,
   SchemaRecord,
 } from "@ethereum-attestation-service/eas-sdk";
 import { createEAS } from "../createEAS";
@@ -39,7 +38,7 @@ test("createEAS", async () => {
   expect(eas.attest.bind(eas)).toBeDefined();
 });
 
-const { attestMock } = vi.hoisted(() => ({
+vi.hoisted(() => ({
   attestMock: vi
     .fn<[AttestationRequest], Transaction<string>>()
     .mockResolvedValue({} as Transaction<string>),
@@ -62,7 +61,7 @@ vi.mock("@ethereum-attestation-service/eas-sdk", async () => {
     //   }
     // },
     SchemaRegistry: class extends actual.SchemaRegistry {
-      async getSchema({ uid }: GetSchemaParams) {
+      async getSchema() {
         return Promise.resolve(metadataSchemaRecord);
       }
     },

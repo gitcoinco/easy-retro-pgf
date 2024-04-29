@@ -1,4 +1,4 @@
-import type { ISnarkJSVerificationKey } from "maci-circuits";
+import type { ISnarkJSVerificationKey } from "maci-cli/sdk";
 
 /**
  * Interface that represents deploy args for initial voice credit proxy
