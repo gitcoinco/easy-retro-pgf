@@ -5,15 +5,17 @@ import { Textarea } from "~/components/ui/Form";
 import { Button } from "~/components/ui/Button";
 import { Switch } from "~/components/ui/Switch";
 import { ReplySvg } from "~/components/ui/ReplySvg";
-
-import { type IdeaType, type Idea } from "./index";
+import type {
+  ReplyType,
+  DiscussionType,
+} from "~/features/projects/types/discussion";
 
 const Item = (data: {
   user: { profile?: string; name: string };
   desc: string;
   time: string;
   impression: { like: number; unlike: number };
-  type?: IdeaType;
+  type?: DiscussionType;
   replayed?: boolean;
   setHideReplayed?: () => void;
 }) => {
@@ -61,10 +63,11 @@ const Item = (data: {
 };
 
 const Reply = () => {
-  const [reply, setReply] = useState<Idea>({
-    desc: "",
-    type: "Concern",
+  const [reply, setReply] = useState<ReplyType>({
+    content: "",
+    discussionId: "",
     isAnonymous: false,
+    projectId: "",
   });
   return (
     <div className="relative flex flex-col rounded border border-outline-dark px-4 py-2">
@@ -75,8 +78,8 @@ const Reply = () => {
         className="resize-none border-none p-0"
         rows={3}
         placeholder="Type your reply here."
-        onChange={(e) => setReply({ ...reply, desc: e.target.value })}
-        value={reply.desc}
+        onChange={(e) => setReply({ ...reply, content: e.target.value })}
+        value={reply.content}
       />
       <div className="flex items-center gap-14">
         <div className="flex items-center justify-evenly gap-5">
@@ -92,7 +95,7 @@ const Reply = () => {
         </div>
         <Button
           className="w-fit px-6"
-          disabled={reply.desc.length === 0}
+          disabled={reply.content.length === 0}
           variant="outline"
         >
           Post idea
@@ -104,7 +107,6 @@ const Reply = () => {
 
 export const List = () => {
   const [hideReplayed, setHideReplayed] = useState(false);
-  console.log("hideReplayed", hideReplayed);
   return (
     <div className="flex w-full flex-col rounded-xl border border-outlineVariant-dark p-5">
       <Item
@@ -112,7 +114,7 @@ export const List = () => {
         time="11:17 PM Sep 5, 2023 +0430"
         desc="A concern worth addressing is the potential competition or integration of similar features by existing platforms like GitHub and Discord, as mentioned in the proposal. While the likelihood of these platforms shifting their focus significantly may be low, it's essential to have a solid strategy in place to differentiate and ensure its value proposition remains compelling. Additionally, the proposal briefly touches on data accuracy and the role of moderators but could provide more details on how it plans to maintain data quality and integrity in the long term."
         impression={{ like: 12, unlike: 4 }}
-        type="Concern"
+        // type="Concern"
         setHideReplayed={() => setHideReplayed(!hideReplayed)}
       />
       <div className="mx-10 mt-8 flex flex-col gap-3">
@@ -124,7 +126,7 @@ export const List = () => {
               time="11:17 PM Sep 5, 2023 +0430"
               desc="A concern worth addressing is the potential competition or integration of similar features by existing platforms like GitHub and Discord, as mentioned in the proposal. While the likelihood of these platforms shifting their focus significantly may be low, it's essential to have a solid strategy in place to differentiate and ensure its value proposition remains compelling. Additionally, the proposal briefly touches on data accuracy and the role of moderators but could provide more details on how it plans to maintain data quality and integrity in the long term."
               impression={{ like: 12, unlike: 4 }}
-              type="Concern"
+              // type="Concern"
               replayed
             />
             <Item
@@ -132,7 +134,7 @@ export const List = () => {
               time="11:17 PM Sep 5, 2023 +0430"
               desc="A concern worth addressing is the potential competition or integration of similar features by existing platforms like GitHub and Discord, as mentioned in the proposal. While the likelihood of these platforms shifting their focus significantly may be low, it's essential to have a solid strategy in place to differentiate and ensure its value proposition remains compelling. Additionally, the proposal briefly touches on data accuracy and the role of moderators but could provide more details on how it plans to maintain data quality and integrity in the long term."
               impression={{ like: 12, unlike: 4 }}
-              type="Concern"
+              // type="Concern"
               replayed
             />
           </>

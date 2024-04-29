@@ -1,22 +1,35 @@
 import React, { useState } from "react";
 
+import type {
+  DiscussionData,
+  DiscussionType,
+} from "~/features/projects/types/discussion";
 import { useCreateDiscussion } from "~/features/projects/hooks/useDiscussion";
 
 import { Textarea } from "~/components/ui/Form";
 import { Button } from "~/components/ui/Button";
 import { Switch } from "~/components/ui/Switch";
 
-import { type IdeaType, type Idea } from "./index";
+export const CreateNew = ({
+  projectId,
+  // onRefetch,
+  address,
+}: {
+  projectId: string;
+  // onRefetch: () => void;
+  address: `0x${string}` | undefined;
+}) => {
+  const ideaType: DiscussionType[] = ["concern", "question", "strength"];
 
-export const CreateNew = () => {
-  const ideaType: IdeaType[] = ["Concern", "Question", "Strength"];
-  const [idea, setIdea] = useState<Idea>({
-    desc: "",
-    type: "Concern",
+  const [idea, setIdea] = useState<DiscussionData>({
+    content: "",
+    type: "concern",
     isAnonymous: false,
+    projectId: projectId,
   });
   const submit = useCreateDiscussion({
-    onSuccess: async () => void console.log("add successfully"),
+    onSuccess: async () => void setIdea({ ...idea, content: "" }),
+    discussionData: idea,
   });
 
   return (
@@ -26,20 +39,21 @@ export const CreateNew = () => {
       </span>
       <div className="flex items-center justify-between">
         <ul className="flex w-full items-center justify-around border-b border-surfaceContainerHigh-dark">
-          {ideaType.map((item: IdeaType) => (
+          {ideaType.map((item: DiscussionType, index) => (
             <li
+              key={index}
               className={` text-sm font-medium text-onSurfaceVariant-dark hover:bg-onSurface-dark/[0.08]  ${idea.type.toLowerCase() === item.toLowerCase() ? " border-b-[3px] border-primary-dark  text-primary-dark hover:bg-onSurface-dark/[0.12]" : ""}`}
             >
               <button
                 onClick={() =>
                   setIdea({
                     ...idea,
-                    type: item.toLowerCase() as IdeaType,
+                    type: item.toLowerCase() as DiscussionType,
                   })
                 }
                 className="p-3"
               >
-                {`${item + "s"}`}
+                {`${item.charAt(0).toUpperCase() + item.slice(1) + "s"}`}
               </button>
             </li>
           ))}
@@ -58,17 +72,22 @@ export const CreateNew = () => {
         className="mt-5 resize-none border-none p-0"
         rows={3}
         placeholder={`Type your ${idea.type.toLowerCase()} here.`}
-        onChange={(e) => setIdea({ ...idea, desc: e.target.value })}
-        value={idea.desc}
+        onChange={(e) => setIdea({ ...idea, content: e.target.value })}
+        value={idea.content}
       />
       <Button
         className="my-2 w-fit px-6"
-        disabled={idea.desc.length === 0}
+        disabled={idea.content.length === 0 || submit.isPending}
         variant="outline"
         onClick={() => submit.mutate()}
       >
         Post idea
       </Button>
+      {submit.error && (
+        <p className=" text-xs font-normal text-onSurfaceVariant-dark">
+          {submit.error.message}
+        </p>
+      )}
     </div>
   );
 };

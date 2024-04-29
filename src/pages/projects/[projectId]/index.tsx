@@ -7,7 +7,7 @@ import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { ProjectAddToBallot } from "~/features/projects/components/AddToBallot";
 import { getAppState } from "~/utils/state";
 import { ProjectAwarded } from "~/features/projects/components/ProjectAwarded";
-import { Feedback } from "~/features/projects/components/discussion";
+import { Discussion } from "~/features/projects/components/discussion";
 
 export default function ProjectDetailsPage({ projectId = "" }) {
   const project = useProjectById(projectId);
@@ -29,7 +29,7 @@ export default function ProjectDetailsPage({ projectId = "" }) {
         action={action}
         state={state}
       />
-      <Feedback state={state} address={address} />
+      <Discussion projectId={projectId} state={state} address={address} />
     </LayoutWithBallot>
   );
 }

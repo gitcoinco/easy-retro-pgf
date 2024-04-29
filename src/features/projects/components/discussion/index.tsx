@@ -4,34 +4,30 @@ import { type Attestation } from "~/utils/fetchAttestations";
 import { type AppState } from "~/utils/state";
 import { CreateNew } from "./CreateNew";
 import { List } from "./List";
+import { useGetDiscussions } from "../../hooks/useDiscussion";
 
-export type IdeaType = "Concern" | "Question" | "Strength";
-
-export type Idea = {
-  desc: string;
-  type: IdeaType;
-  isAnonymous: boolean;
-};
-
-export const Feedback = ({
+export const Discussion = ({
   address,
   state,
+  projectId,
 }: {
   address: `0x${string}` | undefined;
   state: AppState;
+  projectId: string;
 }) => {
   const {
     data,
     isPending,
   }: { data: Attestation[] | undefined; isPending: boolean } = useVoters();
-
+  const discussions = useGetDiscussions({ projectId: projectId });
+  console.log("discussions", discussions);
   return (
     <div className="mt-10 flex flex-col items-baseline gap-5 border-t border-outlineVariant-dark pt-10">
       <div className=" text-lg font-bold text-onSurface-dark">Discussions</div>
       {state === "APPLICATION" ||
       data?.some((item) => item.recipient === address) ? (
         <>
-          <CreateNew />
+          <CreateNew  projectId={projectId} />
           <List />
         </>
       ) : (
