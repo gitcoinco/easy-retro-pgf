@@ -63,8 +63,8 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
       >
         <p className="pb-4 leading-relaxed">
           How much votes should this Project receive to fill the gap between the
-          impact they generated for Optimism and the profit they received for
-          generating this impact
+          impact they generated and the profit they received for generating this
+          impact
         </p>
         <Form
           defaultValues={{ amount: inBallot?.amount }}

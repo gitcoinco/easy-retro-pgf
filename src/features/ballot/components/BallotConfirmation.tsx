@@ -70,7 +70,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
             </h5>
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               Your anonymized feedback will be influential to help us iterate on
-              Optimism&apos;s RetroPGF process.
+              the RetroPGF process.
             </p>
             <Button
               variant="primary"
