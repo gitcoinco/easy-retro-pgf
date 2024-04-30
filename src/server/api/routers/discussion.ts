@@ -7,8 +7,21 @@ import {
   ReactSchema,
 } from "~/features/projects/types/discussion";
 import { type PrismaClient } from "@prisma/client";
+import { publicClient } from "~/server/publicClient";
+
+async function getENSPayload(walletAddr: `0x${string}`) {
+  const ENSName = await publicClient.getEnsName({
+    address: walletAddr,
+  });
+  const ENSAvatar = ENSName
+    ? await publicClient.getEnsAvatar({ name: ENSName })
+    : null;
+
+  return ENSAvatar ? { name: ENSName, avatar: ENSAvatar } : undefined;
+}
 
 async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
+  const ENSPayload = await getENSPayload(walletAddr as `0x${string}`);
   const userInstance = await ctx.db.user.findFirst({
     where: {
       name: walletAddr,
@@ -18,8 +31,13 @@ async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
   if (userInstance) {
     return userInstance;
   }
-  // TODO: fetch user image from wallet provider
-  return ctx.db.user.create({ data: { name: walletAddr } });
+
+  return ctx.db.user.create({
+    data: {
+      name: ENSPayload?.name ?? walletAddr,
+      image: ENSPayload?.avatar,
+    },
+  });
 }
 
 export const discussionRouter = createTRPCRouter({
