@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import { ThumbsUp } from "lucide-react";
 import { ThumbsDown } from "lucide-react";
 import { formatDate } from "~/utils/time";
@@ -40,8 +41,17 @@ export const IdeaItem = ({
         className={`flex ${replayed ? "min-w-[31.87%]" : "min-w-[23.87%]"} items-center`}
       >
         {replayed && <ReplySvg className="mr-5" />}
-
-        <div className="mr-2 h-20 w-20 rounded-full bg-gray-200" />
+        {data.user?.image ? (
+          <Image
+            className="max-h-full scale-75"
+            width={80}
+            height={80}
+            alt="user image"
+            src={data.user?.image}
+          />
+        ) : (
+          <div className="mr-2 h-20 w-20 rounded-full bg-gray-200" />
+        )}
         <div className="flex flex-col items-baseline font-medium text-onSurface-dark">
           <p className="mb-1 text-base">
             {data.user?.name?.replace(/(.{7}).+(.{7})/, "$1...$2")}
