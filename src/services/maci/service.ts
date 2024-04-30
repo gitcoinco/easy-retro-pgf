@@ -4,16 +4,17 @@ import {
   ContractStorage,
   EContracts,
   EMode,
+  VerifyingKey,
+  PollFactoryFactory,
+  MessageProcessorFactoryFactory,
+  TallyFactoryFactory,
+  MACIFactory,
   type MACI,
   type EASGatekeeper,
   type IVerifyingKeyStruct,
   type VkRegistry,
-  PollFactory__factory as PollFactoryFactory,
-  MessageProcessorFactory__factory as MessageProcessorFactoryFactory,
-  TallyFactory__factory as TallyFactoryFactory,
-  MACI__factory as MACIFactory,
-} from "maci-contracts";
-import { type IVkObjectParams, VerifyingKey } from "maci-domainobjs";
+  type IVkObjectParams,
+} from "maci-cli/sdk";
 
 import type {
   IDeployGatekeeperArgs,
@@ -521,7 +522,10 @@ export class MaciService {
       processMessagesZkeyPathNonQv,
       tallyVotesZkeyPathNonQv,
     ].map(
-      (vk) => VerifyingKey.fromObj(vk as IVkObjectParams).asContractParam() as IVerifyingKeyStruct,
+      (vk) =>
+        VerifyingKey.fromObj(
+          vk as IVkObjectParams,
+        ).asContractParam() as IVerifyingKeyStruct,
     );
 
     const vkRegistryContract = await this.deployment.deployContract<VkRegistry>(

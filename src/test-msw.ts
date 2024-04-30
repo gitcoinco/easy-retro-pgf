@@ -14,13 +14,6 @@ export const mockTrpc = createTRPCMsw<AppRouter>({
   },
 });
 
-const mockProjects = Array(24)
-  .fill(null)
-  .map((_, i) => ({
-    id: `project-${i}`,
-    name: `Project #${i}`,
-    metadataPtr: "https://localhost:3000/api/metadata",
-  }));
 export const server = setupServer(
   http.get("/api/auth/session", () => {
     return HttpResponse.json({});

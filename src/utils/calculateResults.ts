@@ -21,8 +21,6 @@ export function calculateVotes(
   ballots: { voterId: string; votes: Vote[] }[],
   payoutOpts: PayoutOptions = { style: "custom" },
 ): BallotResults {
-  const totalVotes = ballots.reduce((sum, { votes }) => sum + votes.length, 0);
-
   const projectVotes: Record<
     string,
     {
@@ -66,18 +64,6 @@ export function calculateVotes(
   }
 
   return projects;
-}
-
-function calculateAverage(votes: number[]) {
-  if (votes.length === 0) {
-    return 0;
-  }
-
-  const sum = votes.reduce((sum, x) => sum + x, 0);
-
-  const average = sum / votes.length;
-
-  return Math.round(average);
 }
 
 function calculateMedian(arr: number[]): number {

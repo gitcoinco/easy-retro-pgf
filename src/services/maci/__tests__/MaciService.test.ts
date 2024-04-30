@@ -6,19 +6,19 @@ import {
   Deployment,
   EContracts,
   EMode,
-  MessageProcessorFactory__factory as MessageProcessorFactoryFactory,
-  PollFactory__factory as PollFactoryFactory,
-  TallyFactory__factory as TallyFactoryFactory,
-  MACI__factory as MACIFactory,
-} from "maci-contracts";
-import { VerifyingKey } from "maci-domainobjs";
+  VerifyingKey,
+  MessageProcessorFactoryFactory,
+  PollFactoryFactory,
+  TallyFactoryFactory,
+  MACIFactory,
+} from "maci-cli/sdk";
 import { describe, expect, test, vi, beforeEach, type Mock } from "vitest";
 
 import { STATE_TREE_SUB_DEPTH } from "../constants";
 import { MaciService } from "..";
 
-vi.mock("maci-contracts", async () => {
-  const mod = await vi.importActual("maci-contracts");
+vi.mock("maci-cli/sdk", async () => {
+  const mod = await vi.importActual("maci-cli/sdk");
 
   return {
     ...mod,
