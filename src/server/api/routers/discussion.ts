@@ -2,13 +2,26 @@ import { createTRPCRouter, discussionProcedure } from "../trpc";
 import { map, omit } from "lodash";
 import {
   CreateDiscussionSchema,
-  ReplySchema,
-  ListSchema,
+  ReplyReqSchema,
+  ListReqSchema,
   ReactSchema,
 } from "~/features/projects/types/discussion";
 import { type PrismaClient } from "@prisma/client";
+import { publicClient } from "~/server/publicClient";
+
+async function getENSPayload(walletAddr: `0x${string}`) {
+  const ENSName = await publicClient.getEnsName({
+    address: walletAddr,
+  });
+  const ENSAvatar = ENSName
+    ? await publicClient.getEnsAvatar({ name: ENSName })
+    : null;
+
+  return ENSAvatar ? { name: ENSName, avatar: ENSAvatar } : undefined;
+}
 
 async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
+  const ENSPayload = await getENSPayload(walletAddr as `0x${string}`);
   const userInstance = await ctx.db.user.findFirst({
     where: {
       name: walletAddr,
@@ -18,8 +31,13 @@ async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
   if (userInstance) {
     return userInstance;
   }
-  // TODO: fetch user image from wallet provider
-  return ctx.db.user.create({ data: { name: walletAddr } });
+
+  return ctx.db.user.create({
+    data: {
+      name: ENSPayload?.name ?? walletAddr,
+      image: ENSPayload?.avatar,
+    },
+  });
 }
 
 export const discussionRouter = createTRPCRouter({
@@ -54,7 +72,7 @@ export const discussionRouter = createTRPCRouter({
     }),
 
   reply: discussionProcedure
-    .input(ReplySchema)
+    .input(ReplyReqSchema)
     .mutation(async ({ input, ctx }) => {
       const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
       const userId = userInstance.id;
@@ -82,7 +100,7 @@ export const discussionRouter = createTRPCRouter({
       });
     }),
 
-  get: discussionProcedure.input(ListSchema).query(async ({ input, ctx }) => {
+  get: discussionProcedure.input(ListReqSchema).query(async ({ input, ctx }) => {
     const discussions = await ctx.db.discussion.findMany({
       select: {
         id: true,
@@ -103,9 +121,15 @@ export const discussionRouter = createTRPCRouter({
             createdAt: true,
             user: { select: { id: true, name: true, image: true } },
           },
+          orderBy: {
+            createdAt: "desc",
+          },
         },
       },
       where: { projectId: input.projectId, parentId: null },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return map(discussions, (discussion) => {

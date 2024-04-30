@@ -2,8 +2,10 @@ import { z } from "zod";
 
 export const DiscussionTypeSchema = z.enum(["concern", "question", "strength"]);
 
-export const ListSchema = z.object({
-  projectId: z.string(),
+export const UserSchema = z.object({
+  id: z.string(),
+  name: z.string().nullable(),
+  image: z.string().nullable(),
 });
 
 export const ReactSchema = z.object({
@@ -11,11 +13,37 @@ export const ReactSchema = z.object({
   discussionId: z.string().uuid(),
 });
 
-export const ReplySchema = z.object({
+export const ReplyReqSchema = z.object({
   isAnonymous: z.boolean(),
   content: z.string().min(1).max(1024),
   discussionId: z.string().uuid(),
   projectId: z.string(),
+});
+export const ReplyResSchema = z.object({
+  user: UserSchema,
+  id: z.string(),
+  type: z.union([DiscussionTypeSchema, z.null()]),
+  isAnonymous: z.boolean(),
+  content: z.string(),
+  thumbsUp: z.number(),
+  thumbsDown: z.number(),
+  createdAt: z.date(),
+});
+
+export const ListReqSchema = z.object({
+  projectId: z.string(),
+});
+
+const ListResSchema = z.object({
+  user: UserSchema,
+  id: z.string(),
+  type: z.union([DiscussionTypeSchema, z.null()]),
+  isAnonymous: z.boolean(),
+  content: z.string(),
+  thumbsUp: z.number(),
+  thumbsDown: z.number(),
+  createdAt: z.date(),
+  replies: z.array(ReplyResSchema),
 });
 
 export const CreateDiscussionSchema = z.object({
@@ -25,8 +53,12 @@ export const CreateDiscussionSchema = z.object({
   projectId: z.string(),
 });
 
-export type DiscussionType = z.infer<typeof DiscussionTypeSchema>;
-export type ListType = z.infer<typeof ListSchema>;
+export type ListReqType = z.infer<typeof ListReqSchema>;
 export type ReactType = z.infer<typeof ReactSchema>;
-export type ReplyType = z.infer<typeof ReplySchema>;
+export type ReplyReqType = z.infer<typeof ReplyReqSchema>;
+export type ReplyResType = z.infer<typeof ReplyResSchema>;
+
+export type DiscussionTypes = z.infer<typeof DiscussionTypeSchema>;
+
 export type DiscussionData = z.infer<typeof CreateDiscussionSchema>;
+export type Discussion = z.infer<typeof ListResSchema>;

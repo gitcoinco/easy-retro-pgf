@@ -1,7 +1,7 @@
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
-  title: "POKTRetroPGF",
+  title: "POKT RetroPGF",
   description: "Open-source Retro Public Goods Funding platform",
   url: "https://rpgf-patterns.vercel.app",
   image: "/api/og",

@@ -13,7 +13,7 @@ import dynamic from "next/dynamic";
 const Logo = () => (
   <div>
     <Image
-      className="max-h-full"
+      className="max-h-full scale-75"
       width={144}
       height={48}
       alt="logo"
