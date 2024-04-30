@@ -86,7 +86,7 @@ export const CreateNew = ({
         Post idea
       </Button>
       {submit.error && (
-        <p className=" text-xs font-normal text-onSurfaceVariant-dark">
+        <p className="break-words break-all text-xs font-normal text-onSurfaceVariant-dark">
           {submit.error.message}
         </p>
       )}
