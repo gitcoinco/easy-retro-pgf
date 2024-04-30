@@ -3,10 +3,11 @@ import { useVoters } from "~/features/voters/components/VotersList";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { type AppState } from "~/utils/state";
 import { CreateNew } from "./CreateNew";
-import { List } from "./List";
+import { List } from "./list";
 import { useGetDiscussions } from "../../hooks/useDiscussion";
+import type { Discussion } from "~/features/projects/types/discussion";
 
-export const Discussion = ({
+export const DiscussionComponent = ({
   address,
   state,
   projectId,
@@ -15,20 +16,22 @@ export const Discussion = ({
   state: AppState;
   projectId: string;
 }) => {
-  const {
-    data,
-    isPending,
-  }: { data: Attestation[] | undefined; isPending: boolean } = useVoters();
-  const discussions = useGetDiscussions({ projectId: projectId });
-  console.log("discussions", discussions);
+  const voters: Attestation[] = useVoters();
+  const { data, refetch } = useGetDiscussions({ projectId: projectId });
   return (
     <div className="mt-10 flex flex-col items-baseline gap-5 border-t border-outlineVariant-dark pt-10">
       <div className=" text-lg font-bold text-onSurface-dark">Discussions</div>
       {state === "APPLICATION" ||
-      data?.some((item) => item.recipient === address) ? (
+      voters?.some((item) => item.recipient === address) ? (
         <>
-          <CreateNew  projectId={projectId} />
-          <List />
+          <CreateNew onRefetch={() => refetch()} projectId={projectId} />
+          {data && (
+            <List
+              projectId={projectId}
+              discussions={data as Discussion[]}
+              onRefetch={() => refetch()}
+            />
+          )}
         </>
       ) : (
         <div className="flex w-full flex-col items-center gap-2 rounded-xl border border-outlineVariant-dark bg-surfaceContainerLow-dark py-7 text-onSurfaceVariant-dark">

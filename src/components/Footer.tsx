@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="flex flex-col items-center justify-center bg-surfaceContainerLow-dark p-2 text-onSurfaceVariant-dark">
       <a
-        href={"https://github.com/gitcoinco/easy-retro-pgf/"}
+        href={"https://github.com/Microflow-xyz/retroactive-pokt-goods-funding/tree/main"}
         target="_blank"
         className="group py-4 text-sm hover:text-white"
       >
@@ -14,7 +14,7 @@ export function Footer() {
             <span className="absolute">❤️</span>
             <span className="absolute group-hover:animate-ping">❤️</span>
           </span>
-          on POKTRetroPGF.
+          on POKT RetroPGF.
         </div>
       </a>
     </footer>

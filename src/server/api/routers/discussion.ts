@@ -2,8 +2,8 @@ import { createTRPCRouter, discussionProcedure } from "../trpc";
 import { map, omit } from "lodash";
 import {
   CreateDiscussionSchema,
-  ReplySchema,
-  ListSchema,
+  ReplyReqSchema,
+  ListReqSchema,
   ReactSchema,
 } from "~/features/projects/types/discussion";
 import { type PrismaClient } from "@prisma/client";
@@ -54,7 +54,7 @@ export const discussionRouter = createTRPCRouter({
     }),
 
   reply: discussionProcedure
-    .input(ReplySchema)
+    .input(ReplyReqSchema)
     .mutation(async ({ input, ctx }) => {
       const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
       const userId = userInstance.id;
@@ -82,7 +82,7 @@ export const discussionRouter = createTRPCRouter({
       });
     }),
 
-  get: discussionProcedure.input(ListSchema).query(async ({ input, ctx }) => {
+  get: discussionProcedure.input(ListReqSchema).query(async ({ input, ctx }) => {
     const discussions = await ctx.db.discussion.findMany({
       select: {
         id: true,
@@ -103,9 +103,15 @@ export const discussionRouter = createTRPCRouter({
             createdAt: true,
             user: { select: { id: true, name: true, image: true } },
           },
+          orderBy: {
+            createdAt: "desc",
+          },
         },
       },
       where: { projectId: input.projectId, parentId: null },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return map(discussions, (discussion) => {

@@ -93,7 +93,6 @@ const ConnectedDetails = ({
 }) => {
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
-
   const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (
     <div>
