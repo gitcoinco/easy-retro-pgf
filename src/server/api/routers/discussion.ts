@@ -103,9 +103,15 @@ export const discussionRouter = createTRPCRouter({
             createdAt: true,
             user: { select: { id: true, name: true, image: true } },
           },
+          orderBy: {
+            createdAt: "desc",
+          },
         },
       },
       where: { projectId: input.projectId, parentId: null },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return map(discussions, (discussion) => {
