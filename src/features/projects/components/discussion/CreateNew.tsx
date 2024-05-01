@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import type {
   DiscussionData,
-  DiscussionType,
+  DiscussionTypes,
 } from "~/features/projects/types/discussion";
 import { useCreateDiscussion } from "~/features/projects/hooks/useDiscussion";
 
@@ -12,14 +12,12 @@ import { Switch } from "~/components/ui/Switch";
 
 export const CreateNew = ({
   projectId,
-  // onRefetch,
-  address,
+  onRefetch,
 }: {
   projectId: string;
-  // onRefetch: () => void;
-  address: `0x${string}` | undefined;
+  onRefetch: () => void;
 }) => {
-  const ideaType: DiscussionType[] = ["concern", "question", "strength"];
+  const ideaType: DiscussionTypes[] = ["concern", "question", "strength"];
 
   const [idea, setIdea] = useState<DiscussionData>({
     content: "",
@@ -27,8 +25,12 @@ export const CreateNew = ({
     isAnonymous: false,
     projectId: projectId,
   });
+
   const submit = useCreateDiscussion({
-    onSuccess: async () => void setIdea({ ...idea, content: "" }),
+    onSuccess: async () => {
+      setIdea({ ...idea, content: "" });
+      onRefetch();
+    },
     discussionData: idea,
   });
 
@@ -39,7 +41,7 @@ export const CreateNew = ({
       </span>
       <div className="flex items-center justify-between">
         <ul className="flex w-full items-center justify-around border-b border-surfaceContainerHigh-dark">
-          {ideaType.map((item: DiscussionType, index) => (
+          {ideaType.map((item: DiscussionTypes, index) => (
             <li
               key={index}
               className={` text-sm font-medium text-onSurfaceVariant-dark hover:bg-onSurface-dark/[0.08]  ${idea.type.toLowerCase() === item.toLowerCase() ? " border-b-[3px] border-primary-dark  text-primary-dark hover:bg-onSurface-dark/[0.12]" : ""}`}
@@ -48,7 +50,7 @@ export const CreateNew = ({
                 onClick={() =>
                   setIdea({
                     ...idea,
-                    type: item.toLowerCase() as DiscussionType,
+                    type: item.toLowerCase() as DiscussionTypes,
                   })
                 }
                 className="p-3"
@@ -84,7 +86,7 @@ export const CreateNew = ({
         Post idea
       </Button>
       {submit.error && (
-        <p className=" text-xs font-normal text-onSurfaceVariant-dark">
+        <p className="break-words break-all text-xs font-normal text-onSurfaceVariant-dark">
           {submit.error.message}
         </p>
       )}

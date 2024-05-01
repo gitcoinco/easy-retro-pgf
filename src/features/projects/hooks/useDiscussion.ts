@@ -2,7 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 
 import type {
   DiscussionData,
-  ListType,
+  ReplyReqType,
+  ListReqType,
+  ReactType,
 } from "~/features/projects/types/discussion";
 
 import { api } from "~/utils/api";
@@ -28,6 +30,48 @@ export function useCreateDiscussion({
     },
   });
 }
-export function useGetDiscussions(projectId: ListType) {
+export function useGetDiscussions(projectId: ListReqType) {
   return api.discussion.get.useQuery(projectId);
+}
+
+export function useAddReply({
+  onSuccess,
+  replyData,
+}: {
+  onSuccess: () => Promise<void>;
+  replyData: ReplyReqType;
+}) {
+  const { mutateAsync, isPending } = api.discussion.reply.useMutation({
+    onSuccess,
+  });
+  return useMutation({
+    mutationFn: async () => {
+      return mutateAsync({
+        isAnonymous: replyData.isAnonymous,
+        content: replyData.content,
+        projectId: replyData.projectId,
+        discussionId: replyData.discussionId,
+      });
+    },
+  });
+}
+
+export function useReact({
+  onSuccess,
+  reactionData,
+}: {
+  onSuccess: () => Promise<void>;
+  reactionData: ReactType;
+}) {
+  const { mutateAsync, isPending } = api.discussion.react.useMutation({
+    onSuccess,
+  });
+  return useMutation({
+    mutationFn: async () => {
+      return mutateAsync({
+        discussionId: reactionData.discussionId,
+        reaction: reactionData.reaction,
+      });
+    },
+  });
 }

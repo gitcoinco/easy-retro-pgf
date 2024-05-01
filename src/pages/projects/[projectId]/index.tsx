@@ -7,7 +7,7 @@ import { useProjectById } from "~/features/projects/hooks/useProjects";
 import { ProjectAddToBallot } from "~/features/projects/components/AddToBallot";
 import { getAppState } from "~/utils/state";
 import { ProjectAwarded } from "~/features/projects/components/ProjectAwarded";
-import { Discussion } from "~/features/projects/components/discussion";
+import { DiscussionComponent } from "~/features/projects/components/discussion";
 
 export default function ProjectDetailsPage({ projectId = "" }) {
   const project = useProjectById(projectId);
@@ -22,14 +22,14 @@ export default function ProjectDetailsPage({ projectId = "" }) {
       <ProjectAddToBallot id={projectId} name={name} />
     );
   return (
-    <LayoutWithBallot sidebar="left" title={name} showBallot eligibilityCheck>
+    <LayoutWithBallot title={name} showBallot eligibilityCheck>
       <ProjectDetails
         address={address}
         attestation={project.data}
         action={action}
         state={state}
       />
-      <Discussion projectId={projectId} state={state} address={address} />
+      <DiscussionComponent projectId={projectId} state={state} address={address} />
     </LayoutWithBallot>
   );
 }

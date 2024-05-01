@@ -6,8 +6,8 @@ import {
 import { map, omit } from "lodash";
 import {
   CreateDiscussionSchema,
-  ReplySchema,
-  ListSchema,
+  ReplyReqSchema,
+  ListReqSchema,
   ReactSchema,
 } from "~/features/projects/types/discussion";
 import { type PrismaClient } from "@prisma/client";
@@ -76,7 +76,7 @@ export const discussionRouter = createTRPCRouter({
     }),
 
   reply: protectedDiscussionProcedure
-    .input(ReplySchema)
+    .input(ReplyReqSchema)
     .mutation(async ({ input, ctx }) => {
       const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
       const userId = userInstance.id;
@@ -105,7 +105,7 @@ export const discussionRouter = createTRPCRouter({
     }),
 
   get: unprotectedDiscussionProcedure
-    .input(ListSchema)
+    .input(ListReqSchema)
     .query(async ({ input, ctx }) => {
       const discussions = await ctx.db.discussion.findMany({
         select: {
