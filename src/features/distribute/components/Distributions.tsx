@@ -34,7 +34,7 @@ export function Distributions() {
 
   const payoutAddresses: Record<string, string> = projects.data ?? {};
   const totalVotes = BigInt(votes.data?.totalVotes ?? 0);
-  const totalTokens = poolAmount.data ?? totalVotes;
+  const totalTokens = poolAmount.data ?? 0n;
   const projectVotes = votes.data?.projects ?? {};
   const distributions = useMemo(
     () =>
@@ -48,10 +48,13 @@ export function Distributions() {
         .sort((a, b) => b.amount - a.amount)
         .map((p) => ({
           ...p,
-          amount: formatUnits(
-            calculatePayout(p.amount, totalVotes, totalTokens),
-            18,
-          ),
+          amount:
+            totalTokens > 0n
+              ? formatUnits(
+                  calculatePayout(p.amount, totalVotes, totalTokens),
+                  18,
+                )
+              : p.amount,
         })),
     [projectIds, payoutAddresses, projectVotes, totalVotes, totalTokens],
   );
