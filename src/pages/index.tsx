@@ -48,7 +48,10 @@ export default function ProjectsPage({}) {
           size="lg"
           className="w-full "
           variant="ghost"
-          onClick={() => alert("where does this link?")}
+          as={Link}
+          href={
+            "https://medium.com/ethereum-optimism/retroactive-public-goods-funding-33c9b7d00f0c"
+          }
         >
           What is RPGF?
         </Button>
