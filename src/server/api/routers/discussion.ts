@@ -1,4 +1,8 @@
-import { createTRPCRouter, discussionProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  protectedDiscussionProcedure,
+  unprotectedDiscussionProcedure,
+} from "../trpc";
 import { map, omit } from "lodash";
 import {
   CreateDiscussionSchema,
@@ -41,7 +45,7 @@ async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
 }
 
 export const discussionRouter = createTRPCRouter({
-  create: discussionProcedure
+  create: protectedDiscussionProcedure
     .input(CreateDiscussionSchema)
     .mutation(async ({ input, ctx }) => {
       const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
@@ -71,7 +75,7 @@ export const discussionRouter = createTRPCRouter({
       });
     }),
 
-  reply: discussionProcedure
+  reply: protectedDiscussionProcedure
     .input(ReplySchema)
     .mutation(async ({ input, ctx }) => {
       const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
@@ -100,58 +104,60 @@ export const discussionRouter = createTRPCRouter({
       });
     }),
 
-  get: discussionProcedure.input(ListSchema).query(async ({ input, ctx }) => {
-    const discussions = await ctx.db.discussion.findMany({
-      select: {
-        id: true,
-        content: true,
-        type: true,
-        isAnonymous: true,
-        thumbsUp: true,
-        thumbsDown: true,
-        createdAt: true,
-        user: { select: { id: true, name: true, image: true } },
-        replies: {
-          select: {
-            id: true,
-            content: true,
-            isAnonymous: true,
-            thumbsUp: true,
-            thumbsDown: true,
-            createdAt: true,
-            user: { select: { id: true, name: true, image: true } },
-          },
-          orderBy: {
-            createdAt: "desc",
+  get: unprotectedDiscussionProcedure
+    .input(ListSchema)
+    .query(async ({ input, ctx }) => {
+      const discussions = await ctx.db.discussion.findMany({
+        select: {
+          id: true,
+          content: true,
+          type: true,
+          isAnonymous: true,
+          thumbsUp: true,
+          thumbsDown: true,
+          createdAt: true,
+          user: { select: { id: true, name: true, image: true } },
+          replies: {
+            select: {
+              id: true,
+              content: true,
+              isAnonymous: true,
+              thumbsUp: true,
+              thumbsDown: true,
+              createdAt: true,
+              user: { select: { id: true, name: true, image: true } },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
           },
         },
-      },
-      where: { projectId: input.projectId, parentId: null },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    return map(discussions, (discussion) => {
-      const updatedReplies = map(discussion.replies, (reply) => {
-        if (reply.isAnonymous) {
-          return omit(reply, ["user"]);
-        }
-
-        return reply;
+        where: { projectId: input.projectId, parentId: null },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
 
-      (discussion.replies as unknown as Array<unknown>) = updatedReplies;
+      return map(discussions, (discussion) => {
+        const updatedReplies = map(discussion.replies, (reply) => {
+          if (reply.isAnonymous) {
+            return omit(reply, ["user"]);
+          }
 
-      if (discussion.isAnonymous) {
-        return omit(discussion, ["user"]);
-      }
+          return reply;
+        });
 
-      return discussion;
-    });
-  }),
+        (discussion.replies as unknown as Array<unknown>) = updatedReplies;
 
-  react: discussionProcedure
+        if (discussion.isAnonymous) {
+          return omit(discussion, ["user"]);
+        }
+
+        return discussion;
+      });
+    }),
+
+  react: protectedDiscussionProcedure
     .input(ReactSchema)
     .mutation(async ({ ctx, input }) => {
       const isThumbsUp = input.reaction === "thumbsUp" ? true : false;
