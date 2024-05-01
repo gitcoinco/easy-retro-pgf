@@ -49,6 +49,7 @@ export default function ProjectsPage({}) {
           className="w-full "
           variant="ghost"
           as={Link}
+          target="_blank"
           href={
             "https://medium.com/ethereum-optimism/retroactive-public-goods-funding-33c9b7d00f0c"
           }
