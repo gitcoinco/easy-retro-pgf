@@ -12,23 +12,25 @@ import {
 } from "~/features/projects/types/discussion";
 import { type PrismaClient } from "@prisma/client";
 import { publicClient } from "~/server/publicClient";
+import { normalize } from "viem/ens";
 
 async function getENSPayload(walletAddr: `0x${string}`) {
   const ENSName = await publicClient.getEnsName({
     address: walletAddr,
   });
   const ENSAvatar = ENSName
-    ? await publicClient.getEnsAvatar({ name: ENSName })
+    ? await publicClient.getEnsAvatar({ name: normalize(ENSName) })
     : null;
 
-  return ENSAvatar ? { name: ENSName, avatar: ENSAvatar } : undefined;
+  return { name: ENSName ?? undefined, avatar: ENSAvatar ?? undefined };
 }
 
 async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
   const ENSPayload = await getENSPayload(walletAddr as `0x${string}`);
+  const username = ENSPayload.name ?? walletAddr;
   const userInstance = await ctx.db.user.findFirst({
     where: {
-      name: walletAddr,
+      name: username,
     },
   });
 
@@ -38,8 +40,8 @@ async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
 
   return ctx.db.user.create({
     data: {
-      name: ENSPayload?.name ?? walletAddr,
-      image: ENSPayload?.avatar,
+      name: username,
+      image: ENSPayload.avatar,
     },
   });
 }
