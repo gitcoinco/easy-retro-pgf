@@ -5,10 +5,19 @@ import {
   EContracts,
   EMode,
   VerifyingKey,
-  PollFactoryFactory,
-  MessageProcessorFactoryFactory,
-  TallyFactoryFactory,
-  MACIFactory,
+  PollFactory__factory as PollFactoryFactory,
+  MessageProcessorFactory__factory as MessageProcessorFactoryFactory,
+  TallyFactory__factory as TallyFactoryFactory,
+  MACI__factory as MACIFactory,
+  ConstantInitialVoiceCreditProxy__factory as ConstantInitialVoiceCreditProxyFactory,
+  EASGatekeeper__factory as EASGatekeeperFactory,
+  Verifier__factory as VerifierFactory,
+  TopupCredit__factory as TopupCreditFactory,
+  PoseidonT3__factory,
+  PoseidonT4__factory as PoseidonT4Factory,
+  PoseidonT5__factory as PoseidonT5Factory,
+  PoseidonT6__factory as PoseidonT6Factory,
+  VkRegistry__factory as VkRegistryFactory,
   type MACI,
   type EASGatekeeper,
   type IVerifyingKeyStruct,
@@ -77,6 +86,8 @@ export class MaciService {
       {
         name: EContracts.ConstantInitialVoiceCreditProxy,
         signer: this.deployer,
+        abi: ConstantInitialVoiceCreditProxyFactory.abi,
+        bytecode: ConstantInitialVoiceCreditProxyFactory.bytecode,
       },
       amount.toString(),
     );
@@ -103,7 +114,12 @@ export class MaciService {
     attester,
   }: IDeployGatekeeperArgs): Promise<string> {
     const contract = await this.deployment.deployContract(
-      { name: EContracts.EASGatekeeper, signer: this.deployer },
+      {
+        name: EContracts.EASGatekeeper,
+        signer: this.deployer,
+        abi: EASGatekeeperFactory.abi,
+        bytecode: EASGatekeeperFactory.bytecode,
+      },
       easAddress,
       attester,
       encodedSchema,
@@ -128,6 +144,8 @@ export class MaciService {
     const contract = await this.deployment.deployContract({
       name: EContracts.Verifier,
       signer: this.deployer,
+      abi: VerifierFactory.abi,
+      bytecode: VerifierFactory.bytecode,
     });
 
     await this.storage.register({
@@ -149,6 +167,8 @@ export class MaciService {
     const contract = await this.deployment.deployContract({
       name: EContracts.TopupCredit,
       signer: this.deployer,
+      abi: TopupCreditFactory.abi,
+      bytecode: TopupCreditFactory.bytecode,
     });
 
     await this.storage.register({
@@ -170,18 +190,26 @@ export class MaciService {
     const poseidonT3Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT3,
       signer: this.deployer,
+      abi: PoseidonT3__factory.abi,
+      bytecode: PoseidonT3__factory.bytecode,
     });
     const poseidonT4Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT4,
       signer: this.deployer,
+      abi: PoseidonT4Factory.abi,
+      bytecode: PoseidonT4Factory.bytecode,
     });
     const poseidonT5Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT5,
       signer: this.deployer,
+      abi: PoseidonT5Factory.abi,
+      bytecode: PoseidonT5Factory.bytecode,
     });
     const poseidonT6Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT6,
       signer: this.deployer,
+      abi: PoseidonT6Factory.abi,
+      bytecode: PoseidonT6Factory.bytecode,
     });
 
     await Promise.all([
@@ -532,6 +560,8 @@ export class MaciService {
       {
         name: EContracts.VkRegistry,
         signer: this.deployer,
+        abi: VkRegistryFactory.abi,
+        bytecode: VkRegistryFactory.bytecode,
       },
     );
 
