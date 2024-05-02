@@ -63,9 +63,8 @@ async function calculateBallotResults(roundId: string, db: PrismaClient) {
   );
 
   const averageVotes = 0;
-  const totalVotes = Object.values(projects).reduce(
-    (sum, x) => sum + x.votes,
-    0,
+  const totalVotes = Math.floor(
+    Object.values(projects).reduce((sum, x) => sum + x.votes, 0),
   );
   const totalVoters = ballots.length;
 
