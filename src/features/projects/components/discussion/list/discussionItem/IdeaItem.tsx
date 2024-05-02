@@ -33,7 +33,7 @@ export const IdeaItem = ({
   const onDislike = useReact({
     onSuccess: async () =>
       setReaction({ ...reaction, disLike: reaction.disLike + 1 }),
-    reactionData: { discussionId: data.id, reaction: "ThumbsDown" },
+    reactionData: { discussionId: data.id, reaction: "thumbsDown" },
   });
   return (
     <div className="flex items-center justify-between gap-14 text-sm">

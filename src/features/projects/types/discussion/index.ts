@@ -9,7 +9,7 @@ export const UserSchema = z.object({
 });
 
 export const ReactSchema = z.object({
-  reaction: z.enum(["thumbsUp", "ThumbsDown"]),
+  reaction: z.enum(["thumbsUp", "thumbsDown"]),
   discussionId: z.string().uuid(),
 });
 

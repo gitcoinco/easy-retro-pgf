@@ -10,7 +10,7 @@ import {
   ListReqSchema,
   ReactSchema,
 } from "~/features/projects/types/discussion";
-import { type PrismaClient } from "@prisma/client";
+import { type Reaction, type PrismaClient } from "@prisma/client";
 import { publicClient } from "~/server/publicClient";
 import { normalize } from "viem/ens";
 
@@ -162,22 +162,74 @@ export const discussionRouter = createTRPCRouter({
   react: protectedDiscussionProcedure
     .input(ReactSchema)
     .mutation(async ({ ctx, input }) => {
-      const isThumbsUp = input.reaction === "thumbsUp" ? true : false;
-
-      return await ctx.db.discussion.update({
+      const discussionId = input.discussionId;
+      const userInstance = await findOrCreateUser(ctx, ctx.session!.user.name!);
+      const userId = userInstance.id;
+      const reactionInstance = await ctx.db.discussionReaction.findFirst({
         where: {
-          id: input.discussionId,
-        },
-        data: {
-          ...(isThumbsUp
-            ? { thumbsUp: { increment: 1 } }
-            : { thumbsDown: { increment: 1 } }),
-        },
-        select: {
-          id: true,
-          thumbsUp: true,
-          thumbsDown: true,
+          discussionId: discussionId,
+          userId: userId,
         },
       });
+
+      // reacted before, need to delete the instance and decrease the counter
+      if (reactionInstance) {
+        const [_deletedReaction, updatedDiscussion] = await ctx.db.$transaction(
+          [
+            ctx.db.discussionReaction.delete({
+              where: {
+                userId_discussionId: {
+                  discussionId: discussionId,
+                  userId: userId,
+                },
+              },
+            }),
+            ctx.db.discussion.update({
+              where: {
+                id: discussionId,
+              },
+              data: {
+                [reactionInstance.reaction]: { decrement: 1 },
+              },
+              select: {
+                id: true,
+                thumbsUp: true,
+                thumbsDown: true,
+              },
+            }),
+          ],
+        );
+
+        // return if more operation does not needed
+        if (reactionInstance.reaction === input.reaction) {
+          return updatedDiscussion;
+        }
+      }
+
+      // did not react before or react by other reactions, need to create the instance and increase the counter
+      const [_createdReaction, updatedDiscussion] = await ctx.db.$transaction([
+        ctx.db.discussionReaction.create({
+          data: {
+            userId: userId,
+            discussionId: discussionId,
+            reaction: input.reaction as Reaction,
+          },
+        }),
+        ctx.db.discussion.update({
+          where: {
+            id: discussionId,
+          },
+          data: {
+            [input.reaction]: { increment: 1 },
+          },
+          select: {
+            id: true,
+            thumbsUp: true,
+            thumbsDown: true,
+          },
+        }),
+      ]);
+
+      return updatedDiscussion;
     }),
 });
