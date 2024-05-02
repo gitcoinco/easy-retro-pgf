@@ -69,10 +69,16 @@ export const discussionRouter = createTRPCRouter({
           thumbsUp: true,
           thumbsDown: true,
           isAnonymous: true,
+          createdAt: true,
           ...(input.isAnonymous
             ? null
             : { user: { select: { id: true, name: true, image: true } } }),
-          createdAt: true,
+          reactions: {
+            select: {
+              userId: true,
+              reaction: true,
+            },
+          },
         },
       });
     }),
@@ -98,10 +104,16 @@ export const discussionRouter = createTRPCRouter({
           thumbsUp: true,
           thumbsDown: true,
           isAnonymous: true,
+          createdAt: true,
           ...(input.isAnonymous
             ? null
             : { user: { select: { id: true, name: true, image: true } } }),
-          createdAt: true,
+          reactions: {
+            select: {
+              userId: true,
+              reaction: true,
+            },
+          },
         },
       });
     }),
@@ -118,7 +130,13 @@ export const discussionRouter = createTRPCRouter({
           thumbsUp: true,
           thumbsDown: true,
           createdAt: true,
-          user: { select: { id: true, name: true, image: true } },
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
           replies: {
             select: {
               id: true,
@@ -127,10 +145,28 @@ export const discussionRouter = createTRPCRouter({
               thumbsUp: true,
               thumbsDown: true,
               createdAt: true,
-              user: { select: { id: true, name: true, image: true } },
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+              reactions: {
+                select: {
+                  userId: true,
+                  reaction: true,
+                },
+              },
             },
             orderBy: {
               createdAt: "desc",
+            },
+          },
+          reactions: {
+            select: {
+              userId: true,
+              reaction: true,
             },
           },
         },
@@ -195,6 +231,12 @@ export const discussionRouter = createTRPCRouter({
                 id: true,
                 thumbsUp: true,
                 thumbsDown: true,
+                reactions: {
+                  select: {
+                    userId: true,
+                    reaction: true,
+                  },
+                },
               },
             }),
           ],
@@ -226,6 +268,12 @@ export const discussionRouter = createTRPCRouter({
             id: true,
             thumbsUp: true,
             thumbsDown: true,
+            reactions: {
+              select: {
+                userId: true,
+                reaction: true,
+              },
+            },
           },
         }),
       ]);
