@@ -77,6 +77,7 @@ export function ApplicationItem({
         <Button
           disabled={isLoading}
           as={Link}
+          target="_blank"
           href={`/applications/${id}`}
           className="transition-transform group-data-[state=closed]:rotate-180"
           type="button"

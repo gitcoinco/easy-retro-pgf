@@ -37,6 +37,9 @@ export function InfiniteLoading<T>({
     [pages],
   );
 
+  console.log("dataaaa", data);
+  console.log("items", items);
+
   const hasMore = useMemo(() => {
     if (!pages.length) return false;
     return (pages[pages.length - 1]?.length ?? 0) === config.pageSize;
