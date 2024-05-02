@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { ThumbsDown, ThumbsUp, UserRound } from "lucide-react";
+import { ThumbsDown, ThumbsUp, UserRound, Loader } from "lucide-react";
 import { formatDate } from "~/utils/time";
 import { ReplySvg } from "~/components/ui/ReplySvg";
 import { useReact } from "~/features/projects/hooks/useDiscussion";
@@ -21,24 +21,41 @@ export const IdeaItem = ({
   replayed?: boolean;
   hideReplayed?: boolean;
 }) => {
-  const [reaction, setReaction] = useState({
-    like: data.thumbsUp,
-    disLike: data.thumbsDown,
+  const [reactionType, setReactionType] = useState<"thumbsUp" | "thumbsDown">();
+  const [reaction, setReaction] = useState<{
+    thumbsUp: number;
+    thumbsDown: number;
+    type?: "thumbsUp" | "thumbsDown";
+  }>({
+    thumbsUp: data?.thumbsUp,
+    thumbsDown: data?.thumbsDown,
+    type: undefined,
   });
-  const onLike = useReact({
-    onSuccess: async () =>
-      setReaction({ ...reaction, like: reaction.like + 1 }),
-    reactionData: { discussionId: data.id, reaction: "thumbsUp" },
+
+  const onReact = useReact({
+    onSuccess: async () => console.log("2443"),
+    reactionData: {
+      discussionId: data.id,
+      reaction: reactionType ?? "thumbsUp",
+    },
   });
-  const onDislike = useReact({
-    onSuccess: async () =>
-      setReaction({ ...reaction, disLike: reaction.disLike + 1 }),
-    reactionData: { discussionId: data.id, reaction: "thumbsDown" },
-  });
+  useEffect(() => {
+    if (onReact?.data) {
+      setReaction({
+        thumbsUp: onReact?.data?.thumbsUp as number,
+        thumbsDown: onReact?.data?.thumbsDown as number,
+        type: reactionType,
+      });
+      setReactionType(undefined);
+    }
+  }, [onReact?.data]);
+
+  console.log("reaction", reaction);
+
   return (
     <div className="flex items-center justify-between gap-14 text-sm">
       <div
-        className={`flex ${replayed ? "min-w-[31.87%]" : "min-w-[23.87%]"} items-center`}
+        className={`flex ${replayed ? "min-w-[31.87%]" : "min-w-[25%]"} items-center`}
       >
         {replayed && <ReplySvg className="mr-5" />}
         {data.user?.image ? (
@@ -72,22 +89,53 @@ export const IdeaItem = ({
       <div
         className={` flex w-full flex-col items-baseline justify-between gap-3`}
       >
-        <p className="break-words break-all font-normal text-onSurfaceVariant-dark">{data.content}</p>
+        <p className="break-words break-all font-normal text-onSurfaceVariant-dark">
+          {data.content}
+        </p>
         <div className="flex items-center gap-10 p-2 pb-0">
-          <button
-            onClick={() => onLike.mutate()}
-            className="flex items-center gap-1"
-          >
-            <ThumbsUp color="#006D3D" strokeWidth={1.5} />
-            {reaction.like}
-          </button>
-          <button
-            onClick={() => onDislike.mutate()}
-            className="flex items-center gap-1"
-          >
-            <ThumbsDown color="#934b1d" strokeWidth={1.5} />
-            {reaction.disLike}
-          </button>
+          {reactionType === "thumbsUp" && onReact.isPending ? (
+            <Loader className="animate-spin" color="#45464f" strokeWidth={1} />
+          ) : (
+            <button
+              onClick={() => {
+                if (reactionType === "thumbsUp") setReactionType(undefined);
+                else setReactionType("thumbsUp");
+                onReact.mutate();
+              }}
+              className="flex items-center gap-1"
+            >
+              <ThumbsUp
+                fill={reaction?.type === "thumbsUp" ? "#006D3D" : "none"}
+                color="#006D3D"
+                strokeWidth={1.5}
+              />
+              {reaction?.thumbsUp}
+            </button>
+          )}
+          {reactionType === "thumbsDown" && onReact.isPending ? (
+            <Loader className="animate-spin" color="#45464f" strokeWidth={1} />
+          ) : (
+            <button
+              onClick={() => {
+                if (reactionType === "thumbsDown") setReactionType(undefined);
+                else setReactionType("thumbsDown");
+                onReact.mutate();
+              }}
+              className="flex items-center gap-1"
+            >
+              <ThumbsDown
+                fill={reaction?.type === "thumbsDown" ? "#934b1d" : "none"}
+                color="#934b1d"
+                strokeWidth={1.5}
+              />
+              {reaction?.thumbsDown}
+            </button>
+          )}
+          {onReact.error && (
+            <p className="break-words break-all py-1 text-xs font-normal text-error-dark">
+              {onReact.error.message}
+            </p>
+          )}
           {data?.replies && data?.replies?.length > 0 && !replayed && (
             <button
               onClick={() => {
