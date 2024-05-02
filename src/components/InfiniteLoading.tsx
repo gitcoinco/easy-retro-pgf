@@ -37,13 +37,20 @@ export function InfiniteLoading<T>({
     [pages],
   );
 
-  console.log("dataaaa", data);
-  console.log("items", items);
-
   const hasMore = useMemo(() => {
     if (!pages.length) return false;
     return (pages[pages.length - 1]?.length ?? 0) === config.pageSize;
   }, [pages]);
+
+  const refUIDs: string[] = items
+    .filter(
+      (item) =>
+        item.refUID !==
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+    )
+    .map((item) => item.refUID);
+
+  const filteredData = items?.filter((item) => !refUIDs?.includes(item.id));
 
   return (
     <div>
@@ -53,7 +60,7 @@ export function InfiniteLoading<T>({
       <div
         className={`mb-16 flex flex-col sm:grid ${columnMap[columns]} gap-2 sm:gap-4 lg:gap-5`}
       >
-        {items.map((item) => renderItem(item, { isLoading }))}
+        {filteredData?.map((item) => renderItem(item, { isLoading }))}
         {(isLoading || isFetchingNextPage) &&
           loadingItems.map((item) => renderItem(item, { isLoading }))}
       </div>
