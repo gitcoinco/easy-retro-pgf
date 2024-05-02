@@ -132,7 +132,7 @@ export default {
         error: {
           light: "rgb(144 74 75)",
           DEFAULT: "#BA1437",
-          dark: "rgb(255 179 178)",
+          dark: "rgb(221 0 53)",
         },
         onError: {
           light: "rgb(255 255 255)",
@@ -258,7 +258,7 @@ export default {
         gray: colors.stone,
       },
       fontFamily: {
-        sans: ["var(--font-kumbhSans)", ...theme.fontFamily.sans],
+        kumbhSans: ["var(--font-kumbhSans)", ...theme.fontFamily.sans],
       },
     },
   },

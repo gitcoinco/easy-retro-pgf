@@ -115,7 +115,10 @@ export const publicProcedure = t.procedure;
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session?.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Please connect your wallet",
+    });
   }
   return next({
     ctx: {
@@ -151,6 +154,13 @@ const enforceSubmissionPeriodCheck = t.middleware(({ ctx, next }) => {
 
   // after submission period
   if (now >= endOfSubmissionPeriod) {
+    if (!address) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Please connect your wallet",
+      });
+    }
+
     if (!isAdmin(address)) {
       throw new TRPCError({
         code: "UNAUTHORIZED",
@@ -172,6 +182,9 @@ const enforceSubmissionPeriodCheck = t.middleware(({ ctx, next }) => {
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 export const adminProcedure = protectedProcedure.use(enforceUserIsAdmin);
-export const discussionProcedure = protectedProcedure.use(
+export const protectedDiscussionProcedure = protectedProcedure.use(
+  enforceSubmissionPeriodCheck,
+);
+export const unprotectedDiscussionProcedure = t.procedure.use(
   enforceSubmissionPeriodCheck,
 );
