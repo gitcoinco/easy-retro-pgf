@@ -19,15 +19,16 @@ export function LinkBox<T extends { url: string }>({
       )}
       <div className="space-y-2">
         {links?.map((link, i) => {
-          return (
-            <ExternalLink
-              key={i}
-              href={link?.url}
-              className="flex gap-2 hover:underline"
-            >
-              {renderItem(link)}
-            </ExternalLink>
-          );
+          if (link?.url)
+            return (
+              <ExternalLink
+                key={i}
+                href={link?.url}
+                className="flex gap-2 hover:underline"
+              >
+                {renderItem(link)}
+              </ExternalLink>
+            );
         })}
       </div>
     </div>

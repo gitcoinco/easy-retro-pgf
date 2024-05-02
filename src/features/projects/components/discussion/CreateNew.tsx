@@ -35,8 +35,12 @@ export const CreateNew = ({
   });
 
   return (
-    <div className="relative flex w-full flex-col rounded border border-outline-dark px-4 py-2">
-      <span className="absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark dark:text-onSurfaceVariant-dark">
+    <div
+      className={`relative flex w-full flex-col rounded border ${idea.content.length === 1024 ? "border-error-dark" : "border-outline-dark"} px-4 py-2`}
+    >
+      <span
+        className={`absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark ${idea.content.length === 1024 ? "text-error-dark" : "dark:text-onSurfaceVariant-dark"}`}
+      >
         Your idea
       </span>
       <div className="flex items-center justify-between">
@@ -76,17 +80,22 @@ export const CreateNew = ({
         placeholder={`Type your ${idea.type.toLowerCase()} here.`}
         onChange={(e) => setIdea({ ...idea, content: e.target.value })}
         value={idea.content}
+        maxLength={1024}
       />
       <Button
         className="my-2 w-fit px-6"
-        disabled={idea.content.length === 0 || submit.isPending}
+        disabled={
+          idea.content.length === 0 ||
+          submit.isPending ||
+          idea.content.length === 1024
+        }
         variant="outline"
         onClick={() => submit.mutate()}
       >
         Post idea
       </Button>
       {submit.error && (
-        <p className="break-words break-all text-xs font-normal text-onSurfaceVariant-dark">
+        <p className="break-words break-all py-1 text-xs font-normal text-error-dark">
           {submit.error.message}
         </p>
       )}

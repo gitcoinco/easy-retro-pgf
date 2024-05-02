@@ -27,10 +27,6 @@ export function Projects() {
       .map((item) => item.refUID),
   );
 
-  const filteredData = projects.data?.pages?.map((arr) =>
-    arr.filter((item) => !refUIDs?.includes(item.id)),
-  );
-
   return (
     <div>
       <div
@@ -55,36 +51,34 @@ export function Projects() {
 
       <SortFilter />
       <InfiniteLoading
-        {...{
-          ...projects,
-          data: { pageParams: projects?.data?.pageParams, pages: filteredData },
-        }}
+        {...projects}
         renderItem={(item, { isLoading }) => {
-          return (
-            <Link
-              key={item.id}
-              href={`/projects/${item.id}`}
-              className={clsx("relative", { ["animate-pulse"]: isLoading })}
-            >
-              {!isLoading && getAppState() === "VOTING" ? (
-                <div className="absolute right-2 top-[100px] z-10 -mt-2">
-                  <ProjectSelectButton
-                    state={select.getState(item.id)}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      select.toggle(item.id);
-                    }}
+          if (!refUIDs?.includes(item.id))
+            return (
+              <Link
+                key={item.id}
+                href={`/projects/${item.id}`}
+                className={clsx("relative", { ["animate-pulse"]: isLoading })}
+              >
+                {!isLoading && getAppState() === "VOTING" ? (
+                  <div className="absolute right-2 top-[100px] z-10 -mt-2">
+                    <ProjectSelectButton
+                      state={select.getState(item.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        select.toggle(item.id);
+                      }}
+                    />
+                  </div>
+                ) : null}
+                {!results.isPending && getAppState() === "RESULTS" ? (
+                  <ProjectItemAwarded
+                    amount={results.data?.projects?.[item.id]?.votes}
                   />
-                </div>
-              ) : null}
-              {!results.isPending && getAppState() === "RESULTS" ? (
-                <ProjectItemAwarded
-                  amount={results.data?.projects?.[item.id]?.votes}
-                />
-              ) : null}
-              <ProjectItem isLoading={isLoading} attestation={item} />
-            </Link>
-          );
+                ) : null}
+                <ProjectItem isLoading={isLoading} attestation={item} />
+              </Link>
+            );
         }}
       />
     </div>

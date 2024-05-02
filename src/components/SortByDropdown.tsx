@@ -13,7 +13,7 @@ type Props = {
 const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
+      <DropdownMenu.Trigger className="outline-none">
         <Button
           icon={ArrowUpDown}
           variant="outline"
@@ -26,7 +26,7 @@ const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="z-50 w-[200px] rounded-xl border border-gray-300 bg-white p-2 dark:border-onSurfaceVariant-dark dark:bg-surfaceContainerLow-dark dark:text-white"
+          className="z-50 w-[200px] font-kumbhSans rounded-xl border border-gray-300 bg-white p-2 dark:border-onSurfaceVariant-dark dark:bg-surfaceContainerLow-dark dark:text-white"
           sideOffset={5}
         >
           <DropdownMenu.Label className="dark:gray-500 p-2 text-xs font-semibold uppercase text-onSurfaceVariant-dark">

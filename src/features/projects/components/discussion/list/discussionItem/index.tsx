@@ -37,8 +37,12 @@ const Reply = ({
   });
 
   return (
-    <div className="relative flex flex-col rounded border border-outline-dark px-4 py-2">
-      <span className="absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark dark:text-onSurfaceVariant-dark">
+    <div
+      className={`relative flex flex-col rounded border ${reply.content.length === 1024 ? "border-error-dark" : "border-outline-dark"} px-4 py-2`}
+    >
+      <span
+        className={`absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark ${reply.content.length === 1024 ? "text-error-dark" : "dark:text-onSurfaceVariant-dark"}`}
+      >
         Your reply
       </span>
       <Textarea
@@ -47,6 +51,7 @@ const Reply = ({
         placeholder="Type your reply here."
         onChange={(e) => setReply({ ...reply, content: e.target.value })}
         value={reply.content}
+        maxLength={1024}
       />
       <div className="mt-2 flex items-center gap-14">
         <div className="flex items-center justify-evenly gap-5">
@@ -62,12 +67,21 @@ const Reply = ({
         </div>
         <Button
           className="w-fit px-6"
-          disabled={reply.content.length === 0 || submit.isPending}
+          disabled={
+            reply.content.length === 0 ||
+            submit.isPending ||
+            reply.content.length === 1024
+          }
           variant="outline"
           onClick={() => submit.mutate()}
         >
           Post idea
         </Button>
+        {submit.error && (
+          <p className="break-words break-all py-1 text-xs font-normal text-error-dark">
+            {submit.error.message}
+          </p>
+        )}
       </div>
     </div>
   );

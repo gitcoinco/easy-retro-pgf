@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { ThumbsUp } from "lucide-react";
-import { ThumbsDown } from "lucide-react";
+import { ThumbsDown, ThumbsUp, UserRound } from "lucide-react";
 import { formatDate } from "~/utils/time";
 import { ReplySvg } from "~/components/ui/ReplySvg";
 import { useReact } from "~/features/projects/hooks/useDiscussion";
+
 import type {
   Discussion,
   ReplyResType,
@@ -50,7 +50,9 @@ export const IdeaItem = ({
             src={data.user?.image}
           />
         ) : (
-          <div className="mr-2 h-20 w-20 rounded-full bg-gray-200" />
+          <div className="mr-2 flex h-20 w-20 items-center justify-center rounded-full bg-surfaceContainerHigh-dark">
+            <UserRound size={40} color="#8f909a" strokeWidth={1.5} />
+          </div>
         )}
         <div className="flex flex-col items-baseline font-medium text-onSurface-dark">
           <p className="mb-1 text-base">
@@ -70,7 +72,7 @@ export const IdeaItem = ({
       <div
         className={` flex w-full flex-col items-baseline justify-between gap-3`}
       >
-        <p className="font-normal text-onSurfaceVariant-dark">{data.content}</p>
+        <p className="break-words break-all font-normal text-onSurfaceVariant-dark">{data.content}</p>
         <div className="flex items-center gap-10 p-2 pb-0">
           <button
             onClick={() => onLike.mutate()}

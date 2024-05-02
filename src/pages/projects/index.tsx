@@ -3,7 +3,7 @@ import { Projects } from "~/features/projects/components/Projects";
 
 export default function ProjectsPage() {
   return (
-    <LayoutWithBallot sidebar="left" eligibilityCheck showBallot>
+    <LayoutWithBallot eligibilityCheck showBallot>
       <Projects />
     </LayoutWithBallot>
   );
