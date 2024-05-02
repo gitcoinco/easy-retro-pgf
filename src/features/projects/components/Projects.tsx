@@ -27,6 +27,10 @@ export function Projects() {
       .map((item) => item.refUID),
   );
 
+  const filteredData = projects.data?.pages?.map((arr) =>
+    arr.filter((item) => !refUIDs?.includes(item.id)),
+  );
+
   return (
     <div>
       <div
@@ -51,7 +55,10 @@ export function Projects() {
 
       <SortFilter />
       <InfiniteLoading
-        {...projects}
+        {...{
+          ...projects,
+          data: { pageParams: projects?.data?.pageParams, pages: filteredData },
+        }}
         renderItem={(item, { isLoading }) => {
           if (!refUIDs?.includes(item.id))
             return (
