@@ -28,6 +28,12 @@ export const ReplyResSchema = z.object({
   thumbsUp: z.number(),
   thumbsDown: z.number(),
   createdAt: z.date(),
+  reactions: z.array(
+    z.object({
+      reaction: z.enum(["thumbsUp", "thumbsDown"]),
+      userId: z.string(),
+    }),
+  ),
 });
 
 export const ListReqSchema = z.object({
@@ -44,6 +50,12 @@ const ListResSchema = z.object({
   thumbsDown: z.number(),
   createdAt: z.date(),
   replies: z.array(ReplyResSchema),
+  reactions: z.array(
+    z.object({
+      reaction: z.enum(["thumbsUp", "thumbsDown"]),
+      userId: z.string(),
+    }),
+  ),
 });
 
 export const CreateDiscussionSchema = z.object({

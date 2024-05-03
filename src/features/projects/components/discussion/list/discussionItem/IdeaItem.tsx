@@ -21,7 +21,9 @@ export const IdeaItem = ({
   replayed?: boolean;
   hideReplayed?: boolean;
 }) => {
-  const [reactionType, setReactionType] = useState<"thumbsUp" | "thumbsDown">();
+  const [reactionType, setReactionType] = useState<
+    "thumbsUp" | "thumbsDown" | undefined
+  >(data?.reactions[0]?.reaction);
   const [reaction, setReaction] = useState<{
     thumbsUp: number;
     thumbsDown: number;
@@ -31,6 +33,8 @@ export const IdeaItem = ({
     thumbsDown: data?.thumbsDown,
     type: undefined,
   });
+
+  console.log("data?.reactions[0]", data);
 
   const onReact = useReact({
     onSuccess: async () => console.log("2443"),
@@ -50,8 +54,6 @@ export const IdeaItem = ({
     }
   }, [onReact?.data]);
 
-  console.log("reaction", reaction);
-
   return (
     <div className="flex items-center justify-between gap-14 text-sm">
       <div
@@ -59,8 +61,8 @@ export const IdeaItem = ({
       >
         {replayed && <ReplySvg className="mr-5" />}
         {data.user?.image ? (
-          <Image
-            className="max-h-full scale-75"
+          <img
+            className="mr-2 flex h-20 w-20 items-center justify-center rounded-full "
             width={80}
             height={80}
             alt="user image"
