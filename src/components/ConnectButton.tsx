@@ -145,12 +145,12 @@ const UserInfo = ({
 
   return (
     <Chip className=" min-h-10 min-w-10 gap-2" {...props}>
-      <div className="h-6 w-6 overflow-hidden rounded-full">
+      <div className="w-4 h-4 md:h-6 md:w-6 overflow-hidden rounded-full">
         {avatar.data ? (
-          <Image width={24} height={24} alt={name} src={avatar.data} />
+          <img width={24} height={24} alt={name} src={avatar.data} />
         ) : (
           <div className="flex h-full items-center justify-center rounded-full ">
-            <UserRound color="#8f909a" strokeWidth={1.5} />
+            <UserRound className="hover:stroke-primary-dark" color="#FFFFFF" strokeWidth={1.5} />
           </div>
         )}
       </div>

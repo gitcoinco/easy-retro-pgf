@@ -12,7 +12,7 @@ export default {
         primary: {
           light: "rgb(76 92 146)",
           DEFAULT: "#703CD0",
-          dark: "rgb(181 196 255)",
+          dark: "rgb(105 141 255)",
         },
         onPrimary: {
           light: "rgb(255 255 255)",
@@ -152,12 +152,12 @@ export default {
         outline: {
           light: "rgb(118 118 128)",
           DEFAULT: "#7A757F",
-          dark: "rgb(143 144 154)",
+          dark: "rgb(108 114 131)",
         },
         background: {
           light: "rgb(250 248 255)",
           DEFAULT: "#FFFBFF",
-          dark: "rgb(18 19 24)",
+          dark: "rgb(35 31 32)",
         },
         onBackground: {
           light: "rgb(26 27 33)",

@@ -58,7 +58,7 @@ export const Layout = ({ children, ...props }: Props) => {
   }
 
   return (
-    <BaseLayout {...props} header={<Header navLinks={navLinks} />}>
+    <BaseLayout {...props} header={<Header address={address} navLinks={navLinks} />}>
       {children}
     </BaseLayout>
   );

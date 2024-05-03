@@ -11,7 +11,7 @@ export const Switch = ({
   return (
     <div
       onClick={setIsOn}
-      className={` relative flex h-8 w-14 cursor-pointer items-center rounded-full ${!isOn ? "border-2 border-outline-dark bg-surfaceContainerHigh-dark" : "bg-primary-dark"}  p-1 transition`}
+      className={` relative flex h-8 w-14 cursor-pointer items-center rounded-full ${!isOn ? "border-2 border-outline-dark bg-background-dark" : "bg-primary-dark"}  p-1 transition`}
     >
       <div
         className={` absolute flex h-6 w-6 items-center justify-center rounded-full  transition-transform ${

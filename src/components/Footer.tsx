@@ -2,13 +2,13 @@ import { GithubIcon } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="flex flex-col items-center justify-center bg-surfaceContainerLow-dark p-2 text-onSurfaceVariant-dark">
+    <footer className="flex flex-col items-center justify-center bg-background-dark p-2 text-onPrimary-light">
       <a
         href={
           "https://github.com/Microflow-xyz/retroactive-pokt-goods-funding/tree/main"
         }
         target="_blank"
-        className="group py-4 text-sm hover:text-white"
+        className="group py-4 text-sm hover:text-onPrimary-light"
       >
         <div className="flex">
           Built with{" "}

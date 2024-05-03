@@ -52,7 +52,7 @@ export function ImageUpload({
 
             <div
               className={clsx(
-                "flex h-full items-center justify-center rounded-xl border bg-gray-200 bg-cover bg-center bg-no-repeat text-xs font-medium text-onSurfaceVariant-dark dark:border-outlineVariant-dark dark:bg-surfaceContainerLow-dark",
+                "flex h-full items-center justify-center border bg-gray-200 bg-cover bg-center bg-no-repeat text-xs font-medium text-onPrimary-light dark:border-onPrimary-light dark:bg-background-dark",
                 {
                   ["animate-pulse opacity-50"]: upload.isPending,
                 },

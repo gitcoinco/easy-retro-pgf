@@ -14,14 +14,14 @@ const button = tv({
   variants: {
     variant: {
       primary:
-        "bg-primary-600 hover:bg-primary-700 dark:bg-primary-dark dark:hover:bg-primary-500 dark:hover:shadow dark:text-onPrimary-dark text-white dark:disabled:bg-surfaceContainerLow-dark",
+        "bg-primary-600 hover:bg-primary-dark dark:bg-onPrimary-light dark:hover:bg-primary-dark dark:hover:shadow dark:text-scrim-dark text-white dark:disabled:bg-outline-dark",
       ghost: "hover:bg-gray-100 dark:hover:bg-surfaceContainerLow-dark",
       default:
         "bg-gray-100 dark:bg-surfaceContainerLow-dark hover:bg-gray-200 dark:hover:bg-onSurfaceVariant-dark",
       inverted: "bg-white text-black hover:bg-white/90",
       link: "bg-none hover:underline",
       outline:
-        "border text-primary-dark border-outline-dark hover:bg-primary-dark/15 dark:disabled:text-onSurface-dark dark-disabled:border dark-disabled:border-solid dark:disabled:border-onSurface-dark-[0.12]",
+        "border text-onPrimary-light hover:border-primary-dark hover:text-primary-dark border-onPrimary-light dark:disabled:text-outline-dark dark-disabled:border dark-disabled:border-solid dark:disabled:border-outline-dark",
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",

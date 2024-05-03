@@ -26,7 +26,7 @@ const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="z-50 w-[200px] font-kumbhSans rounded-xl border border-gray-300 bg-white p-2 dark:border-onSurfaceVariant-dark dark:bg-surfaceContainerLow-dark dark:text-white"
+          className="z-50 w-[200px] font-kumbhSans border border-gray-300 bg-white p-2 dark:border-onSurfaceVariant-dark dark:bg-background-dark dark:text-white"
           sideOffset={5}
         >
           <DropdownMenu.Label className="dark:gray-500 p-2 text-xs font-semibold uppercase text-onSurfaceVariant-dark">
@@ -48,7 +48,7 @@ const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
 
 const RadioItem = ({ value = "", label = "" }) => (
   <DropdownMenu.RadioItem
-    className="cursor-pointer rounded p-2 pl-8 text-sm text-gray-900 outline-none hover:bg-gray-100 focus-visible:ring-0 dark:text-gray-300 dark:hover:bg-surfaceContainerLow-dark"
+    className="cursor-pointer rounded p-2 pl-8 text-sm text-gray-900 outline-none hover:bg-gray-100 focus-visible:ring-0 dark:text-onPrimary-light dark:hover:bg-primary-dark"
     value={value}
   >
     <DropdownMenu.ItemIndicator className="absolute left-4">

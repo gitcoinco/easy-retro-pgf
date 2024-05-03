@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { type ComponentPropsWithRef, useState } from "react";
 import clsx from "clsx";
-
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import { ConnectButton } from "./ConnectButton";
 import { IconButton } from "./ui/Button";
 import { config, metadata } from "~/config";
@@ -28,9 +28,9 @@ const NavLink = ({
 }: { isActive: boolean } & ComponentPropsWithRef<typeof Link>) => (
   <Link
     className={clsx(
-      "flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold  text-onSurfaceVariant-dark hover:text-white",
+      "flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold  text-onPrimary-light hover:text-primary-dark",
       {
-        ["!border-white  !text-white"]: isActive,
+        ["  !text-primary-dark"]: isActive,
       },
     )}
     {...props}
@@ -38,12 +38,12 @@ const NavLink = ({
 );
 
 type NavLink = { href: string; children: string };
-export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
+export const Header = ({ navLinks,address }: { navLinks: NavLink[]; address:`0x${string}` | undefined }) => {
   const { asPath } = useRouter();
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <header className="relative z-10 bg-surfaceContainerLow-dark shadow-md dark:shadow-none">
+    <header className="relative z-10 bg-background-dark shadow-md dark:shadow-none">
       <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center px-2">
         <div className="mr-4 flex items-center md:mr-16">
           <IconButton
@@ -67,11 +67,23 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
             </NavLink>
           ))}
         </div>
+        {!address && <div className="hidden md:flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold  text-onPrimary-light hover:text-primary-dark"><span data-tooltip-id="voting"
+>Voting</span>    <ReactTooltip
+                  id="voting"
+                  place="bottom"
+                  className="max-h-full max-w-[20rem] bg-outline-dark"
+                  multiline={true}
+                  content={
+                    <div className="flex flex-col text-wrap">
+                      <span>Voting hasn't started yet</span>
+                    </div>
+                  }
+                /></div>}
         <div className="flex-1 md:ml-8"></div>
-        <div className="ml-4 flex gap-4 md:ml-8 xl:ml-32">
+        <div className=" flex gap-4 md:ml-8 xl:ml-32">
           <ConnectButton />
         </div>
-        <MobileMenu isOpen={isOpen} navLinks={navLinks} />
+        <MobileMenu address={address} isOpen={isOpen} navLinks={navLinks} />
       </div>
     </header>
   );
@@ -79,10 +91,10 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
 
 const MobileMenu = ({
   isOpen,
-  navLinks,
+  navLinks,address
 }: {
   isOpen?: boolean;
-  navLinks: NavLink[];
+  navLinks: NavLink[];address:`0x${string}` | undefined;
 }) => (
   <div
     className={clsx(
@@ -99,6 +111,18 @@ const MobileMenu = ({
         {...link}
       />
     ))}
+         {!address && <div className="flex md:hidden p-4 text-2xl  font-semibold"><span data-tooltip-id="voting"
+>Voting</span>    <ReactTooltip
+                  id="voting"
+                  place="bottom"
+                  className="max-h-full max-w-[20rem] bg-outline-dark"
+                  multiline={true}
+                  content={
+                    <div className="flex flex-col text-wrap">
+                      <span>Voting hasn't started yet</span>
+                    </div>
+                  }
+                /></div>}
   </div>
 );
 

@@ -36,19 +36,19 @@ export const CreateNew = ({
 
   return (
     <div
-      className={`relative flex w-full flex-col rounded border ${idea.content.length === 1024 ? "border-error-dark" : "border-outline-dark"} px-4 py-2`}
+      className={`relative flex w-full flex-col border ${idea.content.length === 1024 ? "border-error-dark" : "border-onPrimary-light"} px-3 md:px-4 py-2`}
     >
       <span
-        className={`absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark ${idea.content.length === 1024 ? "text-error-dark" : "dark:text-onSurfaceVariant-dark"}`}
+        className={`absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark ${idea.content.length === 1024 ? "text-error-dark" : "dark:text-onPrimary-light"}`}
       >
         Your idea
       </span>
-      <div className="flex items-center justify-between">
-        <ul className="flex w-full items-center justify-around border-b border-surfaceContainerHigh-dark">
+      <div className="flex flex-col md:flex-row items-start gap-3 md:items-center md:justify-between">
+        <ul className="flex w-full items-center justify-around border-b border-outline-dark">
           {ideaType.map((item: DiscussionTypes, index) => (
             <li
               key={index}
-              className={` text-sm font-medium text-onSurfaceVariant-dark hover:bg-onSurface-dark/[0.08]  ${idea.type.toLowerCase() === item.toLowerCase() ? " border-b-[3px] border-primary-dark  text-primary-dark hover:bg-onSurface-dark/[0.12]" : ""}`}
+              className={` text-sm font-medium text-onPrimary-light hover:bg-onSurface-dark/[0.08]  ${idea.type.toLowerCase() === item.toLowerCase() ? " border-b-[3px] border-primary-dark  text-primary-dark hover:bg-onSurface-dark/[0.12]" : ""}`}
             >
               <button
                 onClick={() =>
@@ -64,18 +64,18 @@ export const CreateNew = ({
             </li>
           ))}
         </ul>
-        <div className="ml-11 flex min-w-52 items-center justify-evenly gap-5">
+        <div className="md:ml-11 flex min-w-52 items-center justify-evenly gap-5">
           <Switch
             isOn={idea.isAnonymous}
             setIsOn={() => setIdea({ ...idea, isAnonymous: !idea.isAnonymous })}
           />
-          <span className="flex text-sm font-medium text-onSurfaceVariant-dark">
+          <span className="flex text-sm font-medium text-onPrimary-light">
             Post anonymously
           </span>
         </div>
       </div>
       <Textarea
-        className="mt-5 resize-none border-none p-0"
+        className="mt-3 md:mt-5 resize-none border-none p-0"
         rows={3}
         placeholder={`Type your ${idea.type.toLowerCase()} here.`}
         onChange={(e) => setIdea({ ...idea, content: e.target.value })}

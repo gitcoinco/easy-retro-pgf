@@ -20,7 +20,7 @@ export function ProjectItem({
   return (
     <article
       data-testid={`project-${attestation.id}`}
-      className="group rounded-2xl border border-gray-200 px-5 py-6 hover:border-primary-500 dark:border-outlineVariant-dark dark:hover:border-primary-500"
+      className="group border border-gray-200 px-5 py-6 hover:border-primary-500 dark:border-onPrimary-light dark:hover:border-outline-dark"
     >
       <div className="opacity-70 transition-opacity group-hover:opacity-100">
         <ProjectBanner profileId={attestation?.recipient} />
@@ -49,7 +49,7 @@ export function ProjectItem({
 
 export function ProjectItemAwarded({ amount = 0 }) {
   return (
-    <div className="absolute right-2 top-[100px] z-10 -mt-2 rounded bg-gray-100 p-1 text-sm dark:bg-surfaceContainerLow-dark">
+    <div className="absolute right-2 top-[100px] z-10 -mt-2 bg-gray-100 p-1 text-sm dark:bg-surfaceContainerLow-dark">
       <span className="font-bold">{formatNumber(amount)}</span> votes
     </div>
   );
