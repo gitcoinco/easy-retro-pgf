@@ -91,7 +91,7 @@ function BallotOverview() {
             Votes allocated:
             <div
               className={clsx("text-gray-900 dark:text-gray-300", {
-                ["text-primary-500"]: sum > config.votingMaxTotal,
+                ["text-red-500"]: sum > config.votingMaxTotal,
               })}
             >
               {formatNumber(sum)} votes
