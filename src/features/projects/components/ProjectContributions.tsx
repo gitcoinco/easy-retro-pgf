@@ -1,4 +1,3 @@
-import { Markdown } from "~/components/ui/Markdown";
 import { Heading } from "~/components/ui/Heading";
 import { LinkBox } from "./LinkBox";
 import { FileCode, Github, Globe, type LucideIcon } from "lucide-react";
@@ -9,17 +8,17 @@ type Props = { isLoading: boolean; project?: Application };
 
 export default function ProjectContributions({ isLoading, project }: Props) {
   return (
-    <>
-      <Heading as="h3" size="2xl">
+    <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-baseline md:items-center justify-between pt-6">
+
+        <div className="flex flex-col items-start justify-between gap-3">
+        <Heading className="m-0" as="h3" size="lg">
         Contributions
       </Heading>
-      <div className="mb-4 gap-4 md:flex">
-        <div className="md:w-2/3">
-          <Markdown isLoading={isLoading}>
+          <p className="break-all break-words text-sm font-normal">
             {project?.contributionDescription}
-          </Markdown>
+          </p>
         </div>
-        <div className="md:w-1/3">
+        <div className="md:w-1/3 w-full">
           <LinkBox
             label="Contribution Links"
             links={project?.contributionLinks}
@@ -32,7 +31,7 @@ export default function ProjectContributions({ isLoading, project }: Props) {
               return (
                 <>
                   {createElement(icon ?? "div", {
-                    className: "w-4 h-4 mt-1",
+                    className: "w-4 h-4 ",
                   })}
                   <div className="flex-1 truncate" title={link.description}>
                     {link.description}
@@ -42,7 +41,6 @@ export default function ProjectContributions({ isLoading, project }: Props) {
             }}
           />
         </div>
-      </div>
-    </>
+    </div>
   );
 }

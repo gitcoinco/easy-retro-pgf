@@ -22,6 +22,6 @@ export const ExternalLink = ({
     className={clsx("flex items-center gap-2 font-semibold hover:underline")}
     {...props}
   >
-    {children} <ExternalLinkIcon className="mt-1 h-4 w-4" />
+    {children} <ExternalLinkIcon className=" h-4 w-4" />
   </NextLink>
 );

@@ -29,11 +29,10 @@ import { PlusIcon, Search, Trash } from "lucide-react";
 
 const inputBase = [
   "dark:bg-transparent",
-  "dark:text-onSurface-dark",
-  "dark:border-outline-dark dark:hover:border-onSurface-dark dark:focus:outline-none dark:focus:ring-0 dark:focus:ring-offset-0 dark:focus:border-2 dark:focus:border-primary-dark dark:focus:shadow-none",
-  "rounded",
+  "dark:text-onPrimary-light",
+  "dark:border-onPrimary-light dark:hover:border-onSurface-dark dark:focus:outline-none dark:focus:ring-0 dark:focus:ring-offset-0 dark:focus:border-2 dark:focus:border-primary-dark dark:focus:shadow-none",
   "disabled:opacity-30",
-  "checked:bg-surfaceContainerLow-dark",
+  "checked:bg-outline-dark",
 ];
 export const Input = createComponent(
   "input",

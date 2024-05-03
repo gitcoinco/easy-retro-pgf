@@ -13,7 +13,7 @@
 
 input::placeholder,
 textarea::placeholder {
-  color: #c4c5d5;
+  color: #6c7283;
   opacity: 1;
 }
 @keyframes spin {
@@ -27,4 +27,8 @@ textarea::placeholder {
 
 .animate-spin {
   animation: spin 3s linear infinite;
+}
+
+button:hover svg.lucide-user-round{
+  stroke: rgb(105 141 255);
 }

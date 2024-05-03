@@ -34,33 +34,33 @@ export default function ProjectDetails({
   } = metadata.data ?? {};
   return (
     <div className="relative">
-      <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-surfaceContainerLow-dark">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{attestation?.name}</h1>
-          {action}
-        </div>
-      </div>
-      <div className="overflow-hidden rounded-3xl">
+    
+      <div className="overflow-hidden">
         <ProjectBanner size="lg" profileId={attestation?.recipient} />
       </div>
-      <div className="mb-8 flex items-end gap-4">
+      <div className=" mb-8 md:mb-16 flex flex-col items-baseline md:flex-row md:items-center md:gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
-          className="-mt-20 ml-8"
+          className="-mt-20 ml-2 md:ml-8"
           profileId={attestation?.recipient}
         />
         <div>
-          <div className="">
+          <div className="flex">
             {/* <NameENS address={payoutAddress} /> */}
-            <a href={websiteUrl} target="_blank" className="hover:underline">
+            <a href={websiteUrl} target="_blank" className="hover:text-primary-dark break-all break-words m-2 md:m-0">
               {websiteUrl}
             </a>
           </div>
         </div>
       </div>
-      <div className="flex flex-row items-center justify-between">
-        <p className="text-2xl">{bio}</p>
+      <div className="flex flex-col-reverse md:flex-row items-start gap-5 md:gap-0 md:items-center justify-between">
+      <div className="flex flex-col items-start justify-between gap-4">
+          <h1 className="text-2xl font-bold">{attestation?.name}</h1>
+          {action}
+          <p className="text-lg">{bio}</p>
+
+        </div>
         {address &&
           address === attestation?.attester &&
           state && state === "APPLICATION" && (
@@ -73,8 +73,8 @@ export default function ProjectDetails({
             </Button>
           )}
       </div>
-      <div>
-        <Heading as="h2" size="3xl">
+      <div className="pt-2">
+        <Heading as="h2" size="2xl">
           Impact statements
         </Heading>
 
@@ -85,11 +85,11 @@ export default function ProjectDetails({
 
         <ProjectImpact isLoading={metadata.isPending} project={metadata.data} />
         {fundingSources?.length > 0 && (
-          <>
-            <Heading as="h3" size="2xl">
+          <div className="mt-6 md:mt-10">
+              <Heading className="m-0" as="h3" size="lg">
               Past grants and funding
             </Heading>
-            <div className="space-y-4">
+            <div className="space-y-4 mt-3">
               {fundingSources?.map((source, i) => {
                 const type =
                   {
@@ -100,26 +100,28 @@ export default function ProjectDetails({
                     REVENUE: "Revenue",
                   }[source.type] ?? source.type;
                 return (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="flex-1 truncate text-xl">
+                  <div key={i} className="flex items-center gap-10 text-sm font-normal">
+                    <div className="flex-1 truncate">
                       {source.description}
                     </div>
-                    <div className="text-sm tracking-widest text-onSurfaceVariant-dark dark:text-gray-400">
+                    <div className="flex items-center justify-between gap-6">
+                    <div className=" tracking-widest text-onSurfaceVariant-dark dark:text-outline-dark">
                       {type}
                     </div>
-                    <div className="w-32 text-xl font-medium">
+                    <div className=" justify-end ">
                       {suffixNumber(source.amount)} {source.currency}
+                    </div>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </>
+          </div>
         )}
 
-        <div className="mt-10 flex items-baseline justify-between">
+        <div className="md:mt-10 mt-6 flex flex-col md:flex-row items-baseline justify-between">
           {metadata?.data?.socialMedias.length > 0 && (
-            <div className="md:w-1/3">
+            <div className="md:w-1/3 w-full">
               <div className=" mb-3 text-lg font-bold text-onSurface-dark">
                 Social media links
               </div>
@@ -136,7 +138,7 @@ export default function ProjectDetails({
           {attestation?.refUID &&
             attestation?.refUID !==
               "0x0000000000000000000000000000000000000000000000000000000000000000" && (
-              <div className="md:w-1/3">
+              <div className="mt-6 md:mt-0 w-full md:w-1/3">
                 <div className=" mb-3 text-lg font-bold text-onSurface-dark">
                   Previous edits on this project
                 </div>

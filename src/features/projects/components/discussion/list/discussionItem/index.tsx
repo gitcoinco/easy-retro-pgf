@@ -38,10 +38,10 @@ const Reply = ({
 
   return (
     <div
-      className={`relative flex flex-col rounded border ${reply.content.length === 1024 ? "border-error-dark" : "border-outline-dark"} px-4 py-2`}
+      className={`relative flex flex-col border ${reply.content.length === 1024 ? "border-error-dark" : "border-onPrimary-light"} px-3 md:px-4 py-2`}
     >
       <span
-        className={`absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark ${reply.content.length === 1024 ? "text-error-dark" : "dark:text-onSurfaceVariant-dark"}`}
+        className={`absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark ${reply.content.length === 1024 ? "text-error-dark" : "dark:text-onPrimary-light"}`}
       >
         Your reply
       </span>
@@ -53,7 +53,7 @@ const Reply = ({
         value={reply.content}
         maxLength={1024}
       />
-      <div className="mt-2 flex items-center gap-14">
+      <div className="md:mt-2 flex flex-col md:flex-row items-baseline md:items-center gap-4 mt-4 md:gap-14">
         <div className="flex items-center justify-evenly gap-5">
           <Switch
             isOn={reply.isAnonymous}
@@ -98,7 +98,7 @@ export const DiscussionItem = ({
   const [hideReplayed, setHideReplayed] = useState(false);
 
   return (
-    <div className="flex w-full flex-col rounded-xl border border-outlineVariant-dark p-5">
+    <div className="flex w-full flex-col border border-outline-dark p-3 md:p-5">
       <IdeaItem
         key={discussion.id}
         data={discussion}
@@ -106,7 +106,7 @@ export const DiscussionItem = ({
         hideReplayed={hideReplayed}
       />
 
-      <div className="mx-10 mt-8 flex flex-col gap-4">
+      <div className="md:mx-10 mt-8 flex flex-col gap-6 md:gap-4">
         <Reply
           discussionId={discussion.id}
           projectId={projectId}

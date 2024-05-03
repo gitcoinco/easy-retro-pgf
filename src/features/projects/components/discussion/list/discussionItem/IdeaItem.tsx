@@ -22,7 +22,6 @@ export const IdeaItem = ({
   hideReplayed?: boolean;
 }) => {
   const { data: session } = useSession();
-console.log("session",session)
   const [reaction, setReaction] = useState<{
     thumbsUp: number;
     thumbsDown: number;
@@ -35,7 +34,7 @@ console.log("session",session)
 
 
   const onReact = useReact({
-    onSuccess: async () => console.log("2443"),
+    onSuccess: async () => console.log(""),
     reactionData: {
       discussionId: data.id,
       reaction: reaction.type ?? "thumbsUp",
@@ -52,9 +51,9 @@ console.log("session",session)
   }, [onReact?.data]);
 
   return (
-    <div className="flex items-center justify-between gap-14 text-sm">
+    <div className="flex flex-col gap-4 md:flex-row items-center justify-between md:gap-14 text-sm">
       <div
-        className={`flex ${replayed ? "min-w-[31.87%]" : "min-w-[25%]"} items-center`}
+        className={`flex min-w-full ${replayed ? " md:min-w-[31.87%]" : "md:min-w-[25%]"} items-center`}
       >
         {replayed && <ReplySvg className="mr-5" />}
         {data.user?.image ? (
@@ -66,15 +65,15 @@ console.log("session",session)
             src={data.user?.image}
           />
         ) : (
-          <div className="mr-2 flex h-20 w-20 items-center justify-center rounded-full bg-surfaceContainerHigh-dark">
-            <UserRound size={40} color="#8f909a" strokeWidth={1.5} />
+          <div className="mr-2 flex h-20 w-20 items-center justify-center rounded-full bg-outline-dark">
+            <UserRound size={40} color="#ffffff" strokeWidth={1.5} />
           </div>
         )}
-        <div className="flex flex-col items-baseline font-medium text-onSurface-dark">
+        <div className="flex flex-col items-baseline font-medium text-onPrimary-light">
           <p className="mb-1 text-base">
             {data.user?.name?.replace(/(.{7}).+(.{7})/, "$1...$2")}
           </p>
-          <span className=" text-onSurfaceVariant-dark">
+          <span className=" text-onPrimary-light">
             {formatDate(data.createdAt)}
           </span>
 
@@ -88,10 +87,10 @@ console.log("session",session)
       <div
         className={` flex w-full flex-col items-baseline justify-between gap-3`}
       >
-        <p className="break-words break-all font-normal text-onSurfaceVariant-dark">
+        <p className="break-words break-all font-normal text-onPrimary-light">
           {data.content}
         </p>
-        <div className="flex items-center gap-10 p-2 pb-0">
+        <div className="flex items-center gap-10 pt-2 md:p-2 pb-0">
           {reaction.type === "thumbsUp" && onReact.isPending ? (
             <Loader className="animate-spin" color="#45464f" strokeWidth={1} />
           ) : (
@@ -103,8 +102,8 @@ console.log("session",session)
               className="flex items-center gap-1"
             >
               <ThumbsUp
-                fill={reaction?.type === "thumbsUp" ? "#006D3D" : "none"}
-                color="#006D3D"
+                fill={reaction?.type === "thumbsUp" ? "#00B669" : "none"}
+                color="#00B669"
                 strokeWidth={1.5}
               />
               {reaction?.thumbsUp}
@@ -121,8 +120,8 @@ console.log("session",session)
               className="flex items-center gap-1"
             >
               <ThumbsDown
-                fill={reaction?.type === "thumbsDown" ? "#934b1d" : "none"}
-                color="#934b1d"
+                fill={reaction?.type === "thumbsDown" ? "#FEA16C" : "none"}
+                color="#FEA16C"
                 strokeWidth={1.5}
               />
               {reaction?.thumbsDown}
@@ -138,7 +137,7 @@ console.log("session",session)
               onClick={() => {
                 if (setHideReplayed) setHideReplayed(!hideReplayed);
               }}
-              className="px-3 py-[0.625rem] text-sm font-semibold text-primary-dark"
+              className="px-3 py-[0.625rem] text-sm font-semibold text-primary-dark hover:text-onPrimary-light"
             >
               {!hideReplayed ? "Hide replies" : "Show replies"}
             </button>

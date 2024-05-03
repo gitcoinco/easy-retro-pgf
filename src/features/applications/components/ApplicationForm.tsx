@@ -239,7 +239,7 @@ export function ApplicationForm({
             renderField={(field, i) => (
               <>
                 <FormControl
-                  className="min-w-96 flex-1"
+                  className="md:min-w-96 flex-1"
                   name={`application.contributionLinks.${i}.description`}
                   required
                 >
@@ -281,7 +281,7 @@ export function ApplicationForm({
             renderField={(field, i) => (
               <>
                 <FormControl
-                  className="min-w-96 flex-1"
+                  className="md:min-w-96 flex-1"
                   name={`application.impactMetrics.${i}.description`}
                   required
                 >
@@ -319,7 +319,7 @@ export function ApplicationForm({
             renderField={(field, i) => (
               <>
                 <FormControl
-                  className="min-w-96 flex-1"
+                  className="md:min-w-96 flex-1"
                   name={`application.fundingSources.${i}.description`}
                   required
                 >
@@ -371,7 +371,7 @@ export function ApplicationForm({
             renderField={(field, i) => (
               <>
                 <FormControl
-                  className=" w-2/4"
+                  className=" md:w-2/4"
                   name={`application.socialMedias.${i}.type`}
                   required
                 >
@@ -384,7 +384,7 @@ export function ApplicationForm({
                   </Select>
                 </FormControl>
                 <FormControl
-                  className="w-2/4	"
+                  className="md:w-2/4	"
                   name={`application.socialMedias.${i}.url`}
                   required
                 >
@@ -486,7 +486,7 @@ function ImpactTags() {
               >
                 {label}
                 <span
-                  className=" flex items-center rounded-full border-[1.5px] border-onSurfaceVariant px-[0.375rem] text-xs font-bold text-onSurfaceVariant"
+                  className=" flex items-center rounded-full border-[1.5px] border-outline-dark px-[0.375rem] text-xs font-bold text-outline-dark"
                   data-tooltip-id={label}
                 >
                   i
@@ -494,7 +494,7 @@ function ImpactTags() {
                 <ReactTooltip
                   id={label}
                   place="bottom"
-                  className="max-h-full max-w-[20rem]"
+                  className="max-h-full max-w-[20rem] bg-outline-dark"
                   multiline={true}
                   content={
                     <div className="flex flex-col text-wrap">
