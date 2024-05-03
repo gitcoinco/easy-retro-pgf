@@ -13,7 +13,7 @@ Follow these instructions to deploy your own instance of MACI-RPGF.
 
 The `.env.example` file contains instructions for most of these steps.
 
-At the very minimum you need to configure a postgres database, nextauth and the voting periods under App Configuration.
+At the very minimum you need to configure a postgres database, nextauth, admin address, MACI address and the voting periods under App Configuration.
 
 #### Database
 
@@ -24,8 +24,8 @@ https://vercel.com/dashboard/stores?type=postgres
 3. Press `.env.local` tab, Copy Snippet and paste into text editor
 
 <div>
-    <img width="45%" src="./images/create_postgres.png">
-    <img width="45%" src="./images/create_postgres_details.png">
+    <img width="45%" src="./images/create_postgres.png" />
+    <img width="45%" src="./images/create_postgres_details.png" />
 </div>
 
 #### Auth
@@ -58,9 +58,86 @@ To create your own round you need to do a few things:
 
 If you are running on a different network than Optimism you need to update the contract addresses for EAS. These addresses are used whenever an attestation is created.
 
-You can also configure your own schemas here if you wish to.
+You can also configure your own schemas here if you wish to, or deploy the EAS contracts in a network that doesn't have it.
 
-## 3. Deploy
+## 3. Deploy MACI
+
+TODO: improve this,  test maci-cli setup
+
+As a coordinator you need to deploy MACI instance and poll.
+
+### Install Maci
+
+You can read about the [MACI requirements here](https://maci.pse.dev/docs/installation). To install MACI run the following commands:
+
+```bash
+git clone https://github.com/privacy-scaling-explorations/maci.git && \
+cd maci && \
+pnpm i && \
+pnpm run build
+```
+
+### Download .zkey files
+
+Note the locations of the .zkey files as the CLI requires them as command-line flags. Download ceremony artifacts:
+
+```bash
+pnpm download:ceremony-zkeys
+```
+
+### Set .env Files
+
+Head to the `cli` folder and copy the `.env.template` file. Make sure to include a private key and RPC url.
+
+```
+ETH_SK="your_ethereum_secret_key"
+ETH_PROVIDER="the_eth_provider_url"
+```
+
+### Generate MACI Keys
+
+Generate a new key pair and save it in a secure place.
+
+```bash
+node build/ts/index.js genMaciKeyPair
+```
+
+### Deploy MACI Contracts
+
+The following scripts deploy a MACI instance and set the keys, make sure to save the address of the MACI contract.
+
+> [!IMPORTANT]
+> Make sure that you use the NonQv keys
+
+```sh
+node build/ts/index.js deployVkRegistry
+node build/ts/index.js setVerifyingKeys \
+    --state-tree-depth 10 \
+    --int-state-tree-depth 1 \
+    --msg-tree-depth 2 \
+    --vote-option-tree-depth 2 \
+    --msg-batch-depth 1 \
+    --process-messages-zkey-non-qv ./zkeys/ProcessMessagesNonQv_10-2-1-2/ProcessMessagesNonQv_10-2-1-2.0.zkey \
+    --tally-votes-zkey-non-qv ./zkeys/TallyVotesNonQv_10-1-2/TallyVotesNonQv_10-1-2.0.zkey \
+    --use-quadratic-voting false
+node build/ts/index.js create --stateTreeDepth 10
+```
+
+Now you can create a Poll and start the round using the following script, make sure to add the correct maci public key and set the correct duration in seconds.
+
+```sh
+node build/ts/index.js deployPoll \
+    --pubkey coordinator-maci-public-key \
+    --duration 300 \
+    --int-state-tree-depth 1 \
+    --msg-tree-depth 2 \
+    --msg-batch-depth 1 \
+    --vote-option-tree-depth 2
+```
+
+See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
+
+## 4. Deploy
 
 https://vercel.com/new
 
@@ -70,16 +147,9 @@ https://vercel.com/new
 4. Deploy!
 
 <div>
-  <img width="45%" src="./images/vercel_new.png">
-  <img width="45%" src="./images/vercel_configure.png">
+  <img width="45%" src="./images/vercel_new.png" />
+  <img width="45%" src="./images/vercel_configure.png" />
 </div>
-
-## 4. Deploy MACI
-
-As a coordinator you need to deploy MACI instance and poll. See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
-
-> [!IMPORTANT]
-> Make sure that you use the NonQV keys and create the Poll with `--use-quadratic-voting false`
 
 ## Additional configuration
 
