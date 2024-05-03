@@ -75,7 +75,11 @@ export const discussionRouter = createTRPCRouter({
             : { user: { select: { id: true, name: true, image: true } } }),
           reactions: {
             select: {
-              userId: true,
+              user: {
+                select: {
+                  name: true,
+                },
+              },
               reaction: true,
             },
           },
@@ -110,7 +114,11 @@ export const discussionRouter = createTRPCRouter({
             : { user: { select: { id: true, name: true, image: true } } }),
           reactions: {
             select: {
-              userId: true,
+              user: {
+                select: {
+                  name: true,
+                },
+              },
               reaction: true,
             },
           },
@@ -154,7 +162,11 @@ export const discussionRouter = createTRPCRouter({
               },
               reactions: {
                 select: {
-                  userId: true,
+                  user: {
+                    select: {
+                      name: true,
+                    },
+                  },
                   reaction: true,
                 },
               },
@@ -165,7 +177,11 @@ export const discussionRouter = createTRPCRouter({
           },
           reactions: {
             select: {
-              userId: true,
+              user: {
+                select: {
+                  name: true,
+                },
+              },
               reaction: true,
             },
           },
@@ -233,7 +249,11 @@ export const discussionRouter = createTRPCRouter({
                 thumbsDown: true,
                 reactions: {
                   select: {
-                    userId: true,
+                    user: {
+                      select: {
+                        name: true,
+                      },
+                    },
                     reaction: true,
                   },
                 },
@@ -270,7 +290,11 @@ export const discussionRouter = createTRPCRouter({
             thumbsDown: true,
             reactions: {
               select: {
-                userId: true,
+                user: {
+                  select: {
+                    name: true,
+                  },
+                },
                 reaction: true,
               },
             },
