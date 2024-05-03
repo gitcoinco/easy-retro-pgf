@@ -139,7 +139,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
     onSuccess: async () => void router.push("/ballot/confirmation"),
   });
 
-  if (isApprovedVoter) {
+  if (!isApprovedVoter) {
     return (
       <Button disabled className="w-full">
         Only approved voters can vote
