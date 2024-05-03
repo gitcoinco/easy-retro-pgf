@@ -77,6 +77,7 @@ export const discussionRouter = createTRPCRouter({
             select: {
               user: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -116,6 +117,7 @@ export const discussionRouter = createTRPCRouter({
             select: {
               user: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -164,6 +166,7 @@ export const discussionRouter = createTRPCRouter({
                 select: {
                   user: {
                     select: {
+                      id: true,
                       name: true,
                     },
                   },
@@ -179,6 +182,7 @@ export const discussionRouter = createTRPCRouter({
             select: {
               user: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -251,6 +255,7 @@ export const discussionRouter = createTRPCRouter({
                   select: {
                     user: {
                       select: {
+                        id: true,
                         name: true,
                       },
                     },
@@ -292,6 +297,7 @@ export const discussionRouter = createTRPCRouter({
               select: {
                 user: {
                   select: {
+                    id: true,
                     name: true,
                   },
                 },
