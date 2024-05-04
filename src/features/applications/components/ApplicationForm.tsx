@@ -236,10 +236,11 @@ export function ApplicationForm({
         >
           <FieldArray
             name="application.contributionLinks"
+            isRequired
             renderField={(field, i) => (
               <>
                 <FormControl
-                  className="md:min-w-96 flex-1"
+                  className="flex-1 md:min-w-96"
                   name={`application.contributionLinks.${i}.description`}
                   required
                 >
@@ -278,10 +279,11 @@ export function ApplicationForm({
         >
           <FieldArray
             name="application.impactMetrics"
+            isRequired
             renderField={(field, i) => (
               <>
                 <FormControl
-                  className="md:min-w-96 flex-1"
+                  className="flex-1 md:min-w-96"
                   name={`application.impactMetrics.${i}.description`}
                   required
                 >
@@ -319,7 +321,7 @@ export function ApplicationForm({
             renderField={(field, i) => (
               <>
                 <FormControl
-                  className="md:min-w-96 flex-1"
+                  className="flex-1 md:min-w-96"
                   name={`application.fundingSources.${i}.description`}
                   required
                 >
