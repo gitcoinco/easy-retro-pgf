@@ -10,10 +10,12 @@ export default function ApplicationsPage() {
 
   return (
     <Layout title="Review applications">
-      {address && isAdmin ? (
-        <ApplicationsToApprove />
-      ) : (
+      {!address ? (
         <Alert variant="info" title="Connect your wallet to continue"></Alert>
+      ) : !isAdmin ? (
+        <Alert variant="info" title="Only admin can see this page"></Alert>
+      ) : (
+        <ApplicationsToApprove />
       )}
     </Layout>
   );
