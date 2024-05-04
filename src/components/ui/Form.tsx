@@ -175,9 +175,11 @@ export const ErrorMessage = createComponent(
 export function FieldArray<S extends z.Schema>({
   name,
   renderField,
+  isRequired = false,
 }: {
   name: string;
   renderField: (field: z.infer<S>, index: number) => ReactNode;
+  isRequired?: boolean;
 }) {
   const form = useFormContext();
   const { fields, append, remove } = useFieldArray({
@@ -197,13 +199,13 @@ export function FieldArray<S extends z.Schema>({
       {fields.map((field, i) => (
         <div key={field.id} className="gap-4 md:flex">
           {renderField(field, i)}
-
           <div className="flex justify-end">
             <IconButton
               tabIndex={-1}
               type="button"
               variant="ghost"
               icon={Trash}
+              disabled={isRequired && i === 0}
               onClick={() => remove(i)}
             />
           </div>
@@ -230,9 +232,7 @@ export function FormSection({
 }: { title: string; description: string } & ComponentProps<"section">) {
   return (
     <section className="mb-8">
-      <h3 className="mb-3 text-xl font-bold text-onSurface-dark">
-        {title}
-      </h3>
+      <h3 className="mb-3 text-xl font-bold text-onSurface-dark">{title}</h3>
       <p className="mb-6 text-sm font-normal leading-loose text-onSurfaceVariant-dark">
         {description}
       </p>
