@@ -9,6 +9,7 @@ import { IconButton } from "./ui/Button";
 import { config, metadata } from "~/config";
 import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 
 const Logo = () => (
   <div>
@@ -38,9 +39,18 @@ const NavLink = ({
 );
 
 type NavLink = { href: string; children: string };
-export const Header = ({ navLinks,address }: { navLinks: NavLink[]; address:`0x${string}` | undefined }) => {
+export const Header = ({
+  navLinks,
+  address,
+}: {
+  navLinks: NavLink[];
+  address: `0x${string}` | undefined;
+}) => {
   const { asPath } = useRouter();
   const [isOpen, setOpen] = useState(false);
+  const isAdmin = useIsAdmin();
+  console.log("address", address);
+  console.log("isAdmin", isAdmin);
 
   return (
     <header className="relative z-10 bg-background-dark shadow-md dark:shadow-none">
@@ -67,23 +77,32 @@ export const Header = ({ navLinks,address }: { navLinks: NavLink[]; address:`0x$
             </NavLink>
           ))}
         </div>
-        {!address && <div className="hidden md:flex h-full items-center border-b-[3px] border-transparent p-4 font-semibold  text-onPrimary-light hover:text-primary-dark"><span data-tooltip-id="voting"
->Voting</span>    <ReactTooltip
-                  id="voting"
-                  place="bottom"
-                  className="max-h-full max-w-[20rem] bg-outline-dark"
-                  multiline={true}
-                  content={
-                    <div className="flex flex-col text-wrap">
-                      <span>Voting hasn't started yet</span>
-                    </div>
-                  }
-                /></div>}
+        {(address === undefined || !isAdmin) && (
+          <div className="hidden h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-onPrimary-light  hover:text-primary-dark md:flex">
+            <span data-tooltip-id="voting">Voting</span>{" "}
+            <ReactTooltip
+              id="voting"
+              place="bottom"
+              className="max-h-full max-w-[20rem] bg-outline-dark"
+              multiline={true}
+              content={
+                <div className="flex flex-col text-wrap">
+                  <span>Voting hasn't started yet</span>
+                </div>
+              }
+            />
+          </div>
+        )}
         <div className="flex-1 md:ml-8"></div>
         <div className=" flex gap-4 md:ml-8 xl:ml-32">
           <ConnectButton />
         </div>
-        <MobileMenu address={address} isOpen={isOpen} navLinks={navLinks} />
+        <MobileMenu
+          isAdmin={isAdmin}
+          address={address}
+          isOpen={isOpen}
+          navLinks={navLinks}
+        />
       </div>
     </header>
   );
@@ -91,10 +110,14 @@ export const Header = ({ navLinks,address }: { navLinks: NavLink[]; address:`0x$
 
 const MobileMenu = ({
   isOpen,
-  navLinks,address
+  navLinks,
+  address,
+  isAdmin,
 }: {
   isOpen?: boolean;
-  navLinks: NavLink[];address:`0x${string}` | undefined;
+  navLinks: NavLink[];
+  address: `0x${string}` | undefined;
+  isAdmin: boolean;
 }) => (
   <div
     className={clsx(
@@ -111,18 +134,22 @@ const MobileMenu = ({
         {...link}
       />
     ))}
-         {!address && <div className="flex md:hidden p-4 text-2xl  font-semibold"><span data-tooltip-id="voting"
->Voting</span>    <ReactTooltip
-                  id="voting"
-                  place="bottom"
-                  className="max-h-full max-w-[20rem] bg-outline-dark"
-                  multiline={true}
-                  content={
-                    <div className="flex flex-col text-wrap">
-                      <span>Voting hasn't started yet</span>
-                    </div>
-                  }
-                /></div>}
+    {(address === undefined || !isAdmin) && (
+      <div className="flex p-4 text-2xl font-semibold  md:hidden">
+        <span data-tooltip-id="voting">Voting</span>{" "}
+        <ReactTooltip
+          id="voting"
+          place="bottom"
+          className="max-h-full max-w-[20rem] bg-outline-dark"
+          multiline={true}
+          content={
+            <div className="flex flex-col text-wrap">
+              <span>Voting hasn't started yet</span>
+            </div>
+          }
+        />
+      </div>
+    )}
   </div>
 );
 
