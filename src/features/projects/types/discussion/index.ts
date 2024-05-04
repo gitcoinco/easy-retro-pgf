@@ -31,9 +31,13 @@ export const ReplyResSchema = z.object({
   reactions: z.array(
     z.object({
       reaction: z.enum(["thumbsUp", "thumbsDown"]),
-      userId: z.string(),
+      user: z.object({
+        id: z.string(),
+        name: z.string().nullable(),
     }),
+  }
   ),
+)
 });
 
 export const ListReqSchema = z.object({
@@ -53,9 +57,13 @@ const ListResSchema = z.object({
   reactions: z.array(
     z.object({
       reaction: z.enum(["thumbsUp", "thumbsDown"]),
-      userId: z.string(),
+      user: z.object({
+        id: z.string(),
+        name: z.string().nullable(),
     }),
+  }
   ),
+)
 });
 
 export const CreateDiscussionSchema = z.object({

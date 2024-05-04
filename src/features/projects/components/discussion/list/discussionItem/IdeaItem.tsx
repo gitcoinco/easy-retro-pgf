@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { ThumbsDown, ThumbsUp, UserRound, Loader } from "lucide-react";
 import { formatDate } from "~/utils/time";
 import { ReplySvg } from "~/components/ui/ReplySvg";
@@ -21,9 +21,8 @@ export const IdeaItem = ({
   replayed?: boolean;
   hideReplayed?: boolean;
 }) => {
-  const [reactionType, setReactionType] = useState<
-    "thumbsUp" | "thumbsDown" | undefined
-  >(data?.reactions[0]?.reaction);
+  const { data: session } = useSession();
+console.log("session",session)
   const [reaction, setReaction] = useState<{
     thumbsUp: number;
     thumbsDown: number;
@@ -31,26 +30,24 @@ export const IdeaItem = ({
   }>({
     thumbsUp: data?.thumbsUp,
     thumbsDown: data?.thumbsDown,
-    type: undefined,
+    type: data?.reactions.filter(item => item?.user?.name === session?.user.name)[0]?.reaction,
   });
 
-  console.log("data?.reactions[0]", data);
 
   const onReact = useReact({
     onSuccess: async () => console.log("2443"),
     reactionData: {
       discussionId: data.id,
-      reaction: reactionType ?? "thumbsUp",
+      reaction: reaction.type ?? "thumbsUp",
     },
   });
   useEffect(() => {
     if (onReact?.data) {
       setReaction({
-        thumbsUp: onReact?.data?.thumbsUp as number,
-        thumbsDown: onReact?.data?.thumbsDown as number,
-        type: reactionType,
+        thumbsUp: onReact?.data?.thumbsUp,
+        thumbsDown: onReact?.data?.thumbsDown,
+        type: onReact?.data?.reactions.filter(item => item?.user?.name === session?.user.name)[0]?.reaction === reaction.type ? reaction.type : undefined,
       });
-      setReactionType(undefined);
     }
   }, [onReact?.data]);
 
@@ -95,13 +92,12 @@ export const IdeaItem = ({
           {data.content}
         </p>
         <div className="flex items-center gap-10 p-2 pb-0">
-          {reactionType === "thumbsUp" && onReact.isPending ? (
+          {reaction.type === "thumbsUp" && onReact.isPending ? (
             <Loader className="animate-spin" color="#45464f" strokeWidth={1} />
           ) : (
             <button
               onClick={() => {
-                if (reactionType === "thumbsUp") setReactionType(undefined);
-                else setReactionType("thumbsUp");
+                if (session && reaction.type !== "thumbsUp") setReaction({...reaction , type:"thumbsUp"});
                 onReact.mutate();
               }}
               className="flex items-center gap-1"
@@ -114,13 +110,12 @@ export const IdeaItem = ({
               {reaction?.thumbsUp}
             </button>
           )}
-          {reactionType === "thumbsDown" && onReact.isPending ? (
+          {reaction.type === "thumbsDown" && onReact.isPending ? (
             <Loader className="animate-spin" color="#45464f" strokeWidth={1} />
           ) : (
             <button
               onClick={() => {
-                if (reactionType === "thumbsDown") setReactionType(undefined);
-                else setReactionType("thumbsDown");
+                if (session && reaction.type !== "thumbsDown") setReaction({...reaction , type:"thumbsDown"});
                 onReact.mutate();
               }}
               className="flex items-center gap-1"
