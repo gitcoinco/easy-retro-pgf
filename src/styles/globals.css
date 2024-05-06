@@ -29,6 +29,10 @@ textarea::placeholder {
   animation: spin 3s linear infinite;
 }
 
-button:hover svg.lucide-user-round{
+button:hover svg.lucide-user-round {
   stroke: rgb(105 141 255);
+}
+
+#select-options {
+  background-color: rgb(105 141 255);
 }

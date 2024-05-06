@@ -258,7 +258,7 @@ export function ApplicationForm({
                 >
                   <Select>
                     {Object.entries(contributionTypes).map(([value, label]) => (
-                      <option key={value} value={value}>
+                      <option className=" bg-outline-dark text-red-700" key={value} value={value}>
                         {label}
                       </option>
                     ))}

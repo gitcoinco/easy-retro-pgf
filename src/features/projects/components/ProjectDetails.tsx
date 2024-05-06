@@ -34,11 +34,10 @@ export default function ProjectDetails({
   } = metadata.data ?? {};
   return (
     <div className="relative">
-    
       <div className="overflow-hidden">
         <ProjectBanner size="lg" profileId={attestation?.recipient} />
       </div>
-      <div className=" mb-8 md:mb-16 flex flex-col items-baseline md:flex-row md:items-center md:gap-4">
+      <div className=" mb-8 flex flex-col items-baseline md:mb-16 md:flex-row md:items-center md:gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
@@ -48,22 +47,27 @@ export default function ProjectDetails({
         <div>
           <div className="flex">
             {/* <NameENS address={payoutAddress} /> */}
-            <a href={websiteUrl} target="_blank" className="hover:text-primary-dark break-all break-words m-2 md:m-0">
+            <a
+              href={websiteUrl}
+              target="_blank"
+              className="m-2 break-words break-all hover:text-primary-dark md:m-0"
+            >
               {websiteUrl}
             </a>
           </div>
         </div>
       </div>
-      <div className="flex flex-col-reverse md:flex-row items-start gap-5 md:gap-0 md:items-center justify-between">
-      <div className="flex flex-col items-start justify-between gap-4">
+      <div className="flex flex-col-reverse items-start justify-between gap-5 md:flex-row md:items-center md:gap-0">
+        <div className="flex flex-col items-start justify-between gap-4">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
-          {action}
           <p className="text-lg">{bio}</p>
-
         </div>
+        {action}
+
         {address &&
           address === attestation?.attester &&
-          state && state === "APPLICATION" && (
+          state &&
+          state === "APPLICATION" && (
             <Button
               as={Link}
               href={`/projects/${attestation?.id}/edit`}
@@ -86,10 +90,10 @@ export default function ProjectDetails({
         <ProjectImpact isLoading={metadata.isPending} project={metadata.data} />
         {fundingSources?.length > 0 && (
           <div className="mt-6 md:mt-10">
-              <Heading className="m-0" as="h3" size="lg">
+            <Heading className="m-0" as="h3" size="lg">
               Past grants and funding
             </Heading>
-            <div className="space-y-4 mt-3">
+            <div className="mt-3 space-y-4">
               {fundingSources?.map((source, i) => {
                 const type =
                   {
@@ -100,17 +104,18 @@ export default function ProjectDetails({
                     REVENUE: "Revenue",
                   }[source.type] ?? source.type;
                 return (
-                  <div key={i} className="flex items-center gap-10 text-sm font-normal">
-                    <div className="flex-1 truncate">
-                      {source.description}
-                    </div>
+                  <div
+                    key={i}
+                    className="flex items-center gap-10 text-sm font-normal"
+                  >
+                    <div className="flex-1 truncate">{source.description}</div>
                     <div className="flex items-center justify-between gap-6">
-                    <div className=" tracking-widest text-onSurfaceVariant-dark dark:text-outline-dark">
-                      {type}
-                    </div>
-                    <div className=" justify-end ">
-                      {suffixNumber(source.amount)} {source.currency}
-                    </div>
+                      <div className=" tracking-widest text-onSurfaceVariant-dark dark:text-outline-dark">
+                        {type}
+                      </div>
+                      <div className=" justify-end ">
+                        {suffixNumber(source.amount)} {source.currency}
+                      </div>
                     </div>
                   </div>
                 );
@@ -119,9 +124,9 @@ export default function ProjectDetails({
           </div>
         )}
 
-        <div className="md:mt-10 mt-6 flex flex-col md:flex-row items-baseline justify-between">
+        <div className="mt-6 flex flex-col items-baseline justify-between md:mt-10 md:flex-row">
           {metadata?.data?.socialMedias.length > 0 && (
-            <div className="md:w-1/3 w-full">
+            <div className="w-full md:w-1/3">
               <div className=" mb-3 text-lg font-bold text-onSurface-dark">
                 Social media links
               </div>
@@ -138,7 +143,7 @@ export default function ProjectDetails({
           {attestation?.refUID &&
             attestation?.refUID !==
               "0x0000000000000000000000000000000000000000000000000000000000000000" && (
-              <div className="mt-6 md:mt-0 w-full md:w-1/3">
+              <div className="mt-6 w-full md:mt-0 md:w-1/3">
                 <div className=" mb-3 text-lg font-bold text-onSurface-dark">
                   Previous edits on this project
                 </div>
