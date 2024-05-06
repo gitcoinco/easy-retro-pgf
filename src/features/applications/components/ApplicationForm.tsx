@@ -259,7 +259,7 @@ export function ApplicationForm({
                   <Select>
                     {Object.entries(contributionTypes).map(([value, label]) => (
                       <option
-                        className=" bg-surfaceContainerLow-dark text-onPrimary-light hover:bg-primary-dark"
+                        className=" bg-background-dark text-onPrimary-light hover:bg-primary-dark"
                         key={value}
                         value={value}
                       >
@@ -356,7 +356,7 @@ export function ApplicationForm({
                   <Select>
                     {Object.entries(fundingSourceTypes).map(
                       ([value, label]) => (
-                        <option className="bg-surfaceContainerLow-dark text-onPrimary-light hover:bg-primary-dark" key={value} value={value}>
+                        <option className="bg-background-dark text-onPrimary-light hover:bg-primary-dark" key={value} value={value}>
                           {label}
                         </option>
                       ),
@@ -383,7 +383,7 @@ export function ApplicationForm({
                 >
                   <Select className="w-full">
                     {Object.entries(socialMediaTypes).map(([value, label]) => (
-                      <option className="bg-surfaceContainerLow-dark text-onPrimary-light hover:bg-primary-dark" key={value} value={value}>
+                      <option className="bg-background-dark text-onPrimary-light hover:bg-primary-dark" key={value} value={value}>
                         {label}
                       </option>
                     ))}
