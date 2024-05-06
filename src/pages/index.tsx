@@ -30,7 +30,7 @@ The round will allocate FIL tokens to projects that have created an impact to th
 
 Between Apr 8th and Apr 21st, eligible nominations may submit an application. Eligible projects are listed [here](https://fil-retropgf.notion.site/Round-1-Invited-Applications-3fe95da0c9da4aeba9c6420d1efd0bd6?pvs=74).
 
-After this, badgeholders will vote on the projects between Apr 22nd and May 6th.
+After this, badgeholders will vote on the projects between Apr 22nd and May 9th.
 
 For more information, visit [FIL-RetroPGF documentation](https://fil-retropgf.notion.site/FIL-RetroPGF-4b6f5358440043c8bb1bf53f0297541e).`}
       </Markdown>
