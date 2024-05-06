@@ -41,14 +41,14 @@ export const Layout = ({ children, ...props }: Props) => {
           href: "/applications",
           children: "Applications",
         },
-        {
-          href: "/voters",
-          children: "Voters",
-        },
-        {
-          href: "/distribute",
-          children: "Distribute",
-        },
+        // {
+        //   href: "/voters",
+        //   children: "Voters",
+        // },
+        // {
+        //   href: "/distribute",
+        //   children: "Distribute",
+        // },
         {
           href: "/info",
           children: "Info",
