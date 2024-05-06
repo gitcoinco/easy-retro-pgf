@@ -49,8 +49,6 @@ export const Header = ({
   const { asPath } = useRouter();
   const [isOpen, setOpen] = useState(false);
   const isAdmin = useIsAdmin();
-  console.log("address", address);
-  console.log("isAdmin", isAdmin);
 
   return (
     <header className="relative z-10 bg-background-dark shadow-md dark:shadow-none">
