@@ -49,7 +49,10 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-const defaultCalculation = { style: "custom", threshold: 1 };
+const defaultCalculation = {
+  calculation: "average",
+  threshold: 1,
+};
 async function calculateBallotResults(db: PrismaClient) {
   const settings = await getSettings(db);
   const calculation = settings?.config?.calculation ?? defaultCalculation;
@@ -64,6 +67,7 @@ async function calculateBallotResults(db: PrismaClient) {
     calculation,
   );
 
+  console.log(projects);
   const averageVotes = 0;
   const totalVotes = Math.floor(
     Object.values(projects).reduce((sum, x) => sum + x.votes, 0),

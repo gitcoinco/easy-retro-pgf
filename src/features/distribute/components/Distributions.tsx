@@ -17,6 +17,7 @@ import { usePoolAmount } from "../hooks/useAlloPool";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
 import { calculatePayout } from "../utils/calculatePayout";
+import { formatNumber } from "~/utils/formatNumber";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -96,7 +97,7 @@ export function Distributions() {
             </Button>
           </div>
         </div>
-        <div>Total votes: {votes.data?.totalVotes}</div>
+        <div>Total votes: {formatNumber(votes.data?.totalVotes)}</div>
 
         <div className="min-h-[360px] overflow-auto">
           <DistributionForm
