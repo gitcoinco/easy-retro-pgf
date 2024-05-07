@@ -21,10 +21,10 @@ export const Layout = ({ children, ...props }: Props) => {
       href: "/projects",
       children: "Projects",
     },
-    {
-      href: "/lists",
-      children: "Lists",
-    },
+    // {
+    //   href: "/lists",
+    //   children: "Lists",
+    // },
   ];
 
   if (getAppState() === "RESULTS") {
@@ -41,14 +41,14 @@ export const Layout = ({ children, ...props }: Props) => {
           href: "/applications",
           children: "Applications",
         },
-        {
-          href: "/voters",
-          children: "Voters",
-        },
-        {
-          href: "/distribute",
-          children: "Distribute",
-        },
+        // {
+        //   href: "/voters",
+        //   children: "Voters",
+        // },
+        // {
+        //   href: "/distribute",
+        //   children: "Distribute",
+        // },
         {
           href: "/info",
           children: "Info",
@@ -58,7 +58,7 @@ export const Layout = ({ children, ...props }: Props) => {
   }
 
   return (
-    <BaseLayout {...props} header={<Header navLinks={navLinks} />}>
+    <BaseLayout {...props} header={<Header address={address} navLinks={navLinks} />}>
       {children}
     </BaseLayout>
   );
@@ -69,7 +69,7 @@ export function LayoutWithBallot(props: Props) {
   const { data: session } = useSession();
   return (
     <Layout
-      sidebar="left"
+      sidebar={props.sidebar}
       sidebarComponent={address && session && <BallotOverview />}
       {...props}
     />

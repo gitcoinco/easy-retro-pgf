@@ -37,6 +37,7 @@
     "@trpc/next": "next",
     "@trpc/react-query": "next",
     "@trpc/server": "next",
+    "@types/lodash": "^4.17.0",
     "@vercel/blob": "^0.19.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.0",
@@ -57,6 +58,7 @@
     "react-hook-form": "^7.49.3",
     "react-markdown": "^9.0.1",
     "react-number-format": "^5.3.1",
+    "react-tooltip": "^5.26.3",
     "react-use": "^17.5.0",
     "siwe": "^2.1.4",
     "sonner": "^1.4.0",
@@ -65,7 +67,8 @@
     "tailwind-variants": "^0.1.20",
     "viem": "2.x",
     "wagmi": "2",
-    "zod": "3.22.4"
+    "zod": "3.22.4",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.0",
@@ -78,6 +81,7 @@
     "@types/papaparse": "^5.3.14",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "@types/lodash": "^4.17.0",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "@vitejs/plugin-react": "^4.2.1",

@@ -52,7 +52,7 @@ export function ImageUpload({
 
             <div
               className={clsx(
-                "h-full rounded-xl bg-gray-200 bg-cover bg-center bg-no-repeat dark:bg-gray-800",
+                "flex h-full items-center justify-center border bg-gray-200 bg-cover bg-center bg-no-repeat text-xs font-medium text-onPrimary-light dark:border-onPrimary-light dark:bg-background-dark",
                 {
                   ["animate-pulse opacity-50"]: upload.isPending,
                 },
@@ -60,7 +60,12 @@ export function ImageUpload({
               style={{
                 backgroundImage: `url("${select.data ?? value}")`,
               }}
-            />
+            >
+              {!upload.isPending &&
+                !upload.isSuccess &&
+                !value &&
+                "Upload your file here"}
+            </div>
             <input
               {...field}
               ref={ref}

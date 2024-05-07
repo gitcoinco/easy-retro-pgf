@@ -29,7 +29,6 @@ function BallotOverview() {
 
   const { data: ballot } = useBallot();
   const isSaving = useIsMutating(getQueryKey(api.ballot.save));
-
   const sum = sumBallot(ballot?.votes);
 
   const allocations = ballot?.votes ?? [];
@@ -38,6 +37,7 @@ function BallotOverview() {
   const { data: projectCount } = useProjectCount();
 
   const appState = getAppState();
+
   if (appState === "RESULTS")
     return (
       <BallotMessage>
@@ -203,13 +203,13 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
 const BallotMessage = createComponent(
   "div",
-  tv({ base: "flex flex-col items-center gap-2 pt-8" }),
+  tv({ base: "flex flex-col items-center gap-2 pt-3" }),
 );
 
 const BallotHeader = createComponent(
   "h3",
   tv({
-    base: "text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300",
+    base: "text-sm font-semibold uppercase tracking-widest text-onSurfaceVariant-dark dark:text-gray-300",
   }),
 );
 

@@ -12,7 +12,7 @@ export const SortFilter = () => {
   useDebounce(() => setFilter({ search }), 500, [search]);
 
   return (
-    <div className="mb-2 flex flex-1 flex-col items-end gap-2 sm:flex-row">
+    <div className="mb-5 flex flex-1 flex-col items-end gap-2 sm:flex-row">
       <SearchInput
         className="w-full rounded-full"
         placeholder="Search project names..."

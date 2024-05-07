@@ -2,11 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-.no-scrollbar ::-webkit-scrollbar { 
-    display: none;
-    width: 0;
+.no-scrollbar ::-webkit-scrollbar {
+  display: none;
+  width: 0;
 }
 .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: 0;
+  -ms-overflow-style: none;
+  scrollbar-width: 0;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6c7283;
+  opacity: 1;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 3s linear infinite;
+}
+
+button:hover svg.lucide-user-round {
+  stroke: rgb(105 141 255);
 }

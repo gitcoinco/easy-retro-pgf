@@ -14,13 +14,14 @@ const button = tv({
   variants: {
     variant: {
       primary:
-        "bg-primary-600 hover:bg-primary-700 dark:bg-white dark:hover:bg-primary-500 dark:text-gray-900 text-white dark:disabled:bg-gray-500",
-      ghost: "hover:bg-gray-100 dark:hover:bg-gray-800",
+        "bg-primary-600 hover:bg-primary-dark dark:bg-onPrimary-light dark:hover:bg-primary-dark dark:hover:shadow dark:text-scrim-dark text-white dark:disabled:bg-outline-dark",
+      ghost: "hover:bg-gray-100 dark:hover:bg-surfaceContainerLow-dark",
       default:
-        "bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700",
+        "bg-gray-100 dark:bg-surfaceContainerLow-dark hover:bg-gray-200 dark:hover:bg-onSurfaceVariant-dark",
       inverted: "bg-white text-black hover:bg-white/90",
       link: "bg-none hover:underline",
-      outline: "border-2 hover:bg-white/5",
+      outline:
+        "border text-onPrimary-light hover:border-primary-dark hover:text-primary-dark border-onPrimary-light dark:disabled:text-outline-dark dark-disabled:border dark-disabled:border-solid dark:disabled:border-outline-dark",
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",
@@ -28,7 +29,7 @@ const button = tv({
       icon: "h-12 w-12",
     },
     disabled: {
-      true: "dark:text-gray-400 pointer-events-none pointer-default opacity-50 border-none",
+      true: "dark:text-onSurfaceVariant-dark pointer-events-none pointer-default opacity-50",
     },
   },
   defaultVariants: {
@@ -53,7 +54,7 @@ export const IconButton = forwardRef(function IconButton(
     <Button ref={ref} {...props} size={children ? size : "icon"}>
       {icon
         ? createElement(icon, {
-            className: `w-4 h-4 ${children ? "mr-2" : ""}`,
+            className: `w-4 h-4 bo ${children ? "mr-2" : ""}`,
           })
         : null}
       {children}

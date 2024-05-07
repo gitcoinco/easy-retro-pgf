@@ -2,11 +2,13 @@ import { GithubIcon } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="flex flex-col items-center justify-center bg-gray-950 p-2 text-gray-400">
+    <footer className="flex flex-col items-center justify-center bg-background-dark p-2 text-onPrimary-light">
       <a
-        href={"https://github.com/gitcoinco/easy-retro-pgf/"}
+        href={
+          "https://github.com/Microflow-xyz/retroactive-pokt-goods-funding/tree/main"
+        }
         target="_blank"
-        className="group py-4 text-sm hover:text-white"
+        className="group py-4 text-sm hover:text-onPrimary-light"
       >
         <div className="flex">
           Built with{" "}
@@ -14,11 +16,7 @@ export function Footer() {
             <span className="absolute">❤️</span>
             <span className="absolute group-hover:animate-ping">❤️</span>
           </span>
-          on EasyRetroPGF.
-        </div>
-        <div className="inline-flex">
-          Run your own RPGF Round
-          <GithubIcon className="ml-1 mt-0.5 h-4 w-4" />
+          &nbsp;using EasyRetroPGF by Microflow.
         </div>
       </a>
     </footer>

@@ -1,24 +1,29 @@
 import "~/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { Inter } from "next/font/google";
 
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
 import { Providers } from "~/providers";
 import { api } from "~/utils/api";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+import { Kumbh_Sans } from "next/font/google";
+
+export const kumbhSans = Kumbh_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-kumbhSans",
+});
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
   return (
     <Providers session={pageProps.session}>
       <style jsx global>{`
         :root {
-          --font-inter: ${inter.style.fontFamily};
+          --font-inter: ${kumbhSans.style.fontFamily};
         }
       `}</style>
-      <main className={`${inter.variable}  min-h-screen font-sans`}>
+      <main className={`${kumbhSans.variable}  min-h-screen font-sans`}>
         <Component {...pageProps} />
       </main>
     </Providers>

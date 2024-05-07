@@ -40,13 +40,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String               @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?              @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    discussions   Discussion[]
+    reactions     DiscussionReaction[]
 }
 
 model VerificationToken {
@@ -74,4 +76,42 @@ model Settings {
     id     String @id @default(cuid())
     poolId Int?
     config Json
+}
+
+enum DiscussionType {
+    concern
+    question
+    strength
+}
+
+enum Reaction {
+    thumbsUp
+    thumbsDown
+}
+
+model Discussion {
+    id          String               @id @default(uuid()) @db.Uuid
+    content     String               @db.VarChar(1024)
+    isAnonymous Boolean
+    type        DiscussionType?
+    thumbsUp    Int                  @default(0) @db.Integer
+    thumbsDown  Int                  @default(0) @db.Integer
+    projectId   String               @db.VarChar(128)
+    userId      String               @db.VarChar(256)
+    parentId    String?              @db.Uuid
+    createdAt   DateTime             @default(now()) @db.Timestamptz()
+    user        User                 @relation(fields: [userId], references: [id])
+    parent      Discussion?          @relation("DiscussionReplies", fields: [parentId], references: [id])
+    replies     Discussion[]         @relation("DiscussionReplies")
+    reactions   DiscussionReaction[]
+}
+
+model DiscussionReaction {
+    userId       String     @db.VarChar(256)
+    discussionId String     @db.Uuid
+    reaction     Reaction
+    user         User       @relation(fields: [userId], references: [id])
+    discussion   Discussion @relation(fields: [discussionId], references: [id])
+
+    @@id([userId, discussionId])
 }

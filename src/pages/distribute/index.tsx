@@ -1,4 +1,5 @@
 import { useFormContext } from "react-hook-form";
+import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
@@ -16,16 +17,17 @@ import { api } from "~/utils/api";
 
 export default function DistributePage() {
   const utils = api.useUtils();
+  const { address } = useAccount();
+
   const setConfig = api.config.set.useMutation({
     onSuccess: () => utils.results.votes.invalidate(),
   });
   const settings = api.config.get.useQuery();
 
   const calculation = settings.data?.config?.calculation;
-
   return (
     <Layout
-      sidebar="left"
+      sidebar={address ? "left" : undefined}
       sidebarComponent={
         <div className="space-y-4">
           <ConfigurePool />
@@ -66,18 +68,24 @@ export default function DistributePage() {
         </div>
       }
     >
-      {new Date() < config.reviewEndsAt ? (
-        <div>Voting hasn't started yet</div>
-      ) : (
-        <div>
-          {setConfig.isPending ? (
-            <div className="flex justify-center py-8">
-              <Spinner className="size-6" />
-            </div>
+      {address ? (
+        <>
+          {new Date() < config.reviewEndsAt ? (
+            <div>Voting hasn't started yet</div>
           ) : (
-            <Distributions />
+            <div>
+              {setConfig.isPending ? (
+                <div className="flex justify-center py-8">
+                  <Spinner className="size-6" />
+                </div>
+              ) : (
+                <Distributions />
+              )}
+            </div>
           )}
-        </div>
+        </>
+      ) : (
+        <Alert variant="info" title="Connect your wallet to continue"></Alert>
       )}
     </Layout>
   );
@@ -110,7 +118,7 @@ function VoterCount() {
       </h3>
       <div className="pt-1 text-center text-2xl">
         <Skeleton
-          className="h-8 w-20 dark:bg-gray-700"
+          className="h-8 w-20 dark:bg-onSurfaceVariant-dark"
           isLoading={voters.isPending || votes.isPending}
         >
           {votes.data?.totalVoters} / {voters.data?.length}

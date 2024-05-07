@@ -11,6 +11,7 @@ export function useCreateAttestation() {
     mutationFn: async (data: {
       values: Record<string, unknown>;
       schemaUID: string;
+      refUID?: string;
     }) => {
       if (!signer) throw new Error("Connect wallet first");
       return createAttestation(data, signer);

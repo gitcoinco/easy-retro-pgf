@@ -5,7 +5,7 @@ import { BackgroundImage } from "./BackgroundImage";
 export const Avatar = createComponent(
   BackgroundImage,
   tv({
-    base: "bg-gray-200 dark:bg-gray-800",
+    base: "bg-gray-200 dark:bg-surfaceContainerLow-dark",
     variants: {
       size: {
         xs: "w-5 h-5 rounded-xs",

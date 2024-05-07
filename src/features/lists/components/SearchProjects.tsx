@@ -55,7 +55,7 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
         {projectsData.length ? (
           <Command.List
             className={clsx(
-              "absolute left-0 z-10 mt-1 max-h-[300px] w-full overflow-y-scroll rounded-xl bg-gray-100 p-2 dark:bg-gray-900 md:h-auto",
+              "absolute left-0 z-10 mt-1 max-h-[300px] w-full overflow-y-scroll rounded-xl bg-gray-100 p-2 dark:bg-surfaceContainerLow-dark md:h-auto",
               { ["hidden"]: !isOpen },
               0,
             )}
@@ -67,7 +67,7 @@ export const SearchProjects = ({ addedProjects, onSelect }: Props) => {
                 <Command.Item
                   key={item.id}
                   value={item.id}
-                  className="mt-2 flex cursor-pointer items-center gap-2 rounded-lg p-2 normal-case text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:data-[selected]:bg-gray-700"
+                  className="mt-2 flex cursor-pointer items-center gap-2 rounded-lg p-2 normal-case text-gray-900 hover:bg-gray-100 dark:text-onSurfaceVariant-dark dark:data-[selected]:bg-onSurfaceVariant-dark"
                   onSelect={(id: string) => {
                     setSearch("");
                     setOpen(false);

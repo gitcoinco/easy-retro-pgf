@@ -7,12 +7,14 @@ import { normalize } from "viem/ens";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { createBreakpoint } from "react-use";
 import { ListChecks } from "lucide-react";
+import { UserRound } from "lucide-react";
 
 import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
+import { getAppState } from "~/utils/state";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -91,23 +93,34 @@ const ConnectedDetails = ({
   openAccountModal: () => void;
   isMobile: boolean;
 }) => {
+  const state = getAppState();
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
-
   const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (
     <div>
       <div className="flex gap-2 text-white">
-        {!showBallot ? null : ballot?.publishedAt ? (
-          <Chip>Already submitted</Chip>
+        {state === "VOTING" ? (
+          <>
+            {!showBallot ? null : ballot?.publishedAt ? (
+              <Chip>Already submitted</Chip>
+            ) : (
+              <Chip className="gap-2" as={Link} href={"/ballot"}>
+                {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-surfaceContainerLow-dark text-xs">
+                  {ballotSize}
+                </div>
+              </Chip>
+            )}
+          </>
         ) : (
-          <Chip className="gap-2" as={Link} href={"/ballot"}>
-            {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs">
-              {ballotSize}
-            </div>
-          </Chip>
+          state === "APPLICATION" && (
+            <Chip className="gap-2" as={Link} href={"/applications/new"}>
+              Create application
+            </Chip>
+          )
         )}
+
         <UserInfo
           onClick={openAccountModal}
           address={getAddress(account.address)}
@@ -130,12 +143,18 @@ const UserInfo = ({
   const avatar = useEnsAvatar({ name, chainId: 1 });
 
   return (
-    <Chip className="gap-2" {...props}>
-      <div className="h-6 w-6 overflow-hidden rounded-full">
+    <Chip className=" min-h-10 min-w-10 gap-2" {...props}>
+      <div className="h-4 w-4 overflow-hidden rounded-full md:h-6 md:w-6">
         {avatar.data ? (
-          <Image width={24} height={24} alt={name} src={avatar.data} />
+          <img width={24} height={24} alt={name} src={avatar.data} />
         ) : (
-          <div className="h-full bg-gray-200" />
+          <div className="flex h-full items-center justify-center rounded-full ">
+            <UserRound
+              className="hover:stroke-primary-dark"
+              color="#FFFFFF"
+              strokeWidth={1.5}
+            />
+          </div>
         )}
       </div>
       {children}

@@ -29,11 +29,20 @@ export const fundingSourceTypes = {
   OTHER: "Other",
 } as const;
 
+export const socialMediaTypes = {
+  Github: "Github",
+  Twitter: "Twitter",
+  Discord: "Discord",
+  Telegram: "Telegram",
+} as const;
+
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
   websiteUrl: z.string().url().min(1),
-  payoutAddress: EthAddressSchema,
+  wPOKTReceivingAddress: EthAddressSchema,
+  arbReceivingAddress: EthAddressSchema,
+  opReceivingAddress: EthAddressSchema,
   contributionDescription: z.string().min(3),
   impactDescription: z.string().min(3),
   impactCategory: z.array(z.string()).min(1),
@@ -46,6 +55,7 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
+
   impactMetrics: z
     .array(
       z.object({
@@ -55,16 +65,20 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
-  fundingSources: z
-    .array(
-      z.object({
-        description: z.string().min(3),
-        amount: z.number(),
-        currency: z.string().min(3).max(4),
-        type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
-      }),
-    )
-    .default([]),
+  fundingSources: z.array(
+    z.object({
+      description: z.string().min(3),
+      amount: z.number(),
+      currency: z.string().min(3).max(4),
+      type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
+    }),
+  ),
+  socialMedias: z.array(
+    z.object({
+      url: z.string().min(1),
+      type: z.nativeEnum(reverseKeys(socialMediaTypes)),
+    }),
+  ),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;

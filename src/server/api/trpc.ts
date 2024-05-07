@@ -115,7 +115,10 @@ export const publicProcedure = t.procedure;
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session?.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Please connect your wallet",
+    });
   }
   return next({
     ctx: {
@@ -125,14 +128,47 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const isAdmin = (walletAddr: string | null | undefined) => {
+  if (!config.admins.includes(walletAddr as `0x${string}`)) {
+    return false;
+  }
+
+  return true;
+};
+
 const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
   const address = ctx.session?.user.name;
-  if (!config.admins.includes(address as `0x${string}`)) {
+  if (!isAdmin(address)) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Must be admin to access this route",
     });
   }
+  return next({ ctx });
+});
+
+const enforceSubmissionPeriodCheck = t.middleware(({ ctx, next }) => {
+  const address = ctx.session?.user.name;
+  const endOfSubmissionPeriod = config.registrationEndsAt;
+  const now = new Date();
+
+  // after submission period
+  if (now >= endOfSubmissionPeriod) {
+    if (!address) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Please connect your wallet",
+      });
+    }
+
+    if (!isAdmin(address)) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Must be admin to access this route",
+      });
+    }
+  }
+
   return next({ ctx });
 });
 
@@ -146,3 +182,9 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 export const adminProcedure = protectedProcedure.use(enforceUserIsAdmin);
+export const protectedDiscussionProcedure = protectedProcedure.use(
+  enforceSubmissionPeriodCheck,
+);
+export const unprotectedDiscussionProcedure = t.procedure.use(
+  enforceSubmissionPeriodCheck,
+);

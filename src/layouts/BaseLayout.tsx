@@ -55,7 +55,7 @@ export const BaseLayout = ({
       <Head>
         <title>{title}</title>
         <meta name="description" content={metadata.description} />
-        <link rel="icon" href="favicon.svg" />
+        <link rel="icon" href={`${metadata.url}/favicon.svg`} />
         <meta property="og:url" content={metadata.url} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
@@ -74,15 +74,15 @@ export const BaseLayout = ({
       </Head>
       <div
         className={clsx(
-          " flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
+          "flex h-full min-h-screen flex-1 flex-col dark:bg-background-dark dark:text-white",
           theme,
         )}
       >
         {header}
-        <div className="mx-auto w-full flex-1 pt-2 2xl:container md:flex">
+        <div className="mx-auto w-full flex-1 pt-8 2xl:container md:flex">
           {sidebar === "left" ? wrappedSidebar : null}
           <div
-            className={clsx("w-full min-w-0 px-2 pb-24", {
+            className={clsx("w-full min-w-0 px-2 pb-20", {
               ["mx-auto max-w-5xl"]: !sidebar,
             })}
           >
