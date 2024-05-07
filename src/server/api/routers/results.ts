@@ -45,11 +45,16 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
+const defaultCalculation = {
+  calculation: "average",
+  threshold: 1,
+};
 async function calculateBallotResults(roundId: string, db: PrismaClient) {
   const round = await db.round.findFirstOrThrow({ where: { id: roundId } });
+  // const calculation = settings?.config?.calculation ?? defaultCalculation;
 
   const calculation = {
-    style: round.calculationType as "standard" | "op",
+    calculation: round.calculationType as "average" | "median" | "sum",
     threshold: (round.calculationConfig as { threshold: number })?.threshold,
   };
   // Fetch the ballots
@@ -62,6 +67,7 @@ async function calculateBallotResults(roundId: string, db: PrismaClient) {
     calculation,
   );
 
+  console.log(projects);
   const averageVotes = 0;
   const totalVotes = Math.floor(
     Object.values(projects).reduce((sum, x) => sum + x.votes, 0),

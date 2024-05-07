@@ -27,6 +27,8 @@ import {
 import { Spinner } from "~/components/ui/Spinner";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
+import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
+import { useAccount } from "wagmi";
 
 function BallotOverview() {
   const router = useRouter();
@@ -155,11 +157,21 @@ function BallotOverview() {
 const SubmitBallotButton = ({ disabled = false }) => {
   const isSaving = useIsMutating({ mutationKey: getQueryKey(api.ballot.save) });
   const router = useRouter();
+  const { address } = useAccount();
+  const { data: isApprovedVoter } = useApprovedVoter(address!);
   const [isOpen, setOpen] = useState(false);
   const domain = useCurrentDomain();
   const submit = useSubmitBallot({
     onSuccess: async () => void router.push(`/${domain}/ballot/confirmation`),
   });
+
+  if (!isApprovedVoter) {
+    return (
+      <Button disabled className="w-full">
+        Only approved voters can vote
+      </Button>
+    );
+  }
 
   const messages = {
     signing: {

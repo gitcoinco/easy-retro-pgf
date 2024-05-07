@@ -38,10 +38,7 @@ export const NumberInput = forwardRef(function NumberInput(
         value={field.value}
         disabled={props.disabled}
         defaultValue={props.defaultValue}
-        onChange={(v) =>
-          // Parse decimal string to number to adhere to AllocationSchema
-          setValue(name!, parseFloat(v.target.value.replace(/,/g, "")))
-        }
+        onValueChange={({ floatValue }) => setValue(name, floatValue)}
         onBlur={onBlur}
         thousandSeparator=","
         {...props}

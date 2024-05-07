@@ -23,13 +23,14 @@ export const RoundVotesSchema = RoundVotes.refine(
 );
 
 export const calculationTypes = {
-  standard: "Standard",
-  op: "OP-style",
+  average: "Mean (average)",
+  median: "Median",
+  sum: "Sum",
 } as const;
 
 export const CalculationTypeSchema = z
   .enum(Object.keys(calculationTypes) as [string, ...string[]])
-  .default("standard");
+  .default("average");
 
 export const RoundDates = z.object({
   startsAt: z.date().nullable(),
