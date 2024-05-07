@@ -13,7 +13,7 @@ Follow these instructions to deploy your own instance of MACI-RPGF.
 
 The `.env.example` file contains instructions for most of these steps.
 
-At the very minimum you need to configure a postgres database, nextauth, admin address, MACI address and the voting periods under App Configuration.
+At the very minimum you need to configure a postgres database, nextauth, admin address, MACI address, the EAS Schema and the voting periods under App Configuration.
 
 #### Database
 
@@ -58,13 +58,11 @@ To create your own round you need to do a few things:
 
 If you are running on a different network than Optimism you need to update the contract addresses for EAS. These addresses are used whenever an attestation is created.
 
-You can also configure your own schemas here if you wish to, or deploy the EAS contracts in a network that doesn't have it.
+You can also configure your own schemas here if you wish to, or deploy the EAS contracts to a network that doesn't have it.
 
 ## 3. Deploy MACI
 
-TODO: improve this,  test maci-cli setup
-
-As a coordinator you need to deploy MACI instance and poll.
+As a coordinator you need to deploy a MACI instance and poll.
 
 ### Install Maci
 
@@ -87,11 +85,12 @@ pnpm download:ceremony-zkeys
 
 ### Set .env Files
 
-Head to the `cli` folder and copy the `.env.template` file. Make sure to include a private key and RPC url.
+Head to the `contracts` folder and copy the `.env.example` file. Make sure to include a mnemonic and RPC url.
 
 ```
-ETH_SK="your_ethereum_secret_key"
+MNEMONIC="your_ethereum_secret_key"
 ETH_PROVIDER="the_eth_provider_url"
+ETHERSCAN_API_KEY="etherscan api key"
 ```
 
 ### Generate MACI Keys
@@ -102,38 +101,38 @@ Generate a new key pair and save it in a secure place.
 node build/ts/index.js genMaciKeyPair
 ```
 
-### Deploy MACI Contracts
+### Set the configuration file
 
-The following scripts deploy a MACI instance and set the keys, make sure to save the address of the MACI contract.
+Head to the contracts folder.
+
+```bash
+cd contracts && cp
+```
+
+Copy the config example and update the fields as necessary:
+
+```bash
+cp deploy-config-example.json deploy-config.json
+```
 
 > [!IMPORTANT]
-> Make sure that you use the NonQv keys
+> Make sure that you use the production zkeys, set `useQuadraticVoting` to false, and set the pollDuration with the correct time on seconds.
 
-```sh
-node build/ts/index.js deployVkRegistry
-node build/ts/index.js setVerifyingKeys \
-    --state-tree-depth 10 \
-    --int-state-tree-depth 1 \
-    --msg-tree-depth 2 \
-    --vote-option-tree-depth 2 \
-    --msg-batch-depth 1 \
-    --process-messages-zkey-non-qv ./zkeys/ProcessMessagesNonQv_10-2-1-2/ProcessMessagesNonQv_10-2-1-2.0.zkey \
-    --tally-votes-zkey-non-qv ./zkeys/TallyVotesNonQv_10-1-2/TallyVotesNonQv_10-1-2.0.zkey \
-    --use-quadratic-voting false
-node build/ts/index.js create --stateTreeDepth 10
+### Deploy MACI Contracts
+
+Run `pnpm deploy` to deploy the contracts (you can specify the network by appending `:network` to the command, e.g. pnpm deploy:sepolia - please refer to the available networks on the package.json scripts section)
+
+```bash
+pnpm deploy:NETWORK
 ```
 
-Now you can create a Poll and start the round using the following script, make sure to add the correct maci public key and set the correct duration in seconds.
+Run pnpm deploy-poll to deploy your first Poll (you can specify the network by appending :network to the command, e.g. pnpm deploy-poll:sepolia - please refer to the available networks on the package.json scripts section).
 
 ```sh
-node build/ts/index.js deployPoll \
-    --pubkey coordinator-maci-public-key \
-    --duration 300 \
-    --int-state-tree-depth 1 \
-    --msg-tree-depth 2 \
-    --msg-batch-depth 1 \
-    --vote-option-tree-depth 2
+pnpm deploy-poll:NETWORK
 ```
+
+
 
 See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
 

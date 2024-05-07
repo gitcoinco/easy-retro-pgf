@@ -28,7 +28,7 @@ MACI-RPGF uses EAS as backbone to run Retroactive Public Goods Funding to reward
 
 ## Supported Networks
 
-All networks EAS is deployed to are supported. If the network is not supported, you can follow EAS documentation to deploy the contracts in the network.
+All networks EAS is deployed to are supported. If the network is not supported, you can follow the EAS documentation to deploy the contracts to the network.
 
 - https://docs.attest.sh/docs/quick--start/contracts
 
@@ -53,7 +53,7 @@ All networks EAS is deployed to are supported. If the network is not supported, 
 
 ## Development
 
-To run locally make follow these instructions:
+To run locally follow these instructions:
 
 ```sh
 git clone https://github.com/privacy-scaling-explorations/maci-rpgf
