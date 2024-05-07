@@ -50,7 +50,6 @@ export function calculateVotes(
     const voteIsCounted =
       payoutOpts.threshold && voterIds.size >= payoutOpts.threshold;
 
-    console.log(payoutOpts.calculation);
     if (voteIsCounted) {
       projects[projectId] = {
         voters: voterIds.size,
