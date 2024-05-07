@@ -1,4 +1,3 @@
-import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
 import {
   attestationProcedure,
@@ -45,10 +44,6 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-const defaultCalculation = {
-  calculation: "average",
-  threshold: 1,
-};
 async function calculateBallotResults(roundId: string, db: PrismaClient) {
   const round = await db.round.findFirstOrThrow({ where: { id: roundId } });
   // const calculation = settings?.config?.calculation ?? defaultCalculation;
@@ -67,10 +62,9 @@ async function calculateBallotResults(roundId: string, db: PrismaClient) {
     calculation,
   );
 
-  console.log(projects);
   const averageVotes = 0;
   const totalVotes = Math.floor(
-    Object.values(projects).reduce((sum, x) => sum + x.votes, 0),
+    Object.values(projects).reduce((sum, x) => sum + (x.votes ?? 0), 0),
   );
   const totalVoters = ballots.length;
 

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Form, FormControl, Input, Select } from "~/components/ui/Form";
@@ -70,17 +69,14 @@ export function CalculationForm({
   );
 }
 function MinimumQuorum() {
-  const { watch } = useFormContext<z.infer<typeof CalculationSchema>>();
-  const calculationType = watch("calculationType");
-
   return (
     <FormControl
       name="threshold"
       label="Minimum Quorum"
-      hint="Only for OP-style payouts"
+      hint="Required voters for vote validity"
       valueAsNumber
     >
-      <Input type="number" disabled={calculationType !== "op"} />
+      <Input type="number" />
     </FormControl>
   );
 }
