@@ -44,10 +44,11 @@ export default function DistributePage() {
                 }}
               >
                 <div className="gap-2">
-                  <FormControl name="style" label="Payout style">
+                  <FormControl name="calculation" label="Calculation">
                     <Select disabled={settings.isPending} className={"w-full"}>
-                      <option value="custom">Custom</option>
-                      <option value="op">OP-Style</option>
+                      <option value="average">Mean (average)</option>
+                      <option value="median">Median</option>
+                      <option value="sum">Sum</option>
                     </Select>
                   </FormControl>
                   <MinimumQuorum />
@@ -84,17 +85,14 @@ export default function DistributePage() {
 }
 
 function MinimumQuorum() {
-  const { watch } = useFormContext<Calculation>();
-  const style = watch("style");
-
   return (
     <FormControl
       name="threshold"
       label="Minimum Quorum"
-      hint="Only for OP-style payouts"
+      hint="Required voters for vote validity"
       valueAsNumber
     >
-      <Input type="number" disabled={style !== "op"} />
+      <Input type="number" />
     </FormControl>
   );
 }

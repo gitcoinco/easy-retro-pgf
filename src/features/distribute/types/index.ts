@@ -20,7 +20,7 @@ export const DistributionSchema = z.object({
 });
 
 export const CalculationSchema = z.object({
-  style: z.enum(["custom", "op"]),
+  calculation: z.enum(["average", "median", "sum"]),
   threshold: z.number().optional(),
 });
 export const SettingsSchema = z.object({
