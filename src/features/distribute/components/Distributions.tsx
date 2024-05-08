@@ -51,9 +51,11 @@ export function Distributions() {
           ...p,
           amount:
             totalTokens > 0n
-              ? formatUnits(
-                  calculatePayout(p.amount, totalVotes, totalTokens),
-                  18,
+              ? parseFloat(
+                  formatUnits(
+                    calculatePayout(p.amount, totalVotes, totalTokens),
+                    18,
+                  ),
                 )
               : p.amount,
         })),
