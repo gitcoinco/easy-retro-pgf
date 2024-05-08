@@ -2,6 +2,7 @@ import { type PropsWithChildren, type ReactNode, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useAccount } from "wagmi";
 
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
@@ -14,6 +15,7 @@ import {
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
+import { Spinner } from "~/components/ui/Spinner";
 import {
   useProjectCount,
   useProjectIdMapping,
@@ -33,10 +35,17 @@ function BallotOverview() {
 
   const allocations = ballot?.votes ?? [];
   const canSubmit = router.route === "/ballot" && allocations.length;
+  const viewBallot = router.route !== "/ballot" && allocations.length;
 
   const { data: projectCount } = useProjectCount();
 
   const appState = getAppState();
+
+  const { address } = useAccount();
+
+  if (appState === "LOADING") {
+    return <Spinner className="w-6 h-6" />
+  }
 
   if (appState === "RESULTS")
     return (
@@ -55,7 +64,7 @@ function BallotOverview() {
         <BallotSection title="Results are being tallied"></BallotSection>
       </div>
     );
-
+  
   if (appState !== "VOTING")
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
@@ -72,22 +81,22 @@ function BallotOverview() {
 
   return (
     <div className="space-y-6">
-      <BallotHeader>Your ballot</BallotHeader>
+      <BallotHeader>Voting Round: {config.roundId}</BallotHeader>
       <BallotSection title="Voting ends in:">
         <VotingEndsIn />
       </BallotSection>
-      {isRegistered && (
-        <BallotSection title="Projects added:">
-          <div>
-            <span className="text-gray-900 dark:text-gray-300">
-              {allocations.length}
-            </span>
-            /{projectCount?.count}
-          </div>
-        </BallotSection>
-      )}
-      {isRegistered && (
-        <BallotSection
+      {address && isRegistered && (
+        <>
+          <BallotHeader>Your ballot</BallotHeader>
+          <BallotSection title="Projects added:">
+            <div>
+              <span className="text-gray-900 dark:text-gray-300">
+                {allocations.length}
+              </span>
+              /{projectCount?.count}
+            </div>
+          </BallotSection>
+          <BallotSection
           title={
             <div className="flex justify-between">
               {config.tokenName} allocated:
@@ -109,13 +118,18 @@ function BallotOverview() {
             </div>
           </div>
         </BallotSection>
+        </>
       )}
       {!isRegistered || !isEligibleToVote ? null : ballot?.publishedAt ? (
-        <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
+        <Button className="w-full" variant="primary" as={Link} href={`/ballot/confirmation`}>
           View submitted ballot
         </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > initialVoiceCredits} />
+      ) : viewBallot ? (
+        <Button className="w-full" variant="primary" as={Link} href={`/ballot`}>
+          View my ballot
+        </Button>
       ) : (
         <Button className={"w-full"} variant="primary" disabled>
           No projects added yet
