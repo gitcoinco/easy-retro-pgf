@@ -106,7 +106,7 @@ node build/ts/index.js genMaciKeyPair
 Head to the contracts folder.
 
 ```bash
-cd contracts && cp
+cd contracts
 ```
 
 Copy the config example and update the fields as necessary:
