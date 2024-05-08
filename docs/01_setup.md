@@ -58,7 +58,7 @@ To create your own round you need to do a few things:
 
 If you are running on a different network than Optimism you need to update the contract addresses for EAS. These addresses are used whenever an attestation is created.
 
-You can also configure your own schemas here if you wish to, or deploy the EAS contracts to a network that doesn't have it.
+You can also configure your own schemas here if you wish to, or deploy the EAS contracts to a network that doesn't have them.
 
 ## 3. Deploy MACI
 

@@ -10,7 +10,7 @@
 
 ## Documentation
 
-MACI-RPGF uses EAS as backbone to run Retroactive Public Goods Funding to reward contributors ([As used by the Optimism Collective](https://community.optimism.io/docs/governance/citizens-house/#how-retro-funding-works)) while adding a private layer to reduce bribery and collusion using MACI.
+MACI-RPGF uses EAS as backbone to run Retroactive Public Goods Funding to reward contributors ([As used by the Optimism Collective](https://community.optimism.io/docs/governance/citizens-house/#how-retro-funding-works)) while adding a privacy layer to reduce bribery and collusion using MACI.
 
 ### MACI-RPGF docs
 
@@ -28,7 +28,7 @@ MACI-RPGF uses EAS as backbone to run Retroactive Public Goods Funding to reward
 
 ## Supported Networks
 
-All networks EAS is deployed to are supported. If the network is not supported, you can follow the EAS documentation to deploy the contracts to the network.
+All networks EAS is deployed to are supported. If a network is not supported, you can follow the EAS documentation to deploy the contracts to the network.
 
 - https://docs.attest.sh/docs/quick--start/contracts
 
