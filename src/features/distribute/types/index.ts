@@ -15,7 +15,7 @@ export const EthAddressSchema = z
 
 export const DistributionSchema = z.object({
   projectId: z.string(),
-  amount: z.string(),
+  amount: z.number(),
   payoutAddress: EthAddressSchema,
 });
 
