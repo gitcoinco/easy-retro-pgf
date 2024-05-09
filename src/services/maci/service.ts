@@ -510,20 +510,6 @@ export class MaciService {
       network: await this.getNetwork(),
     });
 
-    const accQueueAddress = await maciContract.stateAq();
-    const accQueue = await this.deployment.getContract({
-      name: EContracts.AccQueueQuinaryBlankSl,
-      address: accQueueAddress,
-    });
-
-    await this.storage.register({
-      id: EContracts.AccQueueQuinaryBlankSl,
-      name: "contracts/trees/AccQueueQuinaryBlankSl.sol:AccQueueQuinaryBlankSl",
-      contract: accQueue,
-      args: [STATE_TREE_SUB_DEPTH],
-      network: await this.getNetwork(),
-    });
-
     return maciInstanceAddress;
   }
 
