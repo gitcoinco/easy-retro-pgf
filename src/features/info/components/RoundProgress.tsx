@@ -6,7 +6,7 @@ import { formatDate } from "~/utils/time";
 
 const steps = [
   {
-    label: "Registration",
+    label: "Accepting Applications",
     date: config.startsAt,
   },
   {
@@ -31,7 +31,7 @@ export function RoundProgress() {
   const { progress, currentStepIndex } = calculateProgress(steps);
 
   return (
-    <div className="relative my-4">
+    <div className="relative my-6">
       <ProgressWrapper
         className={cn({
           ["w-full"]: currentStepIndex === steps.length,
@@ -44,7 +44,7 @@ export function RoundProgress() {
           <div
             key={i}
             className={cn(
-              "z-10 flex-1  rounded-xl border-l border-yellow-400 p-4 transition-opacity",
+              "z-10 flex-1  rounded-xl border-l border-yellow-400 py-4 px-2 transition-opacity",
               {
                 ["opacity-50"]: currentStepIndex <= i,
               },
