@@ -68,7 +68,7 @@ export default function Page({ content }: { content: string | MarkDownData }) {
           <Cpage content={content} />
         </div>
       </div>
-      <Footer color="bg-background-dark" />
+      {/* <Footer color="bg-background-dark" /> */}
     </Layout>
   );
 }
@@ -76,7 +76,6 @@ export default function Page({ content }: { content: string | MarkDownData }) {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const id = context?.params?.id;
   const content = await getMarkDownData(id as string);
-  console.log("content", content);
 
   return {
     props: {

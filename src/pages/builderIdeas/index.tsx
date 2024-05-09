@@ -27,7 +27,6 @@ async function getResources(): Promise<{
 
     return { jsonData, overViewData };
   } catch (error) {
-    console.log("error in getResources", error);
     throw error;
   }
 }
@@ -41,7 +40,6 @@ async function getJsonData(): Promise<Omit<MarkDownData, "contentHtml">[]> {
     "json",
     "output.json",
   );
-  console.log("directoryPath", directoryPath);
 
   const fileContents = fs.readFile(directoryPath, "utf8");
   const jsonData: Omit<MarkDownData, "contentHtml">[] =
@@ -97,7 +95,7 @@ export default function BuilderIdeas() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </Layout>
   );
 }
