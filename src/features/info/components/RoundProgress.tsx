@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { tv } from "tailwind-variants";
 import { createComponent } from "~/components/ui";
 import { config } from "~/config";
@@ -51,7 +52,9 @@ export function RoundProgress() {
             )}
           >
             <h3 className="font-semibold">{step.label}</h3>
-            <div>{formatDate(step.date)}</div>
+            <div>
+              {format(step.date, i === 3 ? "MMM yyyy" : "dd MMM yyyy HH:mm")}
+            </div>
           </div>
         ))}
       </div>
