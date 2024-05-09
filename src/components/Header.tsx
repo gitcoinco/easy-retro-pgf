@@ -53,7 +53,7 @@ export const Header = ({
   return (
     <header className="relative z-10 bg-background-dark shadow-md dark:shadow-none">
       <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center px-2">
-        <div className="mr-4 flex items-center md:mr-16">
+        <div className="mr-4 flex items-center xl:mr-16">
           <IconButton
             icon={isOpen ? X : Menu}
             variant="ghost"
@@ -64,7 +64,7 @@ export const Header = ({
             <Logo />
           </Link>
         </div>
-        <div className="hidden h-full items-center gap-4 overflow-x-auto md:flex">
+        <div className="hidden h-full items-center gap-2 xl:gap-4 overflow-x-auto md:flex">
           {navLinks?.map((link) => (
             <NavLink
               isActive={asPath.startsWith(link.href)}

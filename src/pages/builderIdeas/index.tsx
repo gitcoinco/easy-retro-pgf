@@ -14,7 +14,7 @@ import type {
 import HeroSection from "~/builderIdeas/(navbar)/(home)/component/HeroSection";
 import Footer from "~/builderIdeas/component/footer/Footer";
 import type { Metadata } from "next";
-import Layout from "~/builderIdeas/(navbar)/layout";
+import { Layout } from "~/layouts/DefaultLayout";
 
 async function getResources(): Promise<{
   jsonData: Omit<MarkDownData, "contentHtml">[];
@@ -77,15 +77,15 @@ export default function BuilderIdeas() {
   const [data, setData] = useState({ jsonData: JsonData, overViewData: "" });
 
   return (
-    <Layout title="Builder Ideas">
+    <Layout title="Builder Ideas" isFullWidth>
       <div className="min-h-screen bg-background-dark">
-        <div className="bg-background-dark px-4 py-[2.5rem]  text-onPrimary-light md:px-[4rem] lg:px-[8rem]">
+        <div className="bg-background-dark px-4 py-[2.5rem]  text-onPrimary-light md:px-[4rem]">
           <div className="md:my-8 md:pt-14">
             <HeroSection />
           </div>
         </div>
 
-        <div className="animate-slideup bg-background-dark px-4 py-[2.5rem] text-onPrimary-light md:px-[4rem] lg:px-[8rem]">
+        <div className="animate-slideup bg-background-dark px-4 py-[2.5rem] text-onPrimary-light md:px-[4rem]">
           <div className="flex flex-col gap-1 ">
             <h6 className="font-rubik text-lg text-onPrimary-light">Explore</h6>
             <h4 className="font-rubik text-2xl font-semibold text-onPrimary-light">
