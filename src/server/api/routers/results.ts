@@ -11,6 +11,8 @@ import { eas } from "~/config";
 import { calculateVotes } from "~/utils/calculateResults";
 import { type Vote } from "~/features/ballot/types";
 import { getSettings } from "./config";
+import { getAppState } from "~/utils/state";
+import { TRPCError } from "@trpc/server";
 
 export const resultsRouter = createTRPCRouter({
   votes: protectedProcedure.query(async ({ ctx }) =>
@@ -19,6 +21,12 @@ export const resultsRouter = createTRPCRouter({
   project: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
+      if (getAppState() !== "RESULTS") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Results not available yet",
+        });
+      }
       const { projects } = await calculateBallotResults(ctx.db);
 
       return {
@@ -29,6 +37,12 @@ export const resultsRouter = createTRPCRouter({
   projects: publicProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
+      if (getAppState() !== "RESULTS") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Results not available yet",
+        });
+      }
       const { projects } = await calculateBallotResults(ctx.db);
 
       const sortedIDs = Object.entries(projects ?? {})
