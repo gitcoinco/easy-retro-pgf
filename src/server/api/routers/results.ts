@@ -1,6 +1,10 @@
 import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { eas } from "~/config";
@@ -9,7 +13,7 @@ import { type Vote } from "~/features/ballot/types";
 import { getSettings } from "./config";
 
 export const resultsRouter = createTRPCRouter({
-  votes: publicProcedure.query(async ({ ctx }) =>
+  votes: protectedProcedure.query(async ({ ctx }) =>
     calculateBallotResults(ctx.db),
   ),
   project: publicProcedure
