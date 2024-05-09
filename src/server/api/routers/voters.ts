@@ -19,7 +19,7 @@ export const votersRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return fetchApprovedVoter(input.address);
     }),
-  list: publicProcedure.input(FilterSchema).query(async ({}) => {
+  list: publicProcedure.input(FilterSchema).query(async ({ ctx }) => {
     return fetchAttestations([eas.schemas.approval], {
       where: {
         AND: [
@@ -27,6 +27,22 @@ export const votersRouter = createTRPCRouter({
           createDataFilter("round", "bytes32", config.roundId),
         ],
       },
+    }).then(async (voters) => {
+      const publishedBallots = await ctx.db.ballot
+        .findMany({
+          where: {
+            voterId: { in: voters.map((v) => v.recipient) },
+            publishedAt: { not: null },
+          },
+          select: { voterId: true, publishedAt: true },
+        })
+        .then((r) =>
+          Object.fromEntries(r.map((v) => [v.voterId, Boolean(v.publishedAt)])),
+        );
+      return voters.map((v) => ({
+        ...v,
+        hasVoted: publishedBallots?.[v.recipient],
+      }));
     });
   }),
 });
