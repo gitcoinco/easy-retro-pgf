@@ -8,13 +8,12 @@ export default function SpecificationSection({
   specificationRef: React.MutableRefObject<HTMLElement | null>;
 }) {
   // const {title, ...rest} = MarkDownData
-  const newContent = content.contentHtml.replace(/<h1>.*?<\/h1>/gs, "");
+  const newContent = content?.contentHtml?.replace(/<h1>.*?<\/h1>/gs, "");
   return (
     <section
       id="Specification"
       //  min-h-[60vh]
       className="w-auto items-center  border-0 bg-background-dark p-5 sm:p-6 md:p-10 lg:mb-6  lg:border border-outline-dark"
-      // @ts-ignore
       ref={specificationRef}
     >
       <h6 className="my-4 mb-6 text-3xl font-bold text-onPrimary-light">

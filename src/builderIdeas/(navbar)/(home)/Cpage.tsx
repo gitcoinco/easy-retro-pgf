@@ -72,32 +72,33 @@ export default function Cpage({ markdownContents }: HomeProps) {
     return markdownContents.filter((item) => {
       const searchCondition =
         search !== ""
-          ? item.title.toLowerCase().includes(search.toLowerCase())
+          ? item?.title.toLowerCase().includes(search.toLowerCase())
           : true;
 
       const typeCondition =
-        checkBox["Type"].length !== 0
-          ? checkBox["Type"].some((elem) => item.type === elem)
+        checkBox["Type"]?.length !== 0
+          ? checkBox["Type"]?.some((elem) => item.type === elem)
           : true;
 
       const effortCondition =
-        checkBox["Effort"].length !== 0
-          ? checkBox["Effort"].some((elem) => item.effort === elem)
+        checkBox["Effort"]?.length !== 0
+          ? checkBox["Effort"]?.some((elem) => item.effort === elem)
           : true;
 
       const skillSetsCondition =
-        checkBox["SkillSets"].length !== 0
-          ? checkBox["SkillSets"].some((elem) =>
-              item["skill-sets"].some((subElem) => subElem === elem),
+        checkBox["SkillSets"]?.length !== 0
+          ? checkBox["SkillSets"]?.some(
+              (elem) =>
+                item && item["skill-sets"]?.some((subElem) => subElem === elem),
             )
           : true;
 
       let categoryCondition: any;
-      if (checkBox["Category"].length !== 0) {
+      if (checkBox["Category"]?.length !== 0) {
         let categoryId = newFilter.category.find(
           (elem) => elem.id === item.category,
         )?.id;
-        categoryCondition = checkBox["Category"].some(
+        categoryCondition = checkBox["Category"]?.some(
           (elem) => elem === categoryId,
         );
       } else {
@@ -105,7 +106,7 @@ export default function Cpage({ markdownContents }: HomeProps) {
       }
 
       let executionCondition: any;
-      if (checkBox["ExecutionStatus"].length !== 0) {
+      if (checkBox["ExecutionStatus"]?.length !== 0) {
         let executionId = newFilter["execution-status"].find(
           (elem) => elem.id === item.contributions["execution-status"],
         )?.id;

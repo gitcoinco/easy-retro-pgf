@@ -76,8 +76,6 @@ async function getOverViewData(id: string): Promise<LoadMarkDownType | string> {
 export default function BuilderIdeas() {
   const [data, setData] = useState({ jsonData: JsonData, overViewData: "" });
 
-  console.log("Data:", data);
-
   return (
     <Layout title="Builder Ideas">
       <div className="min-h-screen bg-background-dark">

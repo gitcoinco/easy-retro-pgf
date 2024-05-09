@@ -32,20 +32,20 @@ export default function ScrollSpy({
   }, [overViewRef, specificationRef])
 
   return (
-    <div className="hidden border lg:block bg-white p-4 rounded-md  w-56 ">
-      <div className="mx-4 my-4 font-medium text-gray-500 flex flex-col items-start gap-4">
-        <div className="text-sm text-gray-900 font-bold">ON THIS PAGE</div>
+    <div className="hidden border lg:block bg-background-dark p-4 border-outline-dark  w-56 ">
+      <div className="mx-4 my-4 font-medium text-onPrimary-light flex flex-col items-start gap-4">
+        <div className="text-sm text-outline-dark font-bold">ON THIS PAGE</div>
         <ul className="flex flex-col text-sm items-start gap-4">
           <li className="list-none">
             <a
               id="Anchor"
-              className={`active flex cursor-pointer hover:text-primaryRed ${
+              className={`active flex cursor-pointer hover:text-primary-dark ${
                 currentContent === 'Overview'
-                  ? 'pl-2 text-red-600 border-l-[3px] border-primaryRed'
+                  ? 'pl-2 text-primary-dark border-l-[3px] border-primary-dark'
                   : ''
               }`}
               onClick={() => {
-                if (overViewRef && overViewRef.current) {
+                if (overViewRef?.current) {
                   overViewRef.current.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center',
@@ -72,13 +72,13 @@ export default function ScrollSpy({
           <li className="list-none">
             <a
               id="Anchor"
-              className={`active flex cursor-pointer hover:text-primaryRed ${
+              className={`active flex cursor-pointer hover:text-primary-dark ${
                 currentContent === 'Specification'
-                  ? 'pl-2 text-red-600 border-l-[3px] border-primaryRed'
+                  ? 'pl-2 text-primary-dark border-l-[3px] border-primary-dark'
                   : ''
               }`}
               onClick={() => {
-                if (specificationRef && specificationRef.current) {
+                if (specificationRef?.current) {
                   window.scrollTo({
                     top: specificationRef.current.offsetTop - 72,
                     behavior: 'smooth',

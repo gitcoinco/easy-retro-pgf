@@ -1,4 +1,3 @@
-import Navbar from "@/src/app/component/navbar/Navbar";
 import Link from "next/link";
 
 export default function Custom500({

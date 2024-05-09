@@ -1,13 +1,13 @@
-'use client'
-import { useRef } from 'react'
-import type { MarkDownData } from '~/builderIdeas/(navbar)/(home)/component/Home'
-import OverViewSection from './_component/OverViewSection'
-import ScrollSpy from './_component/ScrollSpy'
-import SpecificationSection from './_component/SpecificationSection'
+"use client";
+import { useRef } from "react";
+import type { MarkDownData } from "~/builderIdeas/(navbar)/(home)/component/Home";
+import OverViewSection from "~/builderIdeas/(navbar)/issue/_component/OverViewSection";
+import ScrollSpy from "~/builderIdeas/(navbar)/issue/_component/ScrollSpy";
+import SpecificationSection from "~/builderIdeas/(navbar)/issue/_component/SpecificationSection";
 
 export default function Cpage({ content }: { content: MarkDownData }) {
-  const overViewRef = useRef<HTMLElement | null>(null)
-  const specificationRef = useRef<HTMLElement | null>(null)
+  const overViewRef = useRef<HTMLElement | null>(null);
+  const specificationRef = useRef<HTMLElement | null>(null);
 
   return (
     <>
@@ -18,7 +18,7 @@ export default function Cpage({ content }: { content: MarkDownData }) {
         />
       </div>
 
-      <div className="w-full lg:w-3/4 flex flex-col lg:gap-8 lg:mx-10">
+      <div className="flex w-full flex-col lg:mx-10 lg:w-3/4 lg:gap-8">
         <OverViewSection content={content} overViewRef={overViewRef} />
         {/* <div className="lg:hidden bg-white p-4 lg:rounded-md lg:shadow-md items-center w-auto lg:mx-10 lg:my-6">
             <hr className="mx-4 border-t border-gray-300" />
@@ -28,8 +28,8 @@ export default function Cpage({ content }: { content: MarkDownData }) {
           content={content}
           /> */}
 
-        <div className="lg:hidden bg-white mx-4 lg:rounded-md lg:shadow-md items-center w-auto lg:mx-10 lg:my-6">
-          <hr className="lg:mx-4 border-t border-gray-300" />
+        <div className="mx-4 w-auto items-center bg-white lg:mx-10 lg:my-6 lg:hidden lg:rounded-md lg:shadow-md">
+          <hr className="border-t border-gray-300 lg:mx-4" />
         </div>
 
         <SpecificationSection
@@ -38,5 +38,5 @@ export default function Cpage({ content }: { content: MarkDownData }) {
         />
       </div>
     </>
-  )
+  );
 }
