@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
 import {
   createTRPCRouter,
-  protectedProcedure,
+  adminProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
@@ -15,9 +15,18 @@ import { getAppState } from "~/utils/state";
 import { TRPCError } from "@trpc/server";
 
 export const resultsRouter = createTRPCRouter({
-  votes: protectedProcedure.query(async ({ ctx }) =>
+  votes: adminProcedure.query(async ({ ctx }) =>
     calculateBallotResults(ctx.db),
   ),
+  results: publicProcedure.query(async ({ ctx }) => {
+    if (getAppState() !== "RESULTS") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Results not available yet",
+      });
+    }
+    return calculateBallotResults(ctx.db);
+  }),
   project: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -78,6 +87,7 @@ async function calculateBallotResults(db: PrismaClient) {
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
     where: { publishedAt: { not: null } },
+    select: { voterId: true, votes: true },
   });
 
   const projects = calculateVotes(

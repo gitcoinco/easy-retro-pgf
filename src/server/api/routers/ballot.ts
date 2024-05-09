@@ -7,13 +7,21 @@ import {
   BallotSchema,
   type Vote,
 } from "~/features/ballot/types";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
 import { ballotTypedData } from "~/utils/typedData";
 import type { db } from "~/server/db";
-import { config } from "~/config";
+import { config, eas } from "~/config";
 import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { type Prisma } from "@prisma/client";
-import { fetchApprovedVoter } from "~/utils/fetchAttestations";
+import {
+  fetchApprovedVoter,
+  fetchAttestations,
+} from "~/utils/fetchAttestations";
+import { useProjectsById } from "~/features/projects/hooks/useProjects";
 
 const defaultBallotSelect = {
   votes: true,
@@ -32,6 +40,37 @@ export const ballotRouter = createTRPCRouter({
         ...ballot,
         votes: (ballot?.votes as Vote[]) ?? [],
       }));
+  }),
+  export: adminProcedure.mutation(({ ctx }) => {
+    return ctx.db.ballot
+      .findMany({ where: { publishedAt: { not: null } } })
+      .then(async (ballots) => {
+        // Get all unique projectIds from all the votes
+        const projectIds = Object.keys(
+          Object.fromEntries(
+            ballots.flatMap((b) =>
+              (b as unknown as { votes: Vote[] }).votes
+                .map((v) => v.projectId)
+                .map((n) => [n, n]),
+            ),
+          ),
+        );
+        const projectsById = await fetchAttestations([eas.schemas.metadata], {
+          where: { id: { in: projectIds } },
+        }).then((projects) =>
+          Object.fromEntries(projects.map((p) => [p.id, p.name])),
+        );
+        return ballots.flatMap(({ voterId, signature, publishedAt, votes }) =>
+          (votes as unknown as Vote[]).map(({ amount, projectId }) => ({
+            voterId,
+            signature,
+            publishedAt,
+            amount,
+            projectId,
+            project: projectsById?.[projectId],
+          })),
+        );
+      });
   }),
   save: protectedProcedure
     .input(BallotSchema)
