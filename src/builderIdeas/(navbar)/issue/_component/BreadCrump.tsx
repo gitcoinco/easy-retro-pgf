@@ -13,7 +13,7 @@ export default function BreadCrump({ content }: { content: MarkDownData }) {
         </h6>
       </Link>
       <div className="text-sm font-medium text-onPrimary-light">&gt;</div>
-      <h6 className="text-sm font-medium text-outline-dark">{content.title}</h6>
+      <h6 className="text-sm font-medium text-outline-dark">{content?.title}</h6>
     </div>
   );
 }
