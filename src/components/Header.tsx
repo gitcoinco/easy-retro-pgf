@@ -64,33 +64,35 @@ export const Header = ({
             <Logo />
           </Link>
         </div>
-        <div className="hidden h-full items-center gap-2 xl:gap-4 overflow-x-auto md:flex">
+        <div className="hidden h-full items-center gap-2 overflow-x-auto md:flex xl:gap-4">
           {navLinks?.map((link) => (
             <NavLink
-              isActive={asPath.startsWith(link.href)}
+              isActive={
+                link?.href?.length > 0 &&
+                link.href !== "/" &&
+                asPath.startsWith(link.href)
+              }
               key={link.href}
               href={link.href}
+              data-tooltip-id={link.children}
             >
               {link.children}
             </NavLink>
           ))}
         </div>
         {(address === undefined || !isAdmin) && (
-          <div className="hidden ml-4 h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-onPrimary-light  hover:text-primary-dark md:flex">
-            <span data-tooltip-id="voting">Voting</span>{" "}
-            <ReactTooltip
-              id="voting"
-              place="bottom"
-              className="max-h-full max-w-[20rem] bg-outline-dark"
-              multiline={true}
-              style={{ backgroundColor: "#6c7283" }}
-              content={
-                <div className="flex flex-col text-wrap">
-                  <span>Voting hasn't started yet</span>
-                </div>
-              }
-            />
-          </div>
+          <ReactTooltip
+            id="Voting"
+            place="bottom"
+            className="max-h-full max-w-[20rem] bg-outline-dark"
+            multiline={true}
+            style={{ backgroundColor: "#6c7283" }}
+            content={
+              <div className="flex flex-col text-wrap">
+                <span>Voting hasn't started yet</span>
+              </div>
+            }
+          />
         )}
         <div className="flex-1 md:ml-8"></div>
         <div className=" flex gap-4 md:ml-8 xl:ml-32">
@@ -130,24 +132,23 @@ const MobileMenu = ({
       <Link
         className={clsx("block p-4 text-2xl  font-semibold")}
         key={link.href}
+        data-tooltip-id={link.children}
         {...link}
       />
     ))}
     {(address === undefined || !isAdmin) && (
-      <div className="flex p-4 text-2xl font-semibold  md:hidden">
-        <span data-tooltip-id="voting">Voting</span>{" "}
-        <ReactTooltip
-          id="voting"
-          place="bottom"
-          className="max-h-full max-w-[20rem] bg-outline-dark"
-          multiline={true}
-          content={
-            <div className="flex flex-col text-wrap">
-              <span>Voting hasn't started yet</span>
-            </div>
-          }
-        />
-      </div>
+      <ReactTooltip
+        id="Voting"
+        place="bottom"
+        className="max-h-full max-w-[20rem] bg-outline-dark"
+        style={{ backgroundColor: "#6c7283" }}
+        multiline={true}
+        content={
+          <div className="flex flex-col text-wrap">
+            <span>Voting hasn't started yet</span>
+          </div>
+        }
+      />
     )}
   </div>
 );

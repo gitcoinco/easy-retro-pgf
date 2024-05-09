@@ -18,17 +18,14 @@ export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
   const navLinks = [
     {
-      href: "/builderIdeas",
-      children: "Builder Ideas",
+      href: "/",
+      children: "Home",
     },
+
     {
       href: "/projects",
       children: "Projects",
     },
-    // {
-    //   href: "/lists",
-    //   children: "Lists",
-    // },
   ];
 
   if (getAppState() === "RESULTS") {
@@ -46,23 +43,42 @@ export const Layout = ({ children, ...props }: Props) => {
           children: "Applications",
         },
         // {
-        //   href: "/voters",
-        //   children: "Voters",
+        //   href: "/voting",
+        //   children: "#",
         // },
         // {
         //   href: "/distribute",
         //   children: "Distribute",
         // },
         {
+          href: "/builderIdeas",
+          children: "Builder Ideas",
+        },
+        {
           href: "/info",
           children: "Info",
         },
       ],
     );
-  }
+  } else
+    navLinks.push(
+      ...[
+        {
+          href: "",
+          children: "Voting",
+        },
+        {
+          href: "/builderIdeas",
+          children: "Builder Ideas",
+        },
+      ],
+    );
 
   return (
-    <BaseLayout {...props} header={<Header address={address} navLinks={navLinks} />}>
+    <BaseLayout
+      {...props}
+      header={<Header address={address} navLinks={navLinks} />}
+    >
       {children}
     </BaseLayout>
   );
