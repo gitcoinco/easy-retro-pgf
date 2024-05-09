@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import { useAccount } from "wagmi";
 import { NameENS } from "~/components/ENS";
 import { EmptyState } from "~/components/EmptyState";
@@ -32,6 +33,7 @@ export function VotersList() {
             id: String(i),
             recipient: String(i),
             attester: String(i),
+            hasVoted: false,
           }))
       )?.map((voter, i) => {
         return (
@@ -39,9 +41,19 @@ export function VotersList() {
             key={voter.recipient + i}
             className="flex items-center gap-2 border-b pb-2 dark:border-gray-800"
           >
-            <Skeleton isLoading={isPending} className="min-h-4 w-96">
-              <NameENS className="flex-1" address={voter.recipient} />
-            </Skeleton>
+            <div className="flex flex-1 items-center justify-between">
+              <Skeleton isLoading={isPending} className="min-h-4 w-96">
+                <NameENS className="flex-1" address={voter.recipient} />
+              </Skeleton>
+              <div>
+                {voter.hasVoted ? (
+                  <span className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">voted</span>
+                    <Check className="size-3 text-green-600" />
+                  </span>
+                ) : null}
+              </div>
+            </div>
             <Button
               size="sm"
               variant="outline"
