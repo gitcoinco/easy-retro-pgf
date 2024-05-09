@@ -33,11 +33,17 @@ export default function HomePage({}) {
           alt="Image"
           layout="fill"
         />
-        <div className="absolute top-[60%] left-[45%] flex w-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-3">
-          <Link href="/builderIdeas" className=" rounded-full bg-onPrimary-light px-8 py-4 text-scrim-dark hover:bg-primary-dark">
+        <div className="absolute left-[45%] top-[60%] flex w-full -translate-x-1/2 -translate-y-1/2 flex-col-reverse items-center justify-center gap-3 md:w-1/2 md:flex-row">
+          <Link
+            href="/builderIdeas"
+            className=" rounded-full bg-onPrimary-light px-8 py-4 font-semibold text-scrim-dark hover:bg-primary-dark"
+          >
             Explore Ideas
           </Link>
-          <Link href="/projects" className="rounded-full bg-onPrimary-light px-8 py-4 text-scrim-dark hover:bg-primary-dark">
+          <Link
+            href="/projects"
+            className="rounded-full bg-onPrimary-light px-8 py-4 font-semibold text-scrim-dark hover:bg-primary-dark"
+          >
             RetroPGF Round1
           </Link>
         </div>
