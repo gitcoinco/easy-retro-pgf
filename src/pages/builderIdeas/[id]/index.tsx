@@ -11,7 +11,7 @@ import Cpage from "./Cpage";
 import Custom500 from "~/builderIdeas/custom-error";
 import Footer from "~/builderIdeas/component/footer/Footer";
 import type { Metadata, ResolvingMetadata } from "next";
-import Layout from "~/builderIdeas/(navbar)/layout";
+import { Layout } from "~/layouts/DefaultLayout";
 
 async function getMarkDownData(id: string): Promise<MarkDownData | string> {
   const encodedFileName = encodeURIComponent(id);
@@ -59,7 +59,7 @@ export default function Page({ content }: { content: string | MarkDownData }) {
   }
 
   return (
-    <Layout title={content?.id}>
+    <Layout isFullWidth title={content?.id}>
       <div className=" bg-background-dark">
         <div className="lg:px-[4rem] lg:py-8 xl:px-[10rem]">
           <BreadCrump content={content} />
