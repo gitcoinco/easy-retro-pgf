@@ -52,9 +52,12 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
   const attestationId = useMemo(() => {
     const values = attestations.data?.valueOf() as Attestation[] | undefined;
-    const length = values?.length ?? 1;
 
-    return values?.[length - 1]?.id;
+    const attestation = values?.find((attestation) =>
+      config.admins.includes(attestation.attester),
+    );
+
+    return attestation?.id;
   }, [attestations]);
 
   const isEligibleToVote = useMemo(
