@@ -18,6 +18,10 @@ export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
   const navLinks = [
     {
+      href: "/builderIdeas",
+      children: "Builder Ideas",
+    },
+    {
       href: "/projects",
       children: "Projects",
     },

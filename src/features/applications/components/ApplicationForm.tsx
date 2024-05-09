@@ -107,7 +107,10 @@ export function ApplicationForm({
   return (
     <div>
       {isBefore(now, config.startsAt) ? (
-        <Alert variant="info" title="Submission period hasn't start yet."></Alert>
+        <Alert
+          variant="info"
+          title="Submission period hasn't start yet."
+        ></Alert>
       ) : (
         <Form
           isEditMode={isEditMode}
@@ -521,6 +524,7 @@ function ImpactTags() {
                   place="bottom"
                   className="max-h-full max-w-[20rem] bg-outline-dark"
                   multiline={true}
+                  style={{ backgroundColor: "#6c7283" }}
                   content={
                     <div className="flex flex-col text-wrap">
                       <span>What is a {label} impact?</span>

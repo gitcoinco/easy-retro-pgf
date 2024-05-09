@@ -76,13 +76,14 @@ export const Header = ({
           ))}
         </div>
         {(address === undefined || !isAdmin) && (
-          <div className="hidden h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-onPrimary-light  hover:text-primary-dark md:flex">
+          <div className="hidden ml-4 h-full items-center border-b-[3px] border-transparent p-4 font-semibold text-onPrimary-light  hover:text-primary-dark md:flex">
             <span data-tooltip-id="voting">Voting</span>{" "}
             <ReactTooltip
               id="voting"
               place="bottom"
               className="max-h-full max-w-[20rem] bg-outline-dark"
               multiline={true}
+              style={{ backgroundColor: "#6c7283" }}
               content={
                 <div className="flex flex-col text-wrap">
                   <span>Voting hasn't started yet</span>
