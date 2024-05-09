@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-
+import "~/builderIdeas/component/Checkbox/Checkbox.css";
 
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
