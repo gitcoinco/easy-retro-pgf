@@ -23,8 +23,8 @@ export const contributionTypes = {
 } as const;
 
 export const fundingSourceTypes = {
-  GOVERNANCE_FUND: "Governance fund",
-  PARTNER_FUND: "Partner fund",
+  POKT_DAO_Grant: "POKT DAO Grant",
+  External_funding: "External funding",
   REVENUE: "Revenue",
   OTHER: "Other",
 } as const;
