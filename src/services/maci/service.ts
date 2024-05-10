@@ -13,7 +13,7 @@ import {
   EASGatekeeper__factory as EASGatekeeperFactory,
   Verifier__factory as VerifierFactory,
   TopupCredit__factory as TopupCreditFactory,
-  PoseidonT3__factory,
+  PoseidonT3__factory as PoseidonT3Factory,
   PoseidonT4__factory as PoseidonT4Factory,
   PoseidonT5__factory as PoseidonT5Factory,
   PoseidonT6__factory as PoseidonT6Factory,
@@ -30,10 +30,9 @@ import type {
   IDeployInitialVoiceCreditProxyArgs,
   IDeployMaciArgs,
   IDeployVkRegistryArgs,
+  IRegisterArgs,
 } from "./types";
-import type { Signer } from "ethers";
-
-import { STATE_TREE_SUB_DEPTH } from "./constants";
+import { type Signer, ethers } from "ethers";
 
 /**
  * MACI service is responsible for deployment of MACI components like:
@@ -190,8 +189,8 @@ export class MaciService {
     const poseidonT3Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT3,
       signer: this.deployer,
-      abi: PoseidonT3__factory.abi,
-      bytecode: PoseidonT3__factory.bytecode,
+      abi: PoseidonT3Factory.abi,
+      bytecode: PoseidonT3Factory.bytecode,
     });
     const poseidonT4Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT4,
@@ -576,6 +575,72 @@ export class MaciService {
     });
 
     return vkRegistryContract.getAddress();
+  }
+
+  /**
+   * Register existing contracts to the ContractStorage
+   *
+   * @param args - arguments for contract registration
+   */
+  async register({ name, address, args }: IRegisterArgs) {
+    // find relative abi for the contract name
+    let abi
+    switch (name) {
+      case EContracts.PoseidonT3:
+        abi = PoseidonT3Factory.abi;
+        break;
+      case EContracts.PoseidonT4:
+        abi = PoseidonT4Factory.abi;
+        break;
+      case EContracts.PoseidonT5:
+        abi = PoseidonT5Factory.abi;
+        break;
+      case EContracts.PoseidonT6:
+        abi = PoseidonT6Factory.abi;
+        break;
+      case EContracts.VkRegistry:
+        abi = VkRegistryFactory.abi;
+        break;
+      case EContracts.MACI:
+        abi = MACIFactory.abi;
+        break;
+      case EContracts.ConstantInitialVoiceCreditProxy:
+        abi = ConstantInitialVoiceCreditProxyFactory.abi;
+        break;
+      case EContracts.EASGatekeeper:
+        abi = EASGatekeeperFactory.abi;
+        break;
+      case EContracts.Verifier:
+        abi = VerifierFactory.abi;
+        break;
+      case EContracts.TopupCredit:
+        abi = TopupCreditFactory.abi;
+        break;
+      case EContracts.PollFactory:
+        abi = PollFactoryFactory.abi;
+        break;
+      case EContracts.MessageProcessorFactory:
+        abi = MessageProcessorFactoryFactory.abi;
+        break;
+      case EContracts.TallyFactory:
+        abi = TallyFactoryFactory.abi;
+        break;
+      default:
+        console.log("No available abi founded.");
+    }
+
+    if (!abi) return;
+
+    // generate contract instance
+    const contract = new ethers.Contract(address, abi, this.deployer);
+
+    // register contract to ContractStorage
+    await this.storage.register({ 
+      id: name,
+      contract,
+      args: args ?? [],
+      network: await this.getNetwork(),
+    });
   }
 
   /**

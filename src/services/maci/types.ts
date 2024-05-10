@@ -1,4 +1,4 @@
-import type { ISnarkJSVerificationKey } from "maci-cli/sdk";
+import type { ISnarkJSVerificationKey, EContracts } from "maci-cli/sdk";
 
 /**
  * Interface that represents deploy args for initial voice credit proxy
@@ -88,4 +88,21 @@ export interface IDeployVkRegistryArgs {
    * Extracted tally votes zkey for Non-QV
    */
   tallyVotesZkeyPathNonQv: ISnarkJSVerificationKey;
+}
+
+export interface IRegisterArgs {
+  /**
+   * Name of the contract
+   */
+  name: EContracts;
+
+  /**
+   * Contract address
+   */
+  address: string;
+
+  /**
+   * args for ContractStorage
+   */
+  args?: unknown[];
 }
