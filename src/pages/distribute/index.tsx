@@ -12,7 +12,7 @@ import {
   CalculationSchema,
 } from "~/features/distribute/types";
 import { useMaci } from "~/contexts/Maci";
-import { Layout } from "~/layouts/DefaultLayout";
+import { AdminLayout } from "~/layouts/AdminLayout";
 import { api } from "~/utils/api";
 
 export default function DistributePage() {
@@ -25,7 +25,7 @@ export default function DistributePage() {
   const calculation = settings.data?.config?.calculation;
 
   return (
-    <Layout
+    <AdminLayout
       sidebar="left"
       sidebarComponent={
         <div className="space-y-4">
@@ -80,7 +80,7 @@ export default function DistributePage() {
           )}
         </div>
       )}
-    </Layout>
+    </AdminLayout>
   );
 }
 

@@ -1,9 +1,9 @@
 import type { ReactNode, PropsWithChildren } from "react";
-import { useAccount } from "wagmi";
-
+import { useSession } from "next-auth/react";
 import { type LayoutProps } from "./BaseLayout";
 import { config } from "~/config";
 import { Layout } from "./DefaultLayout";
+import { InvalidAdmin } from "~/features/admin/components/InvalidAdmin";
 
 type Props = PropsWithChildren<
   {
@@ -12,11 +12,14 @@ type Props = PropsWithChildren<
   } & LayoutProps
 >;
 export const AdminLayout = ({ children, ...props }: Props) => {
-  const { address } = useAccount();
-
-  if (config.admins.includes(address!)) {
-    return <div>Only admins can access this page</div>;
+  const { data } = useSession();
+  if (data && config.admins.includes(data.address as `0x${string}`)) {
+    return <Layout {...props}>{children}</Layout>;
   }
 
-  return <Layout {...props}>{children}</Layout>;
+  return (
+    <Layout {...props}>
+      <InvalidAdmin />
+    </Layout>
+  );
 };

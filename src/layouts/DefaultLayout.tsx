@@ -23,6 +23,10 @@ export const Layout = ({ children, ...props }: Props) => {
       href: "/projects",
       children: "Projects",
     },
+    {
+      href: "/info",
+      children: "Info",
+    },
   ];
 
   if (appState === EAppState.RESULTS) {

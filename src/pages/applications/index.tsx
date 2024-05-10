@@ -1,10 +1,10 @@
 import { ApplicationsToApprove } from "~/features/applications/components/ApplicationsToApprove";
-import { Layout } from "~/layouts/DefaultLayout";
+import { AdminLayout } from "~/layouts/AdminLayout";
 
 export default function ApplicationsPage() {
   return (
-    <Layout title="Review applications">
+    <AdminLayout title="Review applications">
       <ApplicationsToApprove />
-    </Layout>
+    </AdminLayout>
   );
 }
