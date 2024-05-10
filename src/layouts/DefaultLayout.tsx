@@ -50,10 +50,10 @@ export const Layout = ({ children, ...props }: Props) => {
         //   href: "/distribute",
         //   children: "Distribute",
         // },
-        {
-          href: "/builderIdeas",
-          children: "Builder Ideas",
-        },
+        // {
+        //   href: "/builderIdeas",
+        //   children: "Builder Ideas",
+        // },
         {
           href: "/info",
           children: "Key Info",
@@ -67,10 +67,10 @@ export const Layout = ({ children, ...props }: Props) => {
           href: "",
           children: "Voting",
         },
-        {
-          href: "/builderIdeas",
-          children: "Builder Ideas",
-        },
+        // {
+        //   href: "/builderIdeas",
+        //   children: "Builder Ideas",
+        // },
         {
           href: "/info",
           children: "Key Info",
