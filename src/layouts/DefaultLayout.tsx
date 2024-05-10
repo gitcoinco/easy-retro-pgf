@@ -22,6 +22,10 @@ export const Layout = ({ children, ...props }: Props) => {
       href: "/projects",
       children: "Projects",
     },
+    {
+      href: "/info",
+      children: "Info",
+    },
   ];
 
   if (appState === "RESULTS") {
@@ -63,10 +67,6 @@ export const Layout = ({ children, ...props }: Props) => {
 
 export function LayoutWithBallot(props: Props) {
   return (
-    <Layout
-      sidebar="left"
-      sidebarComponent={<BallotOverview />}
-      {...props}
-    />
+    <Layout sidebar="left" sidebarComponent={<BallotOverview />} {...props} />
   );
 }
