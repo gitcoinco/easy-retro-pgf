@@ -1,44 +1,17 @@
-import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
+import { Layout } from "~/layouts/DefaultLayout";
 import { Markdown } from "~/components/ui/Markdown";
-import { metadata } from "~/config";
+import { Button } from "~/components/ui/Button";
+import { Chip } from "~/components/ui/Chip";
 
 export default function HomePage({}) {
   return (
-    <div className="flex min-h-screen flex-col bg-background-dark">
-      <Head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
-        <link rel="icon" href={`${metadata.url}/favicon.svg`} />
-        <meta property="og:url" content={metadata.url} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={metadata.title} />
-        <meta property="og:description" content={metadata.description} />
-        <meta property="og:image" content={metadata.image} />
-
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          property="twitter:domain"
-          content="https://github.com/Microflow-xyz/retroactive-pokt-goods-funding"
-        />
-        <meta property="twitter:url" content={metadata.url} />
-        <meta name="twitter:title" content={metadata.title} />
-        <meta name="twitter:description" content={metadata.description} />
-        <meta name="twitter:image" content={metadata.image} />
-      </Head>
-      <Image
-        className="relative max-h-36 w-full"
-        src="/banner.jpeg"
-        alt="Image"
-        height={150}
-        width={1269}
-      />
-
-      <div className="flex w-full flex-col  md:flex-row items-center justify-start ">
-        <div className="flex lg:w-1/2 flex-col gap-6 lg:gap-8 p-5 md:p-8 lg:p-20">
+    <Layout isFullWidth>
+      <div className="flex w-full flex-col items-center  justify-start  md:flex-row ">
+        <div className="flex flex-col gap-6 px-5 pb-5 pt-0 md:w-1/2 md:p-7 lg:gap-8 xl:p-20">
           <Markdown>{`### Retroactive POKT Goods Funding`}</Markdown>
-          <div className="flex flex-col items-center justify-between gap-3 lg:text-xl leading-relaxed">
+          <div className="flex flex-col items-center justify-between gap-3 leading-relaxed lg:text-xl">
             <p>
               Retroactive funding is a novel mechanism for reducing the gap
               between impact and rewards through the introduction of a third
@@ -55,13 +28,15 @@ export default function HomePage({}) {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link
-              href="https://docs.pokt.network/community/retro-pokt-goods-funding"
+            <Chip
+              className="gap-2 px-8 py-4 md:px-14 md:py-4 lg:px-16 text-base font-semibold"
+              as={Link}
               target="_blank"
-              className=" rounded-full bg-onPrimary-light px-8 py-4 font-semibold text-scrim-dark hover:bg-primary-dark"
+              href="https://docs.pokt.network/community/retro-pokt-goods-funding"
             >
-              Round 1 details
-            </Link>
+              Docs
+            </Chip>
+
             <Link
               href="/projects"
               className="rounded-full bg-onPrimary-light px-8 py-4 font-semibold text-scrim-dark hover:bg-primary-dark"
@@ -70,15 +45,16 @@ export default function HomePage({}) {
             </Link>
           </div>
         </div>
-        <div></div>
+        <div className=" md:w-1/2">
+          <Image
+            className="w-full"
+            src="/homeAsset.png"
+            alt="Image"
+            height={600}
+            width={680}
+          />
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => ({
-//   redirect: {
-//     destination: "/home",
-//     permanent: false,
-//   },
-// });
