@@ -79,6 +79,7 @@ export const ApplicationSchema = z.object({
       type: z.nativeEnum(reverseKeys(socialMediaTypes)),
     }),
   ),
+  isDAOVoters: z.boolean(),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;

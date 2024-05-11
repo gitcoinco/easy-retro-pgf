@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import Link from "next/link";
+import { X, Check } from "lucide-react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
@@ -77,6 +78,19 @@ export default function ProjectDetails({
             </Button>
           )}
       </div>
+      <p className="mt-6 flex items-center gap-2">
+        {metadata?.data?.isDAOVoters ? (
+          <span className=" p-1 rounded-full border border-[#00B669] ">
+            <Check className="w-4 h-4" color="#00B669" strokeWidth={1.5} />
+          </span>
+        ) : (
+          <span className=" p-1 rounded-full border border-[#DD0035]">
+            <X className="w-4 h-4" color="#DD0035" strokeWidth={1.5} />
+          </span>
+        )}
+        Are you or any employees, contractors, or equity holders of the applying
+        organization or team DAO voters?
+      </p>
       <div className="pt-2">
         <Heading as="h2" size="2xl">
           Impact statements
