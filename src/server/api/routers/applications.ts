@@ -3,6 +3,9 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { createDataFilter, fetchAttestations } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";
+import { publicClient } from "~/server/publicClient";
+import { normalize } from "viem/ens";
+import { resolveENSSchema } from "~/features/applications/types";
 
 export const FilterSchema = z.object({
   limit: z.number().default(3 * 8),
@@ -35,4 +38,11 @@ export const applicationsRouter = createTRPCRouter({
       },
     });
   }),
+  resolveENS: adminProcedure
+    .input(resolveENSSchema)
+    .query(async ({ input }) => {
+      return await publicClient.getEnsAddress({
+        name: normalize(input.address),
+      });
+    }),
 });

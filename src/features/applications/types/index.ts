@@ -82,3 +82,6 @@ export const ApplicationSchema = z.object({
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;
+
+export const resolveENSSchema = z.object({ address: z.string().min(1) });
+export type resolveENS = z.infer<typeof resolveENSSchema>;
