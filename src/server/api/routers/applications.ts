@@ -38,11 +38,11 @@ export const applicationsRouter = createTRPCRouter({
       },
     });
   }),
-  // resolveENS: adminProcedure
-  //   .input(resolveENSSchema)
-  //   .query(async ({ input }) => {
-  //     return await publicClient.getEnsAddress({
-  //       name: normalize(input.address),
-  //     });
-  //   }),
+  resolveENS: adminProcedure
+    .input(resolveENSSchema)
+    .query(async ({ input }) => {
+      return await publicClient.getEnsAddress({
+        name: normalize(input.address),
+      });
+    }),
 });
