@@ -84,7 +84,7 @@ export const BaseLayout = ({
         <div className="mx-auto w-full flex-1 pt-8 2xl:container md:flex">
           {sidebar === "left" ? wrappedSidebar : null}
           <div
-            className={clsx("w-full min-w-0 px-2 pb-20", {
+            className={clsx("w-full min-w-0 px-2 pb-6 xl:pb-16", {
               ["mx-auto max-w-5xl"]: !sidebar && !isFullWidth,
             })}
           >

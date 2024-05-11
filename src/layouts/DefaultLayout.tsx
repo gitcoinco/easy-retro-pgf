@@ -19,7 +19,7 @@ export const Layout = ({ children, ...props }: Props) => {
   const navLinks = [
     {
       href: "/",
-      children: "Home",
+      children: "retroPGF",
     },
 
     {
