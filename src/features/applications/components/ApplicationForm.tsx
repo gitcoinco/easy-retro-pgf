@@ -211,10 +211,8 @@ export function ApplicationForm({
               name="application.isDAOVoters"
               label="Are you or any employees, contractors, or equity holders of the applying organization or team DAO voters?"
             >
-              <Input
-                className="h-4 w-4 dark:hover:bg-transparent dark:focus:bg-transparent"
-                type="checkbox"
-              />
+
+              <Input className="w-4 h-4 dark:hover:bg-transparent dark:focus:bg-transparent" type="checkbox" />
             </FormControl>
           </FormSection>
 
