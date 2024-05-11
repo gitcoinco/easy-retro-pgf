@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { createDataFilter, fetchAttestations } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";
 import { publicClient } from "~/server/publicClient";
@@ -13,7 +13,7 @@ export const FilterSchema = z.object({
 });
 
 export const applicationsRouter = createTRPCRouter({
-  approvals: publicProcedure
+  approvals: adminProcedure
     .input(z.object({ ids: z.array(z.string()).optional() }))
     .query(async ({ input }) => {
       return fetchAttestations([eas.schemas.approval], {
@@ -27,7 +27,7 @@ export const applicationsRouter = createTRPCRouter({
         },
       });
     }),
-  list: publicProcedure.input(FilterSchema).query(async ({}) => {
+  list: adminProcedure.input(FilterSchema).query(async ({}) => {
     return fetchAttestations([eas.schemas.metadata], {
       orderBy: [{ time: "desc" }],
       where: {
@@ -38,11 +38,11 @@ export const applicationsRouter = createTRPCRouter({
       },
     });
   }),
-  // resolveENS: adminProcedure
-  //   .input(resolveENSSchema)
-  //   .query(async ({ input }) => {
-  //     return await publicClient.getEnsAddress({
-  //       name: normalize(input.address),
-  //     });
-  //   }),
+  resolveENS: adminProcedure
+    .input(resolveENSSchema)
+    .query(async ({ input }) => {
+      return await publicClient.getEnsAddress({
+        name: normalize(input.address),
+      });
+    }),
 });
