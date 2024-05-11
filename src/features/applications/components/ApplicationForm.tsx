@@ -185,7 +185,9 @@ export function ApplicationForm({
                 label="wPOKT receiving address"
                 required
               >
-                <Input placeholder="0XfAd....aseqw3wcf97" />
+                <Input
+                  placeholder="0XfAd....aseqw3wcf97"
+                />
               </FormControl>
               <FormControl
                 className="flex-1"
@@ -209,7 +211,10 @@ export function ApplicationForm({
               name="application.isDAOVoters"
               label="Are you or any employees, contractors, or equity holders of the applying organization or team DAO voters?"
             >
-              <Input className="w-4 h-4 dark:hover:bg-transparent dark:focus:bg-transparent" type="checkbox" />
+              <Input
+                className="h-4 w-4 dark:hover:bg-transparent dark:focus:bg-transparent"
+                type="checkbox"
+              />
             </FormControl>
           </FormSection>
 
