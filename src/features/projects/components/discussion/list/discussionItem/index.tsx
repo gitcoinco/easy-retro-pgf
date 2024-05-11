@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Textarea } from "~/components/ui/Form";
 import { Button } from "~/components/ui/Button";
@@ -38,7 +38,7 @@ const Reply = ({
 
   return (
     <div
-      className={`relative flex flex-col border ${reply.content.length === 1024 ? "border-error-dark" : "border-onPrimary-light"} px-3 md:px-4 py-2`}
+      className={`relative flex flex-col border ${reply.content.length === 1024 ? "border-error-dark" : "border-onPrimary-light"} px-3 py-2 md:px-4`}
     >
       <span
         className={`absolute -top-[0.625rem] flex text-xs font-normal dark:bg-background-dark ${reply.content.length === 1024 ? "text-error-dark" : "dark:text-onPrimary-light"}`}
@@ -53,7 +53,7 @@ const Reply = ({
         value={reply.content}
         maxLength={1024}
       />
-      <div className="md:mt-2 flex flex-col md:flex-row items-baseline md:items-center gap-4 mt-4 md:gap-14">
+      <div className="mt-4 flex flex-col items-baseline gap-4 md:mt-2 md:flex-row md:items-center md:gap-14">
         <div className="flex items-center justify-evenly gap-5">
           <Switch
             isOn={reply.isAnonymous}
@@ -104,9 +104,10 @@ export const DiscussionItem = ({
         data={discussion}
         setHideReplayed={setHideReplayed}
         hideReplayed={hideReplayed}
+        onRefetch={() => onRefetch()}
       />
 
-      <div className="md:mx-10 mt-8 flex flex-col gap-6 md:gap-4">
+      <div className="mt-8 flex flex-col gap-6 md:mx-10 md:gap-4">
         <Reply
           discussionId={discussion.id}
           projectId={projectId}
@@ -121,6 +122,7 @@ export const DiscussionItem = ({
                 setHideReplayed={setHideReplayed}
                 hideReplayed={hideReplayed}
                 replayed
+                onRefetch={() => onRefetch()}
               />
             ))}
           </>

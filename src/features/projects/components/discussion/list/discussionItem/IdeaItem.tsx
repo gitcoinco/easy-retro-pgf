@@ -15,11 +15,13 @@ export const IdeaItem = ({
   setHideReplayed,
   hideReplayed,
   replayed = false,
+  onRefetch,
 }: {
   data: Discussion | ReplyResType;
   setHideReplayed?: (value: React.SetStateAction<boolean>) => void;
   replayed?: boolean;
   hideReplayed?: boolean;
+  onRefetch?: () => void;
 }) => {
   const { data: session } = useSession();
   const [reaction, setReaction] = useState<{
@@ -27,14 +29,25 @@ export const IdeaItem = ({
     thumbsDown: number;
     type?: "thumbsUp" | "thumbsDown";
   }>({
-    thumbsUp: data?.thumbsUp,
-    thumbsDown: data?.thumbsDown,
-    type: data?.reactions.filter(item => item?.user?.name === session?.user.name)[0]?.reaction,
+    thumbsUp: 0,
+    thumbsDown: 0,
+    type: undefined,
   });
 
+  useEffect(() => {
+    setReaction({
+      thumbsUp: data?.thumbsUp,
+      thumbsDown: data?.thumbsDown,
+      type: data?.reactions.filter(
+        (item) => item?.user?.name === session?.user.name,
+      )[0]?.reaction,
+    });
+  }, [data, onRefetch, hideReplayed]);
 
   const onReact = useReact({
-    onSuccess: async () => console.log(""),
+    onSuccess: async () => {
+      if (onRefetch) onRefetch();
+    },
     reactionData: {
       discussionId: data.id,
       reaction: reaction.type ?? "thumbsUp",
@@ -45,13 +58,18 @@ export const IdeaItem = ({
       setReaction({
         thumbsUp: onReact?.data?.thumbsUp,
         thumbsDown: onReact?.data?.thumbsDown,
-        type: onReact?.data?.reactions.filter(item => item?.user?.name === session?.user.name)[0]?.reaction === reaction.type ? reaction.type : undefined,
+        type:
+          onReact?.data?.reactions.filter(
+            (item) => item?.user?.name === session?.user.name,
+          )[0]?.reaction === reaction.type
+            ? reaction.type
+            : undefined,
       });
     }
   }, [onReact?.data]);
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row items-center justify-between md:gap-14 text-sm">
+    <div className="flex flex-col items-center justify-between gap-4 text-sm md:flex-row md:gap-14">
       <div
         className={`flex min-w-full ${replayed ? " md:min-w-[31.87%]" : "md:min-w-[25%]"} items-center`}
       >
@@ -90,13 +108,14 @@ export const IdeaItem = ({
         <p className="break-words break-all font-normal text-onPrimary-light">
           {data.content}
         </p>
-        <div className="flex items-center gap-10 pt-2 md:p-2 pb-0">
+        <div className="flex items-center gap-10 pb-0 pt-2 md:p-2">
           {reaction.type === "thumbsUp" && onReact.isPending ? (
             <Loader className="animate-spin" color="#45464f" strokeWidth={1} />
           ) : (
             <button
               onClick={() => {
-                if (session && reaction.type !== "thumbsUp") setReaction({...reaction , type:"thumbsUp"});
+                if (session && reaction.type !== "thumbsUp")
+                  setReaction({ ...reaction, type: "thumbsUp" });
                 onReact.mutate();
               }}
               className="flex items-center gap-1"
@@ -114,7 +133,8 @@ export const IdeaItem = ({
           ) : (
             <button
               onClick={() => {
-                if (session && reaction.type !== "thumbsDown") setReaction({...reaction , type:"thumbsDown"});
+                if (session && reaction.type !== "thumbsDown")
+                  setReaction({ ...reaction, type: "thumbsDown" });
                 onReact.mutate();
               }}
               className="flex items-center gap-1"
