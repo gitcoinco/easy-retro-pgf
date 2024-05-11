@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { createDataFilter, fetchAttestations } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";
 import { publicClient } from "~/server/publicClient";
@@ -13,7 +17,7 @@ export const FilterSchema = z.object({
 });
 
 export const applicationsRouter = createTRPCRouter({
-  approvals: adminProcedure
+  approvals: publicProcedure
     .input(z.object({ ids: z.array(z.string()).optional() }))
     .query(async ({ input }) => {
       return fetchAttestations([eas.schemas.approval], {
