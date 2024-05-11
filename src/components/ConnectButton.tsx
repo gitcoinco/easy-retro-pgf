@@ -115,8 +115,8 @@ const ConnectedDetails = ({
           </>
         ) : (
           state === "APPLICATION" && (
-            <Chip className="gap-2" as={Link} href={"/applications/new"}>
-              Create application
+            <Chip className="gap-2 px-4 md:px-12" as={Link} href={"/applications/new"}>
+              Apply
             </Chip>
           )
         )}

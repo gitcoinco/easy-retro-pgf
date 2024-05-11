@@ -79,6 +79,7 @@ export function ApplicationForm({
           impactMetrics: metadata?.data?.impactMetrics,
           fundingSources: metadata?.data?.fundingSources,
           socialMedias: metadata?.data?.socialMedias,
+          isDAOVoters: metadata?.data?.isDAOVoters,
         },
       });
   }, [isEditMode, projectInfo, metadata?.data, profile?.data]);
@@ -103,11 +104,13 @@ export function ApplicationForm({
   }
   const error = create.error;
   const now = new Date();
-  console.log("isAfter", isBefore(now, config.startsAt));
   return (
     <div>
       {isBefore(now, config.startsAt) ? (
-        <Alert variant="info" title="Submission period hasn't start yet."></Alert>
+        <Alert
+          variant="info"
+          title="Submission period hasn't start yet."
+        ></Alert>
       ) : (
         <Form
           isEditMode={isEditMode}
@@ -182,7 +185,9 @@ export function ApplicationForm({
                 label="wPOKT receiving address"
                 required
               >
-                <Input placeholder="0XfAd....aseqw3wcf97" />
+                <Input
+                  placeholder="0XfAd....aseqw3wcf97"
+                />
               </FormControl>
               <FormControl
                 className="flex-1"
@@ -201,6 +206,14 @@ export function ApplicationForm({
                 <Input placeholder="0XfAd....aseqw3wcf97" />
               </FormControl>
             </div>
+            <FormControl
+              className="flex flex-row-reverse items-baseline justify-end gap-2"
+              name="application.isDAOVoters"
+              label="Are you or any employees, contractors, or equity holders of the applying organization or team DAO voters?"
+            >
+
+              <Input className="w-4 h-4 dark:hover:bg-transparent dark:focus:bg-transparent" type="checkbox" />
+            </FormControl>
           </FormSection>
 
           <FormSection
@@ -521,6 +534,7 @@ function ImpactTags() {
                   place="bottom"
                   className="max-h-full max-w-[20rem] bg-outline-dark"
                   multiline={true}
+                  style={{ backgroundColor: "#6c7283" }}
                   content={
                     <div className="flex flex-col text-wrap">
                       <span>What is a {label} impact?</span>
