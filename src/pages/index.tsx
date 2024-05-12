@@ -9,7 +9,7 @@ export default function HomePage({}) {
   return (
     <Layout isFullWidth>
       <div className="flex w-full flex-col items-center  justify-start  md:flex-row ">
-        <div className="flex flex-col gap-6 px-5 pb-5 pt-0 md:w-1/2 md:p-7 lg:gap-8 xl:p-20">
+        <div className="flex flex-col gap-6 px-5 pb-5 pt-0 md:w-1/2 md:px-7 lg:gap-8 xl:px-20">
           <Markdown>{`### Retroactive POKT Goods Funding`}</Markdown>
           <div className="flex flex-col items-center justify-between gap-3 leading-relaxed lg:text-xl">
             <p>
