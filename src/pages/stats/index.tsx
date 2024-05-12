@@ -46,6 +46,7 @@ function Stats() {
   const count = useProjectCount();
   const { data: projectsResults } = useProjectsResults();
 
+  return null;
   const {
     averageVotes,
     totalVotes,

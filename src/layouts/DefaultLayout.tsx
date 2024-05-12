@@ -23,12 +23,12 @@ export const Layout = ({ children, ...props }: Props) => {
     },
   ];
 
-  if (getAppState() === "RESULTS") {
-    navLinks.push({
-      href: "/stats",
-      children: "Stats",
-    });
-  }
+  // if (getAppState() === "RESULTS") {
+  //   navLinks.push({
+  //     href: "/stats",
+  //     children: "Stats",
+  //   });
+  // }
 
   if (config.admins.includes(address!)) {
     navLinks.push(
