@@ -9,39 +9,30 @@ export default function HomePage({}) {
   return (
     <Layout isFullWidth>
       <div className="flex w-full flex-col items-center  justify-start  md:flex-row ">
-        <div className="flex flex-col gap-6 px-5 pb-5 pt-0 md:w-1/2 md:px-7 lg:gap-8 xl:px-20">
-          <Markdown>{`### Retroactive POKT Goods Funding`}</Markdown>
-          <div className="flex flex-col items-center justify-between gap-3 leading-relaxed lg:text-xl">
-            <p>
-              Retroactive funding is a novel mechanism for reducing the gap
-              between impact and rewards through the introduction of a third
-              variable - time.
-            </p>
-            <p>
-              POKT Network has been the recipient of retroactive rewards and is
-              now redistributing these funds via our own retroactive grants
-              program. POKT DAO wants to create a domino effect, ensuring funds
-              aren't captured in companies or DAO treasuries but instead make
-              their way into the hands of the people who directly created
-              impact.
-            </p>
-          </div>
+        <div className="flex flex-col  px-5 pb-5 pt-0 md:w-1/2 md:px-7  xl:px-20">
+          <h1 className=" font-bold lg:text-xl xl:text-2xl">
+            Retroactive POKT Goods Round 1 is now open!
+          </h1>
+          <p className=" mt-4 leading-relaxed lg:text-lg xl:text-xl">
+            Have you created impact for POKT Network? Eligible applicants can
+            apply under the Protocol, Ecosystem or Adoption categories now.
+          </p>
 
-          <div className="flex items-center gap-4">
+          <div className="mt-6 flex flex-col md:flex-row items-center gap-4 lg:mt-8">
             <Chip
-              className="gap-2 px-8 py-4 md:px-14 md:py-4 lg:px-16 text-base font-semibold"
+              className="gap-2 px-8 py-4 lg:px-8 text-base font-semibold md:py-4"
               as={Link}
               target="_blank"
               href="https://docs.pokt.network/community/retro-pokt-goods-funding"
             >
-              Docs
+              Get more info
             </Chip>
 
             <Link
               href="/projects"
               className="rounded-full bg-onPrimary-light px-8 py-4 font-semibold text-scrim-dark hover:bg-primary-dark"
             >
-              Round 1
+              Enter Round 1
             </Link>
           </div>
         </div>

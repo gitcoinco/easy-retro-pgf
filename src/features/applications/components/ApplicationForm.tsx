@@ -276,7 +276,7 @@ export function ApplicationForm({
                     required
                   >
                     <Select>
-                      {Object.entries(contributionTypes).map(
+                      {Object?.entries(contributionTypes).map(
                         ([value, label]) => (
                           <option
                             className=" bg-background-dark text-onPrimary-light hover:bg-primary-dark"
@@ -375,7 +375,7 @@ export function ApplicationForm({
                     required
                   >
                     <Select>
-                      {Object.entries(fundingSourceTypes).map(
+                      {Object?.entries(fundingSourceTypes).map(
                         ([value, label]) => (
                           <option
                             className="bg-background-dark text-onPrimary-light hover:bg-primary-dark"
@@ -407,7 +407,7 @@ export function ApplicationForm({
                     required
                   >
                     <Select className="w-full">
-                      {Object.entries(socialMediaTypes).map(
+                      {Object?.entries(socialMediaTypes).map(
                         ([value, label]) => (
                           <option
                             className="bg-background-dark text-onPrimary-light hover:bg-primary-dark"
@@ -506,7 +506,7 @@ function ImpactTags() {
         Impact categories<span className="text-onSurface-dark"> *</span>
       </Label>
       <div className="flex flex-wrap gap-2">
-        {Object.entries(impactCategories).map(
+        {Object?.entries(impactCategories).map(
           ([value, { label, description }]) => {
             const isSelected = selected.includes(value);
             return (
