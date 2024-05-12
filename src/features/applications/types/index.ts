@@ -1,5 +1,7 @@
 import { z } from "zod";
-import { EthAddressSchema } from "~/features/distribute/types";
+import {
+  EthAddressSchema,
+} from "~/features/distribute/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
 export const MetadataSchema = z.object({
@@ -69,7 +71,7 @@ export const ApplicationSchema = z.object({
     z.object({
       description: z.string().min(3),
       amount: z.number(),
-      currency: z.string().min(3).max(4),
+      currency: z.string().min(3).max(6),
       type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
     }),
   ),

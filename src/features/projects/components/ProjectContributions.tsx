@@ -8,9 +8,9 @@ type Props = { isLoading: boolean; project?: Application };
 
 export default function ProjectContributions({ isLoading, project }: Props) {
   return (
-    <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-baseline md:items-center justify-between pt-6">
+    <div className="flex flex-col gap-3 md:flex-row items-baseline md:items-center justify-between pt-6">
 
-        <div className="flex flex-col items-start justify-between gap-3">
+        <div className="flex md:w-2/3 flex-col items-start justify-between gap-3">
         <Heading className="m-0" as="h3" size="lg">
         Contributions
       </Heading>
