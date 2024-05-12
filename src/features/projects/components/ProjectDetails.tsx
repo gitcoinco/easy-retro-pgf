@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import Link from "next/link";
-import { X, Check } from "lucide-react";
+import { X, Check, ExternalLinkIcon, Globe } from "lucide-react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
@@ -13,6 +13,7 @@ import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { LinkBox } from "./LinkBox";
 import { Button } from "~/components/ui/Button";
+import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export default function ProjectDetails({
   attestation,
@@ -26,13 +27,15 @@ export default function ProjectDetails({
   state?: AppState;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
-
+  const profile = useProfileWithMetadata(attestation?.recipient);
   const {
     bio,
     websiteUrl,
     // payoutAddress,
     fundingSources,
   } = metadata.data ?? {};
+  console.log("metadata.data", profile.data);
+
   return (
     <div className="relative">
       <div className="overflow-hidden">
@@ -46,14 +49,17 @@ export default function ProjectDetails({
           profileId={attestation?.recipient}
         />
         <div>
-          <div className="flex">
-            {/* <NameENS address={payoutAddress} /> */}
+          <div className="flex flex-col items-baseline p-2 md:p-0">
+            <p className="break-words break-all">{profile?.data?.name}</p>
+            <p className="break-words break-all">{attestation?.recipient}</p>
             <a
               href={websiteUrl}
               target="_blank"
-              className="m-2 break-words break-all hover:text-primary-dark md:m-0"
+              className="m-2 flex items-center justify-between gap-1 break-words break-all hover:text-primary-dark md:m-0"
             >
-              {websiteUrl}
+              <Globe className=" h-4 w-4" />
+              <span>Website</span>
+              <ExternalLinkIcon className=" h-4 w-4" />
             </a>
           </div>
         </div>
@@ -80,12 +86,12 @@ export default function ProjectDetails({
       </div>
       <p className="mt-6 flex items-center gap-2">
         {metadata?.data?.isDAOVoters ? (
-          <span className=" p-1 rounded-full border border-[#00B669] ">
-            <Check className="w-4 h-4" color="#00B669" strokeWidth={1.5} />
+          <span className=" rounded-full border border-[#00B669] p-1 ">
+            <Check className="h-4 w-4" color="#00B669" strokeWidth={1.5} />
           </span>
         ) : (
-          <span className=" p-1 rounded-full border border-[#DD0035]">
-            <X className="w-4 h-4" color="#DD0035" strokeWidth={1.5} />
+          <span className=" rounded-full border border-[#DD0035] p-1">
+            <X className="h-4 w-4" color="#DD0035" strokeWidth={1.5} />
           </span>
         )}
         Are you or any employees, contractors, or equity holders of the applying
@@ -111,11 +117,10 @@ export default function ProjectDetails({
               {fundingSources?.map((source, i) => {
                 const type =
                   {
-                    OTHER: "Other",
-                    RETROPGF_2: "RetroPGF2",
-                    GOVERNANCE_FUND: "Governance Fund",
-                    PARTNER_FUND: "Partner Fund",
+                    POKT_DAO_Grant: "POKT DAO Grant",
+                    External_funding: "External funding",
                     REVENUE: "Revenue",
+                    OTHER: "Other",
                   }[source.type] ?? source.type;
                 return (
                   <div
