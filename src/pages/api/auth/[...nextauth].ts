@@ -4,7 +4,6 @@ import { genKeyPair } from "maci-cli/sdk";
 import type { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { db } from "~/server/db";
 
@@ -21,8 +20,6 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
             process.env.NEXTAUTH_URL ?? process.env.VERCEL_URL,
           ).origin;
 
-          console.log({ nextAuthUrl });
-
           if (!nextAuthUrl) {
             return null;
           }
@@ -32,14 +29,8 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
             return null;
           }
 
-          if (
-            siwe.resources?.[0] !==
-            (await getCsrfToken({ req: { headers: req.headers } }))
-          ) {
-            return null;
-          }
-
           await siwe.verify({ signature: credentials?.signature ?? "" });
+          
           const keypair = genKeyPair({
             seed: credentials?.signature
               ? BigInt(credentials.signature)

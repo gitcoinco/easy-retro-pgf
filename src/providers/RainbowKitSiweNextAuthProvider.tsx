@@ -34,14 +34,13 @@ export function RainbowKitSiweNextAuthProvider({
   const adapter = useMemo(
     () =>
       createAuthenticationAdapter({
-        createMessage: ({ address, chainId, nonce }) => {
+        createMessage: ({ address, chainId }) => {
           const defaultConfigurableOptions: ConfigurableMessageOptions = {
             domain: window.location.host,
             statement: "Sign in with Ethereum to the app.",
             uri: window.location.origin,
             version: "1",
             nonce: address,
-            resources: [nonce],
             issuedAt: new Date(1).toISOString(),
           };
 
