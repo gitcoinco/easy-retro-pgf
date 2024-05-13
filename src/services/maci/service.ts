@@ -12,8 +12,7 @@ import {
   ConstantInitialVoiceCreditProxy__factory as ConstantInitialVoiceCreditProxyFactory,
   EASGatekeeper__factory as EASGatekeeperFactory,
   Verifier__factory as VerifierFactory,
-  TopupCredit__factory as TopupCreditFactory,
-  PoseidonT3__factory,
+  PoseidonT3__factory as PoseidonT3Factory,
   PoseidonT4__factory as PoseidonT4Factory,
   PoseidonT5__factory as PoseidonT5Factory,
   PoseidonT6__factory as PoseidonT6Factory,
@@ -30,23 +29,23 @@ import type {
   IDeployInitialVoiceCreditProxyArgs,
   IDeployMaciArgs,
   IDeployVkRegistryArgs,
+  IRegisterArgs,
+  IAbi,
 } from "./types";
-import type { Signer } from "ethers";
-
-import { STATE_TREE_SUB_DEPTH } from "./constants";
+import { ABI } from "./constants";
+import { type Signer, Contract } from "ethers";
 
 /**
  * MACI service is responsible for deployment of MACI components like:
  * 1. VoiceCreditProxy
  * 2. Gatekeeper
  * 3. Verifier
- * 4. TopupCredit
- * 5. Poseidon contracts
- * 6. PollFactory
- * 7. MessageProcessorFactory
- * 8. TallyFactory
- * 9. MACI contract
- * 10. VkRegistry
+ * 4. Poseidon contracts
+ * 5. PollFactory
+ * 6. MessageProcessorFactory
+ * 7. TallyFactory
+ * 8. MACI contract
+ * 9. VkRegistry
  */
 export class MaciService {
   /**
@@ -82,6 +81,12 @@ export class MaciService {
   async deployInitialVoiceCreditProxy({
     amount,
   }: IDeployInitialVoiceCreditProxyArgs): Promise<string> {
+    const address = this.storage.getAddress(
+      EContracts.ConstantInitialVoiceCreditProxy,
+      await this.getNetwork(),
+    );
+    if (address) return address;
+
     const contract = await this.deployment.deployContract(
       {
         name: EContracts.ConstantInitialVoiceCreditProxy,
@@ -92,11 +97,10 @@ export class MaciService {
       amount.toString(),
     );
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.ConstantInitialVoiceCreditProxy,
       contract,
       args: [amount.toString()],
-      network: await this.getNetwork(),
     });
 
     return contract.getAddress();
@@ -113,6 +117,12 @@ export class MaciService {
     encodedSchema,
     attester,
   }: IDeployGatekeeperArgs): Promise<string> {
+    const address = this.storage.getAddress(
+      EContracts.EASGatekeeper,
+      await this.getNetwork(),
+    );
+    if (address) return address;
+
     const contract = await this.deployment.deployContract(
       {
         name: EContracts.EASGatekeeper,
@@ -125,11 +135,10 @@ export class MaciService {
       encodedSchema,
     );
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.EASGatekeeper,
       contract,
       args: [easAddress, attester, encodedSchema],
-      network: await this.getNetwork(),
     });
 
     return contract.getAddress();
@@ -141,6 +150,12 @@ export class MaciService {
    * @returns deployed contract address
    */
   async deployVerifier(): Promise<string> {
+    const address = this.storage.getAddress(
+      EContracts.Verifier,
+      await this.getNetwork(),
+    );
+    if (address) return address;
+
     const contract = await this.deployment.deployContract({
       name: EContracts.Verifier,
       signer: this.deployer,
@@ -148,34 +163,9 @@ export class MaciService {
       bytecode: VerifierFactory.bytecode,
     });
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.Verifier,
       contract,
-      args: [],
-      network: await this.getNetwork(),
-    });
-
-    return contract.getAddress();
-  }
-
-  /**
-   * Deploy TopupCredit contract and save it to the storage
-   *
-   * @returns deployed contract address
-   */
-  async deployTopupCredit(): Promise<string> {
-    const contract = await this.deployment.deployContract({
-      name: EContracts.TopupCredit,
-      signer: this.deployer,
-      abi: TopupCreditFactory.abi,
-      bytecode: TopupCreditFactory.bytecode,
-    });
-
-    await this.storage.register({
-      id: EContracts.TopupCredit,
-      contract,
-      args: [],
-      network: await this.getNetwork(),
     });
 
     return contract.getAddress();
@@ -187,24 +177,60 @@ export class MaciService {
    * @returns deployed contracts addresses
    */
   async deployPoseidon(): Promise<[string, string, string, string]> {
+    const network = await this.getNetwork();
+
+    const poseidonT3Address = this.storage.getAddress(
+      EContracts.PoseidonT3,
+      network,
+    );
+    const poseidonT4Address = this.storage.getAddress(
+      EContracts.PoseidonT4,
+      network,
+    );
+    const poseidonT5Address = this.storage.getAddress(
+      EContracts.PoseidonT5,
+      network,
+    );
+    const poseidonT6Address = this.storage.getAddress(
+      EContracts.PoseidonT6,
+      network,
+    );
+
+    if (
+      poseidonT3Address &&
+      poseidonT4Address &&
+      poseidonT5Address &&
+      poseidonT6Address
+    ) {
+      return [
+        poseidonT3Address,
+        poseidonT4Address,
+        poseidonT5Address,
+        poseidonT6Address,
+      ];
+    }
+
     const poseidonT3Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT3,
       signer: this.deployer,
-      abi: PoseidonT3__factory.abi,
-      bytecode: PoseidonT3__factory.bytecode,
+      abi: PoseidonT3Factory.abi,
+      bytecode: PoseidonT3Factory.bytecode,
     });
+
     const poseidonT4Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT4,
       signer: this.deployer,
       abi: PoseidonT4Factory.abi,
       bytecode: PoseidonT4Factory.bytecode,
     });
+
     const poseidonT5Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT5,
       signer: this.deployer,
       abi: PoseidonT5Factory.abi,
       bytecode: PoseidonT5Factory.bytecode,
     });
+
     const poseidonT6Contract = await this.deployment.deployContract({
       name: EContracts.PoseidonT6,
       signer: this.deployer,
@@ -213,29 +239,21 @@ export class MaciService {
     });
 
     await Promise.all([
-      this.storage.register({
+      this.register({
         id: EContracts.PoseidonT3,
         contract: poseidonT3Contract,
-        args: [],
-        network: await this.getNetwork(),
       }),
-      this.storage.register({
+      this.register({
         id: EContracts.PoseidonT4,
         contract: poseidonT4Contract,
-        args: [],
-        network: await this.getNetwork(),
       }),
-      this.storage.register({
+      this.register({
         id: EContracts.PoseidonT5,
         contract: poseidonT5Contract,
-        args: [],
-        network: await this.getNetwork(),
       }),
-      this.storage.register({
+      this.register({
         id: EContracts.PoseidonT6,
         contract: poseidonT6Contract,
-        args: [],
-        network: await this.getNetwork(),
       }),
     ]);
 
@@ -257,21 +275,29 @@ export class MaciService {
    * @returns deployed contract address
    */
   async deployPollFactory(): Promise<string> {
+    const network = await this.getNetwork();
+    
+    const address = this.storage.getAddress(
+      EContracts.PollFactory,
+      network,
+    );
+    if (address) return address;
+
     const poseidonT3ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT3,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT4ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT4,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT5ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT5,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT6ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT6,
-      await this.getNetwork(),
+      network,
     );
 
     const linkedPollFactoryContract =
@@ -287,17 +313,14 @@ export class MaciService {
         ),
         this.deployer,
       );
-
     const pollFactoryContract =
       await this.deployment.deployContractWithLinkedLibraries(
         linkedPollFactoryContract,
       );
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.PollFactory,
       contract: pollFactoryContract,
-      args: [],
-      network: await this.getNetwork(),
     });
 
     return pollFactoryContract.getAddress();
@@ -309,21 +332,29 @@ export class MaciService {
    * @returns deployed contract address
    */
   async deployMessageProcessorFactory(): Promise<string> {
+    const network = await this.getNetwork();
+
+    const address = this.storage.getAddress(
+      EContracts.MessageProcessorFactory,
+      network,
+    );
+    if (address) return address;
+
     const poseidonT3ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT3,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT4ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT4,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT5ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT5,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT6ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT6,
-      await this.getNetwork(),
+      network,
     );
 
     const linkedMessageProcessorFactoryContract =
@@ -345,11 +376,9 @@ export class MaciService {
         linkedMessageProcessorFactoryContract,
       );
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.MessageProcessorFactory,
       contract: messageProcessorFactoryContract,
-      args: [],
-      network: await this.getNetwork(),
     });
 
     return messageProcessorFactoryContract.getAddress();
@@ -361,21 +390,29 @@ export class MaciService {
    * @returns deployed contract address
    */
   async deployTallyFactory(): Promise<string> {
+    const network = await this.getNetwork();
+    
+    const address = this.storage.getAddress(
+      EContracts.TallyFactory,
+      network,
+    );
+    if (address) return address;
+
     const poseidonT3ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT3,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT4ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT4,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT5ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT5,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT6ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT6,
-      await this.getNetwork(),
+      network,
     );
 
     const linkedTallyFactoryContract =
@@ -397,11 +434,9 @@ export class MaciService {
         linkedTallyFactoryContract,
       );
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.TallyFactory,
       contract: tallyFactoryContract,
-      args: [],
-      network: await this.getNetwork(),
     });
 
     return tallyFactoryContract.getAddress();
@@ -414,21 +449,56 @@ export class MaciService {
    * @returns deployed contract address
    */
   async deployMaci({ stateTreeDepth }: IDeployMaciArgs): Promise<string> {
+    const network = await this.getNetwork();
+
+    const address = this.storage.getAddress(
+      EContracts.MACI,
+      network,
+    );
+    if (address) return address;
+
     const poseidonT3ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT3,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT4ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT4,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT5ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT5,
-      await this.getNetwork(),
+      network,
     );
     const poseidonT6ContractAddress = this.storage.mustGetAddress(
       EContracts.PoseidonT6,
-      await this.getNetwork(),
+      network,
+    );
+
+    const constantInitialVoiceCreditProxyContractAddress =
+      this.storage.mustGetAddress(
+        EContracts.ConstantInitialVoiceCreditProxy,
+        network,
+      );
+
+    const gatekeeperContractAddress = this.storage.mustGetAddress(
+      EContracts.EASGatekeeper,
+      network,
+    );
+    const topupCreditContractAddress = this.storage.mustGetAddress(
+      EContracts.TopupCredit,
+      network,
+    );
+    const pollFactoryContractAddress = this.storage.mustGetAddress(
+      EContracts.PollFactory,
+      network,
+    );
+    const messageProcessorFactoryContractAddress = this.storage.mustGetAddress(
+      EContracts.MessageProcessorFactory,
+      network,
+    );
+    const tallyFactoryContractAddress = this.storage.mustGetAddress(
+      EContracts.TallyFactory,
+      network,
     );
 
     const maciContractFactory = await this.deployment.createContractFactory(
@@ -442,33 +512,6 @@ export class MaciService {
         ),
       ),
       this.deployer,
-    );
-
-    const constantInitialVoiceCreditProxyContractAddress =
-      this.storage.mustGetAddress(
-        EContracts.ConstantInitialVoiceCreditProxy,
-        await this.getNetwork(),
-      );
-
-    const gatekeeperContractAddress = this.storage.mustGetAddress(
-      EContracts.EASGatekeeper,
-      await this.getNetwork(),
-    );
-    const topupCreditContractAddress = this.storage.mustGetAddress(
-      EContracts.TopupCredit,
-      await this.getNetwork(),
-    );
-    const pollFactoryContractAddress = this.storage.mustGetAddress(
-      EContracts.PollFactory,
-      await this.getNetwork(),
-    );
-    const messageProcessorFactoryContractAddress = this.storage.mustGetAddress(
-      EContracts.MessageProcessorFactory,
-      await this.getNetwork(),
-    );
-    const tallyFactoryContractAddress = this.storage.mustGetAddress(
-      EContracts.TallyFactory,
-      await this.getNetwork(),
     );
 
     const maciContract =
@@ -495,7 +538,7 @@ export class MaciService {
       .setMaciInstance(maciInstanceAddress)
       .then((tx) => tx.wait());
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.MACI,
       contract: maciContract,
       args: [
@@ -507,7 +550,6 @@ export class MaciService {
         topupCreditContractAddress,
         stateTreeDepth,
       ],
-      network: await this.getNetwork(),
     });
 
     return maciInstanceAddress;
@@ -530,6 +572,12 @@ export class MaciService {
     tallyVotesZkeyPathQv,
     tallyVotesZkeyPathNonQv,
   }: IDeployVkRegistryArgs): Promise<string> {
+    const address = this.storage.getAddress(
+      EContracts.VkRegistry,
+      await this.getNetwork(),
+    );
+    if (address) return address;
+
     const [qvProcessVk, qvTallyVk, nonQvProcessVk, nonQvTallyQv] = [
       processMessagesZkeyPathQv,
       tallyVotesZkeyPathQv,
@@ -568,14 +616,36 @@ export class MaciService {
       )
       .then((tx) => tx.wait());
 
-    await this.storage.register({
+    await this.register({
       id: EContracts.VkRegistry,
       contract: vkRegistryContract,
-      args: [],
-      network: await this.getNetwork(),
     });
 
     return vkRegistryContract.getAddress();
+  }
+
+  /**
+   * Register contracts to the ContractStorage
+   *
+   * @param args - arguments for contract registration
+   */
+  async register({ id, contract, address, args }: IRegisterArgs) {
+    const abi = ABI[id];
+
+    if (!address && !contract) {
+      throw new Error("Address and contract are not provided. Provide at least one.");
+    }
+
+    if (!abi && !contract) {
+      throw new Error("No such contract.");
+    }
+
+    await this.storage.register({
+      id,
+      contract: contract || new Contract(address, abi, this.deployer),
+      args: args ?? [],
+      network: await this.getNetwork(),
+    });
   }
 
   /**
