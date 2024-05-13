@@ -6,7 +6,6 @@ export const metadata = {
   url: "https://rpgf-patterns.vercel.app",
   image: "/api/og",
 };
-
 export const config = {
   logoUrl: "/logo.svg",
   pageSize: 3 * 4,
@@ -27,7 +26,7 @@ export const config = {
   ) as `0x${string}`[],
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
-  alchemyEthMainnetApiKey: process.env.ALCHEMY_ETH_MAINNET_API_KEY,
+  alchemyEthMainnetApiKey: process.env.NEXT_PUBLIC_ALCHEMY_ETH_MAINNET_API_KEY,
 };
 
 export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
