@@ -103,7 +103,10 @@ const ConnectedDetails = ({
   const { showBallot } = useLayoutOptions();
 
   const onError = useCallback(() => toast.error("Signup error"), []);
-  const handleSignup = useCallback(() => onSignup(onError), [onSignup, onError]);
+  const handleSignup = useCallback(
+    () => onSignup(onError),
+    [onSignup, onError],
+  );
 
   return (
     <div>

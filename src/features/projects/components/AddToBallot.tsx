@@ -20,6 +20,7 @@ import {
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 import { useMaci } from "~/contexts/Maci";
 
 type Props = { id?: string; name?: string };
@@ -37,7 +38,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const sum = sumBallot(allocations.filter((p) => p.projectId !== id));
   const numVotes = ballot?.votes.length ?? 0;
 
-  if (getAppState() !== "VOTING") return null;
+  if (getAppState() !== EAppState.VOTING) return null;
 
   return (
     <div>
@@ -48,9 +49,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         </Alert>
       )}
 
-      {!isEligibleToVote || !isRegistered ? (
-        null
-      ) : ballot?.publishedAt ? (
+      {!isEligibleToVote || !isRegistered ? null : ballot?.publishedAt ? (
         <Button disabled>Ballot published</Button>
       ) : inBallot ? (
         <IconButton

@@ -3,13 +3,14 @@ import { type IGetPollData } from "maci-cli/sdk";
 import { config } from "~/config";
 import { api } from "~/utils/api";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 
 export function useResults(pollData?: IGetPollData) {
   const appState = getAppState();
 
   return api.results.votes.useQuery(
     { pollId: pollData?.id.toString() },
-    { enabled: appState === "RESULTS" },
+    { enabled: appState === EAppState.RESULTS },
   );
 }
 
@@ -32,6 +33,6 @@ export function useProjectResults(id: string, pollData?: IGetPollData) {
 
   return api.results.project.useQuery(
     { id, pollId: pollData?.id.toString() },
-    { enabled: appState === "RESULTS" },
+    { enabled: appState === EAppState.RESULTS },
   );
 }

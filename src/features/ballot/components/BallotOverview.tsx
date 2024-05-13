@@ -22,6 +22,7 @@ import {
 } from "~/features/projects/hooks/useProjects";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 import dynamic from "next/dynamic";
 import { useMaci } from "~/contexts/Maci";
 
@@ -43,11 +44,11 @@ function BallotOverview() {
 
   const { address } = useAccount();
 
-  if (appState === "LOADING") {
-    return <Spinner className="w-6 h-6" />
+  if (appState === EAppState.LOADING) {
+    return <Spinner className="h-6 w-6" />;
   }
 
-  if (appState === "RESULTS")
+  if (appState === EAppState.RESULTS)
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Results are live!</BallotHeader>
@@ -57,19 +58,19 @@ function BallotOverview() {
       </div>
     );
 
-  if (appState === "TALLYING")
+  if (appState === EAppState.TALLYING)
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Voting has ended</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
       </div>
     );
-  
-  if (appState !== "VOTING")
+
+  if (appState !== EAppState.VOTING)
     return (
       <div className="flex flex-col items-center gap-2 pt-8 ">
         <BallotHeader>Voting hasn't started yet</BallotHeader>
-        {appState === "REVIEWING" ? (
+        {appState === EAppState.REVIEWING ? (
           <BallotSection title="Applications are being reviewed" />
         ) : (
           <Button as={Link} href={"/applications/new"}>
@@ -97,31 +98,36 @@ function BallotOverview() {
             </div>
           </BallotSection>
           <BallotSection
-          title={
-            <div className="flex justify-between">
-              {config.tokenName} allocated:
-              <div
-                className={clsx("text-gray-900 dark:text-gray-300", {
-                  ["text-primary-500"]: sum > initialVoiceCredits,
-                })}
-              >
-                {formatNumber(sum)} {config.tokenName}
+            title={
+              <div className="flex justify-between">
+                {config.tokenName} allocated:
+                <div
+                  className={clsx("text-gray-900 dark:text-gray-300", {
+                    ["text-primary-500"]: sum > initialVoiceCredits,
+                  })}
+                >
+                  {formatNumber(sum)} {config.tokenName}
+                </div>
+              </div>
+            }
+          >
+            <Progress value={sum} max={initialVoiceCredits} />
+            <div className="flex justify-between text-xs">
+              <div>Total</div>
+              <div>
+                {formatNumber(initialVoiceCredits)} {config.tokenName}
               </div>
             </div>
-          }
-        >
-          <Progress value={sum} max={initialVoiceCredits} />
-          <div className="flex justify-between text-xs">
-            <div>Total</div>
-            <div>
-              {formatNumber(initialVoiceCredits)} {config.tokenName}
-            </div>
-          </div>
-        </BallotSection>
+          </BallotSection>
         </>
       )}
       {!isRegistered || !isEligibleToVote ? null : ballot?.publishedAt ? (
-        <Button className="w-full" variant="primary" as={Link} href={`/ballot/confirmation`}>
+        <Button
+          className="w-full"
+          variant="primary"
+          as={Link}
+          href={`/ballot/confirmation`}
+        >
           View submitted ballot
         </Button>
       ) : canSubmit ? (

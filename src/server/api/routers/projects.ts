@@ -9,7 +9,12 @@ import {
 } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { config, eas } from "~/config";
-import { type Filter, FilterSchema, OrderBy, SortOrder } from "~/features/filter/types";
+import {
+  type Filter,
+  FilterSchema,
+  OrderBy,
+  SortOrder,
+} from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 
 export const projectsRouter = createTRPCRouter({

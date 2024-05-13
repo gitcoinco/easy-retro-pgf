@@ -30,7 +30,7 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
           }
 
           await siwe.verify({ signature: credentials?.signature ?? "" });
-          
+
           const keypair = genKeyPair({
             seed: credentials?.signature
               ? BigInt(credentials.signature)

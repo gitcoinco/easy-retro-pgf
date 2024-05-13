@@ -5,6 +5,7 @@ import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 import { config } from "~/config";
 
 type Props = PropsWithChildren<
@@ -24,7 +25,7 @@ export const Layout = ({ children, ...props }: Props) => {
     },
   ];
 
-  if (appState === "RESULTS") {
+  if (appState === EAppState.RESULTS) {
     navLinks.push({
       href: "/stats",
       children: "Stats",
@@ -63,10 +64,6 @@ export const Layout = ({ children, ...props }: Props) => {
 
 export function LayoutWithBallot(props: Props) {
   return (
-    <Layout
-      sidebar="left"
-      sidebarComponent={<BallotOverview />}
-      {...props}
-    />
+    <Layout sidebar="left" sidebarComponent={<BallotOverview />} {...props} />
   );
 }

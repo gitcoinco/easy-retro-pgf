@@ -23,6 +23,7 @@ import { useMaci } from "~/contexts/Maci";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 
 export default function BallotPage() {
   const { data: ballot, isLoading } = useBallot();
@@ -98,7 +99,7 @@ function BallotAllocationForm() {
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
               <AllocationForm
-                disabled={appState === "RESULTS"}
+                disabled={appState === EAppState.RESULTS}
                 onSave={handleSaveBallot}
               />
             ) : (
@@ -226,7 +227,8 @@ function ClearBallot() {
   const { pollData } = useMaci();
   const pollId = pollData?.id.toString();
 
-  if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
+  if ([EAppState.TALLYING, EAppState.RESULTS].includes(getAppState()))
+    return null;
 
   return (
     <>
@@ -289,5 +291,9 @@ const TotalAllocation = () => {
   const votes = form.watch("votes") ?? [];
   const sum = sumBallot(votes);
 
-  return <div>{formatNumber(sum)} {config.tokenName}</div>;
+  return (
+    <div>
+      {formatNumber(sum)} {config.tokenName}
+    </div>
+  );
 };

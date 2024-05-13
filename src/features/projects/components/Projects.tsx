@@ -10,6 +10,7 @@ import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 import { useResults } from "~/hooks/useResults";
 import { SortFilter } from "~/components/SortFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
@@ -64,7 +65,7 @@ export function Projects() {
               href={`/projects/${item.id}`}
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
-              {isRegistered && !isLoading && appState === "VOTING" ? (
+              {isRegistered && !isLoading && appState === EAppState.VOTING ? (
                 <div className="absolute right-2 top-[100px] z-10 -mt-2">
                   <ProjectSelectButton
                     state={select.getState(item.id)}
@@ -75,7 +76,7 @@ export function Projects() {
                   />
                 </div>
               ) : null}
-              {!results.isLoading && appState === "RESULTS" ? (
+              {!results.isLoading && appState === EAppState.RESULTS ? (
                 <ProjectItemAwarded
                   amount={results.data?.projects?.[item.id]?.votes}
                 />

@@ -132,8 +132,6 @@ Run pnpm deploy-poll to deploy your first Poll (you can specify the network by a
 pnpm deploy-poll:NETWORK
 ```
 
-
-
 See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
 
 ## 4. Deploy
