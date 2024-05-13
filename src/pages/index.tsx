@@ -1,8 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Layout } from "~/layouts/DefaultLayout";
-import { Markdown } from "~/components/ui/Markdown";
-import { Button } from "~/components/ui/Button";
 import { Chip } from "~/components/ui/Chip";
 
 export default function HomePage({}) {

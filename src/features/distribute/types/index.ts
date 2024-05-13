@@ -1,32 +1,21 @@
-import { type Address, isAddress, createPublicClient } from "viem";
+import { type Address, isAddress } from "viem";
 import { z } from "zod";
-import { normalize } from "viem/ens";
-import { http } from "@wagmi/core";
-import { mainnet } from "@wagmi/core/chains";
+import { resolveENSAddress } from "~/utils/resolveENSAddress";
 
-export const publicClient = createPublicClient({
-  chain: mainnet,
-  transport: http(
-    `https://eth-mainnet.g.alchemy.com/v2/WCcOSca9z2Qo7wnMJz19Wo_yQr5pqv2k`,
-  ),
-});
-
-const isENSAddress = async (val: string) => {
-  const ensAddress = await publicClient.getEnsAddress({
-    name: normalize(val),
-  });
-  if (ensAddress && ensAddress?.length > 0) return true;
-  return false;
-};
+export const EnsAddressSchema = z.string().refine(async (val) => {
+  try {
+    await resolveENSAddress(val);
+    return true;
+  } catch {
+    return false;
+  }
+}, "Invalid address");
 
 export const EthAddressSchema = z.custom<string>(
   (val) => isAddress(val as Address),
   "Invalid address",
 );
-export const EnsAddressSchema = z.custom<string>(
-  async (val) => await isENSAddress(val as string),
-  "Invalid address",
-);
+
 export const DistributionSchema = z.object({
   projectId: z.string(),
   amount: z.string(),
