@@ -15,6 +15,7 @@ import {
 import { Layout } from "~/layouts/DefaultLayout";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 
 const ResultsChart = dynamic(
   async () => await import("~/features/results/components/Chart"),
@@ -31,7 +32,7 @@ export default function StatsPage() {
         Stats
       </Heading>
 
-      {appState === "RESULTS" ? (
+      {appState === EAppState.RESULTS ? (
         <Stats />
       ) : (
         <Alert variant="info" className="mx-auto max-w-sm text-center">

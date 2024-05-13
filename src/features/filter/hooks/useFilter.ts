@@ -1,8 +1,4 @@
-import {
-  parseAsString,
-  parseAsStringEnum,
-  useQueryStates,
-} from "nuqs";
+import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 
 import { OrderBy, SortOrder } from "../types";
 

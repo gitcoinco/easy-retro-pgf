@@ -45,7 +45,7 @@
     "graphql-request": "^6.1.0",
     "lowdb": "^1.0.0",
     "lucide-react": "^0.316.0",
-    "maci-cli": "0.0.0-ci.56ea48a",
+    "maci-cli": "0.0.0-ci.f0bb968",
     "next": "^14.1.0",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
@@ -132,5 +132,8 @@
     ],
     "coverageDirectory": "<rootDir>/coverage",
     "testEnvironment": "node"
+  },
+  "browser": {
+    "child_process": false
   }
 }

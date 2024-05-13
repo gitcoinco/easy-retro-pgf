@@ -1,27 +1,20 @@
 import { isAfter } from "date-fns";
 import { config } from "~/config";
 import { useMaci } from "~/contexts/Maci";
+import { EAppState } from "./types";
 
-type AppState =
-  | "LOADING"
-  | "APPLICATION"
-  | "REVIEWING"
-  | "VOTING"
-  | "RESULTS"
-  | "TALLYING";
-
-export const getAppState = (): AppState => {
+export const getAppState = (): EAppState => {
   const now = new Date();
   const { isLoading, votingEndsAt, pollData, tallyData } = useMaci();
 
   if (isLoading) {
-    return "LOADING";
+    return EAppState.LOADING;
   }
 
-  if (isAfter(config.registrationEndsAt, now)) return "APPLICATION";
-  if (isAfter(config.reviewEndsAt, now)) return "REVIEWING";
-  if (isAfter(votingEndsAt, now)) return "VOTING";
-  if (!pollData?.isStateAqMerged || !tallyData) return "TALLYING";
+  if (isAfter(config.registrationEndsAt, now)) return EAppState.APPLICATION;
+  if (isAfter(config.reviewEndsAt, now)) return EAppState.REVIEWING;
+  if (isAfter(votingEndsAt, now)) return EAppState.VOTING;
+  if (!pollData?.isStateAqMerged || !tallyData) return EAppState.TALLYING;
 
-  return "RESULTS";
+  return EAppState.RESULTS;
 };

@@ -32,6 +32,7 @@ import { AllocationForm } from "~/features/ballot/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
+import { EAppState } from "~/utils/types";
 import { useMaci } from "~/contexts/Maci";
 
 export const ListEditDistribution = ({
@@ -76,7 +77,7 @@ export const ListEditDistribution = ({
   const appState = getAppState();
   return (
     <div>
-      {appState === "VOTING" && (
+      {appState === EAppState.VOTING && (
         <Button
           variant="primary"
           onClick={() => {
@@ -179,7 +180,7 @@ const TotalAllocationBanner = () => {
 
   // Load existing ballot
   const { data: ballot } = useBallot();
-  const { initialVoiceCredits } = useMaci()
+  const { initialVoiceCredits } = useMaci();
 
   const sum = sumBallot(ballot?.votes);
   const votes = form.watch("votes") ?? [];

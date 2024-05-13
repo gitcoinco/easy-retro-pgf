@@ -4,7 +4,11 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
-import { type Settings, SettingsSchema, CalculationSchema } from "~/features/distribute/types";
+import {
+  type Settings,
+  SettingsSchema,
+  CalculationSchema,
+} from "~/features/distribute/types";
 import { type PrismaClient } from "@prisma/client";
 
 export async function getSettings(db: PrismaClient) {
