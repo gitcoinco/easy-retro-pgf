@@ -42,7 +42,7 @@ export const roundsRouter = createTRPCRouter({
             maxVotesTotal: 100_000,
             admins: [creatorId],
             network: networks.optimismSepolia,
-            calculationType: "standard",
+            calculationType: "average",
           },
         })
         .then((r) => r as RoundSchema | undefined);
