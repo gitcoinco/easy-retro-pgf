@@ -23,7 +23,7 @@ import {
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
 import { toast } from "sonner";
-import { useController, useFormContext, useForm } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useProjectMetadata } from "../../projects/hooks/useProjects";
@@ -35,6 +35,7 @@ import { useSession } from "next-auth/react";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { isBefore } from "date-fns";
 import { config } from "~/config";
+import Link from "next/link";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -56,6 +57,8 @@ export function ApplicationForm({
   const clearDraft = useLocalStorage("application-draft")[2];
 
   const [defaultValues, setDefaultValues] = useState();
+  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (isEditMode && projectInfo && metadata?.data && profile?.data)
@@ -90,15 +93,36 @@ export function ApplicationForm({
       if (!isEditMode) clearDraft();
     },
     onError: (err: { reason?: string; data?: { message: string } }) => {
+      console.log("err", err);
       toast.error("Application create error", {
-        description: err.reason ?? err.data?.message,
+        description:
+          err.reason ??
+          err.data?.message ??
+          (!isCorrectNetwork &&
+            `You must be connected to ${correctNetwork.name}`) ??
+          (!session && (
+            <div>You must connect wallet to create an application</div>
+          )),
       });
     },
   });
   if (create.isSuccess) {
     return (
       <Alert variant="success" title="Application created!">
-        It will now be reviewed by our admins.
+        Your submission will now be reviewed by our administrators and
+        subsequently added to the projects.
+        <p>
+          Please contact the&nbsp;
+          <Link
+            className="underline hover:text-primary-dark"
+            href="https://discord.com/channels/553741558869131266/1168923397842022571"
+            target="_blank"
+          >
+            help-desk channel
+          </Link>
+          &nbsp;if your application has not been added after 48 hours. Do not
+          resubmit your application.
+        </p>
       </Alert>
     );
   }
@@ -178,30 +202,94 @@ export function ApplicationForm({
               <Input placeholder="https://" />
             </FormControl>
 
-            <div className="gap-4 md:flex">
+            <div className="gap-4 lg:flex">
               <FormControl
                 className="flex-1"
                 name="application.wPOKTReceivingAddress"
-                label="wPOKT receiving address"
-                required
+                label={
+                  <p className="flex items-center gap-1">
+                    <span
+                      className=" mr-1 flex items-center rounded-full border-[1.5px] border-outline-dark px-[0.375rem] text-xs font-bold text-outline-dark"
+                      data-tooltip-id="application.wPOKTReceivingAddress"
+                    >
+                      i
+                    </span>
+                    wPOKT receiving address
+                    <ReactTooltip
+                      id="application.wPOKTReceivingAddress"
+                      place="bottom"
+                      className="max-h-full max-w-[20rem] bg-outline-dark md:max-w-max"
+                      multiline={true}
+                      style={{ backgroundColor: "#6c7283" }}
+                      content={
+                        <p className="flex flex-col text-wrap font-normal">
+                          wPOKT will be sent to your wallet on Ethereum mainnet.
+                        </p>
+                      }
+                    />
+                    <span className="text-onSurface-dark"> *</span>
+                  </p>
+                }
               >
-                <Input
-                  placeholder="0XfAd....aseqw3wcf97"
-                />
+                <Input placeholder="0XfAd....aseqw3wcf97" />
               </FormControl>
               <FormControl
                 className="flex-1"
                 name="application.arbReceivingAddress"
-                label="ARB receiving address"
-                required
+                label={
+                  <p className="flex items-center gap-1">
+                    <span
+                      className=" mr-1 flex items-center rounded-full border-[1.5px] border-outline-dark px-[0.375rem] text-xs font-bold text-outline-dark"
+                      data-tooltip-id="application.arbReceivingAddress"
+                    >
+                      i
+                    </span>
+                    ARB receiving address
+                    <ReactTooltip
+                      id="application.arbReceivingAddress"
+                      place="bottom"
+                      className="max-h-full max-w-[20rem] bg-outline-dark md:max-w-max"
+                      multiline={true}
+                      style={{ backgroundColor: "#6c7283" }}
+                      content={
+                        <p className="flex flex-col text-wrap font-normal">
+                          ARB will be sent to your wallet on Arbitrum mainnet.
+                        </p>
+                      }
+                    />
+                    <span className="text-onSurface-dark"> *</span>
+                  </p>
+                }
               >
                 <Input placeholder="0XfAd....aseqw3wcf97" />
               </FormControl>
               <FormControl
                 className="flex-1"
                 name="application.opReceivingAddress"
-                label="OP receiving address"
-                required
+                label={
+                  <p className="flex items-center gap-1">
+                    <span
+                      className=" mr-1 flex items-center rounded-full border-[1.5px] border-outline-dark px-[0.375rem] text-xs font-bold text-outline-dark"
+                      data-tooltip-id="application.opReceivingAddress"
+                    >
+                      i
+                    </span>
+                    OP receiving address
+                    <ReactTooltip
+                      id="application.opReceivingAddress"
+                      place="bottom"
+                      className="max-h-full max-w-[20rem] bg-outline-dark md:max-w-max"
+                      multiline={true}
+                      style={{ backgroundColor: "#6c7283" }}
+                      content={
+                        <p className="flex flex-col text-wrap font-normal">
+                          OP will be sent to your wallet on Optimism mainnet.
+                        </p>
+                      }
+                    />
+                    <span className="text-onSurface-dark"> *</span>
+                  </p>
+                }
               >
                 <Input placeholder="0XfAd....aseqw3wcf97" />
               </FormControl>
@@ -211,8 +299,10 @@ export function ApplicationForm({
               name="application.isDAOVoters"
               label="Are you or any employees, contractors, or equity holders of the applying organization or team DAO voters?"
             >
-
-              <Input className="w-4 h-4 dark:hover:bg-transparent dark:focus:bg-transparent" type="checkbox" />
+              <Input
+                className="h-4 w-4 dark:hover:bg-transparent dark:focus:bg-transparent"
+                type="checkbox"
+              />
             </FormControl>
           </FormSection>
 
@@ -441,6 +531,7 @@ export function ApplicationForm({
 
           <CreateApplicationButton
             isLoading={create.isPending}
+            session={session}
             buttonText={
               create.isUploading
                 ? "Uploading metadata"
@@ -458,26 +549,14 @@ export function ApplicationForm({
 function CreateApplicationButton({
   isLoading,
   buttonText,
+  session,
 }: {
   isLoading: boolean;
   buttonText: string;
+  session: Session | null;
 }) {
-  const { data: session } = useSession();
-  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
-
   return (
-    <div className="mt-8 flex items-center justify-between">
-      <div>
-        {!session && (
-          <div>You must connect wallet to create an application</div>
-        )}
-        {!isCorrectNetwork && (
-          <div className="flex items-center gap-2">
-            You must be connected to {correctNetwork.name}
-          </div>
-        )}
-      </div>
-
+    <div className="mt-8 flex items-center justify-end">
       <Button
         disabled={isLoading || !session}
         variant="primary"

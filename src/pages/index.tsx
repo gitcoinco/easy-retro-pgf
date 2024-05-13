@@ -12,12 +12,16 @@ export default function HomePage({}) {
             Retroactive POKT Goods Round 1 is now open!
           </h1>
           <p className=" mt-4 leading-relaxed lg:text-lg xl:text-xl">
-            Have you created an impact for POKT Network? Eligible applicants can apply under the Protocol, Ecosystem, or Adoption categories now. Applications close on 31st May 2024.
+            Have you created an impact for POKT Network? Eligible applicants can
+            apply under the Protocol, Ecosystem, or Adoption categories now.
+          </p>
+          <p className=" mt-2 leading-relaxed lg:text-lg xl:text-xl">
+            Applications close on 31st May 2024.
           </p>
 
-          <div className="mt-6 flex flex-col md:flex-row items-center gap-4 lg:mt-8">
+          <div className="mt-6 flex flex-col items-center gap-4 md:flex-row lg:mt-8">
             <Chip
-              className="gap-2 px-8 py-4 lg:px-8 text-base font-semibold md:py-4"
+              className="gap-2 px-8 py-4 text-base font-semibold md:py-4 lg:px-8"
               as={Link}
               target="_blank"
               href="https://docs.pokt.network/community/retro-pokt-goods-funding"

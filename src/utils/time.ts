@@ -12,5 +12,5 @@ export const calculateTimeLeft = (
   return [days % 365, hrs % 24, min % 60, sec % 60];
 };
 
-export const formatDate = (date: Date | number) =>
-  format(date, "dd MMM yyyy HH:mm");
+export const formatDate = (date: Date | number, formatStr?: string) =>
+  format(date, `${formatStr ? formatStr :"dd MMM yyyy HH:mm"}`);
