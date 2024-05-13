@@ -30,8 +30,9 @@ import type {
   IDeployMaciArgs,
   IDeployVkRegistryArgs,
   IRegisterArgs,
-  IRegisterExistingContractArgs,
+  IAbi,
 } from "./types";
+import { ABI } from "./constants";
 import { type Signer, Contract } from "ethers";
 
 /**
@@ -623,62 +624,25 @@ export class MaciService {
     return vkRegistryContract.getAddress();
   }
 
-  async registerExistingContract({ id, address, args }: IRegisterExistingContractArgs) {
-    let abi
-    switch(id) {
-      case EContracts.InitialVoiceCreditProxy:
-        abi = ConstantInitialVoiceCreditProxyFactory.abi;
-        break;
-      case EContracts.EASGatekeeper:
-        abi = EASGatekeeperFactory.abi;
-        break;
-      case EContracts.Verifier:
-        abi = VerifierFactory.abi;
-        break;
-      case EContracts.PoseidonT3:
-        abi = PoseidonT3Factory.abi;
-        break;
-      case EContracts.PoseidonT4:
-        abi = PoseidonT4Factory.abi;
-        break;
-      case EContracts.PoseidonT5:
-        abi = PoseidonT5Factory.abi;
-        break;
-      case EContracts.PoseidonT6:
-        abi = PoseidonT6Factory.abi;
-        break;
-      case EContracts.PollFactory:
-        abi = PollFactoryFactory.abi;
-        break;
-      case EContracts.MessageProcessorFactory:
-        abi = MessageProcessorFactoryFactory.abi;
-        break;
-      case EContracts.TallyFactory:
-        abi = TallyFactoryFactory.abi;
-        break;
-      case EContracts.MACI:
-        abi = MACIFactory.abi;
-        break;
-      case EContracts.VkRegistry:
-        abi = VkRegistryFactory.abi;
-        break;
-      default:
-        throw new Error("No such contract!");
-    }
-
-    const contract = new Contract(address, abi, this.deployer);
-    await this.register({ id, contract, args });
-  }
-
   /**
    * Register contracts to the ContractStorage
    *
    * @param args - arguments for contract registration
    */
-  async register({ id, contract, args }: IRegisterArgs) {
+  async register({ id, contract, address, args }: IRegisterArgs) {
+    const abi = ABI[id];
+
+    if (!address && !contract) {
+      throw new Error("Address and contract are not provided. Provide at least one.");
+    }
+
+    if (!abi && !contract) {
+      throw new Error("No such contract.");
+    }
+
     await this.storage.register({
       id,
-      contract,
+      contract: contract || new Contract(address, abi, this.deployer),
       args: args ?? [],
       network: await this.getNetwork(),
     });

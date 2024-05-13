@@ -1,5 +1,5 @@
 import type { ISnarkJSVerificationKey, EContracts } from "maci-cli/sdk";
-import type { BaseContract } from "ethers";
+import type { BaseContract, Interface, InterfaceAbi } from "ethers";
 
 /**
  * Interface that represents deploy args for initial voice credit proxy
@@ -100,27 +100,17 @@ export interface IRegisterArgs {
   /**
    * Contract instance
    */
-  contract: BaseContract;
-
-  /**
-   * args for ContractStorage
-   */
-  args?: unknown[];
-}
-
-export interface IRegisterExistingContractArgs {
-  /**
-   * Id of the contract
-   */
-  id: EContracts;
+  contract?: BaseContract;
 
   /**
    * Contract address
    */
-  address: string;
+  address?: string;
 
   /**
    * args for ContractStorage
    */
   args?: unknown[];
 }
+
+export type IAbi = Record<EContracts, Interface | InterfaceAbi >;
