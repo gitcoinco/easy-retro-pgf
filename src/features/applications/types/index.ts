@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   EthAddressSchema,
+  EnsAddressSchema,
 } from "~/features/distribute/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
@@ -42,9 +43,9 @@ export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
   websiteUrl: z.string().url().min(1),
-  wPOKTReceivingAddress: EthAddressSchema,
-  arbReceivingAddress: EthAddressSchema,
-  opReceivingAddress: EthAddressSchema,
+  wPOKTReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
+  arbReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
+  opReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
   contributionDescription: z.string().min(3),
   impactDescription: z.string().min(3),
   impactCategory: z.array(z.string()).min(1),

@@ -20,7 +20,6 @@ import {
   useFieldArray,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { createComponent } from ".";
 import { cn } from "~/utils/classNames";
 import { useInterval, useLocalStorage } from "react-use";
@@ -127,7 +126,7 @@ export const FormControl = ({
   className,
 }: {
   name: string;
-  label?: string;
+  label?: ReactElement | string;
   required?: boolean;
   valueAsNumber?: boolean;
   hint?: string;

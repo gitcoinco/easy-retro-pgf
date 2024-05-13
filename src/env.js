@@ -114,6 +114,7 @@ export const env = createEnv({
     NEXT_PUBLIC_TOKEN_ADDRESS: z
       .string()
       .default("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
+    NEXT_PUBLIC_ALCHEMY_ETH_MAINNET_API_KEY: z.string(),
   },
 
   /**
@@ -169,6 +170,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ALLO2_ADDRESS: process.env.NEXT_PUBLIC_ALLO2_ADDRESS,
     NEXT_PUBLIC_STRATEGY_ADDRESS: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS,
     NEXT_PUBLIC_TOKEN_ADDRESS: process.env.NEXT_PUBLIC_TOKEN_ADDRESS,
+    NEXT_PUBLIC_ALCHEMY_ETH_MAINNET_API_KEY:
+      process.env.NEXT_PUBLIC_ALCHEMY_ETH_MAINNET_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

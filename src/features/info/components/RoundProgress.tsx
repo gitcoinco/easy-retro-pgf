@@ -31,7 +31,7 @@ export function RoundProgress() {
   const { progress, currentStepIndex } = calculateProgress(steps);
 
   return (
-    <div className="relative my-6">
+    <div className="relative my-2">
       <ProgressWrapper
         className={cn({
           ["w-full"]: currentStepIndex === steps.length,
@@ -44,14 +44,14 @@ export function RoundProgress() {
           <div
             key={i}
             className={cn(
-              "z-10 flex-1  rounded-xl border-l border-yellow-400 py-4 px-2 transition-opacity",
+              "z-10 flex-1  rounded-xl border-l border-yellow-400 px-2 py-4 transition-opacity",
               {
                 ["opacity-50"]: currentStepIndex <= i,
               },
             )}
           >
             <h3 className="font-semibold">{step.label}</h3>
-            <div>{formatDate(step.date)}</div>
+            <div>{formatDate(step.date, "dd MMM yyyy")}</div>
           </div>
         ))}
       </div>
