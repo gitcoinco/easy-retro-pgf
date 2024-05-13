@@ -10,19 +10,19 @@ const steps = [
     date: config.startsAt,
   },
   {
-    label: "Review & Approval",
+    label: "Application Assessments",
     date: config.registrationEndsAt,
   },
   {
-    label: "Voting",
+    label: "Voting period",
     date: config.reviewEndsAt,
   },
   {
-    label: "Tallying",
+    label: "End of voting period",
     date: config.votingEndsAt,
   },
   {
-    label: "Distribution",
+    label: "Results Announced",
     date: config.resultsAt,
   },
 ];
