@@ -34,7 +34,7 @@ export function ProjectItem({
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
       </Heading>
       <div className="mb-5">
-        <p className="line-clamp-2 text-sm dark:text-onSurface-dark">
+        <p className="line-clamp-2 h-10 text-sm dark:text-onSurface-dark">
           <Skeleton isLoading={isLoading} className="w-full">
             {metadata.data?.bio}
           </Skeleton>
