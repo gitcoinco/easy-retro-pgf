@@ -14,8 +14,7 @@ export default function HomePage({}) {
             Retroactive POKT Goods Round 1 is now open!
           </h1>
           <p className=" mt-4 leading-relaxed lg:text-lg xl:text-xl">
-            Have you created impact for POKT Network? Eligible applicants can
-            apply under the Protocol, Ecosystem or Adoption categories now.
+            Have you created an impact for POKT Network? Eligible applicants can apply under the Protocol, Ecosystem, or Adoption categories now. Applications close on 31st May 2024.
           </p>
 
           <div className="mt-6 flex flex-col md:flex-row items-center gap-4 lg:mt-8">
