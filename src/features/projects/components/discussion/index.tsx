@@ -17,7 +17,7 @@ export const DiscussionComponent = ({
   state: AppState;
   projectId: string;
 }) => {
-  const voters: Attestation[] = useVoters();
+  const { data: voters } = useVoters();
   const { data, refetch, isLoading } = useGetDiscussions({
     projectId: projectId,
   });
