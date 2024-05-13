@@ -38,36 +38,39 @@ export default function ProjectDetails({
   } = metadata.data ?? {};
   const isAdmin = useIsAdmin();
   const { data: voters } = useVoters();
-  console.log(
-    "isAdmin",
-    isAdmin || (voters && voters?.some((item) => item.recipient === address)),
-  );
+
 
   return (
     <div className="relative">
       <div className="overflow-hidden">
-        <ProjectBanner size="lg" profileId={attestation?.recipient} />
+        <ProjectBanner
+          size="lg"
+          bannerImageUrl={profile?.data?.bannerImageUrl}
+          profileImageUrl={profile?.data?.profileImageUrl}
+        />
       </div>
       <div className=" mb-8 flex flex-col items-baseline md:mb-16 md:flex-row md:items-center md:gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-2 md:ml-8"
-          profileId={attestation?.recipient}
+          profileImageUrl={profile?.data?.profileImageUrl}
         />
         <div>
           <div className="flex flex-col items-baseline p-2 md:p-0">
             <p className="break-words break-all">{profile?.data?.name}</p>
             <p className="break-words break-all">{attestation?.recipient}</p>
-            <a
-              href={websiteUrl}
-              target="_blank"
-              className="m-2 flex items-center justify-between gap-1 break-words break-all hover:text-primary-dark md:m-0"
-            >
-              <Globe className=" h-4 w-4" />
-              <span>Website</span>
-              <ExternalLinkIcon className=" h-4 w-4" />
-            </a>
+            {websiteUrl && (
+              <a
+                href={websiteUrl}
+                target="_blank"
+                className="m-2 flex items-center justify-between gap-1 break-words break-all hover:text-primary-dark md:m-0"
+              >
+                <Globe className=" h-4 w-4" />
+                <span>Website</span>
+                <ExternalLinkIcon className=" h-4 w-4" />
+              </a>
+            )}
           </div>
         </div>
       </div>
