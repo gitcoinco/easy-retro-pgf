@@ -39,7 +39,6 @@ export default function ProjectDetails({
   const isAdmin = useIsAdmin();
   const { data: voters } = useVoters();
 
-
   return (
     <div className="relative">
       <div className="overflow-hidden">
@@ -58,13 +57,13 @@ export default function ProjectDetails({
         />
         <div>
           <div className="flex flex-col items-baseline p-2 md:p-0">
-            <p className="break-words break-all">{profile?.data?.name}</p>
-            <p className="break-words break-all">{attestation?.recipient}</p>
+            <p className="break-words ">{profile?.data?.name}</p>
+            <p className="break-words ">{attestation?.recipient}</p>
             {websiteUrl && (
               <a
                 href={websiteUrl}
                 target="_blank"
-                className="m-2 flex items-center justify-between gap-1 break-words break-all hover:text-primary-dark md:m-0"
+                className="m-2 flex items-center justify-between gap-1 break-words  hover:text-primary-dark md:m-0"
               >
                 <Globe className=" h-4 w-4" />
                 <span>Website</span>
@@ -74,10 +73,10 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
-      <div className="flex flex-col-reverse items-start justify-between gap-5 md:flex-row md:items-center md:gap-0">
+      <div className="flex flex-col-reverse items-start justify-between gap-5 md:flex-row md:items-center md:gap-4">
         <div className="flex flex-col items-start justify-between gap-4">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
-          <p className="text-lg">{bio}</p>
+          <p className="break-words text-justify text-lg ">{bio}</p>
         </div>
         {action}
 

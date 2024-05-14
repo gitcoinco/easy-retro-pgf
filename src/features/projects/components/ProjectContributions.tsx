@@ -14,7 +14,7 @@ export default function ProjectContributions({ isLoading, project }: Props) {
         <Heading className="m-0" as="h3" size="lg">
         Contributions
       </Heading>
-          <p className="break-all break-words text-sm font-normal">
+          <p className=" break-words text-sm font-normal">
             {project?.contributionDescription}
           </p>
         </div>

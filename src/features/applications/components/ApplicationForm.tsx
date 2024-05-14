@@ -617,7 +617,7 @@ function ImpactTags() {
                   content={
                     <div className="flex flex-col text-wrap">
                       <span>What is a {label} impact?</span>
-                      <div className=" flex h-full  w-full break-all ">
+                      <div className=" flex h-full  w-full break-words ">
                         {description}
                       </div>
                     </div>
