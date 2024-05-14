@@ -105,7 +105,7 @@ export const IdeaItem = ({
       <div
         className={` flex w-full flex-col items-baseline justify-between gap-3`}
       >
-        <p className="break-words break-all font-normal text-onPrimary-light">
+        <p className="break-words  font-normal text-onPrimary-light">
           {data.content}
         </p>
         <div className="flex items-center gap-10 pb-0 pt-2 md:p-2">
@@ -148,7 +148,7 @@ export const IdeaItem = ({
             </button>
           )}
           {onReact.error && (
-            <p className="break-words break-all py-1 text-xs font-normal text-error-dark">
+            <p className="break-words  py-1 text-xs font-normal text-error-dark">
               {onReact.error.message}
             </p>
           )}
