@@ -46,7 +46,9 @@ export function Projects() {
           return (
             <Link
               key={item.id}
-              href={`/projects/${item.id}`}
+              href={`/projects/${item?.id}`}
+              as={`/projects/${item?.id}`}
+              prefetch
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
               {!isLoading && getAppState() === "VOTING" ? (
