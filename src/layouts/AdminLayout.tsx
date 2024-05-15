@@ -1,9 +1,9 @@
 import type { ReactNode, PropsWithChildren } from "react";
 import { useSession } from "next-auth/react";
 import { type LayoutProps } from "./BaseLayout";
-import { config } from "~/config";
 import { Layout } from "./DefaultLayout";
 import { InvalidAdmin } from "~/features/admin/components/InvalidAdmin";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 
 type Props = PropsWithChildren<
   {
@@ -13,7 +13,8 @@ type Props = PropsWithChildren<
 >;
 export const AdminLayout = ({ children, ...props }: Props) => {
   const { data } = useSession();
-  if (data && config.admins.includes(data.address as `0x${string}`)) {
+  const isAdmin = useIsAdmin();
+  if (data && isAdmin) {
     return <Layout {...props}>{children}</Layout>;
   }
 
