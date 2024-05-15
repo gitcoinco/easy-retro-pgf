@@ -1,12 +1,12 @@
-import { Markdown } from "~/components/ui/Markdown";
+import { Heading } from "~/components/ui/Heading";
 
 export function InvalidAdmin() {
   return (
     <div>
-      <Markdown>{`### Invalid Admin Account
-  Only admins can access this page.
-
-  `}</Markdown>
+      <Heading className="truncate" size="2xl" as="h3">
+        Invalid Admin Account
+      </Heading>
+      <p>Only admins can access this page.</p>
     </div>
   );
 }
