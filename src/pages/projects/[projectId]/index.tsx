@@ -13,9 +13,7 @@ export default function ProjectDetailsPage({ projectId = "" }) {
   const { name } = project.data ?? {};
 
   const action =
-    getAppState() === "RESULTS" ? (
-      <ProjectAwarded id={projectId} />
-    ) : (
+    getAppState() === "RESULTS" ? null : ( //<ProjectAwarded id={projectId} />
       <ProjectAddToBallot id={projectId} name={name} />
     );
   return (

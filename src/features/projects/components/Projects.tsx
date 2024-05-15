@@ -60,11 +60,11 @@ export function Projects() {
                   />
                 </div>
               ) : null}
-              {!results.isPending && getAppState() === "RESULTS" ? (
+              {/* {!results.isPending && getAppState() === "RESULTS" ? (
                 <ProjectItemAwarded
                   amount={results.data?.projects?.[item.id]?.votes}
                 />
-              ) : null}
+              ) : null} */}
               <ProjectItem isLoading={isLoading} attestation={item} />
             </Link>
           );
