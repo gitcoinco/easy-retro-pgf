@@ -14,13 +14,14 @@ import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
-import { getAppState } from "~/utils/state";
+import { getAppState, type AppState } from "~/utils/state";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
 export const ConnectButton = () => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
+  const state = getAppState();
 
   return (
     <RainbowConnectButton.Custom>
@@ -54,14 +55,25 @@ export const ConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button
-                    suppressHydrationWarning
-                    onClick={openConnectModal}
-                    className="rounded-full"
-                    variant="primary"
-                  >
-                    {isMobile ? "Connect" : "Connect wallet"}
-                  </Button>
+                  <div className="flex flex-row-reverse items-center gap-2">
+                    <Button
+                      suppressHydrationWarning
+                      onClick={openConnectModal}
+                      className="rounded-full"
+                      variant="primary"
+                    >
+                      {isMobile ? "Connect" : "Connect wallet"}
+                    </Button>
+                    {state === "APPLICATION" && (
+                      <Chip
+                        className="gap-2 px-4 md:px-12 md:leading-[1.875rem]"
+                        as={Link}
+                        href={"/applications/new"}
+                      >
+                        Apply
+                      </Chip>
+                    )}
+                  </div>
                 );
               }
 
@@ -74,6 +86,7 @@ export const ConnectButton = () => {
                   account={account}
                   openAccountModal={openAccountModal}
                   isMobile={isMobile}
+                  state={state}
                 />
               );
             })()}
@@ -88,12 +101,13 @@ const ConnectedDetails = ({
   openAccountModal,
   account,
   isMobile,
+  state,
 }: {
   account: { address: string; displayName: string };
   openAccountModal: () => void;
   isMobile: boolean;
+  state: AppState;
 }) => {
-  const state = getAppState();
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
   const { eligibilityCheck, showBallot } = useLayoutOptions();
@@ -115,7 +129,11 @@ const ConnectedDetails = ({
           </>
         ) : (
           state === "APPLICATION" && (
-            <Chip className="gap-2 px-4 md:px-12" as={Link} href={"/applications/new"}>
+            <Chip
+              className="gap-2 px-4 md:px-12"
+              as={Link}
+              href={"/applications/new"}
+            >
               Apply
             </Chip>
           )
