@@ -42,19 +42,16 @@ export default function ProjectDetails({
   return (
     <div className="relative">
       <div className="overflow-hidden">
-        <ProjectBanner
-          size="lg"
-          bannerImageUrl={profile?.data?.bannerImageUrl}
-          profileImageUrl={profile?.data?.profileImageUrl}
-        />
+        <ProjectBanner size="lg" profileId={attestation?.recipient} />
       </div>
       <div className=" mb-8 flex flex-col items-baseline md:mb-16 md:flex-row md:items-center md:gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-2 md:ml-8"
-          profileImageUrl={profile?.data?.profileImageUrl}
+          profileId={attestation?.recipient}
         />
+
         <div>
           <div className="flex flex-col items-baseline p-2 md:p-0">
             <p className="break-words ">{profile?.data?.name}</p>
