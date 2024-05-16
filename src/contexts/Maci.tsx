@@ -21,7 +21,7 @@ import {
 import type { Attestation } from "~/utils/fetchAttestations";
 import { config } from "~/config";
 import { api } from "~/utils/api";
-import { useEthersSigner, useEthersProvider } from "~/hooks/useEthersSigner";
+import { useEthersSigner } from "~/hooks/useEthersSigner";
 import {
   type IVoteArgs,
   type MaciContextType,
@@ -35,7 +35,6 @@ export const MaciContext = createContext<MaciContextType | undefined>(
 export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const { data } = useSession();
   const signer = useEthersSigner();
-  const provider = useEthersProvider();
   const { address, isConnected } = useAccount();
 
   const [isRegistered, setIsRegistered] = useState<boolean>();
@@ -204,7 +203,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
   /// check the poll data and tally data
   useEffect(() => {
-    if (!signer && !provider) {
+    if (!signer) {
       return;
     }
 
@@ -213,7 +212,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       getPoll({
         maciAddress: config.maciAddress!,
         signer,
-        provider,
+        provider: signer.provider,
       })
         .then((data) => {
           setPollData(data);
@@ -238,7 +237,6 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       });
   }, [
     Boolean(signer),
-    Boolean(provider),
     setIsLoading,
     setTallyData,
     setPollData,
