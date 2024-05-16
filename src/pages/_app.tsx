@@ -1,3 +1,4 @@
+import Script from "next/script";
 import "~/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import "~/builderIdeas/component/Checkbox/Checkbox.css";
@@ -18,6 +19,15 @@ export const kumbhSans = Kumbh_Sans({
 function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
   return (
     <Providers session={pageProps.session}>
+      <Script
+        src="https://cdn.cookie3.co/scripts/analytics/0.11.4/cookie3.analytics.min.js"
+        integrity="sha384-lzDmDdr/zEhMdlE+N04MgISCyL3RIWNCb9LjsrQeEFi8Gy5CKXIRI+u58ZV+ybYz"
+        crossOrigin="anonymous"
+        async
+        strategy="lazyOnload"
+        data-site-id="1097"
+        data-chain-tracking-enabled="true"
+      />
       <style jsx global>{`
         :root {
           --font-inter: ${kumbhSans.style.fontFamily};
