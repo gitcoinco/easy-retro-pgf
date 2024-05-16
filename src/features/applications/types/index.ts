@@ -69,7 +69,11 @@ export const ApplicationSchema = z.object({
     .array(
       z.object({
         description: z.string().min(3),
-        url: z.string().url(),
+        url: z.string()
+            .min(1, "URL is required")
+            .refine((data: string) => urlRegex.test(data), {
+                message: "Invalid URL format. URL must be a valid address with or without 'https://'.",
+            }),
         number: z.number(),
       }),
     )
