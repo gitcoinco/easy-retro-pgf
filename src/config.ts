@@ -1,3 +1,4 @@
+import { getAddress, isAddress } from "viem";
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
@@ -22,9 +23,16 @@ export const config = {
   ),
   tokenName: process.env.NEXT_PUBLIC_TOKEN_NAME!,
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
-  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(
-    ",",
-  ) as `0x${string}`[],
+  admins: (
+    (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(
+      ",",
+    ) as `0x${string}`[]
+  ).map((addr) => {
+    console.log(addr);
+    if (isAddress(addr)) return getAddress(addr);
+    throw new Error("Invalid admin address");
+  }),
+
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
 };
