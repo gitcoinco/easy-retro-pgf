@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
-import { formatUnits } from "viem";
+import { formatUnits, getAddress, isAddress } from "viem";
 
 import { EmptyState } from "~/components/EmptyState";
 import { Button } from "~/components/ui/Button";
@@ -19,6 +19,20 @@ import { ExportCSV } from "./ExportCSV";
 import { calculatePayout } from "../utils/calculatePayout";
 import { formatNumber } from "~/utils/formatNumber";
 import { format } from "~/utils/csv";
+import {
+  ethAddressFromDelegated,
+  validateAddressString,
+} from "@glif/filecoin-address";
+
+function convertFilecoinAddress(addr: string) {
+  try {
+    if (!addr) return "";
+    if (isAddress(addr)) return getAddress(addr);
+    if (validateAddressString(addr)) return ethAddressFromDelegated(addr);
+  } catch (error) {
+    console.log(addr, error);
+  }
+}
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -43,7 +57,7 @@ export function Distributions() {
       projectIds
         ?.map((projectId) => ({
           projectId,
-          payoutAddress: payoutAddresses[projectId] ?? "",
+          payoutAddress: convertFilecoinAddress(payoutAddresses[projectId]),
           amount: projectVotes[projectId]?.votes ?? 0,
         }))
         .filter((p) => p.amount > 0)
