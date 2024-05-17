@@ -71,9 +71,13 @@ You can read about the [MACI requirements here](https://maci.pse.dev/docs/instal
 ```bash
 git clone https://github.com/privacy-scaling-explorations/maci.git && \
 cd maci && \
+git checkout v1.2.2 && \
 pnpm i && \
 pnpm run build
 ```
+
+> [!IMPORTANT]
+> It's important to use version 1.2.2 of MACI, as this version has ceremony keys and has been audited.
 
 ### Download .zkey files
 
@@ -98,12 +102,13 @@ ETHERSCAN_API_KEY="etherscan api key"
 Generate a new key pair and save it in a secure place.
 
 ```bash
+cd cli && \
 node build/ts/index.js genMaciKeyPair
 ```
 
 ### Set the configuration file
 
-Head to the contracts folder.
+Head back to the contracts folder.
 
 ```bash
 cd contracts
@@ -134,7 +139,7 @@ pnpm deploy-poll:NETWORK
 
 See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
 
-## 4. Deploy
+## 4. Deploy Frontend
 
 https://vercel.com/new
 
@@ -147,6 +152,29 @@ https://vercel.com/new
   <img width="45%" src="./images/vercel_new.png" />
   <img width="45%" src="./images/vercel_configure.png" />
 </div>
+
+## Poll finalization
+
+Once the voting time has ended, as a coordinator, first you need to merge signups and messages (votes). Head to MACI contracts repository and run the merge command with the deployed poll:
+
+```bash
+cd contracts  && \
+pnpm merge:[network] --poll [poll-id]
+```
+
+> [!IMPORTANT]
+> If you use the same MACI contract, each time you deploy a poll the id increases by one.
+
+Then coordinator generates proofs for the message processing, and tally calculations. This allows to publish the poll results on-chain and then everyone can verify the results when the poll is over:
+
+```bash
+pnpm run prove:[network] --poll [poll-id] \
+    --coordinator-private-key [coordinator-maci-private-key] \
+    --tally-file ../cli/tally.json \
+    --output-dir ../cli/proofs/ \
+```
+
+Once you have the tally.json file you can rename it (tally-{pollId}.json), upload it and add it as an enviroment variable `NEXT_PUBLIC_TALLY_URL` to show the results.
 
 ## Additional configuration
 
