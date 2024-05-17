@@ -34,12 +34,14 @@ export const IdeaItem = ({
     type: undefined,
   });
 
+  console.log("session", session);
+
   useEffect(() => {
     setReaction({
       thumbsUp: data?.thumbsUp,
       thumbsDown: data?.thumbsDown,
       type: data?.reactions.filter(
-        (item) => item?.user?.name === session?.user.name,
+        (item) => item?.user.walletAddress === session?.address,
       )[0]?.reaction,
     });
   }, [data, onRefetch, hideReplayed]);
@@ -60,7 +62,7 @@ export const IdeaItem = ({
         thumbsDown: onReact?.data?.thumbsDown,
         type:
           onReact?.data?.reactions.filter(
-            (item) => item?.user?.name === session?.user.name,
+            (item) => item?.user.walletAddress === session?.address,
           )[0]?.reaction === reaction.type
             ? reaction.type
             : undefined,
