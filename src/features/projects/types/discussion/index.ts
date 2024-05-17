@@ -33,7 +33,7 @@ export const ReplyResSchema = z.object({
       reaction: z.enum(["thumbsUp", "thumbsDown"]),
       user: z.object({
         id: z.string(),
-        name: z.string().nullable(),
+        walletAddress: z.string().nullable(),
     }),
   }
   ),
@@ -59,7 +59,7 @@ const ListResSchema = z.object({
       reaction: z.enum(["thumbsUp", "thumbsDown"]),
       user: z.object({
         id: z.string(),
-        name: z.string().nullable(),
+        walletAddress: z.string().nullable(),
     }),
   }
   ),
