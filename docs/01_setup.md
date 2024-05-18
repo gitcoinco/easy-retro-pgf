@@ -165,7 +165,7 @@ pnpm merge:[network] --poll [poll-id]
 > [!IMPORTANT]
 > If you use the same MACI contract, each time you deploy a poll the id increases by one.
 
-Then coordinator generates proofs for the message processing, and tally calculations. This allows to publish the poll results on-chain and then everyone can verify the results when the poll is over:
+Then the coordinator generates proofs for the message processing, and tally calculations. This allows to publish the poll results on-chain and then everyone can verify the results when the poll is over:
 
 ```bash
 pnpm run prove:[network] --poll [poll-id] \
