@@ -60,7 +60,11 @@ export const ApplicationSchema = z.object({
       z.object({
         description: z.string().min(3),
         type: z.nativeEnum(reverseKeys(contributionTypes)),
-        url: z.string().url(),
+        url: z.string()
+        .min(1, "Website URL is required")
+        .refine((data: string) => urlRegex.test(data), {
+          message: "Invalid URL format. URL must be a valid web address with or without 'https://'.",
+        }),
       }),
     )
     .min(1),
