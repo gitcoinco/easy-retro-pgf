@@ -35,7 +35,7 @@ https://vercel.com/dashboard/stores?type=postgres
 
 #### Network
 
-The default configuration is Optimism.
+The default configuration is Optimism Sepolia for development and Optimism for production.
 
 You can find supported networks on the EAS documentation website: https://docs.attest.sh/docs/quick--start/contracts
 
@@ -77,15 +77,23 @@ pnpm run build
 ```
 
 > [!IMPORTANT]
-> It's important to use version 1.2.2 of MACI, as this version has ceremony keys and has been audited.
+> It's important to use version 1.2.2 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
 
 ### Download .zkey files
 
-Note the locations of the .zkey files as the CLI requires them as command-line flags. Download ceremony artifacts:
+Download ceremony artifacts for production:
 
 ```bash
 pnpm download:ceremony-zkeys
 ```
+
+or the test keys for testnet only:
+
+```bash
+pnpm download:test-zkeys-1-3
+```
+
+Note the locations of the .zkey files as the CLI requires them as command-line flags.
 
 ### Set .env Files
 
@@ -163,7 +171,7 @@ pnpm merge:[network] --poll [poll-id]
 ```
 
 > [!IMPORTANT]
-> If you use the same MACI contract, each time you deploy a poll the id increases by one.
+> For version 1.2.2 you need to deploy a new MACI contract for a new round.
 
 Then the coordinator generates proofs for the message processing, and tally calculations. This allows to publish the poll results on-chain and then everyone can verify the results when the poll is over:
 
