@@ -39,10 +39,16 @@ export const socialMediaTypes = {
   Telegram: "Telegram",
 } as const;
 
+export const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
-  websiteUrl: z.string().url().min(1),
+  websiteUrl: z.string()
+    .min(1, "Website URL is required")
+    .refine((data: string) => urlRegex.test(data), {
+      message: "Invalid URL format. URL must be a valid web address with or without 'https://'.",
+    }),
   wPOKTReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
   arbReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
   opReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
@@ -54,7 +60,11 @@ export const ApplicationSchema = z.object({
       z.object({
         description: z.string().min(3),
         type: z.nativeEnum(reverseKeys(contributionTypes)),
-        url: z.string().url(),
+        url: z.string()
+        .min(1, "Website URL is required")
+        .refine((data: string) => urlRegex.test(data), {
+          message: "Invalid URL format. URL must be a valid web address with or without 'https://'.",
+        }),
       }),
     )
     .min(1),
@@ -63,7 +73,11 @@ export const ApplicationSchema = z.object({
     .array(
       z.object({
         description: z.string().min(3),
-        url: z.string().url(),
+        url: z.string()
+            .min(1, "URL is required")
+            .refine((data: string) => urlRegex.test(data), {
+                message: "Invalid URL format. URL must be a valid address with or without 'https://'.",
+            }),
         number: z.number(),
       }),
     )
@@ -87,5 +101,5 @@ export const ApplicationSchema = z.object({
 
 export type Application = z.infer<typeof ApplicationSchema>;
 
-export const resolveENSSchema = z.object({ address: z.string().min(1) });
+export const resolveENSSchema = z.object({address: z.string().min(1)});
 export type resolveENS = z.infer<typeof resolveENSSchema>;

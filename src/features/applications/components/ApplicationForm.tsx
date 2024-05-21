@@ -349,19 +349,21 @@ export function ApplicationForm({
               renderField={(field, i) => (
                 <>
                   <FormControl
-                    className="flex-1 md:min-w-96"
+                    className="flex-1 md:min-w-96 w-full"
                     name={`application.contributionLinks.${i}.description`}
                     required
                   >
                     <Input placeholder="Description" />
                   </FormControl>
                   <FormControl
+                    className="w-full"
                     name={`application.contributionLinks.${i}.url`}
                     required
                   >
                     <Input placeholder="https://" />
                   </FormControl>
                   <FormControl
+                  className="w-full"
                     name={`application.contributionLinks.${i}.type`}
                     required
                   >
@@ -398,19 +400,21 @@ export function ApplicationForm({
               renderField={(field, i) => (
                 <>
                   <FormControl
-                    className="flex-1 md:min-w-96"
+                    className="flex-1 md:min-w-96 w-full"
                     name={`application.impactMetrics.${i}.description`}
                     required
                   >
                     <Input placeholder="Description" />
                   </FormControl>
                   <FormControl
+                    className="w-full"
                     name={`application.impactMetrics.${i}.url`}
                     required
                   >
                     <Input placeholder="https://" />
                   </FormControl>
                   <FormControl
+                    className="w-full"
                     name={`application.impactMetrics.${i}.number`}
                     required
                     valueAsNumber

@@ -73,7 +73,7 @@ export const InputIcon = createComponent(
 export const Select = createComponent(
   "select",
   tv({
-    base: [...inputBase],
+    base: ["w-full", ...inputBase],
     variants: {
       error: {
         true: "!border-error-dark",

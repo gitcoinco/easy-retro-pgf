@@ -31,6 +31,7 @@ async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
   const userInstance = await ctx.db.user.findFirst({
     where: {
       name: username,
+      walletAddress: walletAddr,
     },
   });
 
@@ -41,6 +42,7 @@ async function findOrCreateUser(ctx: { db: PrismaClient }, walletAddr: string) {
   return ctx.db.user.create({
     data: {
       name: username,
+      walletAddress: walletAddr,
       image: ENSPayload.avatar,
     },
   });
@@ -78,7 +80,7 @@ export const discussionRouter = createTRPCRouter({
               user: {
                 select: {
                   id: true,
-                  name: true,
+                  walletAddress: true,
                 },
               },
               reaction: true,
@@ -118,7 +120,7 @@ export const discussionRouter = createTRPCRouter({
               user: {
                 select: {
                   id: true,
-                  name: true,
+                  walletAddress: true,
                 },
               },
               reaction: true,
@@ -167,7 +169,7 @@ export const discussionRouter = createTRPCRouter({
                   user: {
                     select: {
                       id: true,
-                      name: true,
+                      walletAddress: true,
                     },
                   },
                   reaction: true,
@@ -183,7 +185,7 @@ export const discussionRouter = createTRPCRouter({
               user: {
                 select: {
                   id: true,
-                  name: true,
+                  walletAddress: true,
                 },
               },
               reaction: true,
@@ -256,7 +258,7 @@ export const discussionRouter = createTRPCRouter({
                     user: {
                       select: {
                         id: true,
-                        name: true,
+                        walletAddress: true,
                       },
                     },
                     reaction: true,
@@ -298,7 +300,7 @@ export const discussionRouter = createTRPCRouter({
                 user: {
                   select: {
                     id: true,
-                    name: true,
+                    walletAddress: true,
                   },
                 },
                 reaction: true,

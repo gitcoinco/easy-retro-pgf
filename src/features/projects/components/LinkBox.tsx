@@ -11,9 +11,9 @@ export function LinkBox<T extends { url: string }>({
   renderItem: (link: T) => ReactNode;
 }) {
   return (
-    <div className="rounded-xl border py-6 px-5 dark:border-outline-dark">
+    <div className="rounded-xl border px-5 py-6 dark:border-outline-dark">
       {label && (
-        <div className="mb-5 font-medium text-base tracking-wider text-gray-600 dark:text-onPrimary-light">
+        <div className="mb-5 text-base font-medium tracking-wider text-gray-600 dark:text-onPrimary-light">
           {label}
         </div>
       )}
@@ -23,7 +23,11 @@ export function LinkBox<T extends { url: string }>({
             return (
               <ExternalLink
                 key={i}
-                href={link?.url}
+                href={
+                  link?.url.startsWith("https://")
+                    ? link?.url
+                    : `https://${link?.url}`
+                }
                 className="flex items-center gap-2 text-sm font-medium hover:text-primary-dark"
               >
                 {renderItem(link)}
