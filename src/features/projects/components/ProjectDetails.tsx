@@ -57,15 +57,19 @@ export default function ProjectDetails({
             <p className="break-words ">{profile?.data?.name}</p>
             <p className="break-words ">{attestation?.recipient}</p>
             {websiteUrl && (
-              <a
-                href={websiteUrl}
+              <Link
+                href={
+                  websiteUrl.startsWith("https://")
+                    ? websiteUrl
+                    : `https://${websiteUrl}`
+                }
                 target="_blank"
                 className="m-2 flex items-center justify-between gap-1 break-words  hover:text-primary-dark md:m-0"
               >
                 <Globe className=" h-4 w-4" />
                 <span>Website</span>
                 <ExternalLinkIcon className=" h-4 w-4" />
-              </a>
+              </Link>
             )}
           </div>
         </div>
