@@ -143,6 +143,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 });
 
 const roundMiddleware = t.middleware(async ({ ctx, next }) => {
+  // TODO: should really be replaced with roundId
   const domain = ctx.domain;
 
   const round = domain

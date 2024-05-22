@@ -55,7 +55,7 @@ function RoundForm({ round }: { round: RoundSchema }) {
         </FormControl>
 
         <FormControl className="flex-1" name="domain" label="Round URL">
-          <InputWithAddon addon="https://easy-retro-pgf.vercel.app/" />
+          <InputWithAddon addon="https://easyretropgf.xyz/" />
         </FormControl>
 
         <FormControl required label="Image" name="bannerImageUrl">
