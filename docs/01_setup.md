@@ -90,7 +90,7 @@ pnpm download:ceremony-zkeys
 or the test keys for testnet only:
 
 ```bash
-pnpm download:test-zkeys-1-3
+pnpm download:test-zkeys
 ```
 
 Note the locations of the .zkey files as the CLI requires them as command-line flags.
