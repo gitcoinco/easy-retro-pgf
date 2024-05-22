@@ -37,6 +37,10 @@ interface CreateContextOptions {
     admins: string[];
     network: string | null;
     startsAt: Date | null;
+    reviewAt: Date | null;
+    votingAt: Date | null;
+    resultAt: Date | null;
+    payoutAt: Date | null;
   } | null;
   res: NextApiResponse;
   fetchAttestations?: AttestationFetcher;
@@ -149,7 +153,16 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
   const round = domain
     ? await ctx.db.round.findFirst({
         where: { domain },
-        select: { id: true, admins: true, network: true, startsAt: true },
+        select: {
+          id: true,
+          admins: true,
+          network: true,
+          startsAt: true,
+          reviewAt: true,
+          votingAt: true,
+          resultAt: true,
+          payoutAt: true,
+        },
       })
     : null;
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 import { formatUnits } from "viem";
 
@@ -18,6 +18,7 @@ import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
 import { calculatePayout } from "../utils/calculatePayout";
 import { formatNumber } from "~/utils/formatNumber";
+import { format } from "~/utils/csv";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -99,8 +100,10 @@ export function Distributions() {
             </Button>
           </div>
         </div>
-        <div>Total votes: {formatNumber(votes.data?.totalVotes)}</div>
-
+        <div className="flex items-center gap-4">
+          <div>Total votes: {formatNumber(votes.data?.totalVotes)}</div>
+          <ExportVotes />
+        </div>
         <div className="min-h-[360px] overflow-auto">
           <DistributionForm
             renderHeader={() => (
@@ -120,5 +123,30 @@ export function Distributions() {
         />
       </Form>
     </div>
+  );
+}
+
+function ExportVotes() {
+  const { mutateAsync, isPending } = api.ballot.export.useMutation();
+  const exportCSV = useCallback(async () => {
+    const ballots = await mutateAsync();
+    // Generate CSV file
+    const csv = format(ballots, {
+      columns: [
+        "voterId",
+        "signature",
+        "publishedAt",
+        "project",
+        "amount",
+        "projectId",
+      ],
+    });
+    window.open(`data:text/csv;charset=utf-8,${csv}`);
+  }, [mutateAsync]);
+
+  return (
+    <Button variant="outline" isLoading={isPending} onClick={exportCSV}>
+      Download votes
+    </Button>
   );
 }

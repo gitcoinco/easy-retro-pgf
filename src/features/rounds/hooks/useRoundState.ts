@@ -16,7 +16,7 @@ export function useRoundState() {
   return useMemo(() => getState(data), [data]);
 }
 
-const getState = (round?: RoundSchema | null): AppState => {
+export const getState = (round?: RoundSchema | null): AppState => {
   const now = new Date();
 
   if (!round) return null;

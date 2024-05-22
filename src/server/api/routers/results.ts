@@ -1,24 +1,49 @@
 import type { PrismaClient } from "@prisma/client";
 import {
+  adminProcedure,
   attestationProcedure,
-  createTRPCRouter,
   roundProcedure,
+  createTRPCRouter,
 } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
 import { calculateVotes } from "~/utils/calculateResults";
 import { type Vote } from "~/features/ballot/types";
+import { TRPCError } from "@trpc/server";
+import { getState } from "~/features/rounds/hooks/useRoundState";
+import { RoundSchema } from "~/features/rounds/types";
 
 export const resultsRouter = createTRPCRouter({
-  votes: roundProcedure.query(async ({ ctx }) =>
+  votes: adminProcedure.query(async ({ ctx }) =>
     calculateBallotResults(String(ctx.round?.id), ctx.db),
   ),
+  results: roundProcedure.query(async ({ ctx }) => {
+    const round = await ctx.db.round.findFirst({ where: { id: ctx.round.id } });
+    if (!round) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+      });
+    }
+    if (getState(round as unknown as RoundSchema) !== "RESULTS") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Results not available yet",
+      });
+    }
+    return calculateBallotResults(ctx.round.id, ctx.db);
+  }),
+
   projects: attestationProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
-      const { projects } = await calculateBallotResults(
-        String(ctx.round?.id),
-        ctx.db,
-      );
+      const roundId = String(ctx.round?.id);
+
+      if (getState(ctx.round) !== "RESULTS") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Results not available yet",
+        });
+      }
+      const { projects } = await calculateBallotResults(roundId, ctx.db);
 
       const sortedIDs = Object.entries(projects ?? {})
         .sort((a, b) => b[1].votes - a[1].votes)
@@ -55,6 +80,7 @@ async function calculateBallotResults(roundId: string, db: PrismaClient) {
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
     where: { roundId, publishedAt: { not: null } },
+    select: { voterId: true, votes: true },
   });
 
   const projects = calculateVotes(
