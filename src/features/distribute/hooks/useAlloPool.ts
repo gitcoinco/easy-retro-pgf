@@ -62,7 +62,7 @@ export function useCreatePool() {
         profileId: params.profileId as Address,
         strategy: allo.strategyAddress,
         token: allo.tokenAddress,
-        managers: config.admins,
+        managers: [config.admin],
         amount: params.initialFunding ?? 0n,
         metadata: { protocol: 1n, pointer: "" },
         initStrategyData: "0x",

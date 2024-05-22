@@ -22,9 +22,7 @@ export const config = {
   ),
   tokenName: process.env.NEXT_PUBLIC_TOKEN_NAME!,
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
-  admins: (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(
-    ",",
-  ) as `0x${string}`[],
+  admin: (process.env.NEXT_PUBLIC_ADMIN_ADDRESS ?? "") as `0x${string}`,
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],
   maciAddress: process.env.NEXT_PUBLIC_MACI_ADDRESS,

@@ -15,7 +15,7 @@ export const applicationsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return fetchAttestations([eas.schemas.approval], {
         where: {
-          attester: { in: config.admins },
+          attester: { equals: config.admin },
           refUID: input.ids ? { in: input.ids } : undefined,
           AND: [
             createDataFilter("type", "bytes32", "application"),
