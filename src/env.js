@@ -55,10 +55,6 @@ export const env = createEnv({
 
     NEXT_PUBLIC_MAX_VOTES_TOTAL: z.string().default("150"),
     NEXT_PUBLIC_MAX_VOTES_PROJECT: z.string().default("50"),
-    NEXT_PUBLIC_VOTING_END_DATE: z
-      .string()
-      .datetime()
-      .default(new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString()),
     NEXT_PUBLIC_FEEDBACK_URL: z.string().default("#"),
 
     // EAS Schemas
@@ -144,7 +140,6 @@ export const env = createEnv({
 
     NEXT_PUBLIC_MAX_VOTES_TOTAL: process.env.NEXT_PUBLIC_MAX_VOTES_TOTAL,
     NEXT_PUBLIC_MAX_VOTES_PROJECT: process.env.NEXT_PUBLIC_MAX_VOTES_PROJECT,
-    NEXT_PUBLIC_VOTING_END_DATE: process.env.NEXT_PUBLIC_VOTING_END_DATE,
     NEXT_PUBLIC_FEEDBACK_URL: process.env.NEXT_PUBLIC_FEEDBACK_URL,
 
     NEXT_PUBLIC_APPROVED_APPLICATIONS_SCHEMA:
