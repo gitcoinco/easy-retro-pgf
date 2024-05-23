@@ -21,7 +21,7 @@ export const projectsRouter = createTRPCRouter({
   count: publicProcedure.query(async ({}) => {
     return fetchAttestations([eas.schemas.approval], {
       where: {
-        attester: { in: config.admins },
+        attester: { equals: config.admin },
         AND: [
           createDataFilter("type", "bytes32", "application"),
           createDataFilter("round", "bytes32", config.roundId),
@@ -61,7 +61,7 @@ export const projectsRouter = createTRPCRouter({
 
     return fetchAttestations([eas.schemas.approval], {
       where: {
-        attester: { in: config.admins },
+        attester: { equals: config.admin },
         ...createDataFilter("type", "bytes32", "application"),
       },
     }).then((attestations = []) => {
@@ -120,7 +120,7 @@ export const projectsRouter = createTRPCRouter({
 
     return fetchAttestations([eas.schemas.approval], {
       where: {
-        attester: { in: config.admins },
+        attester: { equals: config.admin },
         ...createDataFilter("type", "bytes32", "application"),
       },
     }).then((attestations = []) => {
@@ -147,7 +147,7 @@ export async function getAllApprovedProjects(): Promise<Attestation[]> {
 
   return fetchAttestations([eas.schemas.approval], {
     where: {
-      attester: { in: config.admins },
+      attester: { equals: config.admin },
       ...createDataFilter("type", "bytes32", "application"),
     },
   }).then((attestations = []) => {

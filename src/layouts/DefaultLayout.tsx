@@ -36,7 +36,7 @@ export const Layout = ({ children, ...props }: Props) => {
     });
   }
 
-  if (config.admins.includes(address!)) {
+  if (config.admin === address!) {
     navLinks.push(
       ...[
         {

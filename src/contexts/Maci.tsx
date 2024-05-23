@@ -53,7 +53,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     const values = attestations.data?.valueOf() as Attestation[] | undefined;
 
     const attestation = values?.find((attestation) =>
-      config.admins.includes(attestation.attester),
+      config.admin === attestation.attester,
     );
 
     return attestation?.id;

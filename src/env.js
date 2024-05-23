@@ -102,7 +102,7 @@ export const env = createEnv({
       .string()
       .default("https://optimism.easscan.org/graphql"),
 
-    NEXT_PUBLIC_ADMIN_ADDRESSES: z.string().startsWith("0x"),
+    NEXT_PUBLIC_ADMIN_ADDRESS: z.string().startsWith("0x"),
     NEXT_PUBLIC_APPROVAL_SCHEMA: z.string().startsWith("0x"),
     NEXT_PUBLIC_METADATA_SCHEMA: z.string().startsWith("0x"),
 
@@ -167,7 +167,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK:
       process.env.NEXT_PUBLIC_SKIP_APPROVED_VOTER_CHECK,
 
-    NEXT_PUBLIC_ADMIN_ADDRESSES: process.env.NEXT_PUBLIC_ADMIN_ADDRESSES,
+    NEXT_PUBLIC_ADMIN_ADDRESS: process.env.NEXT_PUBLIC_ADMIN_ADDRESS,
     NEXT_PUBLIC_APPROVAL_SCHEMA: process.env.NEXT_PUBLIC_APPROVAL_SCHEMA,
     NEXT_PUBLIC_METADATA_SCHEMA: process.env.NEXT_PUBLIC_METADATA_SCHEMA,
 
