@@ -1,6 +1,10 @@
 import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";
@@ -12,7 +16,7 @@ import { getAllApprovedProjects } from "./projects";
 import { TRPCError } from "@trpc/server";
 
 export const resultsRouter = createTRPCRouter({
-  votes: publicProcedure
+  votes: protectedProcedure
     .input(z.object({ pollId: z.string().nullish() }))
     .query(async ({ ctx, input }) =>
       input?.pollId !== undefined && input?.pollId !== null
