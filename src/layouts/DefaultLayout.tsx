@@ -47,10 +47,6 @@ export const Layout = ({ children, ...props }: Props) => {
           href: "/voters",
           children: "Voters",
         },
-        {
-          href: "/distribute",
-          children: "Distribute",
-        },
       ],
     );
   }
