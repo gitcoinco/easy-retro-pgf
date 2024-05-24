@@ -112,11 +112,6 @@ export const env = createEnv({
     NEXT_PUBLIC_MACI_START_BLOCK: z.string().optional(),
 
     NEXT_PUBLIC_TALLY_URL: z.string().url(),
-    NEXT_PUBLIC_ALLO2_ADDRESS: z.string().startsWith("0x"),
-    NEXT_PUBLIC_STRATEGY_ADDRESS: z.string().startsWith("0x").default(""),
-    NEXT_PUBLIC_TOKEN_ADDRESS: z
-      .string()
-      .default("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
   },
 
   /**
@@ -172,9 +167,6 @@ export const env = createEnv({
     NEXT_PUBLIC_MACI_START_BLOCK: process.env.NEXT_PUBLIC_MACI_START_BLOCK,
 
     NEXT_PUBLIC_TALLY_URL: process.env.NEXT_PUBLIC_TALLY_URL,
-    NEXT_PUBLIC_ALLO2_ADDRESS: process.env.NEXT_PUBLIC_ALLO2_ADDRESS,
-    NEXT_PUBLIC_STRATEGY_ADDRESS: process.env.NEXT_PUBLIC_STRATEGY_ADDRESS,
-    NEXT_PUBLIC_TOKEN_ADDRESS: process.env.NEXT_PUBLIC_TOKEN_ADDRESS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { PrismaClient } from "@prisma/client";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -8,9 +7,6 @@ import {
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";
-import { calculateVotes } from "~/utils/calculateResults";
-import { type Vote } from "~/features/ballot/types";
-import { getSettings } from "./config";
 import { type TallyData } from "maci-cli/sdk";
 import { getAllApprovedProjects } from "./projects";
 import { TRPCError } from "@trpc/server";
@@ -18,19 +14,12 @@ import { TRPCError } from "@trpc/server";
 export const resultsRouter = createTRPCRouter({
   votes: protectedProcedure
     .input(z.object({ pollId: z.string().nullish() }))
-    .query(async ({ ctx, input }) =>
-      input?.pollId !== undefined && input?.pollId !== null
-        ? calculateMaciResults(input.pollId)
-        : calculateResults(ctx.db),
-    ),
+    .query(async ({ input }) => calculateMaciResults(input?.pollId)),
 
   project: publicProcedure
     .input(z.object({ id: z.string(), pollId: z.string().nullish() }))
-    .query(async ({ input, ctx }) => {
-      const { projects } = await (input?.pollId !== undefined &&
-      input?.pollId !== null
-        ? calculateMaciResults(input.pollId)
-        : calculateResults(ctx.db));
+    .query(async ({ input }) => {
+      const { projects } = await calculateMaciResults(input?.pollId);
 
       return {
         amount: projects?.[input.id]?.votes ?? 0,
@@ -39,11 +28,8 @@ export const resultsRouter = createTRPCRouter({
 
   projects: publicProcedure
     .input(FilterSchema.extend({ pollId: z.string().nullish() }))
-    .query(async ({ input, ctx }) => {
-      const { projects } = await (input?.pollId !== undefined &&
-      input?.pollId !== null
-        ? calculateMaciResults(input.pollId)
-        : calculateResults(ctx.db));
+    .query(async ({ input }) => {
+      const { projects } = await calculateMaciResults(input?.pollId);
 
       const sortedIDs = Object.entries(projects ?? {})
         .sort((a, b) => b[1].votes - a[1].votes)
@@ -67,38 +53,9 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-export async function calculateResults(db: PrismaClient) {
-  const settings = await getSettings(db);
-  const calculation = settings?.config?.calculation;
+export async function calculateMaciResults(pollId?: string | null) {
+  if (!pollId) throw new Error("No pollId provided.");
 
-  if (!calculation) {
-    console.log("No calculation stored");
-    return {};
-  }
-
-  // When the Minimum Qurom input is empty, return empty
-  if (calculation?.style === "op" && !calculation?.threshold) {
-    return {};
-  }
-
-  const ballots = await db.ballot.findMany();
-
-  const projects = calculateVotes(
-    ballots as unknown as { voterId: string; votes: Vote[] }[],
-    calculation,
-  );
-
-  const totalVotes = ballots.reduce((sum, x) => sum + x.votes.length, 0);
-
-  return {
-    averageVotes: 0,
-    totalVoters: ballots.length,
-    totalVotes,
-    projects,
-  };
-}
-
-export async function calculateMaciResults(pollId: string) {
   const [tallyData, projects] = await Promise.all([
     fetch(`${config.tallyUrl}/tally-${pollId}.json`)
       .then((res) => res.json() as Promise<TallyData>)

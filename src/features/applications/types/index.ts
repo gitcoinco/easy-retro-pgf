@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EthAddressSchema } from "~/features/distribute/types";
+import { EthAddressSchema } from "~/features/voters/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
 export const MetadataSchema = z.object({
@@ -32,10 +32,13 @@ export const fundingSourceTypes = {
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
-  websiteUrl: z.string().min(1).transform((url) => {
-    // Automatically prepend "https://" if it's missing
-    return /^(http:\/\/|https:\/\/)/i.test(url) ? url : `https://${url}`;
-  }),
+  websiteUrl: z
+    .string()
+    .min(1)
+    .transform((url) => {
+      // Automatically prepend "https://" if it's missing
+      return /^(http:\/\/|https:\/\/)/i.test(url) ? url : `https://${url}`;
+    }),
   payoutAddress: EthAddressSchema,
   contributionDescription: z.string().min(3),
   impactDescription: z.string().min(3),
@@ -45,10 +48,15 @@ export const ApplicationSchema = z.object({
       z.object({
         description: z.string().min(3),
         type: z.nativeEnum(reverseKeys(contributionTypes)),
-        url: z.string().min(1).transform((url) => {
-          // Automatically prepend "https://" if it's missing
-          return /^(http:\/\/|https:\/\/)/i.test(url) ? url : `https://${url}`;
-        }),
+        url: z
+          .string()
+          .min(1)
+          .transform((url) => {
+            // Automatically prepend "https://" if it's missing
+            return /^(http:\/\/|https:\/\/)/i.test(url)
+              ? url
+              : `https://${url}`;
+          }),
       }),
     )
     .min(1),
@@ -56,10 +64,15 @@ export const ApplicationSchema = z.object({
     .array(
       z.object({
         description: z.string().min(3),
-        url: z.string().min(1).transform((url) => {
-          // Automatically prepend "https://" if it's missing
-          return /^(http:\/\/|https:\/\/)/i.test(url) ? url : `https://${url}`;
-        }),
+        url: z
+          .string()
+          .min(1)
+          .transform((url) => {
+            // Automatically prepend "https://" if it's missing
+            return /^(http:\/\/|https:\/\/)/i.test(url)
+              ? url
+              : `https://${url}`;
+          }),
         number: z.number(),
       }),
     )

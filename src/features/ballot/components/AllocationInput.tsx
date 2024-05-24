@@ -3,7 +3,7 @@ import { NumericFormat } from "react-number-format";
 import { useFormContext, Controller } from "react-hook-form";
 
 import { Input, InputAddon, InputWrapper } from "~/components/ui/Form";
-import { usePoolToken } from "~/features/distribute/hooks/useAlloPool";
+import { config } from "~/config";
 
 export const AllocationInput = ({
   votingMaxProject,
@@ -18,8 +18,6 @@ export const AllocationInput = ({
   error?: boolean;
 } & ComponentPropsWithRef<"input">) => {
   const form = useFormContext();
-
-  const token = usePoolToken();
 
   return (
     <InputWrapper className="min-w-[160px]">
@@ -52,7 +50,7 @@ export const AllocationInput = ({
         )}
       />
       {tokenAddon && (
-        <InputAddon disabled={props.disabled}>{token.data?.symbol}</InputAddon>
+        <InputAddon disabled={props.disabled}>{config.tokenName}</InputAddon>
       )}
     </InputWrapper>
   );
