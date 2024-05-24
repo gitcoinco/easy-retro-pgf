@@ -3,7 +3,7 @@ import * as wagmiChains from "wagmi/chains";
 export const metadata = {
   title: "Retro POKT Goods Funding",
   description: "Open-source Retro Public Goods Funding platform",
-  url: "https://rpgf-patterns.vercel.app",
+  url: "https://impact.pokt.network",
   image: "/api/og",
 };
 export const config = {

@@ -5,10 +5,12 @@ export function LinkBox<T extends { url: string }>({
   label,
   links,
   renderItem,
+  shouldValidateWithHttps = true,
 }: {
   label?: string;
   links?: T[];
   renderItem: (link: T) => ReactNode;
+  shouldValidateWithHttps?: boolean;
 }) {
   return (
     <div className="rounded-xl border px-5 py-6 dark:border-outline-dark">
@@ -24,9 +26,9 @@ export function LinkBox<T extends { url: string }>({
               <ExternalLink
                 key={i}
                 href={
-                  link?.url.startsWith("https://")
-                    ? link?.url
-                    : `https://${link?.url}`
+                  shouldValidateWithHttps && !link?.url.startsWith("https://")
+                    ? `https://${link?.url}`
+                    : link.url
                 }
                 className="flex items-center gap-2 text-sm font-medium hover:text-primary-dark"
               >
