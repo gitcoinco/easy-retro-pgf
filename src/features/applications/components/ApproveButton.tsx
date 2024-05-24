@@ -13,7 +13,6 @@ function ApproveButton({
   const isAdmin = useIsAdmin();
   const approvals = useApprovedApplications(projectIds);
 
-  console.log("approv", approvals.data);
   const approve = useApproveApplication();
   if (approvals.data?.length)
     return (
@@ -25,7 +24,7 @@ function ApproveButton({
     isAdmin && (
       <Button
         variant="primary"
-        disabled={approve.isLoading}
+        disabled={approve.isPending}
         onClick={() => approve.mutate(projectIds)}
       >
         {children}

@@ -1,26 +1,30 @@
 import { z } from "zod";
-import { Form, FormControl, Textarea } from "~/components/ui/Form";
-import { type Address } from "wagmi";
-import { useFormContext } from "react-hook-form";
-import { IconButton } from "~/components/ui/Button";
 import { useMemo, useState } from "react";
 import { UserRoundPlus } from "lucide-react";
-import { isAddress } from "viem";
-import { Spinner } from "~/components/ui/Spinner";
+import { Form, FormControl, Textarea } from "~/components/ui/Form";
+import { useFormContext } from "react-hook-form";
+import dynamic from "next/dynamic";
+import { type Address, isAddress, getAddress } from "viem";
 import { toast } from "sonner";
+
+import { Button, IconButton } from "~/components/ui/Button";
+import { Spinner } from "~/components/ui/Spinner";
 import { Dialog } from "~/components/ui/Dialog";
 import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
-import dynamic from "next/dynamic";
 import { EthAddressSchema } from "~/features/distribute/types";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
 function parseAddresses(addresses: string): Address[] {
-  return addresses
-    .split(",")
-    .map((addr) => addr.trim())
-    .filter(isAddress)
-    .filter((addr, i, self) => self.indexOf(addr) === i);
+  return (
+    addresses
+      .split(",")
+      .filter((addr) => isAddress(addr))
+      .map((addr) => getAddress(addr.trim()))
+      // Remove duplicates
+      .filter((addr, i, self) => self.indexOf(addr) === i)
+  );
 }
 
 function ApproveVoters() {
@@ -52,6 +56,7 @@ function ApproveVoters() {
             ? `Add voters`
             : "You must be an admin"}
       </IconButton>
+
       <Dialog isOpen={isOpen} onOpenChange={setOpen} title={`Approve voters`}>
         <p className="pb-4 leading-relaxed">
           Add voters who will be allowed to vote in the round.
@@ -78,7 +83,7 @@ function ApproveVoters() {
             />
           </FormControl>
           <div className="flex items-center justify-end">
-            <ApproveButton isLoading={approve.isLoading} isAdmin={isAdmin} />
+            <ApproveButton isLoading={approve.isPending} isAdmin={isAdmin} />
           </div>
         </Form>
       </Dialog>
@@ -96,15 +101,17 @@ function ApproveButton({ isLoading = false, isAdmin = false }) {
   );
 
   return (
-    <IconButton
-      suppressHydrationWarning
-      icon={isLoading ? Spinner : UserRoundPlus}
-      disabled={!selectedCount || !isAdmin || isLoading}
-      variant="primary"
-      type="submit"
-    >
-      {isAdmin ? `Approve ${selectedCount} voters` : "You must be an admin"}
-    </IconButton>
+    <EnsureCorrectNetwork>
+      <Button
+        suppressHydrationWarning
+        icon={UserRoundPlus}
+        disabled={!selectedCount || !isAdmin || isLoading}
+        variant="primary"
+        type="submit"
+      >
+        {isAdmin ? `Approve ${selectedCount} voters` : "You must be an admin"}
+      </Button>
+    </EnsureCorrectNetwork>
   );
 }
 

@@ -8,12 +8,12 @@ export const EthAddressSchema = z.custom<string>(
 
 export const DistributionSchema = z.object({
   projectId: z.string(),
-  amount: z.string(),
+  amount: z.number(),
   payoutAddress: EthAddressSchema,
 });
 
 export const CalculationSchema = z.object({
-  style: z.enum(["custom", "op"]),
+  calculation: z.enum(["average", "median", "sum"]),
   threshold: z.number().optional(),
 });
 export const SettingsSchema = z.object({

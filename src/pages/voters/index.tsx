@@ -3,17 +3,20 @@ import { Heading } from "~/components/ui/Heading";
 import { config } from "~/config";
 import ApproveVoters from "~/features/voters/components/ApproveVoters";
 import { VotersList } from "~/features/voters/components/VotersList";
-import { Layout } from "~/layouts/DefaultLayout";
+import { AdminLayout } from "~/layouts/AdminLayout";
 
 export default function VotersPage() {
   return (
-    <Layout title="Manage voters">
+    <AdminLayout title="Manage voters">
       <div className="flex items-center justify-between">
         <Heading as="h1" size="3xl">
           Approved voters
         </Heading>
         <ApproveVoters />
       </div>
+      <Alert variant="info" className={"mb-2"}>
+        Added voters can take 10 minutes to show up.
+      </Alert>
       {config.skipApprovedVoterCheck ? (
         <Alert variant="warning" className="mb-4 ">
           Configuration has disabled voter approval check. Anyone is an eligible
@@ -21,6 +24,6 @@ export default function VotersPage() {
         </Alert>
       ) : null}
       <VotersList />
-    </Layout>
+    </AdminLayout>
   );
 }

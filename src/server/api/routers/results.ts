@@ -1,20 +1,41 @@
 import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  adminProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { eas } from "~/config";
 import { calculateVotes } from "~/utils/calculateResults";
 import { type Vote } from "~/features/ballot/types";
 import { getSettings } from "./config";
+import { getAppState } from "~/utils/state";
+import { TRPCError } from "@trpc/server";
 
 export const resultsRouter = createTRPCRouter({
-  votes: publicProcedure.query(async ({ ctx }) =>
+  votes: adminProcedure.query(async ({ ctx }) =>
     calculateBallotResults(ctx.db),
   ),
+  results: publicProcedure.query(async ({ ctx }) => {
+    if (getAppState() !== "RESULTS") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Results not available yet",
+      });
+    }
+    return calculateBallotResults(ctx.db);
+  }),
   project: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
+      if (getAppState() !== "RESULTS") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Results not available yet",
+        });
+      }
       const { projects } = await calculateBallotResults(ctx.db);
 
       return {
@@ -25,6 +46,12 @@ export const resultsRouter = createTRPCRouter({
   projects: publicProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
+      if (getAppState() !== "RESULTS") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Results not available yet",
+        });
+      }
       const { projects } = await calculateBallotResults(ctx.db);
 
       const sortedIDs = Object.entries(projects ?? {})
@@ -49,7 +76,10 @@ export const resultsRouter = createTRPCRouter({
     }),
 });
 
-const defaultCalculation = { style: "custom", threshold: 1 };
+const defaultCalculation = {
+  calculation: "average",
+  threshold: 1,
+};
 async function calculateBallotResults(db: PrismaClient) {
   const settings = await getSettings(db);
   const calculation = settings?.config?.calculation ?? defaultCalculation;
@@ -57,6 +87,7 @@ async function calculateBallotResults(db: PrismaClient) {
   // Fetch the ballots
   const ballots = await db.ballot.findMany({
     where: { publishedAt: { not: null } },
+    select: { voterId: true, votes: true },
   });
 
   const projects = calculateVotes(
@@ -65,9 +96,8 @@ async function calculateBallotResults(db: PrismaClient) {
   );
 
   const averageVotes = 0;
-  const totalVotes = Object.values(projects).reduce(
-    (sum, x) => sum + x.votes,
-    0,
+  const totalVotes = Math.floor(
+    Object.values(projects).reduce((sum, x) => sum + x.votes, 0),
   );
   const totalVoters = ballots.length;
 

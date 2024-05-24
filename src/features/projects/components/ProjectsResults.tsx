@@ -20,7 +20,7 @@ export function ProjectsResults() {
             href={`/projects/${item.id}`}
             className={clsx("relative", { ["animate-pulse"]: isLoading })}
           >
-            {!results.isLoading && getAppState() === "RESULTS" ? (
+            {!results.isPending && getAppState() === "RESULTS" ? (
               <ProjectItemAwarded
                 amount={results.data?.projects?.[item.id]?.votes}
               />

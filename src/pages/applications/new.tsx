@@ -23,8 +23,10 @@ Your progress is saved locally so you can return to this page to resume your app
       </Markdown>
       {state !== "APPLICATION" ? (
         <Alert variant="info" title="Application period has ended"></Alert>
-      ) : (
+      ) : address ? (
         <ApplicationForm address={address} />
+      ) : (
+        <Alert variant="info" title="Connect your wallet to continue"></Alert>
       )}
     </Layout>
   );

@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
-import { Form, FormControl, Input, Label, Select } from "~/components/ui/Form";
+import { Form, FormControl, Input, Select } from "~/components/ui/Form";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
@@ -11,7 +11,7 @@ import {
   type Calculation,
   CalculationSchema,
 } from "~/features/distribute/types";
-import { Layout } from "~/layouts/DefaultLayout";
+import { AdminLayout } from "~/layouts/AdminLayout";
 import { api } from "~/utils/api";
 
 export default function DistributePage() {
@@ -24,12 +24,12 @@ export default function DistributePage() {
   const calculation = settings.data?.config?.calculation;
 
   return (
-    <Layout
+    <AdminLayout
       sidebar="left"
       sidebarComponent={
         <div className="space-y-4">
           <ConfigurePool />
-          {settings.isLoading ? (
+          {settings.isPending ? (
             <div />
           ) : (
             <Alert variant="info">
@@ -44,10 +44,11 @@ export default function DistributePage() {
                 }}
               >
                 <div className="gap-2">
-                  <FormControl name="style" label="Payout style">
-                    <Select disabled={settings.isLoading} className={"w-full"}>
-                      <option value="custom">Custom</option>
-                      <option value="op">OP-Style</option>
+                  <FormControl name="calculation" label="Calculation">
+                    <Select disabled={settings.isPending} className={"w-full"}>
+                      <option value="average">Mean (average)</option>
+                      <option value="median">Median</option>
+                      <option value="sum">Sum</option>
                     </Select>
                   </FormControl>
                   <MinimumQuorum />
@@ -55,7 +56,7 @@ export default function DistributePage() {
                     variant="primary"
                     type="submit"
                     className="w-full"
-                    disabled={setConfig.isLoading}
+                    disabled={setConfig.isPending}
                   >
                     Update calculation
                   </Button>
@@ -70,7 +71,7 @@ export default function DistributePage() {
         <div>Voting hasn't started yet</div>
       ) : (
         <div>
-          {setConfig.isLoading ? (
+          {setConfig.isPending ? (
             <div className="flex justify-center py-8">
               <Spinner className="size-6" />
             </div>
@@ -79,22 +80,19 @@ export default function DistributePage() {
           )}
         </div>
       )}
-    </Layout>
+    </AdminLayout>
   );
 }
 
 function MinimumQuorum() {
-  const { watch } = useFormContext<Calculation>();
-  const style = watch("style");
-
   return (
     <FormControl
       name="threshold"
       label="Minimum Quorum"
-      hint="Only for OP-style payouts"
+      hint="Required voters for vote validity"
       valueAsNumber
     >
-      <Input type="number" disabled={style !== "op"} />
+      <Input type="number" />
     </FormControl>
   );
 }
@@ -111,7 +109,7 @@ function VoterCount() {
       <div className="pt-1 text-center text-2xl">
         <Skeleton
           className="h-8 w-20 dark:bg-gray-700"
-          isLoading={voters.isLoading || votes.isLoading}
+          isLoading={voters.isPending || votes.isPending}
         >
           {votes.data?.totalVoters} / {voters.data?.length}
         </Skeleton>

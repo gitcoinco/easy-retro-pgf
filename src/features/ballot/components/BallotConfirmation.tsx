@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { Lock } from "lucide-react";
 
-import { AllocationList } from "./AllocationList";
+import { AllocationList } from "../../../components/AllocationList";
 import { Button } from "~/components/ui/Button";
 import { createComponent } from "~/components/ui";
 import { type Vote } from "../types";
@@ -70,7 +70,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
             </h5>
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               Your anonymized feedback will be influential to help us iterate on
-              Optimism&apos;s RetroPGF process.
+              the RetroPGF process.
             </p>
             <Button
               variant="primary"

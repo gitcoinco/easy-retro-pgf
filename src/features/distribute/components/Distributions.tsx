@@ -1,21 +1,24 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
+import { formatUnits } from "viem";
+
 import { EmptyState } from "~/components/EmptyState";
 import { Button } from "~/components/ui/Button";
 import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
 import { Th, Thead, Tr } from "~/components/ui/Table";
-import { DistributionForm } from "~/features/ballot/components/AllocationList";
+import { DistributionForm } from "~/components/AllocationList";
 import {
   type Distribution,
   DistributionSchema,
 } from "~/features/distribute/types";
 import { api } from "~/utils/api";
 import { usePoolAmount } from "../hooks/useAlloPool";
-import { formatUnits } from "viem";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
 import { calculatePayout } from "../utils/calculatePayout";
+import { formatNumber } from "~/utils/formatNumber";
+import { format } from "~/utils/csv";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -33,7 +36,7 @@ export function Distributions() {
 
   const payoutAddresses: Record<string, string> = projects.data ?? {};
   const totalVotes = BigInt(votes.data?.totalVotes ?? 0);
-  const totalTokens = poolAmount.data ?? totalVotes;
+  const totalTokens = poolAmount.data ?? 0n;
   const projectVotes = votes.data?.projects ?? {};
   const distributions = useMemo(
     () =>
@@ -47,18 +50,23 @@ export function Distributions() {
         .sort((a, b) => b.amount - a.amount)
         .map((p) => ({
           ...p,
-          amount: formatUnits(
-            calculatePayout(p.amount, totalVotes, totalTokens),
-            18,
-          ),
+          amount:
+            totalTokens > 0n
+              ? parseFloat(
+                  formatUnits(
+                    calculatePayout(p.amount, totalVotes, totalTokens),
+                    18,
+                  ),
+                )
+              : p.amount,
         })),
     [projectIds, payoutAddresses, projectVotes, totalVotes, totalTokens],
   );
 
-  if (!votes.isLoading && !projectIds.length) {
+  if (!votes.isPending && !projectIds.length) {
     return <EmptyState title="No project votes found" />;
   }
-  if (projects.isLoading ?? votes.isLoading ?? poolAmount.isLoading) {
+  if (projects.isPending ?? votes.isPending ?? poolAmount.isPending) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner className="size-6" />
@@ -92,8 +100,10 @@ export function Distributions() {
             </Button>
           </div>
         </div>
-        <div>Total votes: {votes.data?.totalVotes}</div>
-
+        <div className="flex items-center gap-4">
+          <div>Total votes: {formatNumber(votes.data?.totalVotes)}</div>
+          <ExportVotes />
+        </div>
         <div className="min-h-[360px] overflow-auto">
           <DistributionForm
             renderHeader={() => (
@@ -113,5 +123,30 @@ export function Distributions() {
         />
       </Form>
     </div>
+  );
+}
+
+function ExportVotes() {
+  const { mutateAsync, isPending } = api.ballot.export.useMutation();
+  const exportCSV = useCallback(async () => {
+    const ballots = await mutateAsync();
+    // Generate CSV file
+    const csv = format(ballots, {
+      columns: [
+        "voterId",
+        "signature",
+        "publishedAt",
+        "project",
+        "amount",
+        "projectId",
+      ],
+    });
+    window.open(`data:text/csv;charset=utf-8,${csv}`);
+  }, [mutateAsync]);
+
+  return (
+    <Button variant="outline" isLoading={isPending} onClick={exportCSV}>
+      Download votes
+    </Button>
   );
 }

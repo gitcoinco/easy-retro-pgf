@@ -23,6 +23,8 @@ import { getAppState } from "~/utils/state";
 import dynamic from "next/dynamic";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
+import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
+import { useAccount } from "wagmi";
 
 function BallotOverview() {
   const router = useRouter();
@@ -127,13 +129,23 @@ function BallotOverview() {
 }
 
 const SubmitBallotButton = ({ disabled = false }) => {
-  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
+  const isSaving = useIsMutating({ mutationKey: getQueryKey(api.ballot.save) });
   const router = useRouter();
+  const { address } = useAccount();
+  const { data: isApprovedVoter } = useApprovedVoter(address!);
   const [isOpen, setOpen] = useState(false);
 
   const submit = useSubmitBallot({
     onSuccess: async () => void router.push("/ballot/confirmation"),
   });
+
+  if (!isApprovedVoter) {
+    return (
+      <Button disabled className="w-full">
+        Only approved voters can vote
+      </Button>
+    );
+  }
 
   const messages = {
     signing: {
@@ -161,7 +173,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
   const { title, instructions } =
     messages[
-      submit.isLoading ? "signing" : submit.error ? "error" : "submitting"
+      submit.isPending ? "signing" : submit.error ? "error" : "submitting"
     ];
 
   return (
@@ -178,7 +190,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
         <p className="pb-8">{instructions}</p>
         <div
           className={clsx("flex gap-2", {
-            ["hidden"]: submit.isLoading,
+            ["hidden"]: submit.isPending,
           })}
         >
           <Button

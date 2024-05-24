@@ -5,7 +5,10 @@ import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
 import type { Application, Profile } from "../types";
 import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 
-export function useCreateApplication(options: {
+export function useCreateApplication({
+  onSuccess,
+  onError,
+}: {
   onSuccess: () => void;
   onError: (err: TransactionError) => void;
 }) {
@@ -13,8 +16,13 @@ export function useCreateApplication(options: {
   const attest = useAttest();
   const upload = useUploadMetadata();
 
-  const mutation = useMutation(
-    async (values: { application: Application; profile: Profile }) => {
+  const mutation = useMutation({
+    onSuccess,
+    onError,
+    mutationFn: async (values: {
+      application: Application;
+      profile: Profile;
+    }) => {
       if (!config.roundId) throw new Error("Round ID must be defined");
       console.log("Uploading profile and application metadata");
       return Promise.all([
@@ -51,14 +59,12 @@ export function useCreateApplication(options: {
         );
       });
     },
-
-    options,
-  );
+  });
 
   return {
     ...mutation,
     error: attest.error || upload.error || mutation.error,
-    isAttesting: attest.isLoading,
-    isUploading: upload.isLoading,
+    isAttesting: attest.isPending,
+    isUploading: upload.isPending,
   };
 }

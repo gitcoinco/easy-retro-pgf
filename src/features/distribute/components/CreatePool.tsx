@@ -1,12 +1,12 @@
+import { type PropsWithChildren } from "react";
 import { z } from "zod";
 import dynamic from "next/dynamic";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 import { useSession } from "next-auth/react";
-import { type PropsWithChildren } from "react";
+import { useFormContext } from "react-hook-form";
 
 import { Button, IconButton } from "~/components/ui/Button";
-
 import { Alert } from "~/components/ui/Alert";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Spinner } from "~/components/ui/Spinner";
@@ -18,10 +18,8 @@ import {
   usePoolAmount,
   usePoolId,
   usePoolToken,
-  useTokenAllowance,
-  useTokenBalance,
 } from "../hooks/useAlloPool";
-import { allo, isNativeToken } from "~/config";
+import { allo } from "~/config";
 import {
   ErrorMessage,
   Form,
@@ -29,8 +27,7 @@ import {
   Input,
   Label,
 } from "~/components/ui/Form";
-import { AllocationInput } from "~/features/ballot/components/AllocationInput";
-import { useFormContext } from "react-hook-form";
+import { NumberInput } from "~/components/NumberInput";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -40,12 +37,12 @@ function CheckAlloProfile(props: PropsWithChildren) {
   if (!isCorrectNetwork) {
     return (
       <Alert variant="info" className="flex items-center gap-2">
-        You must be connected to {correctNetwork.name}
+        You must be connected to {correctNetwork?.name}
       </Alert>
     );
   }
 
-  if (profile.isLoading) {
+  if (profile.isPending) {
     return (
       <Alert className="flex justify-center">
         <Spinner />
@@ -61,12 +58,12 @@ function CheckAlloProfile(props: PropsWithChildren) {
         </p>
         <IconButton
           className={"w-full"}
-          icon={createProfile.isLoading ? Spinner : null}
+          icon={createProfile.isPending ? Spinner : null}
           variant="primary"
           onClick={() => createProfile.mutate()}
-          disabled={createProfile.isLoading}
+          disabled={createProfile.isPending}
         >
-          {createProfile.isLoading ? (
+          {createProfile.isPending ? (
             <>Creating profile...</>
           ) : (
             <>Create profile</>
@@ -83,17 +80,15 @@ function CreatePool() {
   const createPool = useCreatePool();
   const profile = useAlloProfile();
   const approve = useApprove();
-  const balance = useTokenBalance();
   const poolId = usePoolId();
-  const allowance = useTokenAllowance();
 
   const token = usePoolToken();
 
-  const decimals = token.data?.decimals;
+  const { decimals, allowance } = token.data ?? {};
 
   const profileId = profile.data?.id as unknown as `0x${string}`;
 
-  if (poolId.isLoading) {
+  if (poolId.isPending) {
     return (
       <Alert className="flex justify-center">
         <Spinner />
@@ -128,14 +123,14 @@ function CreatePool() {
         }}
         onSubmit={(values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
-          const hasAllowance = isNativeToken
-            ? true
-            : (allowance.data ?? 0) >= amount;
+
+          const hasAllowance = calcHasAllowance(
+            { amount: values.amount, allowance },
+            token.data,
+          );
 
           if (!hasAllowance) {
-            return approve.write({
-              args: [allo.alloAddress, amount],
-            });
+            return approve.mutate(amount);
           }
 
           return createPool.mutate({ profileId, initialFunding: amount });
@@ -146,19 +141,17 @@ function CreatePool() {
         </FormControl>
         <Label>
           Amount of tokens to fund
-          <AllocationInput name="amount" tokenAddon />
+          <NumberInput name="amount" />
         </Label>
 
         <div className="mb-2">
-          <TokenBalance />
+          <TokenBalance token={token.data} />
         </div>
 
         <FundPoolButton
           buttonText="Create pool"
-          isLoading={createPool.isLoading || approve.isLoading}
-          decimals={decimals}
-          allowance={allowance.data}
-          balance={balance.data?.value}
+          isLoading={createPool.isPending || approve.isPending}
+          token={token.data}
         />
       </Form>
     </Alert>
@@ -175,13 +168,11 @@ function ConfigurePool() {
 
 function PoolDetails({ poolId = 0 }) {
   const amount = usePoolAmount();
-  const allowance = useTokenAllowance().data;
-  const balance = useTokenBalance();
   const fundPool = useFundPool();
   const token = usePoolToken();
   const approve = useApprove();
 
-  const decimals = token.data?.decimals ?? 18;
+  const { decimals, symbol, allowance } = token.data ?? {};
 
   const error = approve.error ?? fundPool.error;
 
@@ -192,27 +183,23 @@ function PoolDetails({ poolId = 0 }) {
           Currently in pool
         </h3>
         <div className="text-2xl">
-          {formatUnits(amount.data ?? 0n, decimals)} {token.data?.symbol}
+          {formatUnits(amount.data ?? 0n, decimals)} {symbol}
         </div>
       </div>
 
       <Form
-        schema={z.object({
-          amount: z.number(),
-        })}
+        schema={z.object({ amount: z.number() })}
         onSubmit={async (values, form) => {
           const amount = parseUnits(values.amount.toString(), decimals);
-          const hasAllowance = calcHasAllowance({
-            amount: values.amount,
-            allowance,
-            decimals,
-          });
+          const hasAllowance = calcHasAllowance(
+            { amount: values.amount, allowance },
+            token.data,
+          );
 
           if (!hasAllowance) {
-            return approve.writeAsync({
-              args: [allo.alloAddress, amount],
-            });
+            return approve.mutate(amount);
           }
+
           fundPool.mutate(
             { poolId, amount },
             { onSuccess: () => form.reset({ amount: 0 }) },
@@ -220,16 +207,14 @@ function PoolDetails({ poolId = 0 }) {
         }}
       >
         <div className="mb-2 space-y-2">
-          <AllocationInput name="amount" tokenAddon />
-          <TokenBalance />
+          <NumberInput name="amount" />
+          <TokenBalance token={token.data} />
         </div>
 
         <FundPoolButton
           buttonText="Fund pool"
-          isLoading={fundPool.isLoading || approve.isLoading}
-          decimals={decimals}
-          allowance={allowance}
-          balance={balance.data?.value}
+          isLoading={fundPool.isPending || approve.isPending}
+          token={token.data}
         />
 
         <ErrorMessage>{(error as { message: string })?.message}</ErrorMessage>
@@ -238,31 +223,46 @@ function PoolDetails({ poolId = 0 }) {
   );
 }
 
-function TokenBalance() {
-  const balance = useTokenBalance();
+function TokenBalance({ token }: { token: TokenProps }) {
   return (
     <div className="flex justify-between text-sm">
       <div className="text-gray-500">Wallet balance</div>
       <div>
-        {balance.data?.formatted.slice(0, 5)} {balance.data?.symbol}
+        {token?.balance && token?.decimals
+          ? formatUnits(token.balance, token.decimals).slice(0, 7)
+          : null}{" "}
+        {token.symbol}
       </div>
     </div>
   );
 }
 
+type TokenProps = {
+  decimals?: number;
+  symbol?: string;
+  balance?: bigint;
+  allowance?: bigint;
+  isNativeToken?: boolean;
+};
 function FundPoolButton({
   buttonText = "",
   isLoading = false,
-  allowance = 0n,
-  balance = 0n,
-  decimals = 18,
+  token,
+}: {
+  buttonText: string;
+  isLoading?: boolean;
+  token: TokenProps;
 }) {
   const { address } = useAccount();
   const session = useSession();
   const { formState, watch } = useFormContext<{ amount: number }>();
   const amount = watch("amount") || 0;
 
-  const hasAllowance = calcHasAllowance({ amount, allowance, decimals });
+  const hasAllowance = calcHasAllowance(
+    { amount, allowance: token.allowance },
+    token,
+  );
+
   const disabled = isLoading || Boolean(formState.errors.amount);
 
   if (!address || !session) {
@@ -273,18 +273,10 @@ function FundPoolButton({
     );
   }
 
-  if (!balance) {
+  if (amount > (token.balance ?? 0)) {
     return (
       <Button className={"w-full"} disabled>
         Not enough funds
-      </Button>
-    );
-  }
-
-  if (amount === undefined) {
-    return (
-      <Button className="w-full" disabled>
-        Enter an amount
       </Button>
     );
   }
@@ -307,11 +299,10 @@ function FundPoolButton({
     </IconButton>
   );
 }
-
-function calcHasAllowance({ allowance = 0n, amount = 0, decimals = 18 }) {
-  return isNativeToken
+function calcHasAllowance({ allowance = 0n, amount = 0 }, token: TokenProps) {
+  return token.isNativeToken
     ? true
-    : allowance >= parseUnits(amount.toString(), decimals);
+    : allowance >= parseUnits(amount.toString(), token.decimals ?? 18);
 }
 
 export default dynamic(() => Promise.resolve(ConfigurePool), { ssr: false });

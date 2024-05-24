@@ -1,15 +1,9 @@
 import { type Vote } from "~/features/ballot/types";
 
-/*
-Payout styles:
-Custom: 
-- Sum up all the votes
-OP-style:
-- A project must have a minimum of x voters (threshold)
-- Median value is counted
-*/
-
-export type PayoutOptions = { style: "custom" | "op"; threshold?: number };
+export type PayoutOptions = {
+  calculation: "average" | "median" | "sum";
+  threshold?: number;
+};
 export type BallotResults = Record<
   string,
   {
@@ -39,26 +33,29 @@ export function calculateVotes(
           voterIds: new Set(),
         };
       }
-      projectVotes[vote.projectId]!.total += vote.amount;
       projectVotes[vote.projectId]!.amounts.push(vote.amount);
       projectVotes[vote.projectId]!.voterIds.add(ballot.voterId);
     }
   }
 
   const projects: BallotResults = {};
+
+  const calcFunctions = {
+    average: calculateAverage,
+    median: calculateMedian,
+    sum: calculateSum,
+  };
   for (const projectId in projectVotes) {
-    const { total, amounts, voterIds } = projectVotes[projectId]!;
+    const { amounts, voterIds } = projectVotes[projectId]!;
     const voteIsCounted =
-      payoutOpts.style === "custom" ||
-      (payoutOpts.threshold && voterIds.size >= payoutOpts.threshold);
+      payoutOpts.threshold && voterIds.size >= payoutOpts.threshold;
 
     if (voteIsCounted) {
       projects[projectId] = {
         voters: voterIds.size,
-        votes:
-          payoutOpts.style === "op"
-            ? calculateMedian(amounts.sort((a, b) => a - b))
-            : total,
+        votes: calcFunctions[payoutOpts.calculation ?? "average"]?.(
+          amounts.sort((a, b) => a - b),
+        ),
       };
     }
   }
@@ -66,14 +63,16 @@ export function calculateVotes(
   return projects;
 }
 
-function calculateAverage(votes: number[]) {
-  if (votes.length === 0) {
+function calculateSum(arr: number[]) {
+  return arr?.reduce((sum, x) => sum + x, 0);
+}
+function calculateAverage(arr: number[]) {
+  if (arr.length === 0) {
     return 0;
   }
 
-  const sum = votes.reduce((sum, x) => sum + x, 0);
-
-  const average = sum / votes.length;
+  const sum = arr.reduce((sum, x) => sum + x, 0);
+  const average = sum / arr.length;
 
   return Math.round(average);
 }

@@ -21,10 +21,6 @@ export const Layout = ({ children, ...props }: Props) => {
       href: "/projects",
       children: "Projects",
     },
-    {
-      href: "/lists",
-      children: "Lists",
-    },
   ];
 
   if (getAppState() === "RESULTS") {

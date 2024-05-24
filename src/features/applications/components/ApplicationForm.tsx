@@ -1,8 +1,13 @@
 import { z } from "zod";
-import { type PropsWithChildren } from "react";
+import { type Address } from "viem";
+import { toast } from "sonner";
+import { useController, useFormContext } from "react-hook-form";
+import { useLocalStorage } from "react-use";
+import { useSession } from "next-auth/react";
+import { useAccount, useBalance } from "wagmi";
 
 import { ImageUpload } from "~/components/ImageUpload";
-import { IconButton } from "~/components/ui/Button";
+import { Button } from "~/components/ui/Button";
 import {
   ErrorMessage,
   FieldArray,
@@ -14,8 +19,6 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { Heading } from "~/components/ui/Heading";
-import { Spinner } from "~/components/ui/Spinner";
 import { impactCategories } from "~/config";
 import {
   ApplicationSchema,
@@ -24,20 +27,17 @@ import {
   fundingSourceTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
-import { toast } from "sonner";
-import { useController, useFormContext } from "react-hook-form";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
-import { useLocalStorage } from "react-use";
 import { Alert } from "~/components/ui/Alert";
-import { useSession } from "next-auth/react";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
   application: ApplicationSchema,
 });
 
-export function ApplicationForm({ address = "" }) {
+export function ApplicationForm({ address }: { address: Address }) {
   const clearDraft = useLocalStorage("application-draft")[2];
 
   const create = useCreateApplication({
@@ -134,7 +134,7 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Contribution & Impact"
+          title={"Contribution & Impact"}
           description="Describe the contribution and impact of your project."
         >
           <FormControl
@@ -162,7 +162,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Contribution links"
+          title={
+            <>
+              Contribution links <span className="text-red-300">*</span>
+            </>
+          }
           description="Where can we find your contributions?"
         >
           <FieldArray
@@ -200,7 +204,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Impact metrics"
+          title={
+            <>
+              Impact metrics <span className="text-red-300">*</span>
+            </>
+          }
           description="What kind of impact have your project made?"
         >
           <FieldArray
@@ -225,7 +233,12 @@ export function ApplicationForm({ address = "" }) {
                   required
                   valueAsNumber
                 >
-                  <Input type="number" placeholder="Number" />
+                  <Input
+                    type="number"
+                    placeholder="Number"
+                    min={0}
+                    step={0.01}
+                  />
                 </FormControl>
               </>
             )}
@@ -233,7 +246,11 @@ export function ApplicationForm({ address = "" }) {
         </FormSection>
 
         <FormSection
-          title="Funding sources"
+          title={
+            <>
+              Funding sources <span className="text-red-300">*</span>
+            </>
+          }
           description="From what sources have you received funding?"
         >
           <FieldArray
@@ -252,7 +269,12 @@ export function ApplicationForm({ address = "" }) {
                   required
                   valueAsNumber
                 >
-                  <Input type="number" placeholder="Amount" />
+                  <Input
+                    type="number"
+                    placeholder="Amount"
+                    min={0}
+                    step={0.01}
+                  />
                 </FormControl>
                 <FormControl
                   name={`application.fundingSources.${i}.currency`}
@@ -281,13 +303,14 @@ export function ApplicationForm({ address = "" }) {
 
         {error ? (
           <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
-            Make sure you&apos;re not connected to a VPN since this can cause
-            problems with the RPC and your wallet.
+            Make sure you have funds in your wallet and that you&apos;re not
+            connected to a VPN since this can cause problems with the RPC and
+            your wallet.
           </div>
         ) : null}
 
         <CreateApplicationButton
-          isLoading={create.isLoading}
+          isLoading={create.isPending}
           buttonText={
             create.isUploading
               ? "Uploading metadata"
@@ -308,29 +331,41 @@ function CreateApplicationButton({
   isLoading: boolean;
   buttonText: string;
 }) {
+  const { address } = useAccount();
+  const balance = useBalance({ address });
+
   const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
+  const hasBalance = (balance.data?.value ?? 0n) > 0;
   return (
     <div className="flex items-center justify-between">
       <div>
-        {!session && <div>You must connect wallet to create a list</div>}
+        {!session && (
+          <div>You must connect wallet to create an application</div>
+        )}
         {!isCorrectNetwork && (
           <div className="flex items-center gap-2">
             You must be connected to {correctNetwork.name}
           </div>
         )}
       </div>
-
-      <IconButton
-        icon={isLoading ? Spinner : null}
-        disabled={isLoading || !session}
-        variant="primary"
-        type="submit"
-        isLoading={isLoading}
-      >
-        {buttonText}
-      </IconButton>
+      <EnsureCorrectNetwork>
+        {hasBalance ? (
+          <Button
+            disabled={isLoading || !session}
+            variant="primary"
+            type="submit"
+            isLoading={isLoading}
+          >
+            {buttonText}
+          </Button>
+        ) : (
+          <Button disabled isLoading={balance.isPending}>
+            Not enough funds
+          </Button>
+        )}
+      </EnsureCorrectNetwork>
     </div>
   );
 }
