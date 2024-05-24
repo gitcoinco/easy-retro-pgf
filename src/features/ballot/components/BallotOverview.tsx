@@ -73,7 +73,7 @@ function BallotOverview() {
         {appState === EAppState.REVIEWING ? (
           <BallotSection title="Applications are being reviewed" />
         ) : (
-          <Button as={Link} href={"/applications/new"}>
+          <Button className="border-1" as={Link} href={"/applications/new"}>
             Create application
           </Button>
         )}
