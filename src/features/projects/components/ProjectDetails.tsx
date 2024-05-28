@@ -189,7 +189,8 @@ export default function ProjectDetails({
                 </div>
                 <LinkBox
                   shouldValidateWithHttps={false}
-                  links={[{ url: `${attestation?.refUID}` }]}
+                  links={[{ url: attestation?.refUID }]}
+                  shouldValidateWithHttps={false}
                   renderItem={(link) => (
                     <div className="flex-1 truncate" title={link.url}>
                       {link.url}
