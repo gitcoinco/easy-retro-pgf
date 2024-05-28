@@ -43,6 +43,7 @@ export const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]
 
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
+  email: z.string().email(),
   bio: z.string().min(3),
   websiteUrl: z.string()
     .min(1, "Website URL is required")

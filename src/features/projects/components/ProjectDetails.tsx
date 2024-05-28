@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import Link from "next/link";
-import { X, Check, ExternalLinkIcon, Globe } from "lucide-react";
+import { X, Check, ExternalLinkIcon, Globe, Mail } from "lucide-react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
@@ -16,6 +16,7 @@ import { Button } from "~/components/ui/Button";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useVoters } from "~/features/voters/components/VotersList";
+import url from "url";
 
 export default function ProjectDetails({
   attestation,
@@ -75,9 +76,16 @@ export default function ProjectDetails({
         </div>
       </div>
       <div className="flex flex-col-reverse items-start justify-between gap-5 md:flex-row md:items-center md:gap-4">
-        <div className="flex flex-col items-start justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-2">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
           <p className="break-words text-justify text-lg ">{bio}</p>
+          {(isAdmin || voters?.some((item) => item.recipient === address)) &&
+            metadata?.data?.email && (
+              <p className="flex items-center gap-2">
+                <Mail className="h-4 w-4" strokeWidth={1.5} />
+                {metadata?.data?.email}
+              </p>
+            )}
         </div>
         {action}
 
@@ -180,6 +188,7 @@ export default function ProjectDetails({
                   Previous edits on this project
                 </div>
                 <LinkBox
+                  shouldValidateWithHttps={false}
                   links={[{ url: attestation?.refUID }]}
                   shouldValidateWithHttps={false}
                   renderItem={(link) => (
