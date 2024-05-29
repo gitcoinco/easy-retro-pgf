@@ -41,10 +41,15 @@ export function ImageUpload({
       rules={{ required: "Recipe picture is required" }}
       render={({ field: { value, onChange, ...field } }) => {
         return (
-          <div className={clsx("relative overflow-hidden", className)}>
+          <div
+            onClick={() => ref.current?.click()}
+            className={clsx(
+              "relative cursor-pointer overflow-hidden",
+              className,
+            )}
+          >
             <IconButton
               disabled={upload.isPending}
-              onClick={() => ref.current?.click()}
               icon={upload.isPending ? Spinner : ImageIcon}
               className="absolute bottom-1 right-1"
             ></IconButton>
