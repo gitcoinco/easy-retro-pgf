@@ -36,7 +36,6 @@ import { type Attestation } from "~/utils/fetchAttestations";
 import { isBefore } from "date-fns";
 import { config } from "~/config";
 import Link from "next/link";
-import TextEditor from "./TextEditor";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -54,7 +53,9 @@ export function ApplicationForm({
 }) {
   const metadata = useProjectMetadata(projectInfo?.metadataPtr);
   const profile = useProfileWithMetadata(projectInfo?.recipient);
+
   const clearDraft = useLocalStorage("application-draft")[2];
+
   const [defaultValues, setDefaultValues] = useState();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
   const { data: session } = useSession();
@@ -318,9 +319,10 @@ export function ApplicationForm({
               label="Contribution description"
               required
             >
-                <TextEditor
-                 name="application.contributionDescription"         
-                />
+              <Textarea
+                rows={4}
+                placeholder="What have your project contributed to?"
+              />
             </FormControl>
 
             <FormControl
@@ -328,9 +330,10 @@ export function ApplicationForm({
               label="Impact description"
               required
             >
-                <TextEditor
-                 name="application.impactDescription"              
-                />
+              <Textarea
+                rows={4}
+                placeholder="What impact has your project had?"
+              />
             </FormControl>
             <ImpactTags />
           </FormSection>
