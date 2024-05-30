@@ -19,7 +19,14 @@ const MenuBar: FC<{ editor: any }> = ({ editor }) => {
 
   const addLink = () => {
     if (linkUrl) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+      let url;
+      if (!/^https?:\/\//i.test(linkUrl)){
+       url = 'https://' + linkUrl;
+      } else {
+       url = linkUrl
+      }
+
+      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
       setLinkUrl('');
       setLinkInputVisible(false);
     }
@@ -101,7 +108,12 @@ const TextEditor: FC<{ name: string }> = ({ name }) => {
       Bold,
       Italic,
       Link.configure({
-        openOnClick: true, 
+        openOnClick: true,
+        HTMLAttributes: {
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          class: "text-blue-300"
+        },
       }),
       Placeholder.configure({
         placeholder: 'Enter your description...',

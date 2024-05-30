@@ -16,7 +16,6 @@ import { Button } from "~/components/ui/Button";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useVoters } from "~/features/voters/components/VotersList";
-import url from "url";
 
 export default function ProjectDetails({
   attestation,
@@ -69,7 +68,7 @@ export default function ProjectDetails({
               >
                 <Globe className=" h-4 w-4" />
                 <span>Website</span>
-                <ExternalLinkIcon className=" h-4 w-4" />
+                <ExternalLinkIcon className="h-4 w-4" />
               </Link>
             )}
           </div>
