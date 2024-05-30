@@ -27,10 +27,39 @@ import {
   type MaciContextType,
   type MaciProviderProps,
 } from "./types";
+import type { Ballot, Vote } from "~/features/ballot/types";
 
 export const MaciContext = createContext<MaciContextType | undefined>(
   undefined,
 );
+
+export const sumBallot = (votes?: Vote[]) =>
+(votes ?? []).reduce(
+  (sum, x) => sum + (!isNaN(Number(x?.amount)) ? Number(x.amount) : 0),
+  0,
+);
+
+export const ballotContains = (id: string, ballot?: Ballot) => {
+  return ballot?.votes?.find((v) => v.projectId === id);
+}
+
+const toObject = (arr: object[] = [], key: string) => {
+  return arr?.reduce(
+    (acc, x) => ({ ...acc, [x[key as keyof typeof acc]]: x }),
+    {},
+  );
+}
+
+const mergeBallot = (ballot: Ballot, addedVotes: Vote[], pollId: string) => {
+  return {
+    ...ballot,
+    pollId,
+    votes: Object.values<Vote>({
+      ...toObject(ballot?.votes, "projectId"),
+      ...toObject(addedVotes, "projectId"),
+    }),
+  };
+}
 
 export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const { data } = useSession();
@@ -44,10 +73,39 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const [error, setError] = useState<string>();
   const [pollData, setPollData] = useState<IGetPollData>();
   const [tallyData, setTallyData] = useState<TallyData>();
+  const [ballot, setBallot] = useState<Ballot>({ votes: [], published: false });
 
   const attestations = api.voters.approvedAttestations.useQuery({
     address,
   });
+
+  // remove from the ballot
+  const useRemoveFromBallot = (projectId: string) => {  
+    const votes = (ballot?.votes ?? []).filter(
+      (v) => v.projectId !== projectId,
+    );
+    setBallot({ ...ballot, votes, published: false});
+    useSaveBallot();
+  }
+
+  // add to the ballot
+  const useAddToBallot = (votes: Vote[]) => {
+    const pollId = pollData?.id.toString();
+  
+    setBallot(mergeBallot(ballot as unknown as Ballot, votes, pollId!));
+    useSaveBallot();
+  }
+
+  // save the ballot to localstorage
+  const useSaveBallot = () => {
+    localStorage.setItem("ballot", JSON.stringify(ballot));
+  }
+
+  // remove the ballot from localstorage
+  const useDeleteBallot = () => {
+    setBallot({ votes: [], published: false });
+    localStorage.removeItem("ballot");
+  }
 
   const attestationId = useMemo(() => {
     const values = attestations.data?.valueOf() as Attestation[] | undefined;
@@ -157,6 +215,13 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
         })
         .finally(() => {
           setIsLoading(false);
+          setBallot(prevBallot => {
+            if (!prevBallot) {
+              // Assuming default structure for a new ballot if none exists
+              return { votes: [], published: true };
+            }
+            return { ...prevBallot, published: true };
+          });
         });
     },
     [
@@ -208,6 +273,9 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     }
 
     setIsLoading(true);
+
+    setBallot(JSON.parse(localStorage.getItem("ballot") ?? "{}") ?? { votes: [], published: false });
+
     Promise.all([
       getPoll({
         maciAddress: config.maciAddress!,
@@ -250,6 +318,10 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     stateIndex,
     isRegistered: isRegistered ?? false,
     pollId: pollData?.id.toString(),
+    useAddToBallot,
+    useRemoveFromBallot,
+    useDeleteBallot,
+    ballot,
     error,
     pollData,
     tallyData,

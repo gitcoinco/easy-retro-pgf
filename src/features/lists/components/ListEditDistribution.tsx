@@ -20,12 +20,6 @@ import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
 import { Alert } from "~/components/ui/Alert";
 import { formatNumber } from "~/utils/formatNumber";
-import {
-  ballotContains,
-  sumBallot,
-  useBallot,
-} from "~/features/ballot/hooks/useBallot";
-import { useAddToBallot } from "~/features/ballot/hooks/useBallot";
 import { Spinner } from "~/components/ui/Spinner";
 
 import { AllocationForm } from "~/features/ballot/components/AllocationList";
@@ -33,7 +27,7 @@ import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import { EAppState } from "~/utils/types";
-import { useMaci } from "~/contexts/Maci";
+import { ballotContains, sumBallot, useMaci } from "~/contexts/Maci";
 
 export const ListEditDistribution = ({
   listName,
@@ -44,8 +38,8 @@ export const ListEditDistribution = ({
 }) => {
   const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
-  const { data: ballot } = useBallot();
-  const add = useAddToBallot();
+  const { ballot, useAddToBallot } = useMaci();
+
   const { isRegistered } = useMaci();
 
   // What list projects are already in the ballot?
@@ -56,15 +50,12 @@ export const ListEditDistribution = ({
   // Keep the already in ballot in state because we want to update these when user removes allocations
   const [alreadyInBallot, updateInBallot] = useState(itemsInBallot(votes));
 
-  console.log({ alreadyInBallot });
   function handleAddToBallot(values: { votes: Vote[] }) {
-    add.mutate(values.votes);
+    useAddToBallot(values.votes);
   }
 
   function handleOpenChange() {
     setOpen(false);
-    // updateInBallot(itemsInBallot(listProjects));
-    // add.reset(); // This is needed to reset add.isSuccess and show the allocations again
   }
 
   const ballotVotes = votes?.map((vote) => {
@@ -179,7 +170,7 @@ const TotalAllocationBanner = () => {
   const form = useFormContext<{ votes: Vote[] }>();
 
   // Load existing ballot
-  const { data: ballot } = useBallot();
+  const { ballot } = useMaci();
   const { initialVoiceCredits } = useMaci();
 
   const sum = sumBallot(ballot?.votes);

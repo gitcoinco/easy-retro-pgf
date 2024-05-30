@@ -1,4 +1,3 @@
-import { ballotRouter } from "~/server/api/routers/ballot";
 import { resultsRouter } from "~/server/api/routers/results";
 import { projectsRouter } from "~/server/api/routers/projects";
 import { metadataRouter } from "~/server/api/routers/metadata";
@@ -15,7 +14,6 @@ import { createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   results: resultsRouter,
-  ballot: ballotRouter,
   voters: votersRouter,
   lists: listsRouter,
   applications: applicationsRouter,

@@ -10,7 +10,6 @@ import { toast } from "sonner";
 
 import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
-import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useMaci } from "~/contexts/Maci";
 import type { Address } from "viem";
@@ -96,9 +95,8 @@ const ConnectedDetails = ({
   openAccountModal: () => void;
   isMobile: boolean;
 }) => {
-  const { data: ballot } = useBallot();
+  const { isLoading, isRegistered, isEligibleToVote, onSignup, ballot } = useMaci();
   const ballotSize = (ballot?.votes ?? []).length;
-  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaci();
 
   const { showBallot } = useLayoutOptions();
 
@@ -119,10 +117,10 @@ const ConnectedDetails = ({
             onClick={handleSignup}
           />
         )}
-        {isRegistered && showBallot && ballot?.publishedAt && (
+        {isRegistered && showBallot && ballot?.published && (
           <Chip>Already submitted</Chip>
         )}
-        {isRegistered && showBallot && !ballot?.publishedAt && (
+        {isRegistered && showBallot && !ballot?.published && (
           <Chip className="gap-2" as={Link} href={"/ballot"}>
             {isMobile ? <FaListCheck className="h-4 w-4" /> : `View Ballot`}
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs">

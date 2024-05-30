@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import { type TallyData, type IGetPollData } from "maci-cli/sdk";
+import type { Ballot, Vote } from "~/features/ballot/types";
 
 export interface IVoteArgs {
   voteOptionIndex: bigint;
@@ -17,6 +18,10 @@ export interface MaciContextType {
   error?: string;
   pollData?: IGetPollData;
   tallyData?: TallyData;
+  ballot?: Ballot;
+  useAddToBallot: (votes: Vote[]) => void;
+  useRemoveFromBallot: (projectId: string) => void;
+  useDeleteBallot: () => void;
   onSignup: (onError: () => void) => Promise<void>;
   onVote: (
     args: IVoteArgs[],
