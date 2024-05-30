@@ -34,34 +34,34 @@ const MenuBar: FC<{ editor: any }> = ({ editor }) => {
 
   return (
     <div className="flex gap-2 mb-1 text-white">
-      <button
+      <div
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`px-3 py-1 border rounded ${
           editor.isActive('bold') ? 'bg-white text-black' : 'bg-gray-600 text-white'
         }`}
       >
         <i className={`fas fa-bold ${editor.isActive('bold') ? 'text-black' : 'text-white'}`}></i>
-      </button>
-      <button
+      </div>
+      <div
         onClick={() => editor.chain().focus().toggleItalic().run()}
         className={`px-3 py-1 border rounded ${
           editor.isActive('italic') ? 'bg-white text-black' : 'bg-gray-600 text-white'
         }`}
       >
         <i className={`fas fa-italic ${editor.isActive('italic') ? 'text-black' : 'text-white'}`}></i>
-      </button>
-      <button
+      </div>
+      <div
         onClick={toggleLinkInput}
         className="px-3 py-1 border rounded bg-gray-600 text-white"
       >
         <i className="fas fa-link"></i>
-      </button>
-      <button
+      </div>
+      <div
         onClick={() => editor.chain().focus().unsetLink().run()}
         className="px-3 py-1 border rounded bg-gray-600 text-white"
       >
         <i className="fas fa-unlink"></i>
-      </button>
+      </div>
       {isLinkInputVisible && (
         <div className="flex gap-2">
           <input
@@ -71,12 +71,12 @@ const MenuBar: FC<{ editor: any }> = ({ editor }) => {
             placeholder="Enter URL"
             className="px-3 py-1 border rounded outline-none focus:border-white focus:ring-0 !bg-transparent text-white"
           />
-          <button
+          <div
             onClick={addLink}
             className="px-3 py-1 border rounded bg-gray-600 text-white"
           >
             Add Link
-          </button>
+          </div>
         </div>
       )}
     </div>
@@ -84,13 +84,16 @@ const MenuBar: FC<{ editor: any }> = ({ editor }) => {
 };
 
 const TextEditor: FC<{ name: string }> = ({ name }) => {
-  const { setValue, watch } = useFormContext();
+  const { setValue, watch,getValues } = useFormContext();
   const editorContentRef = useRef(watch(name));
+  const property = name.split('.')[1];
+  const values = getValues();
+  const nestedValue = values?.application?.[property];
 
   const editor = useEditor({
     editorProps: {
       attributes: {
-        class: 'focus:outline-none',
+        class: 'focus:outline-none h-full',
       },
     },
     extensions: [
@@ -104,7 +107,7 @@ const TextEditor: FC<{ name: string }> = ({ name }) => {
         placeholder: 'Enter your description...',
       }),
     ],
-    content: editorContentRef.current,
+    content: nestedValue || editorContentRef.current,
     onUpdate: ({ editor }) => {
       const content = editor.getHTML();
       editorContentRef.current = content;
@@ -121,7 +124,7 @@ const TextEditor: FC<{ name: string }> = ({ name }) => {
       <MenuBar editor={editor} />
       <EditorContent
         editor={editor}
-        className="border p-2 min-h-[200px] text-white rounded-md bg-gray-800"
+        className="border p-2 h-[200px] text-white rounded-md bg-gray-800"
       />
     </div>
   );
