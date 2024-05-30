@@ -13,7 +13,8 @@ export default function ProjectImpact({ isLoading, project }: Props) {
               <Heading className="m-0" as="h3" size="lg">
         Impact
       </Heading>
-          <p dangerouslySetInnerHTML={{ __html: project?.impactDescription }} className="editorClasses break-words text-sm font-normal">
+      <p className=" break-words text-sm font-normal">
+            {project?.impactDescription}
           </p>
         </div>
         <div className="md:w-1/3 w-full">
