@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@allo-team/allo-v2-sdk':
-    specifier: ^1.0.39
-    version: 1.0.71(@typechain/ethers-v6@0.5.1)(ethers@6.12.1)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.4.5)(zod@3.22.4)
   '@ethereum-attestation-service/eas-sdk':
     specifier: ^1.5.0
     version: 1.6.1(ts-node@10.9.2)(typescript@5.4.5)
@@ -284,29 +281,6 @@ packages:
 
   /@adraffy/ens-normalize@1.10.1:
     resolution: {integrity: sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==}
-    dev: false
-
-  /@allo-team/allo-v2-sdk@1.0.71(@typechain/ethers-v6@0.5.1)(ethers@6.12.1)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.4.5)(zod@3.22.4):
-    resolution: {integrity: sha512-M1IvYJgvgAH+ONY5F5RY4dQr2CjVMa14jEZwt2dOEsSMQVXiolIbu0ul+dgIY1Xa6JqkhryESIpMi4Gh3g+HMA==}
-    engines: {node: '>=16.15.0', npm: '>=8.5.5'}
-    dependencies:
-      '@typechain/hardhat': 9.1.0(@typechain/ethers-v6@0.5.1)(ethers@6.12.1)(hardhat@2.22.3)(typechain@8.3.2)
-      dotenv: 16.4.5
-      events: 3.3.0
-      hardhat: 2.22.3(ts-node@10.9.2)(typescript@5.4.5)
-      mocha: 10.4.0
-      viem: 2.10.5(typescript@5.4.5)(zod@3.22.4)
-    transitivePeerDependencies:
-      - '@typechain/ethers-v6'
-      - bufferutil
-      - c-kzg
-      - ethers
-      - supports-color
-      - ts-node
-      - typechain
-      - typescript
-      - utf-8-validate
-      - zod
     dev: false
 
   /@alloc/quick-lru@5.2.0:
@@ -9335,6 +9309,7 @@ packages:
     dependencies:
       is-hex-prefixed: 1.0.0
       strip-hex-prefix: 1.0.0
+    bundledDependencies: false
 
   /event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}

@@ -11,8 +11,8 @@ import { Dialog } from "~/components/ui/Dialog";
 import { useApproveVoters } from "../hooks/useApproveVoters";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import { EthAddressSchema } from "../types";
 import dynamic from "next/dynamic";
-import { EthAddressSchema } from "~/features/distribute/types";
 
 function parseAddresses(addresses: string): string[] {
   return addresses
