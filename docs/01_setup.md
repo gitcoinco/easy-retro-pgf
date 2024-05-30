@@ -71,13 +71,13 @@ You can read about the [MACI requirements here](https://maci.pse.dev/docs/instal
 ```bash
 git clone https://github.com/privacy-scaling-explorations/maci.git && \
 cd maci && \
-git checkout v1.2.2 && \
+git checkout v1.2.3 && \
 pnpm i && \
 pnpm run build
 ```
 
 > [!IMPORTANT]
-> It's important to use version 1.2.2 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
+> It's important to use version 1.2.3 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
 
 ### Download .zkey files
 
