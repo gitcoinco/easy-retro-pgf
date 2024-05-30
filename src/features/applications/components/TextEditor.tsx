@@ -52,13 +52,13 @@ const MenuBar: FC<{ editor: any }> = ({ editor }) => {
       </div>
       <div
         onClick={toggleLinkInput}
-        className="px-3 py-1 border rounded bg-gray-600 text-white"
+        className="px-3 cursor-pointer py-1 border rounded bg-gray-600 text-white"
       >
         <i className="fas fa-link"></i>
       </div>
       <div
         onClick={() => editor.chain().focus().unsetLink().run()}
-        className="px-3 py-1 border rounded bg-gray-600 text-white"
+        className="px-3 cursor-pointer py-1 border rounded bg-gray-600 text-white"
       >
         <i className="fas fa-unlink"></i>
       </div>
@@ -69,11 +69,11 @@ const MenuBar: FC<{ editor: any }> = ({ editor }) => {
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
             placeholder="Enter URL"
-            className="px-3 py-1 border rounded outline-none focus:border-white focus:ring-0 !bg-transparent text-white"
+            className="px-3 cursor-pointer py-1 border rounded outline-none focus:border-white focus:ring-0 !bg-transparent text-white"
           />
           <div
             onClick={addLink}
-            className="px-3 py-1 border rounded bg-gray-600 text-white"
+            className="px-3 cursor-pointer py-1 border rounded bg-gray-600 text-white"
           >
             Add Link
           </div>
