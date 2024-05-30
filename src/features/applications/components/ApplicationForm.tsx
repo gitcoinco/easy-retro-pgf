@@ -36,6 +36,7 @@ import { type Attestation } from "~/utils/fetchAttestations";
 import { isBefore } from "date-fns";
 import { config } from "~/config";
 import Link from "next/link";
+import TextEditor from "./TextEditor";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -53,9 +54,7 @@ export function ApplicationForm({
 }) {
   const metadata = useProjectMetadata(projectInfo?.metadataPtr);
   const profile = useProfileWithMetadata(projectInfo?.recipient);
-
   const clearDraft = useLocalStorage("application-draft")[2];
-
   const [defaultValues, setDefaultValues] = useState();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
   const { data: session } = useSession();
@@ -70,7 +69,6 @@ export function ApplicationForm({
         },
         application: {
           name: metadata?.data?.name,
-          email: metadata?.data?.email,
           bio: metadata?.data?.bio,
           websiteUrl: metadata?.data?.websiteUrl,
           wPOKTReceivingAddress: metadata?.data?.wPOKTReceivingAddress,
@@ -165,9 +163,6 @@ export function ApplicationForm({
           >
             <FormControl name="profile.name" label="Profile name" required>
               <Input placeholder="Your name" />
-            </FormControl>
-            <FormControl name="application.email" label="Email" required>
-              <Input placeholder="Your email" />
             </FormControl>
             <div className="mb-1 gap-4 md:flex">
               <FormControl
@@ -319,10 +314,9 @@ export function ApplicationForm({
               label="Contribution description"
               required
             >
-              <Textarea
-                rows={4}
-                placeholder="What have your project contributed to?"
-              />
+                <TextEditor
+                 name="application.contributionDescription"         
+                />
             </FormControl>
 
             <FormControl
@@ -330,10 +324,9 @@ export function ApplicationForm({
               label="Impact description"
               required
             >
-              <Textarea
-                rows={4}
-                placeholder="What impact has your project had?"
-              />
+                <TextEditor
+                 name="application.impactDescription"              
+                />
             </FormControl>
             <ImpactTags />
           </FormSection>
@@ -353,7 +346,7 @@ export function ApplicationForm({
               renderField={(field, i) => (
                 <>
                   <FormControl
-                    className="w-full flex-1 md:min-w-96"
+                    className="flex-1 md:min-w-96 w-full"
                     name={`application.contributionLinks.${i}.description`}
                     required
                   >
@@ -404,7 +397,7 @@ export function ApplicationForm({
               renderField={(field, i) => (
                 <>
                   <FormControl
-                    className="w-full flex-1 md:min-w-96"
+                    className="flex-1 md:min-w-96 w-full"
                     name={`application.impactMetrics.${i}.description`}
                     required
                   >

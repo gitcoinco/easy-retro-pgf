@@ -36,3 +36,7 @@ button:hover svg.lucide-user-round {
 .react-tooltip{
   background-color: #6c7283;
 }
+
+.editorClasses a{
+  color: lightskyblue;
+}
