@@ -9,14 +9,12 @@ type Props = { isLoading: boolean; project?: Application };
 export default function ProjectContributions({ isLoading, project }: Props) {
   return (
     <div className="flex flex-col gap-3 md:flex-row items-baseline md:items-center justify-between pt-6">
-
         <div className="flex md:w-2/3 flex-col items-start justify-between gap-3">
         <Heading className="m-0" as="h3" size="lg">
         Contributions
       </Heading>
-          <p className=" break-words text-sm font-normal">
-            {project?.contributionDescription}
-          </p>
+        <p dangerouslySetInnerHTML={{ __html: project?.contributionDescription }} className="editorClasses break-words text-sm font-normal">
+        </p>
         </div>
         <div className="md:w-1/3 w-full">
           <LinkBox
