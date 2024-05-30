@@ -69,6 +69,7 @@ export function ApplicationForm({
         },
         application: {
           name: metadata?.data?.name,
+          email: metadata?.data?.email,
           bio: metadata?.data?.bio,
           websiteUrl: metadata?.data?.websiteUrl,
           wPOKTReceivingAddress: metadata?.data?.wPOKTReceivingAddress,
@@ -163,6 +164,9 @@ export function ApplicationForm({
           >
             <FormControl name="profile.name" label="Profile name" required>
               <Input placeholder="Your name" />
+            </FormControl>
+            <FormControl name="application.email" label="Email" required>
+              <Input placeholder="Your email" />
             </FormControl>
             <div className="mb-1 gap-4 md:flex">
               <FormControl
@@ -346,7 +350,7 @@ export function ApplicationForm({
               renderField={(field, i) => (
                 <>
                   <FormControl
-                    className="flex-1 md:min-w-96 w-full"
+                    className="w-full flex-1 md:min-w-96"
                     name={`application.contributionLinks.${i}.description`}
                     required
                   >
@@ -397,7 +401,7 @@ export function ApplicationForm({
               renderField={(field, i) => (
                 <>
                   <FormControl
-                    className="flex-1 md:min-w-96 w-full"
+                    className="w-full flex-1 md:min-w-96"
                     name={`application.impactMetrics.${i}.description`}
                     required
                   >
