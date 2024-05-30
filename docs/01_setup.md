@@ -66,18 +66,18 @@ As a coordinator you need to deploy a MACI instance and poll.
 
 ### Install MACI
 
-You can read about the [MACI requirements here](https://maci.pse.dev/docs/installation). To install MACI run the following commands:
+You can read about the [MACI requirements here](https://maci.pse.dev/docs/v1.2/installation). To install MACI run the following commands:
 
 ```bash
 git clone https://github.com/privacy-scaling-explorations/maci.git && \
 cd maci && \
-git checkout v1.2.2 && \
+git checkout v1.2.3 && \
 pnpm i && \
 pnpm run build
 ```
 
 > [!IMPORTANT]
-> It's important to use version 1.2.2 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
+> It's important to use version 1.2.3 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
 
 ### Download .zkey files
 
@@ -145,7 +145,7 @@ Run pnpm deploy-poll to deploy your first Poll (you can specify the network by a
 pnpm deploy-poll:NETWORK
 ```
 
-See [MACI docs](https://maci.pse.dev/docs/integrating#deployment) for more information.
+See [MACI docs](https://maci.pse.dev/docs/v1.2/integrating#deployment) for more information.
 
 ## 4. Deploy Frontend
 
@@ -171,7 +171,7 @@ pnpm merge:[network] --poll [poll-id]
 ```
 
 > [!IMPORTANT]
-> For version 1.2.2 you need to deploy a new MACI contract for a new round.
+> For version 1.2.3 you need to deploy a new MACI contract for a new round.
 
 Then the coordinator generates proofs for the message processing, and tally calculations. This allows to publish the poll results on-chain and then everyone can verify the results when the poll is over:
 

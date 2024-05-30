@@ -24,7 +24,7 @@ MACI-RPGF uses EAS as backbone to run Retroactive Public Goods Funding to reward
 
 ### MACI docs
 
-- [Documentation](https://maci.pse.dev/)
+- [Documentation](https://maci.pse.dev/docs/introduction)
 
 ## Supported Networks
 
