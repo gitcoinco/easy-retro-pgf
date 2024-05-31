@@ -50,7 +50,7 @@ export function ApplicationItem({
 
         <ProjectAvatar isLoading={isLoading} size="sm" profileId={recipient} />
         <div className=" flex-1">
-          <div className="flex items-center justify-between truncate">
+          <div className="flex items-center justify-between">
             <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
               {name}
             </Skeleton>
