@@ -136,7 +136,7 @@ const TextEditor: FC<{ name: string }> = ({ name }) => {
       <MenuBar editor={editor} />
       <EditorContent
         editor={editor}
-        className="border p-2 h-[200px] text-white rounded-md bg-gray-800"
+        className="border p-2 h-[200px] max-h-[200px] overflow-y-auto text-white rounded-md bg-gray-800"
       />
     </div>
   );
