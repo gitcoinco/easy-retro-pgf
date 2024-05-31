@@ -90,13 +90,10 @@ const MenuBar: FC<{ editor: any }> = ({ editor }) => {
   );
 };
 
-const TextEditor: FC<{ name: string }> = ({ name }) => {
-  const { setValue, watch,getValues } = useFormContext();
-  const editorContentRef = useRef(watch(name));
-  const property = name.split('.')[1];
-  const values = getValues();
-  const nestedValue = values?.application?.[property];
-
+const TextEditor: FC<{ name: string, draftedValue: string }> = ({ name, draftedValue }) => {
+  const { setValue, watch } = useFormContext();
+  const editorContentRef: { current: string } = useRef(watch(name));
+  
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -119,7 +116,7 @@ const TextEditor: FC<{ name: string }> = ({ name }) => {
         placeholder: 'Enter your description...',
       }),
     ],
-    content: nestedValue || editorContentRef.current,
+    content: editorContentRef.current || draftedValue,
     onUpdate: ({ editor }) => {
       const content = editor.getHTML();
       editorContentRef.current = content;

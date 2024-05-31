@@ -54,7 +54,7 @@ export function ApplicationForm({
 }) {
   const metadata = useProjectMetadata(projectInfo?.metadataPtr);
   const profile = useProfileWithMetadata(projectInfo?.recipient);
-  const clearDraft = useLocalStorage("application-draft")[2];
+  const [draft, _, clearDraft] = useLocalStorage("application-draft");
   const [defaultValues, setDefaultValues] = useState();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
   const { data: session } = useSession();
@@ -319,6 +319,8 @@ export function ApplicationForm({
               required
             >
                 <TextEditor
+                // @ts-ignore
+                 draftedValue={draft.application.contributionDescription}
                  name="application.contributionDescription"         
                 />
             </FormControl>
@@ -329,6 +331,8 @@ export function ApplicationForm({
               required
             >
                 <TextEditor
+                // @ts-ignore
+                 draftedValue={draft.application.impactDescription}
                  name="application.impactDescription"              
                 />
             </FormControl>
