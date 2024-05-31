@@ -39,17 +39,14 @@ export const socialMediaTypes = {
   Telegram: "Telegram",
 } as const;
 
-export const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+export const urlRegex =
+  /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
 
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
   email: z.string().email(),
   bio: z.string().min(3),
-  websiteUrl: z.string()
-    .min(1, "Website URL is required")
-    .refine((data: string) => urlRegex.test(data), {
-      message: "Invalid URL format. URL must be a valid web address with or without 'https://'.",
-    }),
+  websiteUrl: z.string().url().min(1),
   wPOKTReceivingAddress: EthAddressSchema,
   arbReceivingAddress: EthAddressSchema,
   opReceivingAddress: EthAddressSchema,
@@ -61,11 +58,7 @@ export const ApplicationSchema = z.object({
       z.object({
         description: z.string().min(3),
         type: z.nativeEnum(reverseKeys(contributionTypes)),
-        url: z.string()
-        .min(1, "Website URL is required")
-        .refine((data: string) => urlRegex.test(data), {
-          message: "Invalid URL format. URL must be a valid web address with or without 'https://'.",
-        }),
+        url: z.string().url(),
       }),
     )
     .min(1),
@@ -74,11 +67,7 @@ export const ApplicationSchema = z.object({
     .array(
       z.object({
         description: z.string().min(3),
-        url: z.string()
-            .min(1, "URL is required")
-            .refine((data: string) => urlRegex.test(data), {
-                message: "Invalid URL format. URL must be a valid address with or without 'https://'.",
-            }),
+        url: z.string().url(),
         number: z.number(),
       }),
     )
@@ -93,7 +82,7 @@ export const ApplicationSchema = z.object({
   ),
   socialMedias: z.array(
     z.object({
-      url: z.string().min(1),
+      url: z.string().url(),
       type: z.nativeEnum(reverseKeys(socialMediaTypes)),
     }),
   ),
@@ -102,5 +91,5 @@ export const ApplicationSchema = z.object({
 
 export type Application = z.infer<typeof ApplicationSchema>;
 
-export const resolveENSSchema = z.object({address: z.string().min(1)});
+export const resolveENSSchema = z.object({ address: z.string().min(1) });
 export type resolveENS = z.infer<typeof resolveENSSchema>;
