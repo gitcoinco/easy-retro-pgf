@@ -6,8 +6,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useSession } from "next-auth/react";
-import { useAccount } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import { isAfter } from "date-fns";
 import {
   signup,
@@ -16,6 +15,7 @@ import {
   type TallyData,
   type IGetPollData,
   getPoll,
+  genKeyPair,
 } from "maci-cli/sdk";
 
 import type { Attestation } from "~/utils/fetchAttestations";
@@ -29,9 +29,8 @@ export const MaciContext = createContext<MaciContextType | undefined>(
 );
 
 export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
-  const { data } = useSession();
   const signer = useEthersSigner();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isDisconnected } = useAccount();
 
   const [isRegistered, setIsRegistered] = useState<boolean>();
   const [stateIndex, setStateIndex] = useState<string>();
@@ -40,6 +39,13 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const [error, setError] = useState<string>();
   const [pollData, setPollData] = useState<IGetPollData>();
   const [tallyData, setTallyData] = useState<TallyData>();
+
+  const [maciPrivKey, setMaciPrivKey] = useState<string | null>(null);
+  const [maciPubKey, setMaciPubKey] = useState<string | null>(null);
+
+  const [signatureMessage, setSignatureMessage] = useState<string>("");
+
+  const { signMessageAsync } = useSignMessage();
 
   const attestations = api.voters.approvedAttestations.useQuery({
     address,
@@ -56,9 +62,51 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   }, [attestations]);
 
   const isEligibleToVote = useMemo(
-    () => Boolean(attestationId) && Boolean(data),
-    [attestationId, data],
+    () => Boolean(attestationId) && Boolean(address),
+    [attestationId, address],
   );
+
+  // on load get the key pair from local storage and set the signature message
+  useEffect(() => {
+    setSignatureMessage(`Generate MACI Key Pair at ${window.location.origin}`);
+    const storedMaciPrivKey = localStorage.getItem("maciPrivKey");
+    const storedMaciPubKey = localStorage.getItem("maciPubKey");
+    if (storedMaciPrivKey && storedMaciPubKey) {
+      setMaciPrivKey(storedMaciPrivKey);
+      setMaciPubKey(storedMaciPubKey);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isDisconnected) {
+      setMaciPrivKey(null);
+      setMaciPubKey(null);
+      localStorage.removeItem("maciPrivKey");
+      localStorage.removeItem("maciPubKey");
+    }
+  }, [isDisconnected]);
+
+  const generateKeypair = useCallback(() => {
+    // if we are not connected then do not generate the key pair
+    if (!address) return;
+
+    (async () => {
+      try {
+        const signature = await signMessageAsync({ message: signatureMessage });
+        const userKeyPair = genKeyPair({ seed: BigInt(signature) });
+        localStorage.setItem("maciPrivKey", userKeyPair.privateKey);
+        localStorage.setItem("maciPubKey", userKeyPair.publicKey);
+        setMaciPrivKey(userKeyPair.privateKey);
+        setMaciPubKey(userKeyPair.publicKey);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, [address, signMessageAsync, setMaciPrivKey, setMaciPubKey]);
+
+  useEffect(() => {
+    generateKeypair();
+  }, [generateKeypair]);
 
   const votingEndsAt = useMemo(
     () =>
@@ -73,7 +121,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
   const onSignup = useCallback(
     async (onError: () => void) => {
-      if (!data?.publicKey || !signer || !attestationId) {
+      if (!signer || !maciPubKey || !attestationId) {
         return;
       }
 
@@ -81,7 +129,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
       try {
         const { stateIndex: index, hash } = await signup({
-          maciPubKey: data.publicKey,
+          maciPubKey: maciPubKey!,
           maciAddress: config.maciAddress!,
           sgDataArg: attestationId,
           signer,
@@ -102,7 +150,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     },
     [
       attestationId,
-      data?.publicKey,
+      maciPubKey,
       address,
       signer,
       setIsRegistered,
@@ -117,7 +165,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       onError: () => Promise<void>,
       onSuccess: () => Promise<void>,
     ) => {
-      if (!signer || !data || !stateIndex || !pollData) {
+      if (!signer || !stateIndex || !pollData) {
         return;
       }
 
@@ -138,11 +186,12 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       );
 
       setIsLoading(true);
+
       await publishBatch({
         messages,
         maciAddress: config.maciAddress!,
-        publicKey: data.publicKey,
-        privateKey: data.privateKey,
+        publicKey: maciPubKey!,
+        privateKey: maciPrivKey!,
         pollId: BigInt(pollData.id),
         signer,
       })
@@ -158,8 +207,8 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     [
       stateIndex,
       pollData?.id,
-      data?.publicKey,
-      data?.privateKey,
+      maciPubKey,
+      maciPrivKey,
       signer,
       setIsLoading,
       setError,
@@ -168,12 +217,12 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
   /// check if the user already registered
   useEffect(() => {
-    if (!isConnected || !signer || !data?.publicKey || !address || isLoading) {
+    if (!isConnected || !signer || !maciPubKey || !address || isLoading) {
       return;
     }
 
     isRegisteredUser({
-      maciPubKey: data.publicKey,
+      maciPubKey: maciPubKey!,
       maciAddress: config.maciAddress!,
       startBlock: config.maciStartBlock,
       signer,
@@ -188,7 +237,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     isLoading,
     isConnected,
     isRegistered,
-    data?.publicKey,
+    maciPubKey,
     address,
     signer,
     stateIndex,

@@ -28,7 +28,7 @@ import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useLocalStorage } from "react-use";
 import { Alert } from "~/components/ui/Alert";
-import { useSession } from "next-auth/react";
+import { useAccount } from "wagmi";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -306,13 +306,14 @@ function CreateApplicationButton({
   isLoading: boolean;
   buttonText: string;
 }) {
-  const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
+
+  const { address } = useAccount();
 
   return (
     <div className="flex items-center justify-between">
       <div>
-        {!session && <div>You must connect wallet to create a list</div>}
+        {!address && <div>You must connect wallet to create a list</div>}
         {!isCorrectNetwork && (
           <div className="flex items-center gap-2">
             You must be connected to {correctNetwork.name}
@@ -322,7 +323,7 @@ function CreateApplicationButton({
 
       <IconButton
         icon={isLoading ? Spinner : null}
-        disabled={isLoading || !session}
+        disabled={isLoading}
         variant="primary"
         type="submit"
         isLoading={isLoading}

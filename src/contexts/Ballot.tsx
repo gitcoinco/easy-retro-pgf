@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 import type { BallotContextType, BallotProviderProps } from "./types";
 import type { Ballot, Vote } from "~/features/ballot/types";
+import { useAccount } from "wagmi";
 
 export const BallotContext = createContext<BallotContextType | undefined>(
   undefined,
@@ -9,6 +10,8 @@ export const BallotContext = createContext<BallotContextType | undefined>(
 
 export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
   const [ballot, setBallot] = useState<Ballot>({ votes: [], published: false });
+
+  const { isDisconnected } = useAccount();
 
   const sumBallot = (votes?: Vote[]) =>
     (votes ?? []).reduce(
@@ -83,6 +86,12 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
       },
     );
   }, []);
+
+  useEffect(() => {
+    if (isDisconnected) {
+      deleteBallot();
+    }
+  }, [isDisconnected]);
 
   const value: BallotContextType = {
     ballot,
