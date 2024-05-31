@@ -50,9 +50,9 @@ export const ApplicationSchema = z.object({
     .refine((data: string) => urlRegex.test(data), {
       message: "Invalid URL format. URL must be a valid web address with or without 'https://'.",
     }),
-  wPOKTReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
-  arbReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
-  opReceivingAddress: z.union([EthAddressSchema, EnsAddressSchema]),
+  wPOKTReceivingAddress: EthAddressSchema,
+  arbReceivingAddress: EthAddressSchema,
+  opReceivingAddress: EthAddressSchema,
   contributionDescription: z.string().min(3),
   impactDescription: z.string().min(3),
   impactCategory: z.array(z.string()).min(1),
