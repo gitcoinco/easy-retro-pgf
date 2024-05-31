@@ -51,7 +51,7 @@ export function RoundProgress() {
             )}
           >
             <h3 className="font-semibold md:text-sm">{step.label}</h3>
-            <div className=" md:text-sm">{formatDate(step.date, "dd MMM yyyy")}</div>
+            <div className=" md:text-sm">{formatDate(step.date)}</div>
           </div>
         ))}
       </div>
