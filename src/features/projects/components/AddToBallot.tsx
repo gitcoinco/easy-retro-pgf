@@ -14,16 +14,19 @@ import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import { EAppState } from "~/utils/types";
-import { ballotContains, sumBallot, useMaci } from "~/contexts/Maci";
+import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 
 type Props = { id?: string; name?: string };
 
 export const ProjectAddToBallot = ({ id, name }: Props) => {
   const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
-  const { ballot, useAddToBallot, useRemoveFromBallot } = useMaci();
 
-  const { isRegistered, isEligibleToVote, initialVoiceCredits } = useMaci();
+  const { isRegistered, isEligibleToVote, initialVoiceCredits, pollId } =
+    useMaci();
+  const { ballot, ballotContains, sumBallot, addToBallot, removeFromBallot } =
+    useBallot();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
@@ -82,7 +85,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
               .default(0),
           })}
           onSubmit={({ amount }) => {
-            useAddToBallot([{ projectId: id!, amount }]);
+            addToBallot([{ projectId: id!, amount }], pollId);
             setOpen(false);
           }}
         >
@@ -90,7 +93,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             current={sum}
             inBallot={Boolean(inBallot)}
             onRemove={() => {
-              useRemoveFromBallot(id!);
+              removeFromBallot(id!);
               setOpen(false);
             }}
           />

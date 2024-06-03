@@ -18,10 +18,6 @@ export interface MaciContextType {
   error?: string;
   pollData?: IGetPollData;
   tallyData?: TallyData;
-  ballot?: Ballot;
-  useAddToBallot: (votes: Vote[]) => void;
-  useRemoveFromBallot: (projectId: string) => void;
-  useDeleteBallot: () => void;
   onSignup: (onError: () => void) => Promise<void>;
   onVote: (
     args: IVoteArgs[],
@@ -31,5 +27,18 @@ export interface MaciContextType {
 }
 
 export interface MaciProviderProps {
+  children: ReactNode;
+}
+
+export interface BallotContextType {
+  ballot?: Ballot;
+  addToBallot: (votes: Vote[], pollId: string) => void;
+  removeFromBallot: (projectId: string) => void;
+  deleteBallot: () => void;
+  ballotContains: (id: string, ballot?: Ballot) => Vote | undefined;
+  sumBallot: (votes?: Vote[]) => number;
+}
+
+export interface BallotProviderProps {
   children: ReactNode;
 }

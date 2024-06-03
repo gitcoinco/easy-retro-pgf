@@ -1,9 +1,9 @@
-import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 import { BallotConfirmation } from "~/features/ballot/components/BallotConfirmation";
 import { Layout } from "~/layouts/DefaultLayout";
 
 export default function BallotConfirmationPage() {
-  const { ballot } = useMaci();
+  const { ballot } = useBallot();
 
   if (!ballot) return null;
 

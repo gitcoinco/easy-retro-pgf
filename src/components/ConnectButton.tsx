@@ -12,6 +12,7 @@ import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 import type { Address } from "viem";
 import { config } from "~/config";
 
@@ -95,7 +96,8 @@ const ConnectedDetails = ({
   openAccountModal: () => void;
   isMobile: boolean;
 }) => {
-  const { isLoading, isRegistered, isEligibleToVote, onSignup, ballot } = useMaci();
+  const { isLoading, isRegistered, isEligibleToVote, onSignup } = useMaci();
+  const { ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
 
   const { showBallot } = useLayoutOptions();
