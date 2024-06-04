@@ -1,11 +1,9 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { IncomingMessage } from "http";
 import { genKeyPair } from "maci-cli/sdk";
 import type { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { SiweMessage } from "siwe";
-import { db } from "~/server/db";
 
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
   const providers = [
@@ -65,7 +63,6 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
   ];
 
   return {
-    adapter: PrismaAdapter(db),
     callbacks: {
       async session({ session, token }) {
         try {

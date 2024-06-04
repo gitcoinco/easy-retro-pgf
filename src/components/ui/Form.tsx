@@ -9,7 +9,6 @@ import {
   type ComponentProps,
   forwardRef,
   cloneElement,
-  useEffect,
 } from "react";
 import {
   FormProvider,
@@ -17,14 +16,12 @@ import {
   useFormContext,
   type UseFormReturn,
   type UseFormProps,
-  type FieldValues,
   useFieldArray,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createComponent } from ".";
 import { cn } from "~/utils/classNames";
-import { useInterval, useLocalStorage } from "react-use";
 import { IconButton } from "./Button";
 import { PlusIcon, Search, Trash } from "lucide-react";
 
@@ -249,14 +246,12 @@ export interface FormProps<S extends z.Schema> extends PropsWithChildren {
   defaultValues?: UseFormProps<z.infer<S>>["defaultValues"];
   values?: UseFormProps<z.infer<S>>["values"];
   schema: S;
-  persist?: string;
   onSubmit: (values: z.infer<S>, form: UseFormReturn<z.infer<S>>) => void;
 }
 
 export function Form<S extends z.Schema>({
   schema,
   children,
-  persist,
   values,
   defaultValues,
   onSubmit,
@@ -269,8 +264,6 @@ export function Form<S extends z.Schema>({
     mode: "onBlur",
   });
 
-  usePersistForm(form, persist);
-
   // Pass the form methods to a FormProvider. This lets us access the form from components with useFormContext
   return (
     <FormProvider {...form}>
@@ -279,17 +272,4 @@ export function Form<S extends z.Schema>({
       </form>
     </FormProvider>
   );
-}
-
-function usePersistForm(form: UseFormReturn<FieldValues>, persist?: string) {
-  // useLocalStorage needs a string to be initialized
-  const [draft, saveDraft] = useLocalStorage(persist ?? "not-set");
-
-  useInterval(() => {
-    if (persist) saveDraft(form?.getValues());
-  }, 3000);
-
-  useEffect(() => {
-    if (persist && draft) form?.reset(draft);
-  }, [persist]);
 }

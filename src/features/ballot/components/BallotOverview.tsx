@@ -7,11 +7,6 @@ import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Progress } from "~/components/ui/Progress";
-import {
-  useBallot,
-  sumBallot,
-  useLockBallot,
-} from "~/features/ballot/hooks/useBallot";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
@@ -25,12 +20,13 @@ import { getAppState } from "~/utils/state";
 import { EAppState } from "~/utils/types";
 import dynamic from "next/dynamic";
 import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 
 function BallotOverview() {
   const router = useRouter();
 
-  const { data: ballot } = useBallot();
   const { isRegistered, isEligibleToVote, initialVoiceCredits } = useMaci();
+  const { sumBallot, ballot } = useBallot();
 
   const sum = sumBallot(ballot?.votes);
 
@@ -121,7 +117,7 @@ function BallotOverview() {
           </BallotSection>
         </>
       )}
-      {!isRegistered || !isEligibleToVote ? null : ballot?.publishedAt ? (
+      {!isRegistered || !isEligibleToVote ? null : ballot?.published ? (
         <Button
           className="w-full"
           variant="primary"
@@ -147,9 +143,8 @@ function BallotOverview() {
 
 const SubmitBallotButton = ({ disabled = false }) => {
   const [isOpen, setOpen] = useState(false);
-  const { isLoading, pollId, error, onVote } = useMaci();
-  const { data: ballot } = useBallot();
-  const { lock, unlock } = useLockBallot();
+  const { isLoading, error, onVote } = useMaci();
+  const { ballot } = useBallot();
 
   const projectIndices = useProjectIdMapping(ballot);
 
@@ -167,11 +162,8 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
       await onVote(
         votes,
+        async () => {},
         async () => {
-          await unlock.mutateAsync({ pollId: pollId! });
-        },
-        async () => {
-          await lock.mutateAsync({ pollId: pollId! });
           await router.push("/ballot/confirmation");
         },
       );

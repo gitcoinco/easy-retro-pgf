@@ -10,28 +10,23 @@ import { Button, IconButton } from "~/components/ui/Button";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
-import {
-  ballotContains,
-  useAddToBallot,
-  useBallot,
-  useRemoveFromBallot,
-  sumBallot,
-} from "~/features/ballot/hooks/useBallot";
 import { AllocationInput } from "~/features/ballot/components/AllocationInput";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import { EAppState } from "~/utils/types";
 import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 
 type Props = { id?: string; name?: string };
 
 export const ProjectAddToBallot = ({ id, name }: Props) => {
   const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
-  const add = useAddToBallot();
-  const remove = useRemoveFromBallot();
-  const { data: ballot } = useBallot();
-  const { isRegistered, isEligibleToVote, initialVoiceCredits } = useMaci();
+
+  const { isRegistered, isEligibleToVote, initialVoiceCredits, pollId } =
+    useMaci();
+  const { ballot, ballotContains, sumBallot, addToBallot, removeFromBallot } =
+    useBallot();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
@@ -49,7 +44,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         </Alert>
       )}
 
-      {!isEligibleToVote || !isRegistered ? null : ballot?.publishedAt ? (
+      {!isEligibleToVote || !isRegistered ? null : ballot?.published ? (
         <Button disabled>Ballot published</Button>
       ) : inBallot ? (
         <IconButton
@@ -90,7 +85,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
               .default(0),
           })}
           onSubmit={({ amount }) => {
-            add.mutate([{ projectId: id!, amount }]);
+            addToBallot([{ projectId: id!, amount }], pollId);
             setOpen(false);
           }}
         >
@@ -98,7 +93,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             current={sum}
             inBallot={Boolean(inBallot)}
             onRemove={() => {
-              remove.mutate(id!);
+              removeFromBallot(id!);
               setOpen(false);
             }}
           />

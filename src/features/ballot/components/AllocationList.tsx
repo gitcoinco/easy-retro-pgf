@@ -20,6 +20,7 @@ import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { FormControl, Input } from "~/components/ui/Form";
 import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 import { config } from "~/config";
 
 const AllocationListWrapper = createComponent(
@@ -57,6 +58,7 @@ export function AllocationFormWithSearch() {
     control: form.control,
   });
   const { initialVoiceCredits } = useMaci();
+  const { removeFromBallot: onRemove } = useBallot();
 
   const { errors } = form.formState;
 
@@ -95,6 +97,7 @@ export function AllocationFormWithSearch() {
                       icon={Trash}
                       onClick={() => {
                         remove(i);
+                        onRemove?.(project.projectId);
                       }}
                     />
                   </Td>
@@ -136,7 +139,6 @@ type AllocationFormProps = {
   ) => ReactNode;
   disabled?: boolean;
   projectIsLink?: boolean;
-  onSave?: (v: { votes: Vote[] }) => void;
 };
 
 function AllocationFormWrapper({
@@ -144,10 +146,10 @@ function AllocationFormWrapper({
   projectIsLink,
   renderHeader,
   renderExtraColumn,
-  onSave,
 }: AllocationFormProps) {
   const form = useFormContext<{ votes: Vote[] }>();
-  const { initialVoiceCredits } = useMaci();
+  const { initialVoiceCredits, pollId } = useMaci();
+  const { addToBallot: onSave, removeFromBallot: onRemove } = useBallot();
 
   const { fields, remove } = useFieldArray({
     name: "votes",
@@ -176,8 +178,9 @@ function AllocationFormWrapper({
                   <AllocationInput
                     name={`votes.${idx}.amount`}
                     disabled={disabled}
+                    defaultValue={project.amount}
                     votingMaxProject={initialVoiceCredits}
-                    onBlur={() => onSave?.(form.getValues())}
+                    onBlur={() => onSave?.(form.getValues().votes, pollId)}
                   />
                 </Td>
                 <Td>
@@ -189,7 +192,7 @@ function AllocationFormWrapper({
                     disabled={disabled}
                     onClick={() => {
                       remove(idx);
-                      onSave?.(form.getValues());
+                      onRemove?.(project.projectId);
                     }}
                   />
                 </Td>

@@ -7,18 +7,8 @@ export const VoteSchema = z.object({
 
 export const BallotSchema = z.object({
   votes: z.array(VoteSchema),
-});
-
-export const BallotPublishSchema = z.object({
-  chainId: z.number(),
-  signature: z.custom<`0x${string}`>(),
-  message: z.object({
-    total_votes: z.bigint(),
-    project_count: z.bigint(),
-    hashed_votes: z.string(),
-  }),
+  published: z.boolean().default(false),
 });
 
 export type Vote = z.infer<typeof VoteSchema>;
 export type Ballot = z.infer<typeof BallotSchema>;
-export type BallotPublish = z.infer<typeof BallotPublishSchema>;

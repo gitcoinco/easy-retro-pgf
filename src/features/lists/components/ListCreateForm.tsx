@@ -22,9 +22,9 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Spinner } from "~/components/ui/Spinner";
 import { AllocationFormWithSearch } from "~/features/ballot/components/AllocationList";
 import { formatNumber } from "~/utils/formatNumber";
-import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import type { Vote } from "~/features/ballot/types";
 import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 
 const ListTags = () => {
   const { control, watch } = useFormContext();
@@ -186,6 +186,7 @@ function TotalAllocation() {
 
   const projects = (form.watch("projects") ?? []) as Vote[];
   const { initialVoiceCredits } = useMaci();
+  const { sumBallot } = useBallot();
   const current = sumBallot(projects);
 
   const exceeds = current - initialVoiceCredits;

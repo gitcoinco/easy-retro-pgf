@@ -1,9 +1,9 @@
+import { useBallot } from "~/contexts/Ballot";
 import { BallotConfirmation } from "~/features/ballot/components/BallotConfirmation";
-import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { Layout } from "~/layouts/DefaultLayout";
 
 export default function BallotConfirmationPage() {
-  const { data: ballot } = useBallot();
+  const { ballot } = useBallot();
 
   if (!ballot) return null;
 

@@ -22,11 +22,8 @@ import type { Attestation } from "~/utils/fetchAttestations";
 import { config } from "~/config";
 import { api } from "~/utils/api";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
-import {
-  type IVoteArgs,
-  type MaciContextType,
-  type MaciProviderProps,
-} from "./types";
+import type { IVoteArgs, MaciContextType, MaciProviderProps } from "./types";
+import type { Ballot, Vote } from "~/features/ballot/types";
 
 export const MaciContext = createContext<MaciContextType | undefined>(
   undefined,
@@ -44,6 +41,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const [error, setError] = useState<string>();
   const [pollData, setPollData] = useState<IGetPollData>();
   const [tallyData, setTallyData] = useState<TallyData>();
+  const [ballot, setBallot] = useState<Ballot>({ votes: [], published: false });
 
   const attestations = api.voters.approvedAttestations.useQuery({
     address,
@@ -52,8 +50,8 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const attestationId = useMemo(() => {
     const values = attestations.data?.valueOf() as Attestation[] | undefined;
 
-    const attestation = values?.find((attestation) =>
-      config.admin === attestation.attester,
+    const attestation = values?.find(
+      (attestation) => config.admin === attestation.attester,
     );
 
     return attestation?.id;
@@ -157,6 +155,13 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
         })
         .finally(() => {
           setIsLoading(false);
+          setBallot((prevBallot) => {
+            if (!prevBallot) {
+              // Assuming default structure for a new ballot if none exists
+              return { votes: [], published: true };
+            }
+            return { ...prevBallot, published: true };
+          });
         });
     },
     [
@@ -208,6 +213,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     }
 
     setIsLoading(true);
+
     Promise.all([
       getPoll({
         maciAddress: config.maciAddress!,
@@ -235,12 +241,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [
-    Boolean(signer),
-    setIsLoading,
-    setTallyData,
-    setPollData,
-  ]);
+  }, [Boolean(signer), setIsLoading, setTallyData, setPollData]);
 
   const value: MaciContextType = {
     isLoading,
