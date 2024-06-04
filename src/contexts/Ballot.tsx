@@ -68,6 +68,12 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
     localStorage.removeItem("ballot");
   };
 
+  // set published to tru
+  const publishBallot = () => {
+    setBallot({ ...ballot, published: true });
+    saveBallot();
+  };
+
   /// Read existing ballot in localStorage
   useEffect(() => {
     setBallot(
@@ -85,6 +91,7 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
     deleteBallot,
     ballotContains,
     sumBallot,
+    publishBallot,
   };
 
   return (

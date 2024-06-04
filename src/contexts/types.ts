@@ -37,6 +37,7 @@ export interface BallotContextType {
   deleteBallot: () => void;
   ballotContains: (id: string, ballot?: Ballot) => Vote | undefined;
   sumBallot: (votes?: Vote[]) => number;
+  publishBallot: () => void;
 }
 
 export interface BallotProviderProps {
