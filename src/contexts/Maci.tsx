@@ -22,44 +22,12 @@ import type { Attestation } from "~/utils/fetchAttestations";
 import { config } from "~/config";
 import { api } from "~/utils/api";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
-import {
-  type IVoteArgs,
-  type MaciContextType,
-  type MaciProviderProps,
-} from "./types";
+import type { IVoteArgs, MaciContextType, MaciProviderProps } from "./types";
 import type { Ballot, Vote } from "~/features/ballot/types";
 
 export const MaciContext = createContext<MaciContextType | undefined>(
   undefined,
 );
-
-export const sumBallot = (votes?: Vote[]) =>
-(votes ?? []).reduce(
-  (sum, x) => sum + (!isNaN(Number(x?.amount)) ? Number(x.amount) : 0),
-  0,
-);
-
-export const ballotContains = (id: string, ballot?: Ballot) => {
-  return ballot?.votes?.find((v) => v.projectId === id);
-}
-
-const toObject = (arr: object[] = [], key: string) => {
-  return arr?.reduce(
-    (acc, x) => ({ ...acc, [x[key as keyof typeof acc]]: x }),
-    {},
-  );
-}
-
-const mergeBallot = (ballot: Ballot, addedVotes: Vote[], pollId: string) => {
-  return {
-    ...ballot,
-    pollId,
-    votes: Object.values<Vote>({
-      ...toObject(ballot?.votes, "projectId"),
-      ...toObject(addedVotes, "projectId"),
-    }),
-  };
-}
 
 export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const { data } = useSession();
@@ -79,39 +47,11 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     address,
   });
 
-  // remove from the ballot
-  const useRemoveFromBallot = (projectId: string) => {  
-    const votes = (ballot?.votes ?? []).filter(
-      (v) => v.projectId !== projectId,
-    );
-    setBallot({ ...ballot, votes, published: false});
-    useSaveBallot();
-  }
-
-  // add to the ballot
-  const useAddToBallot = (votes: Vote[]) => {
-    const pollId = pollData?.id.toString();
-  
-    setBallot(mergeBallot(ballot as unknown as Ballot, votes, pollId!));
-    useSaveBallot();
-  }
-
-  // save the ballot to localstorage
-  const useSaveBallot = () => {
-    localStorage.setItem("ballot", JSON.stringify(ballot));
-  }
-
-  // remove the ballot from localstorage
-  const useDeleteBallot = () => {
-    setBallot({ votes: [], published: false });
-    localStorage.removeItem("ballot");
-  }
-
   const attestationId = useMemo(() => {
     const values = attestations.data?.valueOf() as Attestation[] | undefined;
 
-    const attestation = values?.find((attestation) =>
-      config.admin === attestation.attester,
+    const attestation = values?.find(
+      (attestation) => config.admin === attestation.attester,
     );
 
     return attestation?.id;
@@ -215,7 +155,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
         })
         .finally(() => {
           setIsLoading(false);
-          setBallot(prevBallot => {
+          setBallot((prevBallot) => {
             if (!prevBallot) {
               // Assuming default structure for a new ballot if none exists
               return { votes: [], published: true };
@@ -274,8 +214,6 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
     setIsLoading(true);
 
-    setBallot(JSON.parse(localStorage.getItem("ballot") ?? "{}") ?? { votes: [], published: false });
-
     Promise.all([
       getPoll({
         maciAddress: config.maciAddress!,
@@ -303,12 +241,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [
-    Boolean(signer),
-    setIsLoading,
-    setTallyData,
-    setPollData,
-  ]);
+  }, [Boolean(signer), setIsLoading, setTallyData, setPollData]);
 
   const value: MaciContextType = {
     isLoading,
@@ -318,10 +251,6 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     stateIndex,
     isRegistered: isRegistered ?? false,
     pollId: pollData?.id.toString(),
-    useAddToBallot,
-    useRemoveFromBallot,
-    useDeleteBallot,
-    ballot,
     error,
     pollData,
     tallyData,

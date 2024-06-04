@@ -19,12 +19,14 @@ import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import { EAppState } from "~/utils/types";
 import dynamic from "next/dynamic";
-import { sumBallot, useMaci } from "~/contexts/Maci";
+import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 
 function BallotOverview() {
   const router = useRouter();
 
-  const { isRegistered, isEligibleToVote, initialVoiceCredits, ballot } = useMaci();
+  const { isRegistered, isEligibleToVote, initialVoiceCredits } = useMaci();
+  const { sumBallot, ballot } = useBallot();
 
   const sum = sumBallot(ballot?.votes);
 
@@ -141,7 +143,8 @@ function BallotOverview() {
 
 const SubmitBallotButton = ({ disabled = false }) => {
   const [isOpen, setOpen] = useState(false);
-  const { isLoading, error, onVote, ballot } = useMaci();
+  const { isLoading, error, onVote } = useMaci();
+  const { ballot } = useBallot();
 
   const projectIndices = useProjectIdMapping(ballot);
 

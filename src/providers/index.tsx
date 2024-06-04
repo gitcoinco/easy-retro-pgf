@@ -19,6 +19,7 @@ import { Toaster } from "~/components/Toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { MaciProvider } from "~/contexts/Maci";
+import { BallotProvider } from "~/contexts/Ballot";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
@@ -40,7 +41,7 @@ export function Providers({
             >
               <RainbowKitProvider>
                 <MaciProvider>
-                  {children}
+                  <BallotProvider>{children}</BallotProvider>
                   <Toaster />
                 </MaciProvider>
               </RainbowKitProvider>

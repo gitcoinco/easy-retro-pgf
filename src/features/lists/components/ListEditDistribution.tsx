@@ -27,7 +27,8 @@ import { BallotSchema, type Vote } from "~/features/ballot/types";
 import { config } from "~/config";
 import { getAppState } from "~/utils/state";
 import { EAppState } from "~/utils/types";
-import { ballotContains, sumBallot, useMaci } from "~/contexts/Maci";
+import { useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
 
 export const ListEditDistribution = ({
   listName,
@@ -38,9 +39,8 @@ export const ListEditDistribution = ({
 }) => {
   const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
-  const { ballot, useAddToBallot } = useMaci();
-
-  const { isRegistered } = useMaci();
+  const { ballot, addToBallot, ballotContains } = useBallot();
+  const { isRegistered, pollId } = useMaci();
 
   // What list projects are already in the ballot?
   function itemsInBallot(votes?: Vote[]) {
@@ -51,7 +51,7 @@ export const ListEditDistribution = ({
   const [alreadyInBallot, updateInBallot] = useState(itemsInBallot(votes));
 
   function handleAddToBallot(values: { votes: Vote[] }) {
-    useAddToBallot(values.votes);
+    addToBallot(values.votes, pollId);
   }
 
   function handleOpenChange() {
@@ -64,7 +64,7 @@ export const ListEditDistribution = ({
     );
     return ballotVote ?? vote;
   });
-  const showDialogTitle = !(add.isPending || add.isSuccess);
+  const showDialogTitle = "Add To Ballot";
   const appState = getAppState();
   return (
     <div>
@@ -75,18 +75,17 @@ export const ListEditDistribution = ({
             setOpen(true);
           }}
           className="w-full md:w-auto"
-          disabled={!address || add.isSuccess}
+          disabled={!address}
         >
-          {add.isSuccess ? "List added" : "Add list to ballot"}
+          {ballot ? "List added" : "Add list to ballot"}
         </Button>
       )}
       <Dialog
         title={showDialogTitle ? `Edit distribution` : null}
-        size={add.isSuccess ? "sm" : "md"}
         isOpen={isOpen}
         onOpenChange={handleOpenChange}
       >
-        {add.isSuccess ? (
+        {ballot ? (
           <FeedbackDialog variant="success" icon={CheckCircle2}>
             <div className="font-semibold">
               List added to ballot successfully!
@@ -111,10 +110,6 @@ export const ListEditDistribution = ({
                 Continue adding projects
               </Button>
             </div>
-          </FeedbackDialog>
-        ) : add.isPending ? (
-          <FeedbackDialog variant="info" icon={Spinner}>
-            <div className="font-semibold">Adding list to ballot</div>
           </FeedbackDialog>
         ) : (
           <Form
@@ -170,7 +165,7 @@ const TotalAllocationBanner = () => {
   const form = useFormContext<{ votes: Vote[] }>();
 
   // Load existing ballot
-  const { ballot } = useMaci();
+  const { ballot, sumBallot } = useBallot();
   const { initialVoiceCredits } = useMaci();
 
   const sum = sumBallot(ballot?.votes);

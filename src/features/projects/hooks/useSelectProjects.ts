@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { ballotContains, useMaci } from "~/contexts/Maci";
+import { useBallot } from "~/contexts/Ballot";
+import { useMaci } from "~/contexts/Maci";
 
 export function useSelectProjects() {
-
-  const { useAddToBallot, ballot } = useMaci();
+  const { addToBallot, ballot, ballotContains } = useBallot();
+  const { pollId } = useMaci();
 
   const [selected, setSelected] = useState<Record<string, boolean>>({});
 
@@ -19,7 +20,7 @@ export function useSelectProjects() {
     count: toAdd.length,
     // isLoading: add.isPending,
     add: () => {
-      useAddToBallot(toAdd);
+      addToBallot(toAdd, pollId);
       setSelected({});
     },
     reset: () => setSelected({}),
