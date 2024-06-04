@@ -23,7 +23,6 @@ import { config } from "~/config";
 import { api } from "~/utils/api";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import type { IVoteArgs, MaciContextType, MaciProviderProps } from "./types";
-import type { Ballot, Vote } from "~/features/ballot/types";
 
 export const MaciContext = createContext<MaciContextType | undefined>(
   undefined,
@@ -41,7 +40,6 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const [error, setError] = useState<string>();
   const [pollData, setPollData] = useState<IGetPollData>();
   const [tallyData, setTallyData] = useState<TallyData>();
-  const [ballot, setBallot] = useState<Ballot>({ votes: [], published: false });
 
   const attestations = api.voters.approvedAttestations.useQuery({
     address,
@@ -155,13 +153,6 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
         })
         .finally(() => {
           setIsLoading(false);
-          setBallot((prevBallot) => {
-            if (!prevBallot) {
-              // Assuming default structure for a new ballot if none exists
-              return { votes: [], published: true };
-            }
-            return { ...prevBallot, published: true };
-          });
         });
     },
     [

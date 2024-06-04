@@ -144,7 +144,7 @@ function BallotOverview() {
 const SubmitBallotButton = ({ disabled = false }) => {
   const [isOpen, setOpen] = useState(false);
   const { isLoading, error, onVote } = useMaci();
-  const { ballot } = useBallot();
+  const { ballot, publishBallot } = useBallot();
 
   const projectIndices = useProjectIdMapping(ballot);
 
@@ -165,6 +165,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
         async () => {},
         async () => {
           await router.push("/ballot/confirmation");
+          publishBallot();
         },
       );
     },
