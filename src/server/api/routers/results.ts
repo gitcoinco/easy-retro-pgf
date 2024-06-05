@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
   createTRPCRouter,
-  protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
@@ -12,7 +11,7 @@ import { getAllApprovedProjects } from "./projects";
 import { TRPCError } from "@trpc/server";
 
 export const resultsRouter = createTRPCRouter({
-  votes: protectedProcedure
+  votes: publicProcedure
     .input(z.object({ pollId: z.string().nullish() }))
     .query(async ({ input }) => calculateMaciResults(input?.pollId)),
 

@@ -4,15 +4,14 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { Inter } from "next/font/google";
 
 import type { AppProps } from "next/app";
-import type { Session } from "next-auth";
 import { Providers } from "~/providers";
 import { api } from "~/utils/api";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Providers session={pageProps.session}>
+    <Providers>
       <style jsx global>{`
         :root {
           --font-inter: ${inter.style.fontFamily};

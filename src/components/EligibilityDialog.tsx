@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useAccount, useDisconnect } from "wagmi";
-import { useSession } from "next-auth/react";
 
 import { metadata } from "~/config";
 import { Dialog } from "./ui/Dialog";
@@ -9,10 +8,9 @@ import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
 export const EligibilityDialog = () => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { data: session } = useSession();
   const { data, isLoading, error } = useApprovedVoter(address!);
 
-  if (isLoading || !address || !session || error) return null;
+  if (isLoading || !address || error) return null;
 
   return (
     <Dialog
