@@ -40,8 +40,8 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const [pollData, setPollData] = useState<IGetPollData>();
   const [tallyData, setTallyData] = useState<TallyData>();
 
-  const [maciPrivKey, setMaciPrivKey] = useState<string | null>(null);
-  const [maciPubKey, setMaciPubKey] = useState<string | null>(null);
+  const [maciPrivKey, setMaciPrivKey] = useState<string | undefined>();
+  const [maciPubKey, setMaciPubKey] = useState<string | undefined>();
 
   const [signatureMessage, setSignatureMessage] = useState<string>("");
 
@@ -79,8 +79,8 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (isDisconnected) {
-      setMaciPrivKey(null);
-      setMaciPubKey(null);
+      setMaciPrivKey(undefined);
+      setMaciPubKey(undefined);
       localStorage.removeItem("maciPrivKey");
       localStorage.removeItem("maciPubKey");
     }
@@ -294,6 +294,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     error,
     pollData,
     tallyData,
+    maciPubKey,
     onSignup,
     onVote,
   };
