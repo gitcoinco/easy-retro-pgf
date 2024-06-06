@@ -1,20 +1,16 @@
-import { FileDown, FileUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { Button, IconButton } from "~/components/ui/Button";
+import { Button } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
 import { config } from "~/config";
-import { AllocationForm } from "~/features/ballot/components/AllocationList";
+import { AllocationFormWrapper } from "~/features/ballot/components/AllocationList";
 import { BallotSchema, type Vote } from "~/features/ballot/types";
-import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { LayoutWithBallot } from "~/layouts/DefaultLayout";
 import { useBallot } from "~/contexts/Ballot";
-import { useMaci } from "~/contexts/Maci";
-import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { getAppState } from "~/utils/state";
 import { EAppState } from "~/utils/types";
@@ -66,17 +62,15 @@ function BallotAllocationForm() {
         Once you have reviewed your vote allocation, you can submit your ballot.
       </p>
       <div className="mb-2 justify-between sm:flex">
-        <div className="flex gap-2">
-          <ImportCSV />
-          <ExportCSV votes={ballot?.votes} />
-        </div>
         {ballot?.votes?.length ? <ClearBallot /> : null}
       </div>
       <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
         <div className="p-8">
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {ballot?.votes?.length ? (
-              <AllocationForm disabled={appState === EAppState.RESULTS} />
+              <AllocationFormWrapper
+                disabled={appState === EAppState.RESULTS}
+              />
             ) : (
               <EmptyBallot />
             )}
@@ -91,99 +85,6 @@ function BallotAllocationForm() {
         </div>
       </div>
     </div>
-  );
-}
-
-function ImportCSV() {
-  const [votes, setVotes] = useState<Vote[]>([]);
-  const csvInputRef = useRef<HTMLInputElement>(null);
-  const { addToBallot: save } = useBallot();
-  const { pollId } = useMaci();
-
-  const importCSV = useCallback((csvString: string) => {
-    // Parse CSV and build the ballot data (remove name column)
-    const { data } = parse<Vote>(csvString);
-    const votes =
-      data?.map(({ projectId, amount }) => ({
-        projectId,
-        amount: Number(amount),
-      })) ?? [];
-    setVotes(votes);
-  }, []);
-
-  const handleSaveBallot = () => {
-    save(votes, pollId);
-    setVotes([]);
-  };
-
-  return (
-    <>
-      <IconButton
-        size="sm"
-        icon={FileUp}
-        onClick={() => csvInputRef.current?.click()}
-      >
-        Import CSV
-      </IconButton>
-
-      <input
-        ref={csvInputRef}
-        type="file"
-        accept="*.csv"
-        className="hidden"
-        onChange={(e) => {
-          const [file] = e.target.files ?? [];
-          if (!file) return;
-          // CSV parser doesn't seem to work with File
-          // Read the CSV contents as string
-          const reader = new FileReader();
-          reader.readAsText(file);
-          reader.onload = () => importCSV(String(reader.result));
-          reader.onerror = () => console.log(reader.error);
-        }}
-      />
-      <Dialog
-        size="sm"
-        title="Save ballot?"
-        isOpen={votes?.length > 0}
-        onOpenChange={() => setVotes([])}
-      >
-        <p className="mb-6 leading-6">
-          This will replace your ballot with the CSV.
-        </p>
-        <div className="flex justify-end">
-          <Button variant="primary" onClick={handleSaveBallot}>
-            Yes I'm sure
-          </Button>
-        </div>
-      </Dialog>
-    </>
-  );
-}
-
-function ExportCSV({ votes }: { votes: Vote[] }) {
-  // Fetch projects for votes to get the name
-  const projects = useProjectsById(votes?.map((v) => v.projectId) ?? []);
-
-  const exportCSV = useCallback(async () => {
-    // Append project name to votes
-    const votesWithProjects =
-      votes?.map((vote) => ({
-        ...vote,
-        name: projects.data?.find((p) => p.id === vote.projectId)?.name,
-      })) ?? [];
-
-    // Generate CSV file
-    const csv = format(votesWithProjects, {
-      columns: ["projectId", "name", "amount"],
-    });
-    window.open(`data:text/csv;charset=utf-8,${csv}`);
-  }, [projects, votes]);
-
-  return (
-    <IconButton size="sm" icon={FileDown} onClick={exportCSV}>
-      Export CSV
-    </IconButton>
   );
 }
 
@@ -237,15 +138,11 @@ const EmptyBallot = () => (
       <h3 className="text-center text-lg font-bold">Your ballot is empty</h3>
       <p className="text-center text-sm text-gray-700">
         Your ballot currently doesn&apos;t have any projects added. Browse
-        through the available projects and lists.
+        through the available projects.
       </p>
       <div className="flex items-center justify-center gap-3">
         <Button as={Link} href={"/projects"}>
           View projects
-        </Button>
-        <div className="text-gray-700">or</div>
-        <Button as={Link} href={"/lists"}>
-          View lists
         </Button>
       </div>
     </div>

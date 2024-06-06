@@ -49,7 +49,7 @@ Here, you can also configure who your admins are. These are the users who will a
 To create your own round you need to do a few things:
 
 - Update `NEXT_PUBLIC_ADMIN_ADDRESS` a wallet address that approve the applications and voters (badgeholders)
-- Set `NEXT_PUBLIC_ROUND_ID` to a unique identifier that will group the applications and lists you want to list
+- Set `NEXT_PUBLIC_ROUND_ID` to a unique identifier that will group the applications you want to list
 - Set `NEXT_PUBLIC_MACI_ADDRESS` - your deployed maci contract
 - Set `NEXT_PUBLIC_MACI_START_BLOCK` - block where your maci contract is deployed (optional)
 - Set `NEXT_PUBLIC_TALLY_URL` - your endpoint for vote results, where you host `tally-{pollId}.json` files.

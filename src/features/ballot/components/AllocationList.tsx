@@ -16,7 +16,6 @@ import { AllocationInput } from "./AllocationInput";
 import { IconButton } from "~/components/ui/Button";
 import { type Vote } from "../types";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
-import { SearchProjects } from "~/features/lists/components/SearchProjects";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { FormControl, Input } from "~/components/ui/Form";
 import { useMaci } from "~/contexts/Maci";
@@ -49,85 +48,6 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
   );
 };
 
-export function AllocationFormWithSearch() {
-  const form = useFormContext<{ projects: Vote[] }>();
-
-  const { fields, append, remove } = useFieldArray({
-    name: "projects",
-    keyName: "key",
-    control: form.control,
-  });
-  const { initialVoiceCredits } = useMaci();
-  const { removeFromBallot: onRemove } = useBallot();
-
-  const { errors } = form.formState;
-
-  return (
-    <AllocationListWrapper>
-      <SearchProjects
-        addedProjects={fields}
-        onSelect={(projectId) => append({ projectId, amount: 0 })}
-      />
-      <Table>
-        <Tbody>
-          {fields.length ? (
-            fields.map((project, i) => {
-              const error = errors.projects?.[i]?.amount?.message;
-              return (
-                <Tr key={project.key}>
-                  <Td className={"w-full"}>
-                    <ProjectAvatarWithName id={project.projectId} />
-                    {error ? (
-                      <div className="text-xs text-error-600">{error}</div>
-                    ) : null}
-                  </Td>
-
-                  <Td>
-                    <AllocationInput
-                      tokenAddon
-                      name={`projects.${i}.amount`}
-                      votingMaxProject={initialVoiceCredits}
-                    />
-                  </Td>
-                  <Td>
-                    <IconButton
-                      tabIndex={-1}
-                      type="button"
-                      variant="outline"
-                      icon={Trash}
-                      onClick={() => {
-                        remove(i);
-                        onRemove?.(project.projectId);
-                      }}
-                    />
-                  </Td>
-                </Tr>
-              );
-            })
-          ) : (
-            <Tr>
-              <Td
-                colSpan={3}
-                className="flex flex-1 items-center justify-center py-4"
-              >
-                <div className=" max-w-[360px] space-y-4">
-                  <h3 className="text-center text-lg font-bold">
-                    List is empty
-                  </h3>
-                  <p className="text-center text-sm text-gray-700">
-                    Search projects to add them to the list.
-                  </p>
-                </div>
-              </Td>
-            </Tr>
-          )}
-        </Tbody>
-      </Table>
-      <button type="submit" className="hidden" />
-    </AllocationListWrapper>
-  );
-}
-
 type AllocationFormProps = {
   renderHeader?: () => ReactNode;
   renderExtraColumn?: (
@@ -141,7 +61,7 @@ type AllocationFormProps = {
   projectIsLink?: boolean;
 };
 
-function AllocationFormWrapper({
+export function AllocationFormWrapper({
   disabled,
   projectIsLink,
   renderHeader,
@@ -204,31 +124,7 @@ function AllocationFormWrapper({
     </AllocationListWrapper>
   );
 }
-export function AllocationForm({
-  list,
-  ...props
-}: { list?: Vote[] } & AllocationFormProps) {
-  const { initialVoiceCredits } = useMaci();
 
-  return (
-    <AllocationFormWrapper
-      {...props}
-      renderExtraColumn={({ project }) => {
-        const listAllocation =
-          list?.find((p) => p.projectId === project.projectId)?.amount ?? 0;
-
-        return listAllocation ? (
-          <AllocationInput
-            name="compareAmount"
-            defaultValue={listAllocation}
-            votingMaxProject={initialVoiceCredits}
-            disabled={true}
-          />
-        ) : null;
-      }}
-    />
-  );
-}
 export function DistributionForm(props: AllocationFormProps) {
   return (
     <AllocationFormWrapper
