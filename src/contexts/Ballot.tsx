@@ -19,8 +19,8 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
       0,
     );
 
-  const ballotContains = (id: string, ballot?: Ballot) => {
-    return ballot?.votes?.find((v) => v.projectId === id);
+  const ballotContains = (id: string) => {
+    return ballot.votes.find((v) => v.projectId === id);
   };
 
   const toObject = (arr: object[] = [], key: string) => {
@@ -30,12 +30,12 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
     );
   };
 
-  const mergeBallot = (ballot: Ballot, addedVotes: Vote[], pollId: string) => {
+  const mergeBallot = (addedVotes: Vote[], pollId: string) => {
     return {
       ...ballot,
       pollId,
       votes: Object.values<Vote>({
-        ...toObject(ballot?.votes, "projectId"),
+        ...toObject(ballot.votes, "projectId"),
         ...toObject(addedVotes, "projectId"),
       }),
     };
@@ -51,18 +51,15 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
     const votes = (ballot?.votes ?? []).filter(
       (v) => v.projectId !== projectId,
     );
-    console.log("ballot.votes:", ballot.votes);
-    console.log("projectId:", projectId);
+
     setBallot({ ...ballot, votes, published: false });
-    saveBallot();
   };
 
   // add to the ballot
   const addToBallot = (votes: Vote[], pollId?: string) => {
     if (!pollId) throw new Error("PollId is not provided.");
 
-    setBallot(mergeBallot(ballot as unknown as Ballot, votes, pollId));
-    saveBallot();
+    setBallot(mergeBallot(votes, pollId));
   };
 
   // remove the ballot from localstorage
@@ -74,18 +71,22 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
   // set published to tru
   const publishBallot = () => {
     setBallot({ ...ballot, published: true });
-    saveBallot();
   };
 
   /// Read existing ballot in localStorage
   useEffect(() => {
     setBallot(
-      JSON.parse(localStorage.getItem("ballot") ?? "{}") ?? {
+      JSON.parse(localStorage.getItem("ballot") ?? JSON.stringify(ballot)) ?? {
         votes: [],
         published: false,
       },
     );
   }, []);
+
+  /// store ballot to localStorage once it changes
+  useEffect(() => {
+    saveBallot();
+  }, [ballot, ballot.votes, ballot.published]);
 
   useEffect(() => {
     if (isDisconnected) {

@@ -28,7 +28,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const { ballot, ballotContains, sumBallot, addToBallot, removeFromBallot } =
     useBallot();
 
-  const inBallot = ballotContains(id!, ballot);
+  const inBallot = ballotContains(id!);
   const allocations = ballot?.votes ?? [];
   const sum = sumBallot(allocations.filter((p) => p.projectId !== id));
   const numVotes = ballot?.votes.length ?? 0;

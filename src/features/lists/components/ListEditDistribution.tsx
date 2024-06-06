@@ -44,7 +44,7 @@ export const ListEditDistribution = ({
 
   // What list projects are already in the ballot?
   function itemsInBallot(votes?: Vote[]) {
-    return votes?.filter((p) => ballotContains(p.projectId, ballot));
+    return votes?.filter((p) => ballotContains(p.projectId));
   }
 
   // Keep the already in ballot in state because we want to update these when user removes allocations

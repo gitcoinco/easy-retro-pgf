@@ -3,7 +3,7 @@ import { useBallot } from "~/contexts/Ballot";
 import { useMaci } from "~/contexts/Maci";
 
 export function useSelectProjects() {
-  const { addToBallot, ballot, ballotContains } = useBallot();
+  const { addToBallot, ballotContains } = useBallot();
   const { pollId } = useMaci();
 
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -31,6 +31,6 @@ export function useSelectProjects() {
         : setSelected((s) => ({ ...s, [id]: true }));
     },
     getState: (id: string) =>
-      Boolean(ballotContains(id, ballot)) ? 2 : selected[id] ? 1 : 0,
+      Boolean(ballotContains(id)) ? 2 : selected[id] ? 1 : 0,
   };
 }
