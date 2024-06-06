@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  createTRPCRouter,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchAttestations } from "~/utils/fetchAttestations";
 import { config, eas } from "~/config";

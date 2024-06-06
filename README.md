@@ -18,9 +18,8 @@ MACI-RPGF uses EAS as backbone to run Retroactive Public Goods Funding to reward
 - [Adding Projects & Approving](./docs/02_adding_projects.md)
 - [Creating Badgeholders/Voters](./docs/03_creating_badgeholders.md)
 - [Voting](./docs/04_voting.md)
-- [Lists](./docs/05_lists.md)
-- [Results](./docs/06_results.md)
-- [Distribute](./docs/07_distribute.md)
+- [Results](./docs/05_results.md)
+- [Troubleshooting of MACI](./docs/06_maci_troubleshooting.md)
 
 ### MACI docs
 
@@ -76,7 +75,7 @@ open localhost:3000
 
 ### Technical details
 
-- **EAS** - Projects, lists, profiles, etc are all stored on-chain in Ethereum Attestation Service
+- **EAS** - Projects, profiles, etc are all stored on-chain in Ethereum Attestation Service
 - **Batched requests with tRPC** - Multiple requests are batched into one (for example when the frontend requests the metadata for 24 projects they are batched into 1 request)
 - **Server-side caching of requests to EAS and IPFS** - Immediately returns the data without calling EAS and locally serving ipfs cids.
 - **SQL database for ballots** - Votes are stored privately in a Postgres database
