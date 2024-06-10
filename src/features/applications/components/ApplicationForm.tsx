@@ -53,7 +53,7 @@ export function ApplicationForm({ address }: { address: Address }) {
   if (create.isSuccess) {
     return (
       <Alert variant="success" title="Application created!">
-        It will now be reviewed by our admins.
+        It will now be reviewed by round admins.
       </Alert>
     );
   }
@@ -144,7 +144,7 @@ export function ApplicationForm({ address }: { address: Address }) {
           >
             <Textarea
               rows={4}
-              placeholder="What have your project contributed to?"
+              placeholder="What has your project contributed to?"
             />
           </FormControl>
 
@@ -209,7 +209,7 @@ export function ApplicationForm({ address }: { address: Address }) {
               Impact metrics <span className="text-red-300">*</span>
             </>
           }
-          description="What kind of impact have your project made?"
+          description="What kind of impact has your project made?"
         >
           <FieldArray
             name="application.impactMetrics"
