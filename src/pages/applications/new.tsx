@@ -16,7 +16,7 @@ export default function NewProjectPage() {
         {`
 ### New Application
 Fill out this form to create an application for your project. It will
-then be reviewed by our admins. 
+then be reviewed by round admins. 
 
 Your progress is saved locally so you can return to this page to resume your application.
 `}
