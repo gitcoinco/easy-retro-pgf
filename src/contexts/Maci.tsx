@@ -46,6 +46,10 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
   const [signatureMessage, setSignatureMessage] = useState<string>("");
 
   const { signMessageAsync } = useSignMessage();
+  const user = api.maci.user.useQuery(
+    { publicKey: maciPubKey ?? "" },
+    { enabled: Boolean(maciPubKey && config.maciSubgraphUrl) },
+  );
 
   const attestations = api.voters.approvedAttestations.useQuery({
     address,
@@ -71,42 +75,26 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     setSignatureMessage(`Generate MACI Key Pair at ${window.location.origin}`);
     const storedMaciPrivKey = localStorage.getItem("maciPrivKey");
     const storedMaciPubKey = localStorage.getItem("maciPubKey");
+
     if (storedMaciPrivKey && storedMaciPubKey) {
       setMaciPrivKey(storedMaciPrivKey);
       setMaciPubKey(storedMaciPubKey);
     }
-  }, []);
+  }, [setMaciPrivKey, setMaciPubKey]);
 
-  useEffect(() => {
-    if (isDisconnected) {
-      setMaciPrivKey(undefined);
-      setMaciPubKey(undefined);
-      localStorage.removeItem("maciPrivKey");
-      localStorage.removeItem("maciPubKey");
-    }
-  }, [isDisconnected]);
-
-  const generateKeypair = useCallback(() => {
+  const generateKeypair = useCallback(async () => {
     // if we are not connected then do not generate the key pair
-    if (!address) return;
+    if (!address) {
+      return;
+    }
 
-    (async () => {
-      try {
-        const signature = await signMessageAsync({ message: signatureMessage });
-        const userKeyPair = genKeyPair({ seed: BigInt(signature) });
-        localStorage.setItem("maciPrivKey", userKeyPair.privateKey);
-        localStorage.setItem("maciPubKey", userKeyPair.publicKey);
-        setMaciPrivKey(userKeyPair.privateKey);
-        setMaciPubKey(userKeyPair.publicKey);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+    const signature = await signMessageAsync({ message: signatureMessage });
+    const userKeyPair = genKeyPair({ seed: BigInt(signature) });
+    localStorage.setItem("maciPrivKey", userKeyPair.privateKey);
+    localStorage.setItem("maciPubKey", userKeyPair.publicKey);
+    setMaciPrivKey(userKeyPair.privateKey);
+    setMaciPubKey(userKeyPair.publicKey);
   }, [address, signMessageAsync, setMaciPrivKey, setMaciPubKey]);
-
-  useEffect(() => {
-    generateKeypair();
-  }, [generateKeypair]);
 
   const votingEndsAt = useMemo(
     () =>
@@ -129,7 +117,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
 
       try {
         const { stateIndex: index, hash } = await signup({
-          maciPubKey: maciPubKey!,
+          maciPubKey,
           maciAddress: config.maciAddress!,
           sgDataArg: attestationId,
           signer,
@@ -215,24 +203,57 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     ],
   );
 
+  useEffect(() => {
+    if (isDisconnected) {
+      setMaciPrivKey(undefined);
+      setMaciPubKey(undefined);
+      localStorage.removeItem("maciPrivKey");
+      localStorage.removeItem("maciPubKey");
+    }
+  }, [isDisconnected]);
+
+  useEffect(() => {
+    generateKeypair().catch(console.error);
+  }, [generateKeypair]);
+
+  useEffect(() => {
+    if (!maciPubKey || user.data) {
+      return;
+    }
+
+    user.refetch().catch(console.error);
+  }, [maciPubKey, user]);
+
   /// check if the user already registered
   useEffect(() => {
     if (!isConnected || !signer || !maciPubKey || !address || isLoading) {
       return;
     }
 
-    isRegisteredUser({
-      maciPubKey: maciPubKey!,
-      maciAddress: config.maciAddress!,
-      startBlock: config.maciStartBlock,
-      signer,
-    })
-      .then(({ isRegistered: registered, voiceCredits, stateIndex: index }) => {
-        setIsRegistered(registered);
-        setStateIndex(index);
-        setInitialVoiceCredits(Number(voiceCredits));
+    const [account] = user.data?.accounts.slice(-1) ?? [];
+
+    if (!config.maciSubgraphUrl) {
+      isRegisteredUser({
+        maciPubKey,
+        maciAddress: config.maciAddress!,
+        startBlock: config.maciStartBlock,
+        signer,
       })
-      .catch(console.error);
+        .then(
+          ({ isRegistered: registered, voiceCredits, stateIndex: index }) => {
+            setIsRegistered(registered);
+            setStateIndex(index);
+            setInitialVoiceCredits(Number(voiceCredits));
+          },
+        )
+        .catch(console.error);
+    } else if (account) {
+      const { id, voiceCreditBalance } = account;
+
+      setIsRegistered(true);
+      setStateIndex(id);
+      setInitialVoiceCredits(Number(voiceCreditBalance));
+    }
   }, [
     isLoading,
     isConnected,
@@ -241,6 +262,7 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     address,
     signer,
     stateIndex,
+    user.data,
     setIsRegistered,
     setStateIndex,
     setInitialVoiceCredits,

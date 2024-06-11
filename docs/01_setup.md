@@ -52,6 +52,7 @@ To create your own round you need to do a few things:
 - Set `NEXT_PUBLIC_ROUND_ID` to a unique identifier that will group the applications you want to list
 - Set `NEXT_PUBLIC_MACI_ADDRESS` - your deployed maci contract
 - Set `NEXT_PUBLIC_MACI_START_BLOCK` - block where your maci contract is deployed (optional)
+- Set `NEXT_PUBLIC_MACI_SUBGRAPH_URL` - maci subgraph url (optional). This is recommended to have and you can setup it using [maci-subgraph](https://github.com/privacy-scaling-explorations/maci/tree/dev/subgraph).
 - Set `NEXT_PUBLIC_TALLY_URL` - your endpoint for vote results, where you host `tally-{pollId}.json` files.
 
 #### EAS

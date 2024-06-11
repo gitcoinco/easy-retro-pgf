@@ -2,6 +2,7 @@ import { resultsRouter } from "~/server/api/routers/results";
 import { projectsRouter } from "~/server/api/routers/projects";
 import { metadataRouter } from "~/server/api/routers/metadata";
 import { applicationsRouter } from "~/server/api/routers/applications";
+import { maciRouter } from "~/server/api/routers/maci";
 import { profileRouter } from "~/server/api/routers/profile";
 import { votersRouter } from "~/server/api/routers/voters";
 import { createTRPCRouter } from "~/server/api/trpc";
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   profile: profileRouter,
   metadata: metadataRouter,
   projects: projectsRouter,
+  maci: maciRouter,
 });
 
 // export type definition of API
