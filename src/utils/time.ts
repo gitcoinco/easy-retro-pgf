@@ -1,5 +1,4 @@
-import locale from "date-fns/locale/en-US";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 
 export const calculateTimeLeft = (
   date: Date,

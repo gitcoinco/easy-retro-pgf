@@ -1,6 +1,6 @@
 import { config } from "~/config";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { api } from "~/utils/api";
-import { getAppState } from "~/utils/state";
 
 export function useResults() {
   return api.results.votes.useQuery();
@@ -10,19 +10,17 @@ const seed = 0;
 export function useProjectsResults() {
   return api.results.projects.useInfiniteQuery(
     { limit: config.pageSize, seed },
-    {
-      getNextPageParam: (_, pages) => pages.length,
-    },
+    { getNextPageParam: (_, pages) => pages.length },
   );
-}
-
-export function useProjectCount() {
-  return api.projects.count.useQuery();
 }
 
 export function useProjectResults(id: string) {
-  return api.results.project.useQuery(
-    { id },
-    { enabled: getAppState() === "RESULTS" },
-  );
+  const query = api.results.votes.useQuery(undefined, {
+    enabled: useRoundState() === "RESULTS",
+  });
+  const project = query.data?.projects?.[id];
+  return {
+    ...query,
+    data: project?.votes ?? 0,
+  };
 }

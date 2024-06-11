@@ -26,7 +26,7 @@ const SortByDropdown = ({ value, onChange, options = [] }: Props) => {
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="z-50 w-[200px] rounded-xl border border-gray-300 bg-white p-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          className="z-50 w-[200px] rounded-xl border border-gray-300 bg-white p-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
           sideOffset={5}
         >
           <DropdownMenu.Label className="dark:gray-500 p-2 text-xs font-semibold uppercase text-gray-700">

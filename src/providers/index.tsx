@@ -19,7 +19,6 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import * as allChains from "viem/chains";
-import type { Chain } from "viem/chains";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ThemeProvider } from "next-themes";
@@ -96,9 +95,9 @@ function createWagmiConfig() {
       },
     },
   });
-  const chains = [appConfig.config.network, allChains.mainnet] as [
-    Chain,
-    ...Chain[],
+  const chains = appConfig.supportedNetworks as unknown as [
+    allChains.Chain,
+    ...allChains.Chain[],
   ];
 
   const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_ID;

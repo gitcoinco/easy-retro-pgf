@@ -14,6 +14,8 @@ export const EligibilityDialog = () => {
 
   if (isPending || !address || !session || error) return null;
 
+  // TODO: Find a smoother UX for this
+  if (true) return null;
   return (
     <Dialog
       size="sm"

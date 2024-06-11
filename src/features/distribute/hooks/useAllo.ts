@@ -32,7 +32,6 @@ export async function waitForLogs(
   abi: readonly JsonFragment[],
   client?: PublicClient,
 ) {
-  console.log("client", client);
   return client?.waitForTransactionReceipt({ hash }).then(({ logs }) => {
     return logs
       .map(({ data, topics }) => {

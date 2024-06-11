@@ -2,14 +2,17 @@ import clsx from "clsx";
 import Link from "next/link";
 
 import { InfiniteLoading } from "~/components/InfiniteLoading";
-import { getAppState } from "~/utils/state";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useProjectsResults, useResults } from "~/hooks/useResults";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 
 export function ProjectsResults() {
   const projects = useProjectsResults();
   const results = useResults();
+  const domain = useCurrentDomain();
 
+  const roundState = useRoundState();
   return (
     <InfiniteLoading
       {...projects}
@@ -17,10 +20,10 @@ export function ProjectsResults() {
         return (
           <Link
             key={item.id}
-            href={`/projects/${item.id}`}
+            href={`/${domain}/projects/${item.id}`}
             className={clsx("relative", { ["animate-pulse"]: isLoading })}
           >
-            {!results.isPending && getAppState() === "RESULTS" ? (
+            {!results.isPending && roundState === "RESULTS" ? (
               <ProjectItemAwarded
                 amount={results.data?.projects?.[item.id]?.votes}
               />

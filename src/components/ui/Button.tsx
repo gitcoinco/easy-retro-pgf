@@ -9,22 +9,23 @@ import {
 import { cn } from "~/utils/classNames";
 import { Spinner } from "./Spinner";
 
-const button = tv({
+export const button = tv({
   base: "inline-flex items-center justify-center font-semibold text-center transition-colors rounded-full duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-gray-800",
   variants: {
     variant: {
       primary:
-        "bg-primary-600 hover:bg-primary-700 dark:bg-white dark:hover:bg-primary-500 dark:text-gray-900 text-white dark:disabled:bg-gray-500",
+        "bg-primary-600 hover:bg-primary-500 dark:bg-white dark:hover:bg-gray-200 dark:text-gray-900 text-white dark:disabled:bg-gray-500",
       ghost: "hover:bg-gray-100 dark:hover:bg-gray-800",
       default:
-        "bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700",
-      inverted: "bg-white text-black hover:bg-white/90",
-      link: "bg-none hover:underline",
-      outline: "border-2 hover:bg-white/5",
+        "bg-gray-100 dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800",
+      danger:
+        "bg-red-600 text-white dark:bg-red-900 hover:bg-red-500 dark:hover:bg-red-700",
+      outline: "border border-gray-300 hover:bg-white/5 hover:border-gray-400",
     },
     size: {
       sm: "px-3 py-2 h-10 min-w-[40px]",
-      deafult: "px-4 py-2 h-12",
+      md: "px-6 py-2 h-12",
+      lg: "px-6 py-3 text-lg",
       icon: "h-12 w-12",
     },
     disabled: {
@@ -33,7 +34,7 @@ const button = tv({
   },
   defaultVariants: {
     variant: "default",
-    size: "deafult",
+    size: "md",
   },
 });
 

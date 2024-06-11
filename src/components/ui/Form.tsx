@@ -9,6 +9,7 @@ import {
   forwardRef,
   cloneElement,
   useEffect,
+  type ComponentProps,
 } from "react";
 import {
   FormProvider,
@@ -25,12 +26,13 @@ import { createComponent } from ".";
 import { cn } from "~/utils/classNames";
 import { useInterval, useLocalStorage } from "react-use";
 import { IconButton } from "./Button";
-import { PlusIcon, Search, Trash } from "lucide-react";
+import { Calendar, PlusIcon, Search, Trash } from "lucide-react";
 
 const inputBase = [
   "dark:bg-gray-900",
   "dark:text-gray-300",
   "dark:border-gray-700",
+  "border-gray-300",
   "rounded",
   "disabled:opacity-30",
   "checked:bg-gray-800",
@@ -56,12 +58,17 @@ export const InputWrapper = createComponent(
 export const InputAddon = createComponent(
   "div",
   tv({
-    base: "absolute right-0 text-gray-900 dark:text-gray-300 inline-flex items-center justify-center h-full border-gray-300 dark:border-gray-800 border-l px-4 font-semibold",
+    base: "absolute text-gray-900 dark:text-gray-300 inline-flex items-center justify-center h-full border-gray-300 dark:border-gray-800 border-l px-4 font-semibold",
     variants: {
       disabled: {
         true: "text-gray-500 dark:text-gray-500",
       },
+      position: {
+        left: "left-0",
+        right: "right-0",
+      },
     },
+    defaultVariants: { position: "right" },
   }),
 );
 
@@ -84,7 +91,7 @@ export const Select = createComponent(
   }),
 );
 
-export const Checkbox = createComponent(
+const CheckboxComponent = createComponent(
   "input",
   tv({
     base: [
@@ -93,6 +100,13 @@ export const Checkbox = createComponent(
     ],
   }),
 );
+
+export const Checkbox = forwardRef(function Checkbox(
+  props: ComponentPropsWithRef<typeof CheckboxComponent>,
+  ref,
+) {
+  return <CheckboxComponent ref={ref} type="checkbox" {...props} />;
+});
 
 export const Label = createComponent(
   "label",
@@ -104,6 +118,25 @@ export const Textarea = createComponent(
   "textarea",
   tv({ base: [...inputBase, "w-full"] }),
 );
+
+export const InputWithAddon = forwardRef(function InputWithAddon(
+  { addon, ...props }: ComponentPropsWithRef<typeof Input> & { addon: string },
+  ref,
+) {
+  return (
+    <InputWrapper className={cn("items-center border", inputBase)}>
+      <InputAddon
+        position="left"
+        className={
+          "static whitespace-nowrap border-l-0 bg-gray-100 px-2 py-2.5 text-sm font-normal text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+        }
+      >
+        {addon}
+      </InputAddon>
+      <Input ref={ref} {...props} className="border-y-0 border-l border-r-0" />
+    </InputWrapper>
+  );
+});
 
 export const SearchInput = forwardRef(function SearchInput(
   { ...props }: ComponentPropsWithRef<typeof Input>,
@@ -118,6 +151,21 @@ export const SearchInput = forwardRef(function SearchInput(
     </InputWrapper>
   );
 });
+
+export const DateInput = forwardRef(function DateInput(
+  { ...props }: ComponentPropsWithRef<typeof Input>,
+  ref,
+) {
+  return (
+    <InputWrapper>
+      <InputIcon>
+        <Calendar className="size-4" />
+      </InputIcon>
+      <Input autoComplete={"off"} ref={ref} {...props} className="pl-10" />
+    </InputWrapper>
+  );
+});
+
 export const FormControl = ({
   name,
   label,
@@ -131,7 +179,7 @@ export const FormControl = ({
   label?: string;
   required?: boolean;
   valueAsNumber?: boolean;
-  hint?: string;
+  hint?: string | ReactElement;
 } & ComponentPropsWithoutRef<"fieldset">) => {
   const {
     register,
@@ -159,7 +207,7 @@ export const FormControl = ({
         ...register(name, { valueAsNumber }),
       })}
       {hint && (
-        <div className="pt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="pl-0.5 pt-1 text-xs text-gray-500 dark:text-gray-400">
           {hint}
         </div>
       )}
@@ -228,7 +276,10 @@ export function FormSection({
   title,
   description,
   children,
-}: { title: string; description: string } & ComponentProps<"section">) {
+}: {
+  title: ReactNode | string;
+  description: ReactNode | string;
+} & ComponentProps<"section">) {
   return (
     <section className="mb-8">
       <h3 className="mb-1 text-xl font-semibold">{title}</h3>
