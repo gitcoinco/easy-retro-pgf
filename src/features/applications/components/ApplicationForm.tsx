@@ -19,7 +19,6 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { impactCategories } from "~/config";
 import {
   ApplicationSchema,
   ProfileSchema,
@@ -30,6 +29,8 @@ import { useCreateApplication } from "../hooks/useCreateApplication";
 import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
 const ApplicationCreateSchema = z.object({
@@ -331,6 +332,7 @@ function CreateApplicationButton({
   isLoading: boolean;
   buttonText: string;
 }) {
+  const roundState = useRoundState();
   const { address } = useAccount();
   const balance = useBalance({ address });
 
@@ -338,6 +340,7 @@ function CreateApplicationButton({
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
   const hasBalance = (balance.data?.value ?? 0n) > 0;
+
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -346,14 +349,19 @@ function CreateApplicationButton({
         )}
         {!isCorrectNetwork && (
           <div className="flex items-center gap-2">
-            You must be connected to {correctNetwork.name}
+            You must be connected to {correctNetwork?.name}
           </div>
         )}
       </div>
+
+      {roundState !== "APPLICATION" && (
+        <Alert variant="info" title="Application period has ended" />
+      )}
+
       <EnsureCorrectNetwork>
         {hasBalance ? (
           <Button
-            disabled={isLoading || !session}
+            disabled={roundState !== "APPLICATION" || isLoading || !session}
             variant="primary"
             type="submit"
             isLoading={isLoading}
@@ -378,26 +386,29 @@ function ImpactTags() {
     control,
   });
 
+  const { data: round } = useCurrentRound();
+
   const selected = watch("application.impactCategory") ?? [];
 
   const error = formState.errors.application?.impactCategory;
+  if (!round?.categories?.length) return null;
   return (
     <div className="mb-4">
       <Label>
         Impact categories<span className="text-red-300">*</span>
       </Label>
       <div className="flex flex-wrap gap-2">
-        {Object.entries(impactCategories).map(([value, { label }]) => {
-          const isSelected = selected.includes(value);
+        {round?.categories?.map(({ id, label }) => {
+          const isSelected = selected.includes(id);
           return (
             <Tag
               size="lg"
               selected={isSelected}
-              key={value}
+              key={id}
               onClick={() => {
                 const currentlySelected = isSelected
-                  ? selected.filter((s) => s !== value)
-                  : selected.concat(value);
+                  ? selected.filter((s) => s !== id)
+                  : selected.concat(id);
 
                 field.onChange(currentlySelected);
               }}

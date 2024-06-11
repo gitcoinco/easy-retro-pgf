@@ -1,4 +1,3 @@
-import { SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
 import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
 import { ImageIcon } from "lucide-react";

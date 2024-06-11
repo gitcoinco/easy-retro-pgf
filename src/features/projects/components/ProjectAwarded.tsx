@@ -8,7 +8,7 @@ export function ProjectAwarded({ id = "" }) {
   if (amount.isPending) return null;
   return (
     <Button variant="primary">
-      {formatNumber(amount.data?.amount ?? 0)} votes
+      {formatNumber(amount.data ?? 0)} votes
     </Button>
   );
 }

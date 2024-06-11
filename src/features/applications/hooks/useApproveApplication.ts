@@ -1,13 +1,16 @@
 import { useAttest } from "~/hooks/useEAS";
 import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
-import { config, eas } from "~/config";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { toast } from "sonner";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { getContracts } from "~/lib/eas/createEAS";
 
 export function useApproveApplication(opts?: { onSuccess?: () => void }) {
   const attest = useAttest();
   const signer = useEthersSigner();
+
+  const { data: round } = useCurrentRound();
 
   return useMutation({
     onSuccess: () => {
@@ -20,16 +23,20 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
       }),
     mutationFn: async (applicationIds: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
+      if (!round?.network) throw new Error("Round network not configured");
+
+      const contracts = getContracts(round.network);
 
       const attestations = await Promise.all(
         applicationIds.map((refUID) =>
           createAttestation(
             {
-              values: { type: "application", round: config.roundId },
-              schemaUID: eas.schemas.approval,
+              values: { type: "application", round: round.id },
+              schemaUID: contracts.schemas.approval,
               refUID,
             },
             signer,
+            contracts,
           ),
         ),
       );

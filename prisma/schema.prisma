@@ -58,7 +58,9 @@ model VerificationToken {
 }
 
 model Ballot {
+    id      String @id @default(cuid())
     voterId String
+    roundId String
 
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
@@ -67,13 +69,42 @@ model Ballot {
 
     votes Json[]
 
-    @@unique([voterId]) // Only one ballot per voter
+    // Only one ballot per voter and round
+    @@unique([voterId, roundId])
 }
 
-model Settings {
-    id     String @id @default(cuid())
+model Round {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    creatorId      String
+    name           String
+    description    String?
+    bannerImageUrl String?
+    domain         String  @unique
+
+    network String?
+    admins  String[]
+
+    startsAt DateTime?
+    reviewAt DateTime?
+    votingAt DateTime?
+    resultAt DateTime?
+    payoutAt DateTime?
+
+    categories Json[]
+
+    maxVotesTotal   Int?
+    maxVotesProject Int?
+    tokenAddress    String?
+
+    calculationType   String
+    calculationConfig Json?
+
     poolId Int?
-    config Json
+
+    comments Comment[]
 }
 
 model Comment {
@@ -83,4 +114,7 @@ model Comment {
     content   String
     creatorId String
     projectId String
+
+    roundId String
+    round   Round  @relation(fields: [roundId], references: [id])
 }

@@ -1,37 +1,17 @@
 import { tv } from "tailwind-variants";
 import { createComponent } from "~/components/ui";
-import { config } from "~/config";
 import { cn } from "~/utils/classNames";
 import { formatDate } from "~/utils/time";
 
-const steps = [
-  {
-    label: "Registration",
-    date: config.startsAt,
-  },
-  {
-    label: "Review & Approval",
-    date: config.registrationEndsAt,
-  },
-  {
-    label: "Voting",
-    date: config.reviewEndsAt,
-  },
-  {
-    label: "Tallying",
-    date: config.votingEndsAt,
-  },
-  {
-    label: "Distribution",
-    date: config.resultsAt,
-  },
-];
-
-export function RoundProgress() {
+export function RoundProgress({
+  steps = [],
+}: {
+  steps: { label: string; date: Date }[];
+}) {
   const { progress, currentStepIndex } = calculateProgress(steps);
 
   return (
-    <div className="relative my-4">
+    <div className="relative my-2">
       <ProgressWrapper
         className={cn({
           ["w-full"]: currentStepIndex === steps.length,

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type ComponentPropsWithRef } from "react";
+import { type PropsWithChildren, type ComponentPropsWithRef } from "react";
+
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { getAddress, type Address } from "viem";
 import { normalize } from "viem/ens";
@@ -13,10 +14,13 @@ import { Chip } from "./ui/Chip";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
+import { EnsureCorrectNetwork } from "./EnureCorrectNetwork";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
-export const ConnectButton = () => {
+export const ConnectButton = ({ children }: PropsWithChildren) => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
 
@@ -26,7 +30,6 @@ export const ConnectButton = () => {
         account,
         chain,
         openAccountModal,
-        openChainModal,
         openConnectModal,
         mounted,
         authenticationStatus,
@@ -63,16 +66,16 @@ export const ConnectButton = () => {
                 );
               }
 
-              if (chain.unsupported) {
-                return <Chip onClick={openChainModal}>Wrong network</Chip>;
-              }
-
               return (
-                <ConnectedDetails
-                  account={account}
-                  openAccountModal={openAccountModal}
-                  isMobile={isMobile}
-                />
+                children ?? (
+                  <EnsureCorrectNetwork>
+                    <ConnectedDetails
+                      account={account}
+                      openAccountModal={openAccountModal}
+                      isMobile={isMobile}
+                    />
+                  </EnsureCorrectNetwork>
+                )
               );
             })()}
           </div>
@@ -93,17 +96,18 @@ const ConnectedDetails = ({
 }) => {
   const { data: ballot } = useBallot();
   const ballotSize = (ballot?.votes ?? []).length;
+  const domain = useCurrentDomain();
 
   const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (
     <div>
-      <div className="flex gap-2 text-white">
+      <div className="flex gap-2">
         {!showBallot ? null : ballot?.publishedAt ? (
           <Chip>Already submitted</Chip>
         ) : (
-          <Chip className="gap-2" as={Link} href={"/ballot"}>
+          <Chip className="gap-2" as={Link} href={`/${domain}/ballot`}>
             {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs">
+            <div className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold">
               {ballotSize}
             </div>
           </Chip>
@@ -135,7 +139,7 @@ const UserInfo = ({
         {avatar.data ? (
           <Image width={24} height={24} alt={name} src={avatar.data} />
         ) : (
-          <div className="h-full bg-gray-200" />
+          <div className="h-full bg-gray-700" />
         )}
       </div>
       {children}

@@ -38,8 +38,8 @@ export function useAddToBallot() {
 
 export function useRemoveFromBallot() {
   const { data: ballot } = useBallot();
-
   const { mutate } = useSaveBallot();
+
   return useMutation({
     mutationFn: async (projectId: string) => {
       const votes = (ballot?.votes ?? []).filter(
@@ -65,12 +65,14 @@ export function useSubmitBallot({
 }) {
   const chainId = useChainId();
   const { refetch } = useBallot();
+
   const { mutateAsync, isPending } = api.ballot.publish.useMutation({
     onSuccess,
   });
   useBeforeUnload(isPending, "You have unsaved changes, are you sure?");
 
   const { signTypedDataAsync } = useSignTypedData();
+
 
   return useMutation({
     mutationFn: async () => {

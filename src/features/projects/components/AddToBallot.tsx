@@ -16,9 +16,9 @@ import {
   useRemoveFromBallot,
   sumBallot,
 } from "~/features/ballot/hooks/useBallot";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { AllocationInput } from "~/components/AllocationInput";
-import { config } from "~/config";
-import { getAppState } from "~/utils/state";
 
 type Props = { id?: string; name?: string };
 
@@ -27,12 +27,16 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
   const [isOpen, setOpen] = useState(false);
   const add = useAddToBallot();
   const remove = useRemoveFromBallot();
+  const round = useCurrentRound();
   const { data: ballot } = useBallot();
 
   const inBallot = ballotContains(id!, ballot);
   const allocations = ballot?.votes ?? [];
   const sum = sumBallot(allocations.filter((p) => p.projectId !== id));
-  if (getAppState() !== "VOTING") return null;
+  if (useRoundState() !== "VOTING") return null;
+
+  const maxVotesProject = round.data?.maxVotesProject ?? 0;
+  const maxVotesTotal = round.data?.maxVotesTotal ?? 0;
   return (
     <div>
       {ballot?.publishedAt ? (
@@ -72,9 +76,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             amount: z
               .number()
               .min(0)
-              .max(
-                Math.min(config.votingMaxProject, config.votingMaxTotal - sum),
-              )
+              .max(Math.min(maxVotesProject, maxVotesTotal - sum))
               .default(0),
           })}
           onSubmit={({ amount }) => {
@@ -85,6 +87,8 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
           <ProjectAllocation
             current={sum}
             inBallot={Boolean(inBallot)}
+            maxVotesProject={maxVotesProject}
+            maxVotesTotal={maxVotesTotal}
             onRemove={() => {
               remove.mutate(id!);
               setOpen(false);
@@ -99,10 +103,14 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
 const ProjectAllocation = ({
   current = 0,
   inBallot,
+  maxVotesProject,
+  maxVotesTotal,
   onRemove,
 }: {
   current: number;
   inBallot: boolean;
+  maxVotesProject: number;
+  maxVotesTotal: number;
   onRemove: () => void;
 }) => {
   const form = useFormContext();
@@ -112,8 +120,8 @@ const ProjectAllocation = ({
     : 0;
   const total = amount + current;
 
-  const exceededProjectTokens = amount > config.votingMaxProject;
-  const exceededMaxTokens = total > config.votingMaxTotal;
+  const exceededProjectTokens = amount > maxVotesProject;
+  const exceededMaxTokens = total > maxVotesTotal;
 
   const isError = exceededProjectTokens || exceededMaxTokens;
   return (
@@ -126,7 +134,7 @@ const ProjectAllocation = ({
           </span>
           <span
             className={clsx("font-semibold", {
-              ["text-primary-500"]: exceededMaxTokens,
+              ["text-red-500"]: exceededMaxTokens,
             })}
           >
             {formatNumber(total)}
@@ -135,14 +143,14 @@ const ProjectAllocation = ({
         <div className="flex gap-2">
           <span
             className={clsx("font-semibold", {
-              ["text-primary-500"]: exceededProjectTokens,
+              ["text-red-500"]: exceededProjectTokens,
             })}
           >
             {formatNumber(amount)}
           </span>
           <span className="text-gray-600 dark:text-gray-400">/</span>
           <span className="text-gray-600 dark:text-gray-400">
-            {formatNumber(config.votingMaxProject)}
+            {formatNumber(maxVotesProject)}
           </span>
         </div>
       </div>
