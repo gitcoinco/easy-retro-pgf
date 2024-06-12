@@ -23,6 +23,7 @@ export const networks = {
   base: "base",
   baseGoerli: "baseGoerli",
   celo: "celo",
+  avalanche: "avalanche",
 } as const;
 
 export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -38,6 +39,7 @@ export const allo = {
     [networks.base]: "",
     [networks.baseGoerli]: "",
     [networks.celo]: "0x53a27a249518cb777e445a553b5ece124fd1a532",
+    [networks.avalanche]: "0x5E3FF1a3B34c06Beb247b38484067c845cfe6fAE",
   },
 };
 
@@ -58,6 +60,16 @@ export const eas = {
     [networks.celo]: {
       eas: "0x72E1d8ccf5299fb36fEfD8CC4394B8ef7e98Af92",
       registry: "0x5ece93bE4BDCF293Ed61FA78698B594F2135AF34",
+      schemas: {
+        metadata:
+          "0xf01bd22db2b104f6a7096f3625307b1c03b863b73f08e71557ebf1adc20cf1bf",
+        approval:
+          "0xe2636f31239f7948afdd9a9c477048b7fc2a089c347af60e3aa1251e5bf63e5c",
+      },
+    },
+    [networks.avalanche]: {
+      eas: "0x96c8a2beA1f575f5Bb969476acF59A97a55cA655",
+      registry: "0x87AFA1549ed770A7c2653829b1D182aE7D2b12b8",
       schemas: {
         metadata:
           "0xf01bd22db2b104f6a7096f3625307b1c03b863b73f08e71557ebf1adc20cf1bf",
@@ -104,6 +116,8 @@ export const easApiEndpoints = {
   [networks.base]: "https://base.easscan.org/graphql",
   [networks.baseGoerli]: "https://base-goerli.easscan.org/graphql",
   [networks.celo]: "https://celo.easscan.org/graphql",
+  [networks.avalanche]:
+    "http://ec2-35-174-143-89.compute-1.amazonaws.com:32768/",
 } as const;
 
 // TODO: Remove and move to round config
