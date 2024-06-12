@@ -89,6 +89,9 @@ dependencies:
   maci-cli:
     specifier: 1.2.4
     version: 1.2.4(@nomicfoundation/hardhat-chai-matchers@2.0.6)(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-ignition-ethers@0.15.3)(@nomicfoundation/hardhat-network-helpers@1.0.10)(@nomicfoundation/hardhat-verify@2.0.6)(@typechain/ethers-v6@0.5.1)(@typechain/hardhat@9.1.0)(@types/chai@4.3.16)(@types/mocha@10.0.6)(@types/node@20.12.11)(chai@4.4.1)(hardhat-gas-reporter@1.0.10)(solidity-coverage@0.8.12)(ts-node@10.9.2)(typechain@8.3.2)(typescript@5.4.5)
+  maci-domainobjs:
+    specifier: 1.2.4
+    version: 1.2.4
   next:
     specifier: ^14.1.0
     version: 14.2.3(@babel/core@7.24.5)(react-dom@18.2.0)(react@18.2.0)
