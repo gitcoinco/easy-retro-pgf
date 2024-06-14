@@ -15,24 +15,6 @@ The `.env.example` file contains instructions for most of these steps.
 
 At the very minimum you need to configure a postgres database, nextauth, admin address, MACI address, the EAS Schema and the voting periods under App Configuration.
 
-#### Database
-
-https://vercel.com/dashboard/stores?type=postgres
-
-1. Press Create Database button
-2. Select Postgres, press continue, and give it a name and region
-3. Press `.env.local` tab, Copy Snippet and paste into text editor
-
-<div>
-    <img width="45%" src="./images/create_postgres.png" />
-    <img width="45%" src="./images/create_postgres_details.png" />
-</div>
-
-#### Auth
-
-1. Generate a secret (`openssl rand -base64 32`)
-2. Configure `NEXTAUTH_URL` (this should only be necessary on localhost or for production domains)
-
 #### Network
 
 The default configuration is Optimism Sepolia for development and Optimism for production.
@@ -78,7 +60,7 @@ pnpm run build
 ```
 
 > [!IMPORTANT]
-> It's important to use version 1.2.3 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
+> It's important to use version 1.2.4 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
 
 ### Download .zkey files
 
