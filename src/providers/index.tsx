@@ -15,23 +15,21 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MaciProvider } from "~/contexts/Maci";
 import { BallotProvider } from "~/contexts/Ballot";
 
-export function Providers({
-  children,
-}: PropsWithChildren) {
+export function Providers({ children }: PropsWithChildren) {
   const { config, queryClient } = useMemo(() => createWagmiConfig(), []);
 
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-              <RainbowKitProvider>
-                <MaciProvider>
-                  <BallotProvider>{children}</BallotProvider>
-                  <Toaster />
-                </MaciProvider>
-              </RainbowKitProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider>
+            <MaciProvider>
+              <BallotProvider>{children}</BallotProvider>
+              <Toaster />
+            </MaciProvider>
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     </ThemeProvider>
   );
 }

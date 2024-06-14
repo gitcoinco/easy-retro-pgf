@@ -8,8 +8,10 @@ export const BallotContext = createContext<BallotContextType | undefined>(
   undefined,
 );
 
+const defaultBallot = { votes: [], published: false };
+
 export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
-  const [ballot, setBallot] = useState<Ballot>({ votes: [], published: false });
+  const [ballot, setBallot] = useState<Ballot>(defaultBallot);
 
   const { isDisconnected } = useAccount();
 
@@ -64,7 +66,7 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
 
   // remove the ballot from localstorage
   const deleteBallot = () => {
-    setBallot({ votes: [], published: false });
+    setBallot(defaultBallot);
     localStorage.removeItem("ballot");
   };
 
@@ -76,16 +78,17 @@ export const BallotProvider: React.FC<BallotProviderProps> = ({ children }) => {
   /// Read existing ballot in localStorage
   useEffect(() => {
     setBallot(
-      JSON.parse(localStorage.getItem("ballot") ?? JSON.stringify(ballot)) ?? {
-        votes: [],
-        published: false,
-      },
+      JSON.parse(
+        localStorage.getItem("ballot") ?? JSON.stringify(defaultBallot),
+      ) ?? defaultBallot,
     );
   }, []);
 
   /// store ballot to localStorage once it changes
   useEffect(() => {
-    saveBallot();
+    if (ballot !== defaultBallot) {
+      saveBallot();
+    }
   }, [ballot, ballot.votes, ballot.published]);
 
   useEffect(() => {
