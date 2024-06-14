@@ -24,15 +24,28 @@ export default function LandingPage({}) {
         height={900}
       />
       <Markdown>
-        {`### Welcome to FIL-RetroPGF-1, the Filecoin network’s first Optimism-inspired Retroactive Public Goods Funding round.
+        {`### Welcome to FIL-RetroPGF-1, the Filecoin network&apos;s first Optimism-inspired Retroactive Public Goods Funding round.
+It&apos;s a wrap! We&apos;d like to thank all the projects that participated in this round for their contributions and support in the process. 
 
-The round will allocate FIL tokens to projects that have created an impact to the Filecoin network between Oct 2023 - Mar 2024. Future impact windows will be rewarded in future rounds.
+This page presents an overview of the FIL allocation results for FIL-RetroPGF-1, for funds donated to the round by Titan Network, web3mine, Filecoin Foundation and Protocol Labs.
 
-Between Apr 8th and Apr 21st, eligible nominations may submit an application. Eligible projects are listed [here](https://fil-retropgf.notion.site/Round-1-Invited-Applications-3fe95da0c9da4aeba9c6420d1efd0bd6?pvs=74).
 
-After this, badgeholders will vote on the projects between Apr 22nd and May 9th.
+Fig. 1 shows the allocation breakdown by project category.
 
-For more information, visit [FIL-RetroPGF documentation](https://fil-retropgf.notion.site/FIL-RetroPGF-4b6f5358440043c8bb1bf53f0297541e).`}
+For additional breakdown and analysis of voting patterns, please check out this [article](https://medium.com/@blackbandres/a-deepdive-into-fil-retropgf-1-results-7e5a0bcdba08).
+
+Please refer to [this spreadsheet](https://docs.google.com/spreadsheets/d/15tQZU4yfzCCso_dd5NGXfSy6XB2pmrEZzZrG_TEIKyY/edit?usp=sharing) for an expanded version of the distribution table for all allocations.
+
+### Total FIL allocated to each category
+
+<iframe src="https://plotly.com/~k2ncsu/1.embed?autosize=true" width="100%" height="800" />
+
+-
+
+### What's Next?
+
+Distribution will start on June 20th 2024. We have reached out to recipients to conduct the KYC required for fund distribution. If you are a recipient, please make sure to respond by 13 June 2024 to be included in the first batch distribution. Distribution will be performed in batches on the 20th of each month. KYC must be completed by 13 August 2024 at the latest to avoid forfeiting funds.
+`}
       </Markdown>
     </Layout>
   );
