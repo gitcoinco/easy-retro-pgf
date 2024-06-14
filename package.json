@@ -59,6 +59,7 @@
     "react-markdown": "^9.0.1",
     "react-number-format": "^5.3.1",
     "react-use": "^17.5.0",
+    "rehype-raw": "^7.0.0",
     "siwe": "^2.1.4",
     "sonner": "^1.4.0",
     "superjson": "^2.2.1",
