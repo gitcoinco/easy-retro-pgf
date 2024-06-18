@@ -159,6 +159,11 @@ function CreatePool() {
 }
 
 function ConfigurePool() {
+  const poolId = usePoolId();
+
+  if (poolId.data) {
+    return <PoolDetails poolId={poolId.data} />;
+  }
   return (
     <CheckAlloProfile>
       <CreatePool />
