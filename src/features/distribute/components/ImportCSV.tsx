@@ -5,7 +5,7 @@ import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { parse } from "~/utils/csv";
 import { type Distribution } from "../types";
-import { getAddress } from "viem";
+import { getAddress, isAddress } from "viem";
 import { toast } from "sonner";
 
 export function ImportCSV() {
@@ -19,7 +19,9 @@ export function ImportCSV() {
       const { data } = parse<Distribution>(csvString);
       const distribution = data.map(({ projectId, amount, payoutAddress }) => ({
         projectId,
-        payoutAddress: getAddress(payoutAddress),
+        payoutAddress: isAddress(payoutAddress)
+          ? getAddress(payoutAddress)
+          : "",
         amount: Number(amount),
       }));
       console.log(123, distribution);
