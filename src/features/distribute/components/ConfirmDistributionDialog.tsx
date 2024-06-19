@@ -59,7 +59,7 @@ export function ConfirmDistributionDialog({
             ["text-red-600"]: amountDiff < 0n,
           })}
         >
-          {formatNumber(Number(formatUnits(amountDiff, token.decimals)))}
+          {Number(formatUnits(amountDiff, token.decimals))}
         </div>
       </div>
       <div className="space-y-1">
