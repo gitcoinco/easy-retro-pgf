@@ -54,7 +54,7 @@ You can read about the [MACI requirements here](https://maci.pse.dev/docs/v1.2/i
 ```bash
 git clone https://github.com/privacy-scaling-explorations/maci.git && \
 cd maci && \
-git checkout v1.2.3 && \
+git checkout v1.2.4 && \
 pnpm i && \
 pnpm run build
 ```
@@ -63,6 +63,9 @@ pnpm run build
 > It's important to use version 1.2.4 of MACI, as this version's circuit are audited and have zKeys which have undergone a trusted setup.
 
 ### Download .zkey files
+
+> [!IMPORTANT]
+> When using the Ceremony Keys make sure to compile the project using the correct state tree depth argument using the following command `export STATE_TREE_DEPTH=6 && pnpm build`. Refer to the [circuits documentation](https://maci.pse.dev/docs/developers-references/zk-snark-circuits/) page for more information.
 
 Download ceremony artifacts for production:
 
