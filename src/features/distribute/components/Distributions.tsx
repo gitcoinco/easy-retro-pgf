@@ -30,7 +30,7 @@ function convertFilecoinAddress(addr: string) {
     if (isAddress(addr)) return getAddress(addr);
     if (validateAddressString(addr)) return ethAddressFromDelegated(addr);
   } catch (error) {
-    return addr;
+    return "";
     console.log(addr, error);
   }
 }

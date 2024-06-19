@@ -19,8 +19,8 @@ export function ConfirmDistributionDialog({
   const { data: token } = usePoolToken();
   const { data: balance } = usePoolAmount();
 
-  const { isPending, mutate } = useDistribute();
-
+  const { isPending, mutate, error } = useDistribute();
+  console.log("err", error);
   const { recipients, amounts } = useMemo(() => {
     return distribution.reduce(
       (acc, x) => ({
@@ -37,7 +37,6 @@ export function ConfirmDistributionDialog({
   }, [distribution]);
 
   const amountDiff = (balance ?? 0n) - amounts.reduce((sum, x) => sum + x, 0n);
-
   return (
     <Dialog
       isOpen={distribution.length > 0}

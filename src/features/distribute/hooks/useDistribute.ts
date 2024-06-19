@@ -3,6 +3,7 @@ import { useAllo } from "./useAllo";
 import { usePoolId, usePoolToken } from "./useAlloPool";
 import { type Address, encodeAbiParameters, parseAbiParameters } from "viem";
 import { useSendTransaction } from "wagmi";
+import { toast } from "sonner";
 
 export function useDistribute() {
   const allo = useAllo();
@@ -11,6 +12,7 @@ export function useDistribute() {
 
   const { sendTransactionAsync } = useSendTransaction();
   return useMutation({
+    onError: (err) => toast.error(err.toString()),
     mutationFn: async ({
       recipients,
       amounts,
