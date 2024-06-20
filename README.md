@@ -60,6 +60,8 @@ bun install # (or pnpm / yarn / npm)
 
 cp .env.example .env # and update .env variables
 
+docker-compose up # starts a local postgres instance
+
 bun run dev
 
 bun run db:push # create database tables
