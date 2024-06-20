@@ -1,15 +1,17 @@
 import { z } from "zod";
 import { Form, FormControl, Input } from "~/components/ui/Form";
-import { useAddPoolManager } from "../hooks/useAlloPool";
+import { useAddPoolManager, useIsPoolAdmin } from "../hooks/useAlloPool";
 import { Button } from "~/components/ui/Button";
 import { EthAddressSchema } from "../types";
 import { Dialog } from "~/components/ui/Dialog";
 import { useState } from "react";
 
 export function AddPoolAdmin({ poolId = 0 }) {
+  const { data: isPoolAdmin } = useIsPoolAdmin(poolId);
   const add = useAddPoolManager();
   const [isOpen, setOpen] = useState(false);
-  if (!poolId) return null;
+  if (!poolId || !isPoolAdmin) return null;
+
   return (
     <>
       <Button className={"w-full"} onClick={() => setOpen(true)}>

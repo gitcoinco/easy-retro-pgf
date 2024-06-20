@@ -150,6 +150,15 @@ export function useAddPoolManager() {
   });
 }
 
+export function useIsPoolAdmin(poolId: number) {
+  const { address } = useAccount();
+  const allo = useAllo();
+  return useQuery({
+    queryKey: ["pool-admin", poolId, address],
+    queryFn: async () => allo?.isPoolAdmin(poolId, address),
+  });
+}
+
 export function usePoolToken() {
   const { address } = useAccount();
   const tokenContract = {
