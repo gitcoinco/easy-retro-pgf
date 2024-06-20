@@ -1,4 +1,3 @@
-import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Form, FormControl, Input, Select } from "~/components/ui/Form";
@@ -7,10 +6,7 @@ import { Spinner } from "~/components/ui/Spinner";
 import { config } from "~/config";
 import ConfigurePool from "~/features/distribute/components/CreatePool";
 import { Distributions } from "~/features/distribute/components/Distributions";
-import {
-  type Calculation,
-  CalculationSchema,
-} from "~/features/distribute/types";
+import { CalculationSchema } from "~/features/distribute/types";
 import { AdminLayout } from "~/layouts/AdminLayout";
 import { api } from "~/utils/api";
 
@@ -29,6 +25,7 @@ export default function DistributePage() {
       sidebarComponent={
         <div className="space-y-4">
           <ConfigurePool />
+
           {settings.isPending ? (
             <div />
           ) : (

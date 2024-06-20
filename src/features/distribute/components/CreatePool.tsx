@@ -28,6 +28,7 @@ import {
   Label,
 } from "~/components/ui/Form";
 import { NumberInput } from "~/components/NumberInput";
+import { AddPoolAdmin } from "./AddPoolAdmin";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -224,6 +225,8 @@ function PoolDetails({ poolId = 0 }) {
 
         <ErrorMessage>{(error as { message: string })?.message}</ErrorMessage>
       </Form>
+
+      <AddPoolAdmin poolId={poolId} />
     </Alert>
   );
 }

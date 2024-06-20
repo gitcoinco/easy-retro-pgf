@@ -7,7 +7,7 @@ import {
   useSendTransaction,
   useWriteContract,
 } from "wagmi";
-import { type Address, parseAbi, erc20Abi } from "viem";
+import { type Address, parseAbi, erc20Abi, getAddress } from "viem";
 import { abi as AlloABI } from "@allo-team/allo-v2-sdk/dist/Allo/allo.config";
 import { allo, config, isNativeToken, nativeToken } from "~/config";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -114,6 +114,35 @@ export function useFundPool() {
         to,
         data,
         value: BigInt(amount),
+      });
+
+      return waitForLogs(hash, AlloABI, client);
+    },
+  });
+}
+
+export function useAddPoolManager() {
+  const allo = useAllo();
+  const { sendTransactionAsync } = useSendTransaction();
+  const client = usePublicClient();
+
+  return useMutation({
+    mutationFn: async ({
+      address,
+      poolId,
+    }: {
+      address: string;
+      poolId: number;
+    }) => {
+      if (!allo) throw new Error("Allo not initialized");
+
+      const { to, data } = allo.addPoolManager(
+        BigInt(poolId),
+        getAddress(address),
+      );
+      const hash = await sendTransactionAsync({
+        to,
+        data,
       });
 
       return waitForLogs(hash, AlloABI, client);
