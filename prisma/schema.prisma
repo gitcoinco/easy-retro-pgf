@@ -83,6 +83,7 @@ model Round {
     description    String?
     bannerImageUrl String?
     domain         String  @unique
+    type         String  @default("project")
 
     network String?
     admins  String[]
@@ -94,6 +95,7 @@ model Round {
     payoutAt DateTime?
 
     categories Json[]
+    metrics Json[]
 
     maxVotesTotal   Int?
     maxVotesProject Int?
