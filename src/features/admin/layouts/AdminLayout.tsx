@@ -34,7 +34,6 @@ export function RoundAdminLayout({
 }) {
   const { address } = useAccount();
   const round = useCurrentRound();
-
   return (
     <Layout sidebarComponent={<RoundConfigSidebar />} sidebar="left" {...props}>
       <div className={className}>

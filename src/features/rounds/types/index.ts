@@ -72,11 +72,17 @@ export const RoundDatesSchema = RoundDates.superRefine(
     }
   },
 );
+
+export const roundTypes = {
+  impact: "Impact",
+  project: "Project",
+};
 export const RoundSchema = z
   .object({
     id: z.string(),
     name: RoundNameSchema,
     domain: z.string(),
+    type: z.enum(Object.keys(roundTypes) as [string, ...string[]]),
     creatorId: z.string(),
     admins: z.array(EthAddressSchema),
     description: z.string().nullable(),

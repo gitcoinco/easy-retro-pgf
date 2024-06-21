@@ -1,5 +1,5 @@
-import { Plus, Trash } from "lucide-react";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { CandlestickChart, LayoutGrid, Plus, Trash } from "lucide-react";
+import { useController, useFieldArray, useFormContext } from "react-hook-form";
 import { isAfter } from "date-fns";
 import {
   Form,
@@ -11,11 +11,14 @@ import {
 } from "~/components/ui/Form";
 import { RoundAdminLayout } from "~/features/admin/layouts/AdminLayout";
 import { Button } from "~/components/ui/Button";
-import { RoundSchema } from "~/features/rounds/types";
+import { RoundSchema, roundTypes } from "~/features/rounds/types";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { ImageUpload } from "~/components/ImageUpload";
+import { createComponent } from "~/components/ui";
+import { tv } from "tailwind-variants";
+import { createElement } from "react";
 
 export default function AdminPage() {
   return (
@@ -30,7 +33,6 @@ function RoundForm({ round }: { round: RoundSchema }) {
   const router = useRouter();
   const update = useUpdateRound();
 
-  console.group(round);
   return (
     <Form
       defaultValues={{ ...round }}
@@ -65,6 +67,10 @@ function RoundForm({ round }: { round: RoundSchema }) {
         <FormControl name="description" label="Description">
           <Textarea rows={10} />
         </FormControl>
+
+        <FormControl name="type" label="Round Type">
+          <SelectRoundType />
+        </FormControl>
       </FormSection>
       <FormSection
         title="Impact categories"
@@ -83,6 +89,38 @@ function RoundForm({ round }: { round: RoundSchema }) {
     </Form>
   );
 }
+
+function SelectRoundType({ name = "" }) {
+  const { control } = useFormContext();
+  const { field } = useController({ control, name });
+  const icons = [CandlestickChart, LayoutGrid] as const;
+  return (
+    <div className="flex gap-4">
+      {Object.entries(roundTypes).map(([key, label], i) => (
+        <RoundTypeItem
+          key={key}
+          checked={field.value === key}
+          onClick={() => field.onChange(key)}
+        >
+          {createElement(icons[i]!, { className: "size-8" })}
+          {label}
+        </RoundTypeItem>
+      ))}
+    </div>
+  );
+}
+
+const RoundTypeItem = createComponent(
+  "div",
+  tv({
+    base: "flex flex-col flex-1 items-center gap-2 font-semibold border-2 transition-colors p-4 rounded cursor-pointer hover:bg-gray-50",
+    variants: {
+      checked: {
+        true: "border-primary-500 bg-primary-50 hover:bg-primary-100",
+      },
+    },
+  }),
+);
 
 function Categories({ disabled = false }) {
   const { control, register } = useFormContext();
