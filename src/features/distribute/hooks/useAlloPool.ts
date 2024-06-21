@@ -149,13 +149,39 @@ export function useAddPoolManager() {
     },
   });
 }
+export function useWithdrawPoolFunds(poolId?: number) {
+  const { data: pool } = usePool(poolId);
+
+  const { writeContractAsync } = useWriteContract();
+  return useMutation({
+    mutationFn: async ({ address }: { address: string }) =>
+      writeContractAsync({
+        abi: parseAbi([
+          "function withdraw(address _token, address _recipient) external view",
+        ]),
+        address: getAddress(pool?.strategy),
+        functionName: "withdraw",
+        args: [getAddress(pool?.token!), getAddress(address)],
+      }),
+  });
+}
 
 export function useIsPoolAdmin(poolId: number) {
   const { address } = useAccount();
   const allo = useAllo();
   return useQuery({
     queryKey: ["pool-admin", poolId, address],
-    queryFn: async () => allo?.isPoolAdmin(poolId, address),
+    queryFn: async () =>
+      allo?.isPoolAdmin(BigInt(poolId), getAddress(address!)),
+  });
+}
+export function useIsPoolManager(poolId: number) {
+  const { address } = useAccount();
+  const allo = useAllo();
+  return useQuery({
+    queryKey: ["pool-manager", poolId, address],
+    queryFn: async () =>
+      allo?.isPoolManager(BigInt(poolId), getAddress(address!)),
   });
 }
 
