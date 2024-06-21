@@ -72,7 +72,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
       >
         <p className="pb-4 leading-relaxed">
           How much {config.tokenName} should this Project receive to fill the
-          gap between the impact they generated for Optimism and the profit they
+          gap between the impact they generated for {config.roundOrganizer} and the profit they
           received for generating this impact
         </p>
         <Form
@@ -166,7 +166,7 @@ const ProjectAllocation = ({
           className="w-full"
           disabled={isError}
         >
-          {inBallot ? "Update" : "Add"} votes
+          {inBallot ? "Update" : "Add"} vote
         </Button>
         {inBallot ? (
           <Button
@@ -175,7 +175,7 @@ const ProjectAllocation = ({
             className="w-full"
             onClick={onRemove}
           >
-            Remove from ballot
+            Remove from vote
           </Button>
         ) : null}
       </div>

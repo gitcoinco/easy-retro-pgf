@@ -27,9 +27,11 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
                 Your vote has been received 🥳
               </h3>
               <p className="mb-10 text-gray-700 dark:text-gray-300">
-                Thank you for participating in RetroPGF 3. Please help us
-                improve the process by providing feedback on your experience as
-                a badgeholder!
+                Thank you for participating in this round. If you have 5 minutes, we'd love
+                to hear your feedback on what we could do better to improve! Your feedback would always
+                remain anonymous. It would, however, greatly help us continue to iterate on the
+                MACI-RPGF stack to keep learning and implementing improvements to continue to build a better
+                experience.
               </p>
               <Button
                 variant="primary"
@@ -66,11 +68,11 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
         <Card>
           <div>
             <h5 className="mb-3 text-2xl font-bold">
-              Help us improve next round of RetroPGF
+              Help us improve next round of MACI-RPGF
             </h5>
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               Your anonymized feedback will be influential to help us iterate on
-              Optimism&apos;s RetroPGF process.
+              MACI RPGF process.
             </p>
             <Button
               variant="primary"

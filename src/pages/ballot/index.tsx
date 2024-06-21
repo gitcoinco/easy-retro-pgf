@@ -115,7 +115,7 @@ function ClearBallot() {
         onOpenChange={setOpen}
       >
         <p className="mb-6 leading-6">
-          This will empty your ballot and remove all the projects you have
+          This will empty your vote and remove all the projects you have
           added.
         </p>
         <div className="flex justify-end">
@@ -137,7 +137,7 @@ const EmptyBallot = () => (
     <div className=" max-w-[360px] space-y-4">
       <h3 className="text-center text-lg font-bold">Your ballot is empty</h3>
       <p className="text-center text-sm text-gray-700">
-        Your ballot currently doesn&apos;t have any projects added. Browse
+        Your vote currently doesn&apos;t have any projects added. Browse
         through the available projects.
       </p>
       <div className="flex items-center justify-center gap-3">

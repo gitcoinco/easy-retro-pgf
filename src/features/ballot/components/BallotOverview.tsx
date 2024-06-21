@@ -124,13 +124,13 @@ function BallotOverview() {
           as={Link}
           href={`/ballot/confirmation`}
         >
-          View submitted ballot
+          View submitted vote
         </Button>
       ) : canSubmit ? (
         <SubmitBallotButton disabled={sum > initialVoiceCredits} />
       ) : viewBallot ? (
         <Button className="w-full" variant="primary" as={Link} href={`/ballot`}>
-          View my ballot
+          View my vote
         </Button>
       ) : (
         <Button className={"w-full"} variant="primary" disabled>
@@ -173,23 +173,23 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
   const messages = {
     signing: {
-      title: "Sign ballot",
+      title: "Sign vote",
       instructions:
-        "Confirm the transactions in your wallet to submit your  ballot.",
+        "Confirm the transactions in your wallet to submit your vote.",
     },
     submitting: {
-      title: "Submit ballot",
+      title: "Submit vote",
       instructions:
-        "Once you submit your ballot, you won’t be able to change it. If you are ready, go ahead and submit!",
+        "Once you submit your vote, you won’t be able to change it. If you are ready, go ahead and submit!",
     },
     error: {
-      title: "Error submitting ballot",
+      title: "Error submitting vote",
       instructions: (
         <Alert
           variant="warning"
           title={(submit.error as { message?: string })?.message}
         >
-          There was an error submitting the ballot.
+          There was an error submitting the vote.
         </Alert>
       ),
     },
@@ -208,7 +208,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
         disabled={disabled}
         onClick={async () => setOpen(true)}
       >
-        Submit ballot
+        Submit vote
       </Button>
       <Dialog size="sm" isOpen={isOpen} onOpenChange={setOpen} title={title}>
         <p className="pb-8">{instructions}</p>
@@ -229,7 +229,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
             variant="primary"
             onClick={() => submit.mutate()}
           >
-            Submit ballot
+            Submit vote
           </Button>
         </div>
       </Dialog>

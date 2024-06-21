@@ -1,9 +1,9 @@
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
-  title: "EasyRetroPGF",
-  description: "Open-source Retro Public Goods Funding platform",
-  url: "https://easy-retro-pgf.vercel.app",
+  title: "MACI RPGF",
+  description: "Open-source Retro Public Goods Funding platform with MACI for private on chain voting/",
+  url: "https://maci-rpgf.vercel.app",
   image: "/api/og",
 };
 
@@ -29,6 +29,7 @@ export const config = {
   maciStartBlock: Number(process.env.NEXT_PUBLIC_MACI_START_BLOCK ?? 0),
   maciSubgraphUrl: process.env.NEXT_PUBLIC_MACI_SUBGRAPH_URL ?? "",
   tallyUrl: process.env.NEXT_PUBLIC_TALLY_URL,
+  roundOrganizer: process.env.NEXT_PUBLIC_ROUND_ORGANIZER ?? "Optimism",
 };
 
 export const theme = {
