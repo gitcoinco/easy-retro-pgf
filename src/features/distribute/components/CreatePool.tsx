@@ -28,8 +28,8 @@ import {
   Label,
 } from "~/components/ui/Form";
 import { NumberInput } from "~/components/NumberInput";
-import { AddPoolAdmin } from "./AddPoolAdmin";
 import { WithdrawPoolFunds } from "./WithdrawPoolFunds";
+import { AddPoolManager } from "./AddPoolManager";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -227,7 +227,7 @@ function PoolDetails({ poolId = 0 }) {
         <ErrorMessage>{(error as { message: string })?.message}</ErrorMessage>
       </Form>
 
-      <AddPoolAdmin poolId={poolId} />
+      <AddPoolManager poolId={poolId} />
       <WithdrawPoolFunds poolId={poolId} />
     </Alert>
   );

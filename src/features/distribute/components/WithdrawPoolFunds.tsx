@@ -22,7 +22,11 @@ export function WithdrawPoolFunds({ poolId = 0 }) {
       <Button className={"w-full"} onClick={() => setOpen(true)}>
         Withdraw funds
       </Button>
-      <Dialog isOpen={isOpen} onOpenChange={setOpen}>
+      <Dialog
+        title="Withdraw funds from pool"
+        isOpen={isOpen}
+        onOpenChange={setOpen}
+      >
         <Form
           schema={z.object({
             address: EthAddressSchema,
@@ -32,7 +36,7 @@ export function WithdrawPoolFunds({ poolId = 0 }) {
           }}
         >
           <div className="gap-2">
-            <FormControl name="address" label="Address">
+            <FormControl name="address" label="Address of recipient">
               <Input placeholder="0x..." />
             </FormControl>
             <Button

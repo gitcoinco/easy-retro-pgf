@@ -6,7 +6,7 @@ import { EthAddressSchema } from "../types";
 import { Dialog } from "~/components/ui/Dialog";
 import { useState } from "react";
 
-export function AddPoolAdmin({ poolId = 0 }) {
+export function AddPoolManager({ poolId = 0 }) {
   const { data: isPoolAdmin } = useIsPoolAdmin(poolId);
   const add = useAddPoolManager();
   const [isOpen, setOpen] = useState(false);
@@ -17,7 +17,7 @@ export function AddPoolAdmin({ poolId = 0 }) {
       <Button className={"w-full"} onClick={() => setOpen(true)}>
         Add PoolManager
       </Button>
-      <Dialog isOpen={isOpen} onOpenChange={setOpen}>
+      <Dialog title="Add pool manager" isOpen={isOpen} onOpenChange={setOpen}>
         <Form
           schema={z.object({
             address: EthAddressSchema,
@@ -27,7 +27,7 @@ export function AddPoolAdmin({ poolId = 0 }) {
           }}
         >
           <div className="gap-2">
-            <FormControl name="address" label="Address">
+            <FormControl name="address" label="Address of new pool manager">
               <Input placeholder="0x..." />
             </FormControl>
             <Button
