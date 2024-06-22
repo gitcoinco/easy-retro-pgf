@@ -50,6 +50,10 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     { publicKey: maciPubKey ?? "" },
     { enabled: Boolean(maciPubKey && config.maciSubgraphUrl) },
   );
+  const poll = api.maci.poll.useQuery(
+    { pollId: "0" },
+    { enabled: Boolean(maciPubKey && config.maciSubgraphUrl) },
+  );
 
   const attestations = api.voters.approvedAttestations.useQuery({
     address,
@@ -224,6 +228,15 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     user.refetch().catch(console.error);
   }, [maciPubKey, user]);
 
+  useEffect(() => {
+    if (poll.data) {
+        console.log("poll", poll.data)
+      return;
+    }
+
+    poll.refetch().catch(console.error);
+  }, [poll]);
+
   /// check if the user already registered
   useEffect(() => {
     if (!isConnected || !signer || !maciPubKey || !address || isLoading) {
@@ -273,7 +286,11 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
     if (!signer) {
       return;
     }
-
+    console.log(pollData)
+    console.log("poll2", poll.data)
+    console.log("signer", signer)
+    console.log("votingEndsAt", votingEndsAt)
+    console.log(config.maciAddress)
     setIsLoading(true);
 
     Promise.all([
@@ -283,10 +300,12 @@ export const MaciProvider: React.FC<MaciProviderProps> = ({ children }) => {
         provider: signer.provider,
       })
         .then((data) => {
+          console.log("data", data)
           setPollData(data);
           return data;
         })
         .then(async (data) => {
+            console.log("data2", data)
           if (!data.isStateAqMerged || isAfter(votingEndsAt, new Date())) {
             return;
           }
