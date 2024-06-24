@@ -29,10 +29,7 @@ import {
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-interface CreateContextOptions {
-  session: Session | null;
-  domain?: string;
-  round?: {
+export interface PartialRound {
     id: string;
     admins: string[];
     network: string | null;
@@ -41,7 +38,12 @@ interface CreateContextOptions {
     votingAt: Date | null;
     resultAt: Date | null;
     payoutAt: Date | null;
-  } | null;
+}
+
+interface CreateContextOptions {
+  session: Session | null;
+  domain?: string;
+  round?: PartialRound | null;
   res: NextApiResponse;
   fetchAttestations?: AttestationFetcher;
 }
@@ -151,7 +153,7 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
   const domain = ctx.domain;
 
   const round = domain
-    ? await ctx.db.round.findFirst({
+    ? ((await ctx.db.round.findFirst({
         where: { domain },
         select: {
           id: true,
@@ -163,7 +165,7 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
           resultAt: true,
           payoutAt: true,
         },
-      })
+      })) as PartialRound)
     : null;
 
   if (!round)
