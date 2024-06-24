@@ -20,6 +20,7 @@ import { calculatePayout } from "~/server/api/utils/calculatePayout";
 import { formatNumber } from "~/utils/formatNumber";
 import { format } from "~/utils/csv";
 import { ImportCSV } from "./ImportCSV";
+import { calculateDistributionsByProject } from "~/server/api/utils/calculateDistributionsByProject";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -41,26 +42,13 @@ export function Distributions() {
   const projectVotes = votes.data?.projects ?? {};
   const distributions = useMemo(
     () =>
-      projectIds
-        ?.map((projectId) => ({
-          projectId,
-          payoutAddress: payoutAddresses[projectId] ?? "",
-          amount: projectVotes[projectId]?.votes ?? 0,
-        }))
-        .filter((p) => p.amount > 0)
-        .sort((a, b) => b.amount - a.amount)
-        .map((p) => ({
-          ...p,
-          amount:
-            totalTokens > 0n
-              ? parseFloat(
-                  formatUnits(
-                    calculatePayout(p.amount, totalVotes, totalTokens),
-                    18,
-                  ),
-                )
-              : p.amount,
-        })),
+      calculateDistributionsByProject({
+        projectIds,
+        payoutAddresses,
+        projectVotes,
+        totalVotes,
+        totalTokens,
+      }),
     [projectIds, payoutAddresses, projectVotes, totalVotes, totalTokens],
   );
 
