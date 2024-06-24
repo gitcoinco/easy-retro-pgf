@@ -3,6 +3,7 @@ import { resultsRouter } from "~/server/api/routers/results";
 import { roundsRouter } from "~/server/api/routers/rounds";
 import { commentsRouter } from "~/server/api/routers/comments";
 import { projectsRouter } from "~/server/api/routers/projects";
+import { metricsRouter } from "~/server/api/routers/metrics";
 import { metadataRouter } from "~/server/api/routers/metadata";
 import { applicationsRouter } from "~/server/api/routers/applications";
 import { profileRouter } from "~/server/api/routers/profile";
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
   profile: profileRouter,
   metadata: metadataRouter,
   projects: projectsRouter,
+  metrics: metricsRouter,
 });
 
 // export type definition of API
