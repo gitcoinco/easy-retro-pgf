@@ -83,7 +83,7 @@ function MinimumQuorum() {
 
 function VoterCount() {
   const voters = useVoters();
-  const votes = api.results.votes.useQuery();
+  const totalVoters = api.results.totalVoters.useQuery();
 
   return (
     <div className="mb-4 flex flex-col items-center">
@@ -93,9 +93,9 @@ function VoterCount() {
       <div className="pt-1 text-center text-2xl">
         <Skeleton
           className="h-8 w-20 dark:bg-gray-700"
-          isLoading={voters.isPending || votes.isPending}
+          isLoading={voters.isPending || totalVoters.isPending}
         >
-          {votes.data?.totalVoters} / {voters.data?.length}
+          {totalVoters.data} / {voters.data?.length}
         </Skeleton>
       </div>
     </div>

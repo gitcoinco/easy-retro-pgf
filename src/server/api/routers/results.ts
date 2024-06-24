@@ -51,6 +51,15 @@ export const resultsRouter = createTRPCRouter({
 
       return { totalVotes, projectIds, distributions };
     }),
+  totalVoters: adminProcedure.query(async ({ ctx }) => {
+    const roundId = ctx.round?.id || "";
+    const { db } = ctx;
+    const ballots = await db.ballot.findMany({
+      where: { roundId, publishedAt: { not: null } },
+      select: { voterId: true, votes: true },
+    });
+    return ballots.length;
+  }),
   votes: adminProcedure.query(async ({ ctx }) =>
     calculateBallotResults(String(ctx.round?.id), ctx.db),
   ),
