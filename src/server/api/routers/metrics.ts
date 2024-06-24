@@ -25,14 +25,26 @@ export const metricsRouter = createTRPCRouter({
       .map(([id, name]) => ({ id, name }));
   }),
 
-  search: publicProcedure.query(async () => {
-    return fetchImpactMetrics({
-      where: {
-        project_name: { _in: ["zora", "uniswap", "safe-global"] },
-      },
-      orderBy: [{ active_contract_count_90_days: "desc" }],
-      limit: 10,
-      offset: 0,
-    });
+  forProjects: roundProcedure.query(async ({ ctx }) => {
+    try {
+      const approvedProjects = ["zora", "uniswap", "aave", "gitcoin"];
+      return fetchImpactMetrics(
+        {
+          where: {
+            project_name: { _in: approvedProjects },
+            event_source: { _eq: "BASE" },
+          },
+          orderBy: [{ active_contract_count_90_days: "desc" }],
+          limit: 10,
+          offset: 0,
+        },
+        ctx.round.metrics,
+      );
+    } catch (error) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: (error as Error).message,
+      });
+    }
   }),
 });
