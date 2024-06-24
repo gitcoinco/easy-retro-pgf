@@ -6,7 +6,11 @@ import {
   roundProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { fetchImpactMetrics } from "~/utils/openSourceObserver";
+import {
+  OSOMetric,
+  fetchImpactMetrics,
+  mapMetrics,
+} from "~/utils/fetchMetrics";
 import { availableMetrics } from "~/features/metrics/types";
 
 export const metricsRouter = createTRPCRouter({
@@ -39,6 +43,8 @@ export const metricsRouter = createTRPCRouter({
           offset: 0,
         },
         ctx.round.metrics,
+      ).then((res) =>
+        mapMetrics(res, ctx.round.metrics as (keyof OSOMetric)[]),
       );
     } catch (error) {
       throw new TRPCError({

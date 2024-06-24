@@ -38,7 +38,7 @@ type OSOMetricProjectMeta = {
   project_namespace: string;
   project_source: string;
 };
-type OSOMetric = {
+export type OSOMetric = {
   active_contract_count_90_days: number;
   address_count: number;
   address_count_90_days: number;
@@ -55,6 +55,7 @@ type OSOMetric = {
   transaction_count: number;
   transaction_count_6_months: number;
 };
+type OSOMetrics = (OSOMetric & OSOMetricProjectMeta)[];
 
 type OrderBy = "asc" | "desc";
 type Query = {
@@ -74,7 +75,7 @@ export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
     );
   }
   return fetch<{
-    onchain_metrics_by_project_v1: (OSOMetric & OSOMetricProjectMeta)[];
+    onchain_metrics_by_project_v1: OSOMetrics;
   }>(`${openSourceObserverEndpoint}`, {
     method: "POST",
     body: JSON.stringify({ query: createMetricsQuery(metrics), variables }),
@@ -82,5 +83,53 @@ export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
     if (r.errors) throw new Error(r.errors[0]?.message);
 
     return r.data?.onchain_metrics_by_project_v1;
+  });
+}
+
+type MetricWithProjects = {
+  id: string;
+  name: string;
+  total: number;
+  projects: {
+    id: string;
+    amount: number;
+    fraction: number;
+  }[];
+};
+type MetricBallot = {
+  projects: {
+    metrics: { id: string; name: string; allocation: number }[];
+  }[];
+};
+export function mapMetrics(
+  results: OSOMetrics,
+  metrics: (keyof OSOMetric)[],
+): MetricWithProjects[] {
+  const totals = metrics.map((id) => {
+    return results.reduce((sum, item) => sum + item[id], 0);
+  });
+
+  return metrics.map((id, i) => {
+    const total = totals[i] ?? 0;
+    return {
+      id,
+      name: id,
+      total,
+      projects: results
+        .map((item) => {
+          return {
+            id: item.project_id,
+            name: item.project_name,
+            amount: item[id],
+            fraction: total ? item[id] / total : 0,
+
+            // This is for ballot view
+            // metrics: metrics.map((id) => {
+            //   return { id, name: id, amount: item[id] };
+            // }),
+          };
+        })
+        .sort((a, b) => b.amount - a.amount),
+    };
   });
 }
