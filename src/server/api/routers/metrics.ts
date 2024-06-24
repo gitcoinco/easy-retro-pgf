@@ -1,8 +1,13 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  roundProcedure,
+} from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { fetchImpactMetrics } from "~/utils/openSourceObserver";
+import { availableMetrics } from "~/features/metrics/types";
 
 export const metricsRouter = createTRPCRouter({
   get: publicProcedure
@@ -13,6 +18,12 @@ export const metricsRouter = createTRPCRouter({
       }
       return {};
     }),
+
+  forRound: roundProcedure.query(async ({ ctx }) => {
+    return Object.entries(availableMetrics)
+      .filter(([id]) => ctx.round.metrics.includes(id))
+      .map(([id, name]) => ({ id, name }));
+  }),
 
   search: publicProcedure.query(async () => {
     return fetchImpactMetrics({
