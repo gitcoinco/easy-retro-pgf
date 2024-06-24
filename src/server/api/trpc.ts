@@ -215,3 +215,7 @@ export const adminProcedure = protectedProcedure
   .use(enforceUserIsAdmin)
   .use(roundMiddleware);
 export const attestationProcedure = roundProcedure.use(attestationMiddleware);
+export const adminAttestationProcedure = protectedProcedure
+  .use(enforceUserIsAdmin)
+  .use(roundMiddleware)
+  .use(attestationMiddleware);
