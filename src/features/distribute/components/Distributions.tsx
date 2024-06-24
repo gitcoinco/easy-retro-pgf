@@ -16,7 +16,7 @@ import { api } from "~/utils/api";
 import { usePoolAmount } from "../hooks/useAlloPool";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
-import { calculatePayout } from "../utils/calculatePayout";
+import { calculatePayout } from "~/server/api/utils/calculatePayout";
 import { formatNumber } from "~/utils/formatNumber";
 import { format } from "~/utils/csv";
 import { ImportCSV } from "./ImportCSV";
