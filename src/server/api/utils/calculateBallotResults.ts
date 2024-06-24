@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import { calculateVotes } from "~/utils/calculateResults";
+import { calculateVotes } from "~/server/api/utils/calculateResults";
 import { type Vote } from "~/features/ballot/types";
 
 export async function calculateBallotResults(

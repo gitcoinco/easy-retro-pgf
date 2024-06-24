@@ -1,6 +1,6 @@
 import { formatUnits } from "viem";
 import { calculatePayout } from "~/server/api/utils/calculatePayout";
-import { BallotResults } from "~/utils/calculateResults";
+import { BallotResults } from "~/server/api/utils/calculateResults";
 
 export function calculateDistributionsByProject({
   projectIds,
