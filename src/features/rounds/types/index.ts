@@ -88,6 +88,7 @@ export const RoundSchema = z
     description: z.string().nullable(),
     bannerImageUrl: z.string().url(),
     categories: z.array(z.object({ id: z.string(), label: z.string() })),
+    metrics: z.array(z.string()),
     network: z.string().nullable(),
     tokenAddress: EthAddressSchema.or(z.string().nullish()),
     poolId: z.number().nullable(),

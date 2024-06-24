@@ -2,6 +2,7 @@ import { CandlestickChart, LayoutGrid, Plus, Trash } from "lucide-react";
 import { useController, useFieldArray, useFormContext } from "react-hook-form";
 import { isAfter } from "date-fns";
 import {
+  Checkbox,
   Form,
   FormControl,
   FormSection,
@@ -19,6 +20,7 @@ import { ImageUpload } from "~/components/ImageUpload";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { createElement } from "react";
+import { availableMetrics } from "~/features/metrics/types";
 
 export default function AdminPage() {
   return (
@@ -72,14 +74,11 @@ function RoundForm({ round }: { round: RoundSchema }) {
           <SelectRoundType />
         </FormControl>
       </FormSection>
-      <FormSection
-        title="Impact categories"
-        description="Define your impact categories for the application form. Once the application phase has started you can only rename the category labels (not add or remove)."
-      >
-        <Categories
-          disabled={isAfter(new Date(), round.startsAt ?? new Date())}
-        />
-      </FormSection>
+
+      <Metrics disabled={isAfter(new Date(), round.startsAt ?? new Date())} />
+      <Categories
+        disabled={isAfter(new Date(), round.startsAt ?? new Date())}
+      />
 
       <div className="flex justify-end">
         <Button variant="primary" type="submit" isLoading={update.isPending}>
@@ -122,44 +121,76 @@ const RoundTypeItem = createComponent(
   }),
 );
 
+function Metrics({ disabled = false }) {
+  const { register, watch } = useFormContext();
+
+  if (watch("type") !== "impact") return null;
+
+  return (
+    <FormSection
+      title="Metrics"
+      description="Define your impact metrics to vote for. Once the application phase has started you can only rename the category labels (not add or remove)."
+    >
+      <div className="space-y-1">
+        {Object.entries(availableMetrics).map(([metricId, name]) => (
+          <label
+            key={metricId}
+            className="flex flex-1 cursor-pointer items-center gap-2 p-1"
+          >
+            <Checkbox value={metricId} {...register(`metrics`)} />
+            {name}
+          </label>
+        ))}
+      </div>
+    </FormSection>
+  );
+}
+
 function Categories({ disabled = false }) {
-  const { control, register } = useFormContext();
+  const { control, register, watch } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     name: "categories",
     control,
   });
 
+  if (watch("type") !== "project") return null;
+
   return (
-    <div className="flex-1">
-      <div className="space-y-1">
-        {fields.map((field, i) => (
-          <div key={i} className="flex justify-end gap-1">
-            <FormControl name={`categories.${i}.label`}>
-              <Input placeholder={`Impact category...`} />
-            </FormControl>
-            <input
-              type="hidden"
-              {...register(`categories.${i}.id`)}
-              value={i}
-            />
-            <Button
-              disabled={disabled}
-              variant="ghost"
-              icon={Trash}
-              onClick={() => remove(i)}
-            />
-          </div>
-        ))}
+    <FormSection
+      title="Categories"
+      description="Define your impact categories for the projects. Once the application phase has started you can only rename the category labels (not add or remove)."
+    >
+      <div className="flex-1">
+        <div className="space-y-1">
+          {fields.map((field, i) => (
+            <div key={i} className="flex justify-end gap-1">
+              <FormControl name={`categories.${i}.label`}>
+                <Input placeholder={`Impact category...`} />
+              </FormControl>
+              <input
+                type="hidden"
+                {...register(`categories.${i}.id`)}
+                value={i}
+              />
+              <Button
+                disabled={disabled}
+                variant="ghost"
+                icon={Trash}
+                onClick={() => remove(i)}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-end">
+          <Button
+            disabled={disabled}
+            icon={Plus}
+            onClick={() => append({ name: "" })}
+          >
+            Add category
+          </Button>
+        </div>
       </div>
-      <div className="flex items-center justify-end">
-        <Button
-          disabled={disabled}
-          icon={Plus}
-          onClick={() => append({ name: "" })}
-        >
-          Add category
-        </Button>
-      </div>
-    </div>
+    </FormSection>
   );
 }

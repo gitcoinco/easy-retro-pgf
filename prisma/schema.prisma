@@ -95,7 +95,7 @@ model Round {
     payoutAt DateTime?
 
     categories Json[]
-    metrics Json[]
+    metrics String[]
 
     maxVotesTotal   Int?
     maxVotesProject Int?
