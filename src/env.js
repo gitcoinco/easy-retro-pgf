@@ -29,7 +29,7 @@ export const env = createEnv({
     POSTGRES_HOST: z.string(),
     POSTGRES_PASSWORD: z.string(),
     POSTGRES_DATABASE: z.string(),
-    
+
     OPENSOURCE_OBSERVER_API: z.string(),
   },
 
@@ -47,7 +47,7 @@ export const env = createEnv({
 
     NEXT_PUBLIC_WALLETCONNECT_ID: z.string(),
     NEXT_PUBLIC_ALCHEMY_ID: z.string().optional(),
-    
+
     NEXT_PUBLIC_ALLO2_ADDRESS: z.string().startsWith("0x"),
   },
 
@@ -78,7 +78,7 @@ export const env = createEnv({
     NEXT_PUBLIC_METADATA_SCHEMA: process.env.NEXT_PUBLIC_METADATA_SCHEMA,
 
     NEXT_PUBLIC_ALLO2_ADDRESS: process.env.NEXT_PUBLIC_ALLO2_ADDRESS,
-    
+
     OPENSOURCE_OBSERVER_API: process.env.OPENSOURCE_OBSERVER_API,
   },
   /**
