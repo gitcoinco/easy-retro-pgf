@@ -6,9 +6,8 @@ import {
   createSearchFilter,
 } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
-import { eas } from "~/config";
 import { type Filter, FilterSchema } from "~/features/filter/types";
-import { fetchMetadata } from "~/utils/fetchMetadata";
+import { getPayoutAddressesFromAttestations } from "~/server/api/utils/getPayoutAddressesFromAttestations";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -95,26 +94,7 @@ export const projectsRouter = createTRPCRouter({
         .fetchAttestations(["metadata"], {
           where: { id: { in: input.ids } },
         })
-        .then((attestations) =>
-          Promise.all(
-            attestations.map((attestation) =>
-              fetchMetadata(attestation.metadataPtr).then((data) => {
-                const { payoutAddress } = data as unknown as {
-                  payoutAddress: string;
-                };
-
-                console.log({ payoutAddress });
-                return { projectId: attestation.id, payoutAddress };
-              }),
-            ),
-          ),
-        )
-        .then((projects) =>
-          projects.reduce(
-            (acc, x) => ({ ...acc, [x.projectId]: x.payoutAddress }),
-            {},
-          ),
-        );
+        .then(getPayoutAddressesFromAttestations);
     }),
 });
 
