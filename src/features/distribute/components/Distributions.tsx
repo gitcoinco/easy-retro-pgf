@@ -24,19 +24,11 @@ export function Distributions() {
   >([]);
 
   const poolAmount = usePoolAmount();
-
-  if (poolAmount.isPending) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner className="size-6" />
-      </div>
-    );
-  }
   const totalTokens = poolAmount.data?.toString() ?? "0";
 
   const distributionResult = api.results.distribution.useQuery({ totalTokens });
 
-  if (distributionResult.isPending) {
+  if (poolAmount.isPending || distributionResult.isPending) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner className="size-6" />
