@@ -36,7 +36,7 @@ export function Distributions() {
   );
 
   const payoutAddresses: Record<string, string> = projects.data ?? {};
-  const totalVotes = BigInt(votes.data?.totalVotes ?? 0);
+  const totalVotes = votes.data?.totalVotes || 0;
   const totalTokens = poolAmount.data ?? 0n;
   const projectVotes = votes.data?.projects ?? {};
   const distributions = useMemo(

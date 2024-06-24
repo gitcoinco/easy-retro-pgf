@@ -1,7 +1,9 @@
 export function calculatePayout(
   votes: number,
-  totalVotes: bigint,
+  totalVotes: number,
   totalTokens: bigint,
 ) {
-  return (BigInt(Math.round(votes * 100)) * totalTokens) / totalVotes / 100n;
+  return (
+    (BigInt(Math.round(votes * 100)) * totalTokens) / BigInt(totalVotes) / 100n
+  );
 }
