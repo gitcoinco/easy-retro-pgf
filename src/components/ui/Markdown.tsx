@@ -1,7 +1,7 @@
+import clsx from "clsx";
 import { type ComponentProps } from "react";
 import ReactMarkdown from "react-markdown";
 import { Link } from "./Link";
-import clsx from "clsx";
 
 const components = {
   a: (p: ComponentProps<typeof Link>) => <Link target="_blank" {...p} />,
