@@ -29,28 +29,28 @@ export const metricsRouter = createTRPCRouter({
       .map(([id, name]) => ({ id, name }));
   }),
 
-  forProjects: roundProcedure.query(async ({ ctx }) => {
-    try {
-      const approvedProjects = ["zora", "uniswap", "aave", "gitcoin"];
-      return fetchImpactMetrics(
-        {
-          where: {
-            project_name: { _in: approvedProjects },
-            event_source: { _eq: "BASE" },
+  forProjects: roundProcedure
+    .input(z.object({ metricId: z.string() }))
+    .query(async ({ input: { metricId }, ctx }) => {
+      try {
+        const approvedProjects = ["zora", "uniswap", "aave", "gitcoin"];
+        return fetchImpactMetrics(
+          {
+            where: {
+              project_name: { _in: approvedProjects },
+              event_source: { _eq: "BASE" },
+            },
+            orderBy: [{ active_contract_count_90_days: "desc" }],
+            limit: 10,
+            offset: 0,
           },
-          orderBy: [{ active_contract_count_90_days: "desc" }],
-          limit: 10,
-          offset: 0,
-        },
-        ctx.round.metrics,
-      ).then((res) =>
-        mapMetrics(res, ctx.round.metrics as (keyof OSOMetric)[]),
-      );
-    } catch (error) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: (error as Error).message,
-      });
-    }
-  }),
+          [metricId],
+        ).then((res) => mapMetrics(res, [metricId] as (keyof OSOMetric)[]));
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+        });
+      }
+    }),
 });
