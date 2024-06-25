@@ -78,13 +78,9 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const session = await getServerAuthSession({ req, res });
 
   // Get the current round domain
-  const domain = req.headers.referer?.split("/")[3];
+  const domain = req.headers["round-id"] as string;
 
-  return createInnerTRPCContext({
-    session,
-    res,
-    domain,
-  });
+  return createInnerTRPCContext({ session, res, domain });
 };
 
 /**
@@ -205,8 +201,8 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  */
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
-export const roundProcedure = publicProcedure.use(roundMiddleware);
-export const protectedRoundProcedure = publicProcedure
+export const roundProcedure = t.procedure.use(roundMiddleware);
+export const protectedRoundProcedure = t.procedure
   .use(roundMiddleware)
   .use(enforceUserIsAuthed);
 export const adminProcedure = protectedProcedure
