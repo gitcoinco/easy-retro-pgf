@@ -15,3 +15,9 @@ export const availableMetrics = {
   transaction_count: "Transaction Count",
   transaction_count_6_months: "Transaction Count (6 Months)",
 } as const;
+
+export type Metric = {
+  id: string;
+  name: string;
+  description?: string;
+};
