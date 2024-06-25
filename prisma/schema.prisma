@@ -124,8 +124,7 @@ model Comment {
 
 model ApiKey {
     id        String   @id @default(cuid())
-    pk        String
-    sk        String
+    key        String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     creatorId    String
