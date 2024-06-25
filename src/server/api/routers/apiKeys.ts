@@ -1,10 +1,7 @@
 import { createHash } from "crypto";
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
-
-export function hashApiKey(apiKey: string) {
-  return createHash("sha256").update(apiKey).digest("hex");
-}
+import { hashApiKey } from "~/utils/hashApiKey";
 
 const genApiKey = () => hashApiKey(crypto.randomUUID());
 

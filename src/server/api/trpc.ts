@@ -20,6 +20,7 @@ import {
   type AttestationFetcher,
   createAttestationFetcher,
 } from "~/utils/fetchAttestations";
+import { hashApiKey } from "~/utils/hashApiKey";
 
 /**
  * 1. CONTEXT
@@ -210,3 +211,14 @@ export const adminProcedure = protectedProcedure
   .use(enforceUserIsAdmin);
 
 export const attestationProcedure = roundProcedure.use(attestationMiddleware);
+
+export async function getApiKeySession(apiKey?: string | null) {
+  if (!apiKey) return null;
+
+  // Find API key
+  const key = await db.apiKey.findFirst({ where: { key: hashApiKey(apiKey) } });
+
+  if (key?.creatorId) return { id: key.creatorId };
+
+  return null;
+}
