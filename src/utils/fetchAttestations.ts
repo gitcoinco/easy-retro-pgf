@@ -3,6 +3,7 @@ import { fromHex, type Address } from "viem";
 import { eas, easApiEndpoints, type networks } from "~/config";
 import { createCachedFetch } from "./fetch";
 import { getContracts } from "~/lib/eas/createEAS";
+import { type PartialRound } from "~/server/api/trpc";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 
@@ -58,11 +59,6 @@ const AttestationsQuery = `
   }
 `;
 
-type PartialRound = {
-  id: string | null;
-  startsAt: Date | null;
-  network: string | null;
-};
 type SchemaType = "approval" | "metadata";
 export type AttestationFetcher = (
   schema: SchemaType[],

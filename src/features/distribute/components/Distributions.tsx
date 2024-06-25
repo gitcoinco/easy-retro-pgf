@@ -1,7 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
-import { formatUnits } from "viem";
-
 import { EmptyState } from "~/components/EmptyState";
 import { Button } from "~/components/ui/Button";
 import { Form } from "~/components/ui/Form";
@@ -16,7 +14,6 @@ import { api } from "~/utils/api";
 import { usePoolAmount } from "../hooks/useAlloPool";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
-import { calculatePayout } from "../utils/calculatePayout";
 import { formatNumber } from "~/utils/formatNumber";
 import { format } from "~/utils/csv";
 import { ImportCSV } from "./ImportCSV";
@@ -27,52 +24,24 @@ export function Distributions() {
   >([]);
 
   const poolAmount = usePoolAmount();
-  const votes = api.results.votes.useQuery();
-  const projectIds = Object.keys(votes.data?.projects ?? {});
+  const totalTokens = poolAmount.data?.toString() ?? "0";
 
-  const projects = api.projects.payoutAddresses.useQuery(
-    { ids: projectIds },
-    { enabled: Boolean(projectIds.length) },
-  );
+  const distributionResult = api.results.distribution.useQuery({ totalTokens });
 
-  const payoutAddresses: Record<string, string> = projects.data ?? {};
-  const totalVotes = BigInt(votes.data?.totalVotes ?? 0);
-  const totalTokens = poolAmount.data ?? 0n;
-  const projectVotes = votes.data?.projects ?? {};
-  const distributions = useMemo(
-    () =>
-      projectIds
-        ?.map((projectId) => ({
-          projectId,
-          payoutAddress: payoutAddresses[projectId] ?? "",
-          amount: projectVotes[projectId]?.votes ?? 0,
-        }))
-        .filter((p) => p.amount > 0)
-        .sort((a, b) => b.amount - a.amount)
-        .map((p) => ({
-          ...p,
-          amount:
-            totalTokens > 0n
-              ? parseFloat(
-                  formatUnits(
-                    calculatePayout(p.amount, totalVotes, totalTokens),
-                    18,
-                  ),
-                )
-              : p.amount,
-        })),
-    [projectIds, payoutAddresses, projectVotes, totalVotes, totalTokens],
-  );
-
-  if (!votes.isPending && !projectIds.length) {
-    return <EmptyState title="No project votes found" />;
-  }
-  if (projects.isPending ?? votes.isPending ?? poolAmount.isPending) {
+  if (poolAmount.isPending || distributionResult.isPending) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner className="size-6" />
       </div>
     );
+  }
+
+  const distributions = distributionResult.data?.distributions || [];
+  const projectIds = distributionResult.data?.projectIds || [];
+  const totalVotes = distributionResult.data?.totalVotes;
+
+  if (!projectIds.length) {
+    return <EmptyState title="No project votes found" />;
   }
 
   if (!distributions.length) {
@@ -103,7 +72,7 @@ export function Distributions() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div>Total votes: {formatNumber(votes.data?.totalVotes)}</div>
+          <div>Total votes: {formatNumber(totalVotes)}</div>
           <ExportVotes />
         </div>
         <div className="min-h-[360px] overflow-auto">

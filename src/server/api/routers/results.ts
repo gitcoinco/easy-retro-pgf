@@ -1,18 +1,65 @@
-import type { PrismaClient } from "@prisma/client";
 import {
   adminProcedure,
   attestationProcedure,
   roundProcedure,
   createTRPCRouter,
+  adminAttestationProcedure,
 } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
-import { calculateVotes } from "~/utils/calculateResults";
-import { type Vote } from "~/features/ballot/types";
 import { TRPCError } from "@trpc/server";
 import { getState } from "~/features/rounds/hooks/useRoundState";
 import { RoundSchema } from "~/features/rounds/types";
+import { calculateBallotResults } from "~/server/api/utils/calculateBallotResults";
+import { z } from "zod";
+import { calculateDistributionsByProject } from "~/server/api/utils/calculateDistributionsByProject";
+import { getPayoutAddressesFromAttestations } from "~/server/api/utils/getPayoutAddressesFromAttestations";
 
 export const resultsRouter = createTRPCRouter({
+  distribution: adminAttestationProcedure
+    .input(
+      z.object({
+        totalTokens: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const votes = await calculateBallotResults(String(ctx.round?.id), ctx.db);
+      const totalVotes = votes.totalVotes;
+      const projectVotes = votes.projects ?? {};
+      const projectIds = Object.keys(votes.projects ?? {});
+
+      let totalTokens = 0n;
+
+      try {
+        totalTokens = BigInt(input.totalTokens);
+      } catch (error) {
+        throw new Error("Invalid totalTokens value, can not convert to bigint");
+      }
+
+      const payoutAddresses = await ctx
+        .fetchAttestations(["metadata"], {
+          where: { id: { in: projectIds } },
+        })
+        .then(getPayoutAddressesFromAttestations);
+
+      const distributions = calculateDistributionsByProject({
+        projectIds,
+        projectVotes,
+        totalTokens,
+        totalVotes,
+        payoutAddresses,
+      });
+
+      return { totalVotes, projectIds, distributions };
+    }),
+  totalVoters: adminProcedure.query(async ({ ctx }) => {
+    const roundId = ctx.round?.id || "";
+    const { db } = ctx;
+    const ballots = await db.ballot.findMany({
+      where: { roundId, publishedAt: { not: null } },
+      select: { voterId: true, votes: true },
+    });
+    return ballots.length;
+  }),
   votes: adminProcedure.query(async ({ ctx }) =>
     calculateBallotResults(String(ctx.round?.id), ctx.db),
   ),
@@ -68,31 +115,3 @@ export const resultsRouter = createTRPCRouter({
         );
     }),
 });
-
-async function calculateBallotResults(roundId: string, db: PrismaClient) {
-  const round = await db.round.findFirstOrThrow({ where: { id: roundId } });
-  // const calculation = settings?.config?.calculation ?? defaultCalculation;
-
-  const calculation = {
-    calculation: round.calculationType as "average" | "median" | "sum",
-    threshold: (round.calculationConfig as { threshold: number })?.threshold,
-  };
-  // Fetch the ballots
-  const ballots = await db.ballot.findMany({
-    where: { roundId, publishedAt: { not: null } },
-    select: { voterId: true, votes: true },
-  });
-
-  const projects = calculateVotes(
-    ballots as unknown as { voterId: string; votes: Vote[] }[],
-    calculation,
-  );
-
-  const averageVotes = 0;
-  const totalVotes = Math.floor(
-    Object.values(projects).reduce((sum, x) => sum + (x.votes ?? 0), 0),
-  );
-  const totalVoters = ballots.length;
-
-  return { projects, totalVoters, totalVotes, averageVotes };
-}
