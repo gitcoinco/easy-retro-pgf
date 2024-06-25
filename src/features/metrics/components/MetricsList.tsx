@@ -42,7 +42,7 @@ function MetricCard({
   const domain = useCurrentDomain();
 
   return (
-    <Card type="metrics">
+    <Card className="bg-card text-card-foreground rounded-lg p-6 shadow-sm">
       <div className="flex gap-8">
         <div className="flex-1 space-y-4">
           {isLoading ? (
