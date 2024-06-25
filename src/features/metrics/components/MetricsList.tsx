@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { Metric } from "~/features/metrics/types";
 import { Card } from "~/components/ui/Card";
+import { Skeleton } from "~/components/ui/Skeleton";
 
 export function MetricsList({
   metrics,
@@ -39,7 +40,7 @@ function MetricCard({
   metric?: Metric;
   href?: string;
 }) {
-  const domain = useCurrentDomain();
+  // Skeleton sizes should be fixed after the card design is finished
 
   return (
     <Card className="bg-card text-card-foreground rounded-lg p-6 shadow-sm">
@@ -61,17 +62,5 @@ function MetricCard({
         </div>
       </div>
     </Card>
-  );
-}
-
-function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`bg-muted animate-pulse rounded-md ${className}`}
-      {...props}
-    />
   );
 }
