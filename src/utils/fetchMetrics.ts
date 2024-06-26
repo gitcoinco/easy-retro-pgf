@@ -113,7 +113,7 @@ export function mapMetrics(
     const total = totals[i] ?? 0;
     return {
       id,
-      name: id,
+      name: id in AvailableMetrics ? AvailableMetrics[id] : id,
       total,
       projects: results
         .map((item) => {
