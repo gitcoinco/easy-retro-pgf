@@ -23,7 +23,7 @@ export function ImportCSV({
       const { data } = parse<Distribution>(csvString);
       const distribution = data.map(
         ({ projectId, name, amount, payoutAddress }) => {
-          if (isNaN(amount)) throw new Error("Must be number");
+          if (isNaN(amount)) throw new Error("Must be a valid CSV file");
           return {
             projectId,
             name,
@@ -49,7 +49,7 @@ export function ImportCSV({
       <input
         ref={csvInputRef}
         type="file"
-        accept="*.csv"
+        accept=".csv"
         className="hidden"
         onChange={(e) => {
           const [file] = e.target.files ?? [];
@@ -59,7 +59,9 @@ export function ImportCSV({
           const reader = new FileReader();
           reader.readAsText(file);
           reader.onload = () => importCSV(String(reader.result));
-          reader.onerror = () => console.log(reader.error);
+          reader.onerror = () => {
+            throw new Error(reader.error);
+          };
         }}
       />
       <Dialog
