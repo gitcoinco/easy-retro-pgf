@@ -97,7 +97,7 @@ await fetch("https://easyretropgf.xyz/api/trpc/projects.search?input=" + encodeU
     headers: {
         "content-type": "application/json",
         "round-id": "<your round id>"
-        "authorization": "Bearer <api key>"
+        "x-api-key": "<api key>"
     }
 }).then(res => res.json())
 
