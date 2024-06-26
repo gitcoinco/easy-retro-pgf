@@ -40,6 +40,9 @@ export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
+  const [importedDistribution, setImportedDistribution] = useState<
+    Distribution[]
+  >([]);
 
   const poolAmount = usePoolAmount();
   const votes = api.results.votes.useQuery();
@@ -100,7 +103,11 @@ export function Distributions() {
         schema={z.object({
           votes: z.array(DistributionSchema),
         })}
-        values={{ votes: distributions }}
+        values={{
+          votes: importedDistribution.length
+            ? importedDistribution
+            : distributions,
+        }}
         onSubmit={(values) => {
           console.log("Distribute", values.votes[0]);
           setConfirmDistribution(values.votes);
@@ -110,7 +117,7 @@ export function Distributions() {
           <h1 className="text-3xl font-bold">Distribute</h1>
 
           <div className="flex items-center gap-2">
-            <ImportCSV />
+            <ImportCSV onImportDistribution={setImportedDistribution} />
             <ExportCSV votes={distributions} />
             <Button variant="primary" type="submit">
               Distribute tokens
@@ -122,17 +129,32 @@ export function Distributions() {
           <ExportVotes />
         </div>
         <div className="min-h-[360px] overflow-auto">
-          <DistributionForm
-            renderHeader={() => (
-              <Thead>
-                <Tr>
-                  <Th>Project</Th>
-                  <Th>Payout address</Th>
-                  <Th>Amount</Th>
-                </Tr>
-              </Thead>
-            )}
-          />
+          {importedDistribution.length ? (
+            <div className="space-y-4 p-4">
+              {importedDistribution.map((alloc) => (
+                <div key={alloc.projectId} className="flex gap-2">
+                  <div className="flex-1">
+                    <div className="font-semibold">{alloc.name}</div>
+                    <pre>{alloc.payoutAddress}</pre>
+                  </div>
+                  <div>{alloc.amount}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <DistributionForm
+              disabled={Boolean(importedDistribution.length)}
+              renderHeader={() => (
+                <Thead>
+                  <Tr>
+                    <Th>Project</Th>
+                    <Th>Payout address</Th>
+                    <Th>Amount</Th>
+                  </Tr>
+                </Thead>
+              )}
+            />
+          )}
         </div>
         <ConfirmDistributionDialog
           distribution={confirmDistribution}

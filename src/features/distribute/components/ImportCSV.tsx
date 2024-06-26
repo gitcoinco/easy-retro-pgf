@@ -8,7 +8,11 @@ import { type Distribution } from "../types";
 import { getAddress, isAddress } from "viem";
 import { toast } from "sonner";
 
-export function ImportCSV() {
+export function ImportCSV({
+  onImportDistribution,
+}: {
+  onImportDistribution: (distribution: Distribution[]) => void;
+}) {
   const form = useFormContext();
   const [distribution, setDistribution] = useState<Distribution[]>([]);
   const csvInputRef = useRef<HTMLInputElement>(null);
@@ -17,13 +21,19 @@ export function ImportCSV() {
     try {
       // Parse CSV and build the ballot data (remove name column)
       const { data } = parse<Distribution>(csvString);
-      const distribution = data.map(({ projectId, amount, payoutAddress }) => ({
-        projectId,
-        payoutAddress: isAddress(payoutAddress)
-          ? getAddress(payoutAddress)
-          : "",
-        amount: Number(amount),
-      }));
+      const distribution = data.map(
+        ({ projectId, name, amount, payoutAddress }) => {
+          if (isNaN(amount)) throw new Error("Must be number");
+          return {
+            projectId,
+            name,
+            payoutAddress: isAddress(payoutAddress)
+              ? getAddress(payoutAddress)
+              : "",
+            amount: isNaN(amount) ? 0 : Number(amount),
+          };
+        },
+      );
       console.log(123, distribution);
       setDistribution(distribution);
     } catch (error) {
@@ -66,7 +76,8 @@ export function ImportCSV() {
           <Button
             variant="primary"
             onClick={() => {
-              form.reset({ votes: distribution });
+              // form.reset({ votes: distribution });
+              onImportDistribution(distribution);
               setDistribution([]);
             }}
           >
