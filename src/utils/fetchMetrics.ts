@@ -1,6 +1,6 @@
 import { openSourceObserverEndpoint } from "~/config";
 import { createCachedFetch } from "./fetch";
-import { availableMetrics } from "~/features/metrics/types";
+import { AvailableMetrics } from "~/features/metrics/types";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 
@@ -69,7 +69,7 @@ type Query = {
 };
 
 export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
-  if (metrics.some((id) => !Object.keys(availableMetrics).includes(id))) {
+  if (metrics.some((id) => !(id in AvailableMetrics))) {
     throw new Error(
       `One of the metrics provided doesn't exist:\n${metrics.join("\n")}`,
     );
