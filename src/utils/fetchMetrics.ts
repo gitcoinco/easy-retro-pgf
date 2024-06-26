@@ -86,15 +86,18 @@ export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
   });
 }
 
-type MetricWithProjects = {
+export type MetricProject = {
+  id: string;
+  amount: number;
+  fraction: number;
+};
+
+export type MetricWithProjects = {
   id: string;
   name: string;
+  description?: string;
   total: number;
-  projects: {
-    id: string;
-    amount: number;
-    fraction: number;
-  }[];
+  projects: MetricProject[];
 };
 type MetricBallot = {
   projects: {
