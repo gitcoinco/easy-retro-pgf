@@ -20,6 +20,7 @@ import {
   type AttestationFetcher,
   createAttestationFetcher,
 } from "~/utils/fetchAttestations";
+import { hashApiKey } from "~/utils/hashApiKey";
 
 /**
  * 1. CONTEXT
@@ -78,13 +79,9 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const session = await getServerAuthSession({ req, res });
 
   // Get the current round domain
-  const domain = req.headers.referer?.split("/")[3];
+  const domain = req.headers["round-id"] as string;
 
-  return createInnerTRPCContext({
-    session,
-    res,
-    domain,
-  });
+  return createInnerTRPCContext({ session, res, domain });
 };
 
 /**
@@ -205,8 +202,8 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  */
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
-export const roundProcedure = publicProcedure.use(roundMiddleware);
-export const protectedRoundProcedure = publicProcedure
+export const roundProcedure = t.procedure.use(roundMiddleware);
+export const protectedRoundProcedure = t.procedure
   .use(roundMiddleware)
   .use(enforceUserIsAuthed);
 export const adminProcedure = protectedProcedure
@@ -214,3 +211,14 @@ export const adminProcedure = protectedProcedure
   .use(enforceUserIsAdmin);
 
 export const attestationProcedure = roundProcedure.use(attestationMiddleware);
+
+export async function getApiKeySession(apiKey?: string | null) {
+  if (!apiKey) return null;
+
+  // Find API key
+  const key = await db.apiKey.findFirst({ where: { key: hashApiKey(apiKey) } });
+
+  if (key?.creatorId) return { id: key.creatorId };
+
+  return null;
+}

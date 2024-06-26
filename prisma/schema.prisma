@@ -120,3 +120,12 @@ model Comment {
     roundId String
     round   Round  @relation(fields: [roundId], references: [id])
 }
+
+
+model ApiKey {
+    id        String   @id @default(cuid())
+    key        String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    creatorId    String
+}

@@ -1,3 +1,4 @@
+import { apiKeysRouter } from "~/server/api/routers/apiKeys";
 import { ballotRouter } from "~/server/api/routers/ballot";
 import { resultsRouter } from "~/server/api/routers/results";
 import { roundsRouter } from "~/server/api/routers/rounds";
@@ -16,6 +17,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  apiKeys: apiKeysRouter,
   rounds: roundsRouter,
   comments: commentsRouter,
   results: resultsRouter,
