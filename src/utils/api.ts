@@ -26,6 +26,7 @@ export const api = createTRPCNext<AppRouter>({
        *
        * @see https://trpc.io/docs/links
        */
+
       links: [
         loggerLink({
           enabled: (opts) =>
@@ -35,6 +36,10 @@ export const api = createTRPCNext<AppRouter>({
         httpBatchLink({
           transformer: superjson,
           url: `${getBaseUrl()}/api/trpc`,
+          headers() {
+            const roundId = location.pathname.split("/")[1];
+            return { "round-id": roundId };
+          },
         }),
       ],
     };

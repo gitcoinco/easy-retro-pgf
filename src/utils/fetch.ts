@@ -17,7 +17,7 @@ export function createCachedFetch({ ttl = 1000 * 60 }) {
         throw new Error("Network error");
       }
 
-      return (await r.json()) as { data: T; error: Error };
+      return (await r.json()) as { data: T; error: Error; errors?: Error[] };
     });
   };
 }
