@@ -44,11 +44,11 @@ const lineDot = (p: {
   );
 };
 
-type DistributionChartProps = {
+type CustomLineChartProps = {
   data: { x: number; y: number }[];
 };
 
-export function DistributionChart({ data }: DistributionChartProps) {
+export function CustomLineChart({ data }: CustomLineChartProps) {
   const lineChartData = useMemo(
     () =>
       data?.length
@@ -69,6 +69,6 @@ export function DistributionChart({ data }: DistributionChartProps) {
   );
 }
 
-export default dynamic(() => Promise.resolve(DistributionChart), {
+export default dynamic(() => Promise.resolve(CustomLineChart), {
   ssr: false,
 });
