@@ -1,3 +1,5 @@
+import { OSOMetric } from "~/utils/fetchMetrics";
+
 export enum AvailableMetrics {
   active_contract_count_90_days = "Active Contract Count (90 Days)",
   address_count = "Address Count",
@@ -15,8 +17,10 @@ export enum AvailableMetrics {
   transaction_count_6_months = "Transaction Count (6 Months)",
 }
 
+export type MetricId = keyof OSOMetric;
+
 export type Metric = {
-  id: string;
+  id: MetricId;
   name: string;
   description?: string;
 };
