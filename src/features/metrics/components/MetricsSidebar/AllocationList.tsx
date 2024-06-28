@@ -1,14 +1,18 @@
 import { type MetricProject } from "~/utils/fetchMetrics";
 import { AllocationItem } from "./AllocationItem";
 
-const handleFormatAllocation = (p: number) => `${p * 100}%`;
+const formatAllocationPercentage = (amount: number) => `${amount * 100}%`;
 
-export function AllocationList({ projects }: { projects: MetricProject[] }) {
+type AllocationListProps = {
+  projects: MetricProject[];
+};
+
+export function AllocationList({ projects }: AllocationListProps) {
   return (
     <>
       {projects.map((project) => (
         <AllocationItem key={project.id} {...project}>
-          {handleFormatAllocation(project.amount)}
+          {formatAllocationPercentage(project.amount)}
         </AllocationItem>
       ))}
     </>
