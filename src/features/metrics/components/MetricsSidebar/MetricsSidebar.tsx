@@ -49,7 +49,7 @@ export function MetricsSidebar({ projects }: MetricsSidebarProps) {
     <Card className="sticky top-4 w-[300px]">
       <div className="p-3">
         <Heading size="xl">{title}</Heading>
-        {description && <Text>{description}</Text>}
+        {description && <p className="mb-4 leading-relaxed">{description}</p>}
       </div>
       <div className="space-y-2 p-3">
         <div className="space-y-1">
