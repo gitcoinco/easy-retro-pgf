@@ -12,7 +12,7 @@ export function AllocationList({ projects }: AllocationListProps) {
     <>
       {projects.map((project) => (
         <AllocationItem key={project.id} {...project}>
-          {formatAllocationPercentage(project.amount)}
+          {formatAllocationPercentage(project.fraction)}
         </AllocationItem>
       ))}
     </>

@@ -15,7 +15,7 @@ type MetricsSidebarProps = {
 };
 
 const parseProjectsDataToChartData = (projects: MetricProject[]) => {
-  return projects.map((project, index) => ({ x: index, y: project.amount }));
+  return projects.map((project, index) => ({ x: index, y: project.fraction }));
 };
 
 const sortProjectsData = (
@@ -23,7 +23,7 @@ const sortProjectsData = (
   sortBy: "ascending" | "descending",
 ) => {
   return projects.sort((a, b) =>
-    sortBy === "descending" ? b.amount - a.amount : a.amount - b.amount,
+    sortBy === "descending" ? b.fraction - a.fraction : a.fraction - b.fraction,
   );
 };
 
