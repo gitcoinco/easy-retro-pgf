@@ -1,16 +1,13 @@
 "use client";
 import { Check, Plus } from "lucide-react";
 import { Button } from "./Button";
+import { useState } from "react";
 
 const state: { [key: string]: boolean } = {};
 
 const useBallotContext = () => ({
-  add: (id: string) => {
-    console.log("Added to ballot:", id);
-  },
-  remove: (id: string) => {
-    console.log("Removed from ballot:", id);
-  },
+  add: undefined,
+  remove: undefined,
   state,
   isPending: false,
 });
@@ -22,14 +19,22 @@ export function AddToBallotButton({
   id?: string;
   variant?: "default" | "secondary" | "destructive";
 }) {
-  const { add, remove, state, isPending } = useBallotContext();
+  const [isAdded, setIsAdded] = useState(false);
+
+  const {
+    add = (id: string) => setIsAdded(true),
+    remove = (id: string) => setIsAdded(false),
+    state,
+    isPending,
+  } = useBallotContext();
+
   if (isPending)
     return (
       <Button disabled variant="secondary" isLoading>
         Loading
       </Button>
     );
-  const isAdded = state[id];
+  // const isAdded = state[id];
   if (isAdded) {
     return (
       <Button
