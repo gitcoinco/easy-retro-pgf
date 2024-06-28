@@ -3,8 +3,7 @@ import { useMemo, useState } from "react";
 
 import { Card } from "~/components/ui/Card";
 import { Heading } from "~/components/ui/Heading";
-import { ScrollArea } from "~/components/ScrollArea";
-import { Text } from "~/components/Text";
+import { ScrollArea } from "~/components/ui/ScrollArea";
 import { Button } from "../Buttons";
 import { AllocationList } from "./AllocationList";
 import { MetricProject } from "~/utils/fetchMetrics";
