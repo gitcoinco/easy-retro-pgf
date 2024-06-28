@@ -104,6 +104,10 @@ type MetricBallot = {
     metrics: { id: string; name: string; allocation: number }[];
   }[];
 };
+
+const mockedDescription =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ligula at dolor bibendum auctor. Fusce eu justo nec nisl suscipit sollicitudin. Aliquam erat volutpat. Mauris quis facilisis purus, non auctor magna. Nulla facilisi. Donec et odio vel nulla ornare viverra. Vivamus at lacus nec urna sodales fermentum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cras sagittis, nibh in sodales aliquet, libero mi porttitor elit, non pharetra arcu nulla non est. Proin vitae augue dignissim, malesuada enim non, fermentum nisi.";
+
 export function mapMetrics(
   results: OSOMetrics,
   metrics: (keyof OSOMetric)[],
@@ -118,6 +122,7 @@ export function mapMetrics(
       id,
       name: id in AvailableMetrics ? AvailableMetrics[id] : id,
       total,
+      description: mockedDescription, //! TO REMOVE
       projects: results
         .map((item) => {
           return {
