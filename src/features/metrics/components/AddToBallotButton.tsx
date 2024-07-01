@@ -1,7 +1,7 @@
 "use client";
 import { Check, Plus } from "lucide-react";
-import { Button } from "./Button";
 import { useState } from "react";
+import { Button } from "~/components/ui/Button";
 
 const state: { [key: string]: boolean } = {};
 
@@ -17,7 +17,7 @@ export function AddToBallotButton({
   variant = "secondary",
 }: {
   id?: string;
-  variant?: "default" | "secondary" | "destructive";
+  variant?: "default" | "secondary" | "primary";
 }) {
   const [isAdded, setIsAdded] = useState(false);
 

@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { Heading } from "~/components/ui/Heading";
 import { Markdown } from "~/components/ui/Markdown";
 import { Spinner } from "~/components/ui/Spinner";
-import { AddToBallotButton } from "./Buttons/AddToBallotButton";
-import Link from "next/link";
-import { ViewCalculationButton } from "./Buttons";
+import { AddToBallotButton } from "./AddToBallotButton";
+import { Button } from "~/components/ui/Button";
 
 type MetricDetailsProps = {
   name: string;
@@ -38,9 +39,12 @@ export default function MetricDetails({
         </>
       )}
       <div className="flex items-center gap-2">
-        <AddToBallotButton variant="destructive" id={id} />
+        <AddToBallotButton variant="primary" id={id} />
         <Link href={calculationUrl} target="_blank">
-          <ViewCalculationButton />
+          <Button variant="link">
+            View calculation
+            <ArrowUpRight className="ml-1 size-4" />
+          </Button>
         </Link>
       </div>
     </div>

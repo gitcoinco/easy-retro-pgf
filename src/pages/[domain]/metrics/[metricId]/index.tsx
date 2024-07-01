@@ -3,6 +3,7 @@ import MetricDetails from "~/features/metrics/components/MetricDetails";
 import { MetricsLayout } from "~/layouts/MetricsLayout";
 import { useMetricById } from "~/features/metrics/hooks/useMetrics";
 import { Spinner } from "~/components/ui/Spinner";
+import { MetricsSidebar } from "~/features/metrics/components/MetricsSidebar";
 
 type MetricsDetailPageProps = {
   metricId: string;
@@ -16,7 +17,7 @@ export default function MetricsDetailPage({
   const { name = "", description = "", projects = [] } = data ?? {};
 
   return (
-    <MetricsLayout>
+    <MetricsLayout sidebarComponent={<MetricsSidebar />}>
       {isPending ? (
         <>
           <div className="flex h-full w-full items-center justify-center">
@@ -27,14 +28,7 @@ export default function MetricsDetailPage({
           </div>
         </>
       ) : (
-        <>
-          <div className="mb-6 h-5">{"> BREADCRUMBS"}</div>
-          <MetricDetails name={name} description={description} />
-          <div className="space-y-4">{"COMMENTS"}</div>
-          <div className="fixed bottom-10 left-1/2 z-10 -translate-x-1/2 rounded-lg border bg-white p-2 shadow">
-            {"PAGINATION"}
-          </div>
-        </>
+        <MetricDetails name={name} description={description} />
       )}
     </MetricsLayout>
   );
