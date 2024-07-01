@@ -1,16 +1,59 @@
-import React from "react";
-import { SidebarMetric } from "./SidebarMetric";
-import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+"use client";
+
+import { useMemo, useState } from "react";
+
+import { MetricProject } from "~/utils/fetchMetrics";
+import { useMetricById } from "~/features/metrics/hooks/useMetrics";
+import { AvailableMetrics } from "~/features/metrics/types";
 import { useCurrentMetricId } from "~/features/metrics/hooks/useMetrics";
-import { SidebarPlaceholder } from "./SidebarPlaceholder";
+
+import { AllocationList } from "./AllocationList";
+import { SidebarWithChart } from "../SidebarWithChart";
+
+const parseProjectsDataToChartData = (projects: MetricProject[]) => {
+  return projects.map((project, index) => ({ x: index, y: project.fraction }));
+};
+
+const sortProjectsData = (
+  projects: MetricProject[],
+  sortBy: "ascending" | "descending",
+) => {
+  return projects.sort((a, b) =>
+    sortBy === "descending" ? b.fraction - a.fraction : a.fraction - b.fraction,
+  );
+};
 
 export function MetricsSidebar() {
-  const domain = useCurrentDomain();
   const metricId = useCurrentMetricId();
 
-  if (metricId) {
-    return <SidebarMetric metricId={metricId} />;
-  }
+  const { data, error, isPending } = useMetricById(metricId);
 
-  return <SidebarPlaceholder title="">No metric id</SidebarPlaceholder>;
+  const projects = data?.projects || [];
+
+  const [sortOrder, setSortOrder] = useState<"ascending" | "descending">(
+    "descending",
+  );
+
+  const toggleSortOrder = () =>
+    setSortOrder(sortOrder === "ascending" ? "descending" : "ascending");
+
+  const { sortedProjects, chartData } = useMemo(() => {
+    const sortedProjects = sortProjectsData(projects, sortOrder);
+    const chartData = parseProjectsDataToChartData(sortedProjects);
+    return { sortedProjects, chartData };
+  }, [projects, sortOrder]);
+
+  return (
+    <SidebarWithChart
+      title="Metric Data"
+      description={AvailableMetrics[metricId]}
+      chartData={chartData}
+      sortOrder={sortOrder}
+      toggleSortOrder={toggleSortOrder}
+      isPending={isPending}
+      error={error}
+    >
+      <AllocationList projects={sortedProjects} />
+    </SidebarWithChart>
+  );
 }
