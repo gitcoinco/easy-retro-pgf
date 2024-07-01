@@ -30,7 +30,7 @@ import { hashApiKey } from "~/utils/hashApiKey";
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-interface CreateContextOptions {
+export interface CreateContextOptions {
   session: Session | null;
   domain?: string;
   round?: {

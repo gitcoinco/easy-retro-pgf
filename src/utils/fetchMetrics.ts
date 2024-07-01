@@ -111,6 +111,7 @@ const mockedDescription =
 export function mapMetrics(
   results: OSOMetrics,
   metrics: (keyof OSOMetric)[],
+  calcAmount = (amount = 0, metricId = "") => amount,
 ): MetricWithProjects[] {
   const totals = metrics.map((id) => {
     return results.reduce((sum, item) => sum + item[id], 0);
@@ -125,11 +126,12 @@ export function mapMetrics(
       description: mockedDescription, //! TO REMOVE
       projects: results
         .map((item) => {
+          const amount = calcAmount(item[id], id);
           return {
             id: item.project_id,
             name: item.project_name,
-            amount: item[id],
-            fraction: total ? item[id] / total : 0,
+            amount,
+            fraction: total ? amount / total : 0,
 
             // This is for ballot view
             // metrics: metrics.map((id) => {

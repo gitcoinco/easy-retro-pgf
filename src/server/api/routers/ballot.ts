@@ -8,6 +8,7 @@ import {
   type Vote,
 } from "~/features/ballot/types";
 import {
+  CreateContextOptions,
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
@@ -20,6 +21,7 @@ import {
   createAttestationFetcher,
   fetchApprovedVoter,
 } from "~/utils/fetchAttestations";
+import { db } from "~/server/db";
 
 const defaultBallotSelect = {
   votes: true,
@@ -29,19 +31,22 @@ const defaultBallotSelect = {
   signature: true,
 } satisfies Prisma.BallotSelect;
 
+export async function getBallotForUser(
+  ctx: CreateContextOptions & { db: typeof db },
+) {
+  const voterId = ctx.session?.user.name!;
+  const roundId = ctx.round?.id;
+  return ctx.db?.ballot
+    .findFirst({
+      select: defaultBallotSelect,
+      where: { voterId, roundId },
+    })
+    .then((ballot) => ({ ...ballot, votes: (ballot?.votes as Vote[]) ?? [] }));
+}
+
 export const ballotRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) => {
-    const voterId = ctx.session.user.name!;
-    const roundId = ctx.round?.id;
-    return ctx.db.ballot
-      .findFirst({
-        select: defaultBallotSelect,
-        where: { voterId, roundId },
-      })
-      .then((ballot) => ({
-        ...ballot,
-        votes: (ballot?.votes as Vote[]) ?? [],
-      }));
+    return getBallotForUser(ctx);
   }),
   export: adminProcedure.mutation(({ ctx }) => {
     return ctx.db.ballot
