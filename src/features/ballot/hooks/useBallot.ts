@@ -25,12 +25,12 @@ export function useSaveBallot(opts?: { onSuccess?: () => void }) {
 
 export function useAddToBallot() {
   const { data: ballot } = useBallot();
-  const { mutate } = useSaveBallot();
+  const { mutateAsync } = useSaveBallot();
 
   return useMutation({
     mutationFn: async (votes: Vote[]) => {
       if (ballot) {
-        return mutate(mergeBallot(ballot as unknown as Ballot, votes));
+        return mutateAsync(mergeBallot(ballot as unknown as Ballot, votes));
       }
     },
   });
@@ -38,14 +38,14 @@ export function useAddToBallot() {
 
 export function useRemoveFromBallot() {
   const { data: ballot } = useBallot();
-  const { mutate } = useSaveBallot();
+  const { mutateAsync } = useSaveBallot();
 
   return useMutation({
     mutationFn: async (projectId: string) => {
       const votes = (ballot?.votes ?? []).filter(
         (v) => v.projectId !== projectId,
       );
-      return mutate({ ...ballot, votes });
+      return mutateAsync({ ...ballot, votes });
     },
   });
 }
@@ -72,7 +72,6 @@ export function useSubmitBallot({
   useBeforeUnload(isPending, "You have unsaved changes, are you sure?");
 
   const { signTypedDataAsync } = useSignTypedData();
-
 
   return useMutation({
     mutationFn: async () => {

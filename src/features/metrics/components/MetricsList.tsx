@@ -4,6 +4,7 @@ import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { Metric } from "~/features/metrics/types";
 import { Card } from "~/components/ui/Card";
 import { Skeleton } from "~/components/ui/Skeleton";
+import { AddToBallotButton } from "./AddToBallotButton";
 
 export function MetricsList({
   metrics,
@@ -54,8 +55,11 @@ function MetricCard({
             </>
           ) : (
             <>
-              <div className="text-lg hover:underline">
-                <Link href={href}>{metric?.name}</Link>
+              <div className="flex justify-between">
+                <div className="text-lg hover:underline">
+                  <Link href={href}>{metric?.name}</Link>
+                </div>
+                <AddToBallotButton id={metric.id} />
               </div>
             </>
           )}
