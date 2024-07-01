@@ -11,7 +11,7 @@ import {
   fetchImpactMetrics,
   mapMetrics,
 } from "~/utils/fetchMetrics";
-import { availableMetrics } from "~/features/metrics/types";
+import { AvailableMetrics } from "~/features/metrics/types";
 
 export const metricsRouter = createTRPCRouter({
   get: publicProcedure
@@ -24,7 +24,7 @@ export const metricsRouter = createTRPCRouter({
     }),
 
   forRound: roundProcedure.query(async ({ ctx }) => {
-    return Object.entries(availableMetrics)
+    return Object.entries(AvailableMetrics)
       .filter(([id]) => ctx.round.metrics.includes(id))
       .map(([id, name]) => ({ id, name }));
   }),

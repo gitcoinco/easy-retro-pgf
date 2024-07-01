@@ -20,7 +20,7 @@ import { ImageUpload } from "~/components/ImageUpload";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { createElement } from "react";
-import { availableMetrics } from "~/features/metrics/types";
+import { AvailableMetrics } from "~/features/metrics/types";
 
 export default function AdminPage() {
   return (
@@ -132,7 +132,7 @@ function Metrics({ disabled = false }) {
       description="Define your impact metrics to vote for. Once the application phase has started you can only rename the category labels (not add or remove)."
     >
       <div className="space-y-1">
-        {Object.entries(availableMetrics).map(([metricId, name]) => (
+        {Object.entries(AvailableMetrics).map(([metricId, name]) => (
           <label
             key={metricId}
             className="flex flex-1 cursor-pointer items-center gap-2 p-1"

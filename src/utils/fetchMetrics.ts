@@ -1,6 +1,6 @@
 import { openSourceObserverEndpoint } from "~/config";
 import { createCachedFetch } from "./fetch";
-import { availableMetrics } from "~/features/metrics/types";
+import { AvailableMetrics } from "~/features/metrics/types";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 
@@ -69,7 +69,7 @@ type Query = {
 };
 
 export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
-  if (metrics.some((id) => !Object.keys(availableMetrics).includes(id))) {
+  if (metrics.some((id) => !(id in AvailableMetrics))) {
     throw new Error(
       `One of the metrics provided doesn't exist:\n${metrics.join("\n")}`,
     );
@@ -86,21 +86,28 @@ export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
   });
 }
 
-type MetricWithProjects = {
+export type MetricProject = {
+  id: string;
+  amount: number;
+  fraction: number;
+};
+
+export type MetricWithProjects = {
   id: string;
   name: string;
+  description?: string;
   total: number;
-  projects: {
-    id: string;
-    amount: number;
-    fraction: number;
-  }[];
+  projects: MetricProject[];
 };
 type MetricBallot = {
   projects: {
     metrics: { id: string; name: string; allocation: number }[];
   }[];
 };
+
+const mockedDescription =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ligula at dolor bibendum auctor. Fusce eu justo nec nisl suscipit sollicitudin. Aliquam erat volutpat. Mauris quis facilisis purus, non auctor magna. Nulla facilisi. Donec et odio vel nulla ornare viverra. Vivamus at lacus nec urna sodales fermentum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cras sagittis, nibh in sodales aliquet, libero mi porttitor elit, non pharetra arcu nulla non est. Proin vitae augue dignissim, malesuada enim non, fermentum nisi.";
+
 export function mapMetrics(
   results: OSOMetrics,
   metrics: (keyof OSOMetric)[],
@@ -113,8 +120,9 @@ export function mapMetrics(
     const total = totals[i] ?? 0;
     return {
       id,
-      name: id,
+      name: id in AvailableMetrics ? AvailableMetrics[id] : id,
       total,
+      description: mockedDescription, //! TO REMOVE
       projects: results
         .map((item) => {
           return {
