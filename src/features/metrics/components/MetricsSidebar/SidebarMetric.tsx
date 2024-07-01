@@ -3,12 +3,12 @@
 import { useMemo, useState } from "react";
 import { ArrowDownNarrowWide, ArrowUpWideNarrow } from "lucide-react";
 
+import { Button } from "~/components/ui/Button";
 import { ScrollArea } from "~/components/ui/ScrollArea";
 import { MetricProject } from "~/utils/fetchMetrics";
 import { useMetricById } from "~/features/metrics/hooks/useMetrics";
 import { AvailableMetrics, MetricId } from "~/features/metrics/types";
 
-import { Button } from "../Buttons";
 import { AllocationList } from "./AllocationList";
 import { CustomLineChart } from "../Charts";
 import { SidebarCard } from "./SidebarCard";
@@ -76,14 +76,15 @@ export function SidebarMetric({ metricId }: SidebarMetricProps) {
           <div className="flex justify-end gap-1">
             <Button
               size="xs"
-              iconRight={
-                sortOrder === "ascending"
-                  ? ArrowUpWideNarrow
-                  : ArrowDownNarrowWide
-              }
+              className="bg-transparent"
               onClick={toggleSortOrder}
             >
               {sortOrder === "ascending" ? "Ascending" : "Descending"}
+              {sortOrder === "ascending" ? (
+                <ArrowUpWideNarrow className="ml-1 size-4" />
+              ) : (
+                <ArrowDownNarrowWide className="ml-1 size-4" />
+              )}
             </Button>
           </div>
         </div>
