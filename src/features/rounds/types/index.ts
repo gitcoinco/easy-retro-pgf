@@ -72,8 +72,11 @@ export const RoundDatesSchema = RoundDates.superRefine(
     }
   },
 );
-
-export const roundTypes = {
+export enum RoundTypes {
+  impact = "impact",
+  project = "project",
+}
+export const roundTypes: Record<RoundTypes, string> = {
   impact: "Impact",
   project: "Project",
 };
