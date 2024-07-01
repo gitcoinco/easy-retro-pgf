@@ -28,7 +28,7 @@ export default function MetricsDetailPage({
           </div>
         </>
       ) : (
-        <MetricDetails name={name} description={description} />
+        <MetricDetails id={metricId} name={name} description={description} />
       )}
     </MetricsLayout>
   );

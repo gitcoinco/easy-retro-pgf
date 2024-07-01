@@ -19,7 +19,7 @@ export default function MetricDetails({
   name = "",
   description = "",
   isPending = false,
-  id = "1",
+  id,
 }: MetricDetailsProps) {
   const calculationUrl = ""; // Provide a valid URL here
 
