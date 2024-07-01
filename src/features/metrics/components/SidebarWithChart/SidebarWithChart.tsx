@@ -1,6 +1,6 @@
 "use client";
 
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useMemo, useState } from "react";
 import { ArrowDownNarrowWide, ArrowUpWideNarrow } from "lucide-react";
 
 import { Button } from "~/components/ui/Button";
@@ -10,32 +10,74 @@ import { Spinner } from "~/components/ui/Spinner";
 import { CustomLineChart } from "../Charts";
 import { SidebarCard } from "./SidebarCard";
 import { SidebarPlaceholder } from "./SidebarPlaceholder";
+import { AllocationList } from "./AllocationList";
 
 export type SortOrder = "ascending" | "descending";
 
-type SidebarWithChartProps = PropsWithChildren<{
+const sortAllocationData = (
+  allocationData: {
+    id: string;
+    name?: string;
+    image?: string;
+    amount: number;
+    fraction: number;
+  }[],
+  sortBy: "ascending" | "descending",
+) => {
+  return allocationData.sort((a, b) =>
+    sortBy === "descending" ? b.fraction - a.fraction : a.fraction - b.fraction,
+  );
+};
+
+const parseAllocationDataToChartData = (
+  allocationData: {
+    id: string;
+    name?: string;
+    image?: string;
+    amount: number;
+    fraction: number;
+  }[],
+) => {
+  return allocationData.map((item, index) => ({
+    x: index,
+    y: item.fraction,
+  }));
+};
+
+type SidebarWithChartProps = {
   title?: string;
   description?: string;
-  chartData: {
-    x: number;
-    y: number;
+  allocationData: {
+    id: string;
+    name?: string;
+    image?: string;
+    amount: number;
+    fraction: number;
   }[];
-  sortOrder: SortOrder;
-  toggleSortOrder: () => void;
   isPending?: boolean;
   error: any;
-}>;
+};
 
 export function SidebarWithChart({
-  children,
   title = "",
   description = "",
-  chartData,
-  sortOrder,
-  toggleSortOrder,
+  allocationData,
   isPending,
   error,
 }: SidebarWithChartProps) {
+  const [sortOrder, setSortOrder] = useState<"ascending" | "descending">(
+    "descending",
+  );
+
+  const toggleSortOrder = () =>
+    setSortOrder(sortOrder === "ascending" ? "descending" : "ascending");
+
+  const { sortedData, chartData } = useMemo(() => {
+    const sortedData = sortAllocationData(allocationData, sortOrder);
+    const chartData = parseAllocationDataToChartData(sortedData);
+    return { sortedData, chartData };
+  }, [allocationData, sortOrder]);
+
   if (isPending) {
     return (
       <SidebarPlaceholder>
@@ -74,7 +116,9 @@ export function SidebarWithChart({
             </Button>
           </div>
         </div>
-        <ScrollArea className="relative max-h-[328px]">{children} </ScrollArea>
+        <ScrollArea className="relative max-h-[328px]">
+          <AllocationList data={sortedData} />
+        </ScrollArea>
       </div>
     </SidebarCard>
   );
