@@ -1,16 +1,14 @@
 "use client";
 import { Check, Plus } from "lucide-react";
-import { useState } from "react";
 import { Button } from "~/components/ui/Button";
+import {
+  ballotContains,
+  useAddToBallot,
+  useBallot,
+  useRemoveFromBallot,
+} from "~/features/ballot/hooks/useBallot";
 
 const state: { [key: string]: boolean } = {};
-
-const useBallotContext = () => ({
-  add: undefined,
-  remove: undefined,
-  state,
-  isPending: false,
-});
 
 export function AddToBallotButton({
   id = "",
@@ -19,14 +17,11 @@ export function AddToBallotButton({
   id?: string;
   variant?: "default" | "secondary" | "primary";
 }) {
-  const [isAdded, setIsAdded] = useState(false);
-
-  const {
-    add = (id: string) => setIsAdded(true),
-    remove = (id: string) => setIsAdded(false),
-    state,
-    isPending,
-  } = useBallotContext();
+  const ballot = useBallot();
+  const add = useAddToBallot();
+  const remove = useRemoveFromBallot();
+  const isAdded = ballotContains(id, ballot.data);
+  const isPending = add.isPending || remove.isPending;
 
   if (isPending)
     return (
@@ -34,14 +29,13 @@ export function AddToBallotButton({
         Loading
       </Button>
     );
-  // const isAdded = state[id];
   if (isAdded) {
     return (
       <Button
         icon={Check}
         variant="success"
         onClick={() => {
-          remove(id);
+          remove.mutate(id);
         }}
       >
         Added
@@ -54,7 +48,7 @@ export function AddToBallotButton({
       icon={Plus}
       variant={variant}
       onClick={() => {
-        add(id);
+        add.mutate([{ projectId: id, amount: 0 }]);
       }}
     >
       Add to ballot
