@@ -2,13 +2,11 @@
 import { Check, Plus } from "lucide-react";
 import { Button } from "~/components/ui/Button";
 import {
-  ballotContains,
-  useAddToBallot,
   useBallot,
-  useRemoveFromBallot,
-} from "~/features/ballot/hooks/useBallot";
-
-const state: { [key: string]: boolean } = {};
+  useRemoveAllocation,
+  useSaveAllocation,
+} from "~/features/ballotV2/hooks/useBallot";
+import { RoundTypes } from "~/features/rounds/types";
 
 export function AddToBallotButton({
   id = "",
@@ -18,11 +16,11 @@ export function AddToBallotButton({
   variant?: "default" | "secondary" | "primary";
 }) {
   const ballot = useBallot();
-  const add = useAddToBallot();
-  const remove = useRemoveFromBallot();
-  const isAdded = ballotContains(id, ballot.data);
-  const isPending = add.isPending || remove.isPending;
+  const add = useSaveAllocation();
+  const remove = useRemoveAllocation();
 
+  const isPending = ballot.isPending || add.isPending || remove.isPending;
+  const isAdded = ballot.data?.allocations.find((a) => a.id === id);
   if (isPending)
     return (
       <Button disabled variant="secondary" isLoading>
@@ -33,9 +31,9 @@ export function AddToBallotButton({
     return (
       <Button
         icon={Check}
-        variant="success"
+        variant="primary"
         onClick={() => {
-          remove.mutate(id);
+          remove.mutate({ id });
         }}
       >
         Added
@@ -48,7 +46,7 @@ export function AddToBallotButton({
       icon={Plus}
       variant={variant}
       onClick={() => {
-        add.mutate([{ projectId: id, amount: 0 }]);
+        add.mutate({ id, amount: 0, type: RoundTypes.impact, locked: false });
       }}
     >
       Add to ballot
