@@ -16,14 +16,12 @@ const defaultBallotSelect = {
 const AllocationSchema = z.object({
   id: z.string(),
   amount: z.number().min(0),
-  type: z.nativeEnum(RoundTypes).optional(),
   locked: z.boolean().default(true),
 });
 
 export const ballotV2Router = createTRPCRouter({
   get: ballotProcedure.query(({ ctx }) => {
-    const voterId = ctx.session?.user.name!;
-    const roundId = ctx.round?.id;
+    const { ballotId, roundId, voterId } = ctx;
 
     return ctx.db.ballotV2.findFirst({
       where: { voterId, roundId },

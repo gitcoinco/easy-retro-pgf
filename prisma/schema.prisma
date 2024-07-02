@@ -78,6 +78,8 @@ model BallotV2 {
     voterId String
     roundId String
 
+    type RoundType @default(project)
+
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
     publishedAt DateTime?
@@ -86,20 +88,19 @@ model BallotV2 {
     allocations Allocation[]
 
     // Only one ballot per voter and round
-    @@unique([voterId, roundId])
+    @@unique([voterId, roundId, type])
 }
 
 model Allocation {
     id        String
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    ballot    BallotV2  @relation(fields: [ballotId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    ballot    BallotV2 @relation(fields: [ballotId], references: [id])
     ballotId  String
     voterId   String
     roundId   String
-    type      RoundType @default(project)
     amount    Decimal
-    locked    Boolean   @default(true)
+    locked    Boolean  @default(true)
 
     @@id([voterId, roundId, ballotId, id])
 }

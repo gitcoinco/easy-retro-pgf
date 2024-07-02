@@ -13,6 +13,7 @@ import type { NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { RoundTypes } from "~/features/rounds/types";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -37,6 +38,7 @@ export interface CreateContextOptions {
     id: string;
     admins: string[];
     network: string | null;
+    type: string | null;
     startsAt: Date | null;
     reviewAt: Date | null;
     votingAt: Date | null;
@@ -154,6 +156,7 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
           id: true,
           admins: true,
           network: true,
+          type: true,
           startsAt: true,
           reviewAt: true,
           votingAt: true,
@@ -211,11 +214,13 @@ export const ballotProcedure = protectedRoundProcedure.use(
   t.middleware(async ({ ctx, next }) => {
     const voterId = ctx.session?.user.name!;
     const roundId = ctx.round?.id!;
+    const type = ctx.round?.type as RoundTypes;
     // Find or create ballot
+
     const { id: ballotId } = await ctx.db.ballotV2.upsert({
-      where: { voterId_roundId: { voterId, roundId } },
+      where: { voterId_roundId_type: { voterId, roundId, type } },
       update: {},
-      create: { voterId, roundId },
+      create: { voterId, roundId, type },
     });
     return next({ ctx: { ...ctx, voterId, roundId, ballotId } });
   }),

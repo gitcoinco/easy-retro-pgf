@@ -46,7 +46,7 @@ export function AddToBallotButton({
       icon={Plus}
       variant={variant}
       onClick={() => {
-        add.mutate({ id, amount: 0, type: RoundTypes.impact, locked: false });
+        add.mutate({ id, amount: 0, locked: false });
       }}
     >
       Add to ballot
