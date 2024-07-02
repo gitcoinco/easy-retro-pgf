@@ -73,6 +73,42 @@ model Ballot {
     @@unique([voterId, roundId])
 }
 
+model BallotV2 {
+    id      String @id @default(cuid())
+    voterId String
+    roundId String
+
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    publishedAt DateTime?
+    signature   String?
+
+    allocations Allocation[]
+
+    // Only one ballot per voter and round
+    @@unique([voterId, roundId])
+}
+
+model Allocation {
+    id        String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    ballot    BallotV2  @relation(fields: [ballotId], references: [id])
+    ballotId  String
+    voterId   String
+    roundId   String
+    type      RoundType @default(project)
+    amount    Decimal
+    locked    Boolean   @default(true)
+
+    @@id([voterId, roundId, ballotId, id])
+}
+
+enum RoundType {
+    impact
+    project
+}
+
 model Round {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
@@ -82,8 +118,8 @@ model Round {
     name           String
     description    String?
     bannerImageUrl String?
-    domain         String  @unique
-    type         String  @default("project")
+    domain         String    @unique
+    type           RoundType @default(project)
 
     network String?
     admins  String[]
@@ -95,7 +131,7 @@ model Round {
     payoutAt DateTime?
 
     categories Json[]
-    metrics String[] @default([])
+    metrics    String[] @default([])
 
     maxVotesTotal   Int?
     maxVotesProject Int?
@@ -121,11 +157,10 @@ model Comment {
     round   Round  @relation(fields: [roundId], references: [id])
 }
 
-
 model ApiKey {
     id        String   @id @default(cuid())
-    key        String
+    key       String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    creatorId    String
+    creatorId String
 }
