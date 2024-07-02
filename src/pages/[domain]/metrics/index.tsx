@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { MetricsList } from "~/features/metrics/components/MetricsList";
 import { MetricsLayout } from "~/layouts/MetricsLayout";
-import { MetricsSidebar } from "~/features/metrics/components/MetricsSidebar";
+import { BallotSidebar } from "~/features/metrics/components/BallotSidebar";
 
 function useMetricsForRound() {
   return api.metrics.forRound.useQuery();
@@ -12,7 +12,7 @@ export default function MetricsPage() {
 
   return (
     <MetricsLayout
-      sidebarComponent={<MetricsSidebar />}
+      sidebarComponent={<BallotSidebar />}
       title="MetricList"
       showBallot
       eligibilityCheck

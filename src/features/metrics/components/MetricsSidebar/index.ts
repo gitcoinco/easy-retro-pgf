@@ -1,1 +1,0 @@
-export { MetricsSidebar } from "./MetricsSidebar";
