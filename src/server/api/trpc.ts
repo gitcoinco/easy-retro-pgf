@@ -206,6 +206,20 @@ export const roundProcedure = t.procedure.use(roundMiddleware);
 export const protectedRoundProcedure = t.procedure
   .use(roundMiddleware)
   .use(enforceUserIsAuthed);
+
+export const ballotProcedure = protectedRoundProcedure.use(
+  t.middleware(async ({ ctx, next }) => {
+    const voterId = ctx.session?.user.name!;
+    const roundId = ctx.round?.id!;
+    // Find or create ballot
+    const { id: ballotId } = await ctx.db.ballotV2.upsert({
+      where: { voterId_roundId: { voterId, roundId } },
+      update: {},
+      create: { voterId, roundId },
+    });
+    return next({ ctx: { ...ctx, voterId, roundId, ballotId } });
+  }),
+);
 export const adminProcedure = protectedProcedure
   .use(roundMiddleware)
   .use(enforceUserIsAdmin);
