@@ -13,6 +13,7 @@ export function BallotSidebar() {
       isLoading={isPending}
       isUpdating={useIsSavingBallot()}
       formatAllocation={(v) => v.toFixed(2) + "%"}
+      formatChartTick={(v) => v + "%"}
       projects={data?.projects}
     />
   );

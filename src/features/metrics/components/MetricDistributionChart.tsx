@@ -43,14 +43,14 @@ export function DistributionChart({
         dot={(p) => {
           const { key, r, cx, cy } = p;
           return p.index === 0 ? (
-            <circle key={key} r={r} cx={cx} cy={cy} fill="red" />
+            <circle key={key} r={r} cx={cx} cy={cy} fill="rgb(22,163,74)" />
           ) : (
             <path key={key} />
           );
         }}
         type="monotone"
         dataKey="y"
-        stroke="red"
+        stroke="rgb(22,163,74)"
       />
     </LineChart>
   );

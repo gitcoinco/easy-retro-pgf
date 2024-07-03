@@ -14,6 +14,7 @@ export function MetricDetailsSidebar({ metricId = "" }) {
       title="Distribution"
       isLoading={isPending}
       formatAllocation={(v) => v.toFixed(2) + "%"}
+      formatChartTick={(v) => v + "%"}
       projects={data?.[0]?.projects}
     />
   );
