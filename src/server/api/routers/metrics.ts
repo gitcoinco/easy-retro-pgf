@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  ballotProcedure,
   createTRPCRouter,
   publicProcedure,
   roundProcedure,
@@ -12,7 +13,7 @@ import {
   mapMetrics,
 } from "~/utils/fetchMetrics";
 import { AvailableMetrics } from "~/features/metrics/types";
-import { getBallotForUser } from "./ballot";
+import { calculateMetricsBallot } from "~/utils/calculateMetrics";
 
 export const metricsRouter = createTRPCRouter({
   get: publicProcedure
@@ -21,7 +22,9 @@ export const metricsRouter = createTRPCRouter({
       if (!ids.length) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
-      return {};
+      return Object.fromEntries(
+        Object.entries(AvailableMetrics).filter(([id]) => ids.includes(id)),
+      );
     }),
 
   forRound: roundProcedure.query(async ({ ctx }) => {
@@ -30,14 +33,12 @@ export const metricsRouter = createTRPCRouter({
       .map(([id, name]) => ({ id, name }));
   }),
 
-  forBallot: roundProcedure.query(async ({ ctx }) => {
+  forBallot: ballotProcedure.query(async ({ ctx }) => {
     try {
-      const ballot = await getBallotForUser(ctx);
+      const { ballot } = ctx;
 
-      // TODO: Rename ballot projectId to a more generic id (for both project and metric)
-      // and filter on vote.type === impact
       const metricsById = Object.fromEntries(
-        ballot.votes.map((v) => [v.projectId, v.amount]),
+        ballot?.allocations.map((v) => [v.id, v.amount]),
       );
 
       // TODO: Fetch approved projects and convert in a way so it can query OSO
@@ -53,19 +54,12 @@ export const metricsRouter = createTRPCRouter({
           offset: 0,
         },
         Object.keys(metricsById),
-      ).then((res) =>
-        mapMetrics(
-          res,
-          Object.keys(metricsById) as (keyof OSOMetric)[],
-          (amount = 0, metricId) => {
-            // Calculate the distribution based on the ballot allocation
-            const ballotAmount =
-              metricsById[metricId as keyof typeof metricsById] ?? 0;
-
-            return ballotAmount * amount;
-          },
-        ),
-      );
+      ).then((projects) => {
+        return {
+          allocations: ballot?.allocations ?? [],
+          projects: calculateMetricsBallot(projects, metricsById),
+        };
+      });
     } catch (error) {
       throw new TRPCError({
         code: "BAD_REQUEST",
@@ -91,7 +85,9 @@ export const metricsRouter = createTRPCRouter({
             offset: 0,
           },
           [metricId],
-        ).then((res) => mapMetrics(res, [metricId] as (keyof OSOMetric)[]));
+        ).then((projects) =>
+          mapMetrics(projects, [metricId] as (keyof OSOMetric)[]),
+        );
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",

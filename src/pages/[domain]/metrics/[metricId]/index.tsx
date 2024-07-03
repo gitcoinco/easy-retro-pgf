@@ -3,7 +3,7 @@ import MetricDetails from "~/features/metrics/components/MetricDetails";
 import { MetricsLayout } from "~/layouts/MetricsLayout";
 import { useMetricById } from "~/features/metrics/hooks/useMetrics";
 import { Spinner } from "~/components/ui/Spinner";
-import { MetricsSidebar } from "~/features/metrics/components/MetricsSidebar";
+import { MetricDetailsSidebar } from "~/features/metrics/components/MetricDetailsSidebar";
 
 type MetricsDetailPageProps = {
   metricId: string;
@@ -17,7 +17,9 @@ export default function MetricsDetailPage({
   const { name = "", description = "", projects = [] } = data ?? {};
 
   return (
-    <MetricsLayout sidebarComponent={<MetricsSidebar />}>
+    <MetricsLayout
+      sidebarComponent={<MetricDetailsSidebar metricId={metricId} />}
+    >
       {isPending ? (
         <>
           <div className="flex h-full w-full items-center justify-center">

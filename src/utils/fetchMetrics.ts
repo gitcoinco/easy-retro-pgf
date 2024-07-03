@@ -55,7 +55,7 @@ export type OSOMetric = {
   transaction_count: number;
   transaction_count_6_months: number;
 };
-type OSOMetrics = (OSOMetric & OSOMetricProjectMeta)[];
+export type OSOMetrics = (OSOMetric & OSOMetricProjectMeta)[];
 
 type OrderBy = "asc" | "desc";
 type Query = {
@@ -130,13 +130,9 @@ export function mapMetrics(
           return {
             id: item.project_id,
             name: item.project_name,
-            amount,
+            // amount,
+            amount: total ? (amount / total) * 100 : 0,
             fraction: total ? amount / total : 0,
-
-            // This is for ballot view
-            // metrics: metrics.map((id) => {
-            //   return { id, name: id, amount: item[id] };
-            // }),
           };
         })
         .sort((a, b) => b.amount - a.amount),

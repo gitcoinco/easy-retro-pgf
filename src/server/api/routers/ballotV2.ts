@@ -4,7 +4,7 @@ import type { Prisma, PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { AllocationSchema, Allocation } from "~/features/ballot/types";
 
-const defaultBallotSelect = {
+export const defaultBallotSelect = {
   id: true,
   allocations: true,
   createdAt: true,

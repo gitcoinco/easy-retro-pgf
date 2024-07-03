@@ -1,1 +1,0 @@
-export { SidebarWithChart } from "./SidebarWithChart";

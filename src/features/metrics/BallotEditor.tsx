@@ -3,14 +3,15 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { NumericFormat } from "react-number-format";
 import { Lock, Minus, Plus, Trash2, Unlock } from "lucide-react";
-import { Metric } from "./types";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Button } from "~/components/ui/Button";
 import { cn } from "~/utils/classNames";
 import { useBallotContext } from "../ballot/components/provider";
 import { useSortBallot } from "../ballot/hooks/useBallotEditor";
+import { Metric } from "./types";
+import { useCurrentDomain } from "../rounds/hooks/useRound";
 
-const BallotFilter = () => <div>Ballot filter</div>;
+const BallotFilter = () => <div></div>;
 export function BallotEditor({
   metrics = [],
   isLoading,
@@ -18,6 +19,7 @@ export function BallotEditor({
   metrics?: Metric[];
   isLoading: boolean;
 }) {
+  const domain = useCurrentDomain();
   const { state, inc, dec, set, remove } = useBallotContext();
   const { sorted } = useSortBallot(state);
 
@@ -31,20 +33,20 @@ export function BallotEditor({
     <div>
       <div className="flex items-center justify-between">
         <div className="mb-4">
-          <h3 className="text-3xl font-semibold">Your ballot</h3>
-          <div className="text-sm">
+          <h3 className="mb-2 text-3xl font-semibold">Your ballot</h3>
+          <div className="">
             You&apos;ve added {count} of {metrics.length} metrics
           </div>
         </div>
         <BallotFilter />
       </div>
 
-      <div className="divide-y border-y">
+      <div className="divide-y rounded-xl border">
         {isLoading &&
           Array(3)
             .fill(0)
             .map((_, i) => (
-              <div className="py-4" key={i}>
+              <div className="p-4" key={i}>
                 <Skeleton key={i} className="h-10" />
               </div>
             ))}
@@ -55,12 +57,11 @@ export function BallotEditor({
             const { name } = metricById[id] ?? {};
 
             return (
-              <div key={id} className="flex items-center justify-between py-4">
-                <h3
-                  className="text-sm font-medium underline-offset-4 hover:underline"
-                  tabIndex={-1}
-                >
-                  <Link href={`/metrics/${id}`}>{name}</Link>
+              <div key={id} className="flex items-center justify-between p-4">
+                <h3 className="text-lg underline-offset-4 hover:underline">
+                  <Link href={`/${domain}/metrics/${id}`} tabIndex={-1}>
+                    {name}
+                  </Link>
                 </h3>
                 <div className="flex gap-2">
                   <Button
@@ -93,7 +94,7 @@ export function BallotEditor({
                       isAllowed={(values) => (values?.floatValue ?? 0) <= 100}
                       customInput={(p) => (
                         <input
-                          className="w-24 text-center"
+                          className="w-24 border-none text-center"
                           {...p}
                           max={100}
                           min={0}

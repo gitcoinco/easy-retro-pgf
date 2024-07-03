@@ -215,14 +215,17 @@ export const ballotProcedure = protectedRoundProcedure.use(
     const voterId = ctx.session?.user.name!;
     const roundId = ctx.round?.id!;
     const type = ctx.round?.type as RoundTypes;
-    // Find or create ballot
 
-    const { id: ballotId } = await ctx.db.ballotV2.upsert({
+    // Find or create ballot
+    const ballot = await ctx.db.ballotV2.upsert({
       where: { voterId_roundId_type: { voterId, roundId, type } },
       update: {},
       create: { voterId, roundId, type },
+      include: { allocations: true },
     });
-    return next({ ctx: { ...ctx, voterId, roundId, ballotId } });
+    return next({
+      ctx: { ...ctx, voterId, roundId, ballotId: ballot.id, ballot },
+    });
   }),
 );
 export const adminProcedure = protectedProcedure
