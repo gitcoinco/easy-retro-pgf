@@ -1,8 +1,8 @@
 import { ballotProcedure, createTRPCRouter } from "~/server/api/trpc";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 
 import { z } from "zod";
-import { RoundTypes } from "~/features/rounds/types";
+import { AllocationSchema, Allocation } from "~/features/ballot/types";
 
 const defaultBallotSelect = {
   id: true,
@@ -13,15 +13,9 @@ const defaultBallotSelect = {
   signature: true,
 } satisfies Prisma.BallotV2Select;
 
-const AllocationSchema = z.object({
-  id: z.string(),
-  amount: z.number().min(0),
-  locked: z.boolean().default(true),
-});
-
 export const ballotV2Router = createTRPCRouter({
   get: ballotProcedure.query(({ ctx }) => {
-    const { ballotId, roundId, voterId } = ctx;
+    const { roundId, voterId } = ctx;
 
     return ctx.db.ballotV2.findFirst({
       where: { voterId, roundId },
@@ -32,24 +26,14 @@ export const ballotV2Router = createTRPCRouter({
     .input(AllocationSchema)
     .mutation(async ({ input, ctx }) => {
       const { ballotId, roundId, voterId } = ctx;
-      return ctx.db.allocation.upsert({
-        where: {
-          voterId_roundId_ballotId_id: {
-            id: input.id,
-            voterId,
-            roundId,
-            ballotId,
-          },
-        },
-        update: { ...input },
-        create: { ...input, voterId, roundId, ballotId },
-      });
+
+      return autobalanceAllocations(ctx, input);
     }),
   remove: ballotProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const { ballotId, roundId, voterId } = ctx;
-      return ctx.db.allocation.delete({
+      await ctx.db.allocation.delete({
         where: {
           voterId_roundId_ballotId_id: {
             id: input.id,
@@ -59,6 +43,51 @@ export const ballotV2Router = createTRPCRouter({
           },
         },
       });
+      return autobalanceAllocations(ctx);
     }),
   publish: ballotProcedure.mutation(({ ctx }) => {}),
 });
+
+async function autobalanceAllocations(
+  {
+    db,
+    ballotId,
+    voterId,
+    roundId,
+  }: { db: PrismaClient; ballotId: string; voterId: string; roundId: string },
+  input?: Allocation,
+) {
+  const allocations = await db.allocation
+    .findMany({ where: { ballotId } })
+    .then((r) =>
+      r.map(({ id, amount, locked }) =>
+        id === input?.id ? input : { id, amount, locked },
+      ),
+    );
+
+  const locked = allocations.filter((alloc) => alloc.locked);
+  const lockedAmount = locked.reduce((sum, x) => sum + Number(x.amount), 0);
+
+  const unlocked = allocations
+    .filter((alloc) => !alloc.locked)
+    .map((alloc, i, arr) => ({
+      ...alloc,
+      amount: (100 - lockedAmount) / arr.length,
+    }));
+  const updates = [...locked, ...unlocked];
+  await Promise.all(
+    updates.map(({ id, ...data }) =>
+      db.allocation.update({
+        where: {
+          voterId_roundId_ballotId_id: { voterId, ballotId, roundId, id },
+        },
+        data,
+      }),
+    ),
+  );
+
+  return db.ballotV2.findFirst({
+    where: { voterId, roundId },
+    select: defaultBallotSelect,
+  });
+}
