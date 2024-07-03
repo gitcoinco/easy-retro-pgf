@@ -18,6 +18,10 @@ export const MetricsLayout = ({ children, ...props }: Props) => {
       href: `/${domain}/metrics`,
       children: `Metrics`,
     },
+    {
+      href: `/${domain}/ballot/metrics`,
+      children: `Ballot`,
+    },
   ];
 
   return (

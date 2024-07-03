@@ -13,7 +13,7 @@ export default function MetricsPage() {
   return (
     <MetricsLayout
       sidebarComponent={<BallotSidebar />}
-      title="MetricList"
+      title="Metrics"
       showBallot
       eligibilityCheck
     >

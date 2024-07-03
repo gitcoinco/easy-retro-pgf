@@ -25,7 +25,19 @@ export const ballotV2Router = createTRPCRouter({
   save: ballotProcedure
     .input(AllocationSchema)
     .mutation(async ({ input, ctx }) => {
-      const { ballotId, roundId, voterId } = ctx;
+      const { voterId, roundId, ballotId } = ctx;
+      await ctx.db.allocation.upsert({
+        where: {
+          voterId_roundId_ballotId_id: {
+            voterId,
+            roundId,
+            ballotId,
+            id: input.id,
+          },
+        },
+        update: input,
+        create: { ...input, voterId, roundId, ballotId },
+      });
 
       return autobalanceAllocations(ctx, input);
     }),

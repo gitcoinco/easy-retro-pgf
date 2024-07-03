@@ -19,3 +19,7 @@ export function useCurrentMetric() {
 
   return useMetricById(metricId);
 }
+
+export function useMetrics() {
+  return api.metrics.forRound.useQuery();
+}
