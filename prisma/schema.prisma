@@ -99,7 +99,7 @@ model Allocation {
     ballotId  String
     voterId   String
     roundId   String
-    amount    Decimal
+    amount    Int
     locked    Boolean  @default(true)
 
     @@id([voterId, roundId, ballotId, id])
