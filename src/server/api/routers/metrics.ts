@@ -13,7 +13,10 @@ import {
   mapMetrics,
 } from "~/utils/fetchMetrics";
 import { AvailableMetrics } from "~/features/metrics/types";
-import { calculateMetricsBallot } from "~/utils/calculateMetrics";
+import {
+  calculateMetricsBallot,
+  calculateMetricsForProjects,
+} from "~/utils/calculateMetrics";
 import { metricsList } from "~/utils/osoData";
 
 // TODO: Fetch approved projects and convert in a way so it can query OSO
@@ -89,6 +92,49 @@ export const metricsRouter = createTRPCRouter({
         ).then((projects) =>
           mapMetrics(projects, metricIds as (keyof OSOMetric)[]),
         );
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+        });
+      }
+    }),
+  projects: roundProcedure
+    .input(z.object({ projectIds: z.array(z.string()) }))
+    .query(async ({ input: { projectIds }, ctx }) => {
+      try {
+        const tempProjectMap = Object.fromEntries(
+          projectIds.map((id, i) => [
+            approvedProjects[i % approvedProjects.length],
+            id,
+          ]),
+        );
+        const metricIds = ctx.round.metrics;
+        return fetchImpactMetrics(
+          {
+            where: {
+              project_name: { _in: Object.keys(tempProjectMap) },
+              event_source: { _eq: "BASE" },
+            },
+            orderBy: [{ active_contract_count_90_days: "desc" }],
+            limit: 300,
+            offset: 0,
+          },
+          metricIds,
+        ).then((projects) => {
+          return Object.fromEntries(
+            projects.map((project) => [
+              tempProjectMap[project.project_name],
+              metricIds.reduce(
+                (acc, x) => ({
+                  ...acc,
+                  [x]: project[x as keyof typeof project],
+                }),
+                {},
+              ),
+            ]),
+          );
+        });
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
