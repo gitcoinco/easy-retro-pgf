@@ -253,9 +253,5 @@ export function MetricSort({
 }
 
 export function MetricNameFromId({ id = "" }) {
-  return (
-    <span className={cn("truncate", { ["animate-pulse"]: isPending })}>
-      {snakeToTitleCase(id)}
-    </span>
-  );
+  return <span className={cn("truncate")}>{snakeToTitleCase(id)}</span>;
 }
