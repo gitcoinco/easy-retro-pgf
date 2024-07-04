@@ -13,10 +13,7 @@ import {
   mapMetrics,
 } from "~/utils/fetchMetrics";
 import { AvailableMetrics } from "~/features/metrics/types";
-import {
-  calculateMetricsBallot,
-  calculateMetricsForProjects,
-} from "~/utils/calculateMetrics";
+import { calculateMetricsBallot } from "~/utils/calculateMetrics";
 import { metricsList } from "~/utils/osoData";
 
 // TODO: Fetch approved projects and convert in a way so it can query OSO
@@ -103,6 +100,7 @@ export const metricsRouter = createTRPCRouter({
     .input(z.object({ projectIds: z.array(z.string()) }))
     .query(async ({ input: { projectIds }, ctx }) => {
       try {
+        // Temporary mapping to OSO example projects
         const tempProjectMap = Object.fromEntries(
           projectIds.map((id, i) => [
             approvedProjects[i % approvedProjects.length],
@@ -124,6 +122,7 @@ export const metricsRouter = createTRPCRouter({
         ).then((projects) => {
           return Object.fromEntries(
             projects.map((project) => [
+              // Replace with correct projectId
               tempProjectMap[project.project_name],
               metricIds.reduce(
                 (acc, x) => ({
