@@ -1,23 +1,11 @@
-import { api } from "~/utils/api";
 import { MetricsList } from "~/features/metrics/components/MetricsList";
 import { MetricsLayout } from "~/layouts/MetricsLayout";
 import { BallotSidebar } from "~/features/metrics/components/BallotSidebar";
 
-function useMetricsForRound() {
-  return api.metrics.forRound.useQuery();
-}
-
 export default function MetricsPage() {
-  const { data: metrics, isPending } = useMetricsForRound();
-
   return (
-    <MetricsLayout
-      sidebarComponent={<BallotSidebar />}
-      title="Metrics"
-      showBallot
-      eligibilityCheck
-    >
-      <MetricsList metrics={metrics} isPending={isPending} />
+    <MetricsLayout sidebarComponent={<BallotSidebar />} title="Metrics">
+      <MetricsList />
     </MetricsLayout>
   );
 }

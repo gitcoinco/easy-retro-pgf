@@ -14,7 +14,6 @@ export default function MetricsBallot() {
       <MetricsLayout
         sidebarComponent={<BallotSidebar />}
         title="Ballot"
-        showBallot
         eligibilityCheck
       >
         <BallotEditor isLoading={isPending} metrics={metrics} />

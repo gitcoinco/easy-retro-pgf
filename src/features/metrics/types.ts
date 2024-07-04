@@ -20,7 +20,7 @@ export enum AvailableMetrics {
 export type MetricId = keyof OSOMetric;
 
 export type Metric = {
-  id: MetricId;
+  id: string;
   name: string;
   description?: string;
 };

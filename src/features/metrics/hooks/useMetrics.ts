@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import { MetricId } from "../types";
 
 export function useMetricById(id: string) {
-  const query = api.metrics.forProjects.useQuery({ metricId: id });
+  const query = api.metrics.forProjects.useQuery({ metricIds: [id] });
 
   return { ...query, data: query.data?.[0] };
 }

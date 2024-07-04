@@ -14,7 +14,10 @@ import {
 } from "~/utils/fetchMetrics";
 import { AvailableMetrics } from "~/features/metrics/types";
 import { calculateMetricsBallot } from "~/utils/calculateMetrics";
+import { metricsList } from "~/utils/osoData";
 
+// TODO: Fetch approved projects and convert in a way so it can query OSO
+const approvedProjects = ["zora", "uniswap", "aave", "gitcoin", "layer3xyz"];
 export const metricsRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ ids: z.array(z.string()) }))
@@ -22,15 +25,18 @@ export const metricsRouter = createTRPCRouter({
       if (!ids.length) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
-      return Object.fromEntries(
-        Object.entries(AvailableMetrics).filter(([id]) => ids.includes(id)),
-      );
+
+      return metricsList.filter((metric) => ids.includes(metric.id));
     }),
 
   forRound: roundProcedure.query(async ({ ctx }) => {
     return Object.entries(AvailableMetrics)
       .filter(([id]) => ctx.round.metrics.includes(id))
-      .map(([id, name]) => ({ id, name }));
+      .map(([id, name]) => ({
+        id,
+        name,
+        ...metricsList.find((m) => m.id === id),
+      }));
   }),
 
   forBallot: ballotProcedure.query(async ({ ctx }) => {
@@ -41,8 +47,6 @@ export const metricsRouter = createTRPCRouter({
         ballot?.allocations.map((v) => [v.id, v.amount]),
       );
 
-      // TODO: Fetch approved projects and convert in a way so it can query OSO
-      const approvedProjects = ["zora", "uniswap", "aave", "gitcoin"];
       return fetchImpactMetrics(
         {
           where: {
@@ -50,7 +54,7 @@ export const metricsRouter = createTRPCRouter({
             event_source: { _eq: "BASE" },
           },
           orderBy: [{ active_contract_count_90_days: "desc" }],
-          limit: 10,
+          limit: 300,
           offset: 0,
         },
         Object.keys(metricsById),
@@ -68,12 +72,9 @@ export const metricsRouter = createTRPCRouter({
     }
   }),
   forProjects: roundProcedure
-    .input(z.object({ metricId: z.string() }))
-    .query(async ({ input: { metricId }, ctx }) => {
+    .input(z.object({ metricIds: z.array(z.string()) }))
+    .query(async ({ input: { metricIds }, ctx }) => {
       try {
-        // TODO: Fetch approved projects and convert in a way so it can query OSO
-        const approvedProjects = ["zora", "uniswap", "aave", "gitcoin"];
-
         return fetchImpactMetrics(
           {
             where: {
@@ -81,12 +82,12 @@ export const metricsRouter = createTRPCRouter({
               event_source: { _eq: "BASE" },
             },
             orderBy: [{ active_contract_count_90_days: "desc" }],
-            limit: 10,
+            limit: 300,
             offset: 0,
           },
-          [metricId],
+          metricIds,
         ).then((projects) =>
-          mapMetrics(projects, [metricId] as (keyof OSOMetric)[]),
+          mapMetrics(projects, metricIds as (keyof OSOMetric)[]),
         );
       } catch (error) {
         throw new TRPCError({

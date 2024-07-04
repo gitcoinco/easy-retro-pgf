@@ -5,7 +5,7 @@ import { MetricsSidebar } from "./MetricsSidebar";
 
 export function MetricDetailsSidebar({ metricId = "" }) {
   const { data, error, isPending } = api.metrics.forProjects.useQuery(
-    { metricId },
+    { metricIds: [metricId] },
     { enabled: !!metricId },
   );
 

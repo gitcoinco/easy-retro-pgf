@@ -10,6 +10,7 @@ import { useBallotContext } from "../ballot/components/provider";
 import { useSortBallot } from "../ballot/hooks/useBallotEditor";
 import { Metric } from "./types";
 import { useCurrentDomain } from "../rounds/hooks/useRound";
+import { snakeToTitleCase } from "~/utils/formatStrings";
 
 const BallotFilter = () => <div></div>;
 export function BallotEditor({
@@ -60,7 +61,7 @@ export function BallotEditor({
               <div key={id} className="flex items-center justify-between p-4">
                 <h3 className="text-lg underline-offset-4 hover:underline">
                   <Link href={`/${domain}/metrics/${id}`} tabIndex={-1}>
-                    {name}
+                    {snakeToTitleCase(name)}
                   </Link>
                 </h3>
                 <div className="flex gap-2">

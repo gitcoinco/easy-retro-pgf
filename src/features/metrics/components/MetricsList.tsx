@@ -2,18 +2,18 @@ import React from "react";
 import Link from "next/link";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { Metric } from "~/features/metrics/types";
-import { Card } from "~/components/ui/Card";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { AddToBallotButton } from "./AddToBallotButton";
+import { ErrorMessage } from "~/components/ErrorMessage";
+import { useMetrics } from "../hooks/useMetrics";
+import { Heading } from "~/components/ui/Heading";
+import { Markdown } from "~/components/ui/Markdown";
+import { snakeToTitleCase } from "~/utils/formatStrings";
 
-export function MetricsList({
-  metrics,
-  isPending,
-}: {
-  metrics?: Metric[];
-  isPending: boolean;
-}) {
-  const domain = useCurrentDomain();
+export function MetricsList() {
+  const { data, error, isPending } = useMetrics();
+
+  if (error) return <ErrorMessage error={error} />;
 
   return (
     <section className="space-y-4">
@@ -21,50 +21,43 @@ export function MetricsList({
         ? Array(5)
             .fill(0)
             .map((_, i) => <MetricCard key={i} isLoading />)
-        : metrics?.map((metric) => (
-            <MetricCard
-              key={metric.id}
-              href={`/${domain}/metrics/${metric?.id}`}
-              metric={metric}
-            />
+        : data.map((metric, i) => (
+            <MetricCard key={metric.id} metric={metric} />
           ))}
     </section>
   );
 }
-
 function MetricCard({
   metric,
   isLoading,
-  href = "",
 }: {
   isLoading?: boolean;
   metric?: Metric;
-  href?: string;
 }) {
-  // Skeleton sizes should be fixed after the card design is finished
-
+  const domain = useCurrentDomain();
   return (
-    <Card className="bg-card text-card-foreground rounded-lg p-6 shadow-sm">
+    <div className={"rounded border p-6 "}>
       <div className="flex gap-8">
         <div className="flex-1 space-y-4">
           {isLoading ? (
-            <>
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-12" />
-              <Skeleton className="h-6 w-32" />
-            </>
+            <Skeleton isLoading className="block h-6 w-48" />
           ) : (
-            <>
-              <div className="flex justify-between">
-                <div className="text-lg hover:underline">
-                  <Link href={href}>{metric?.name}</Link>
-                </div>
-                <AddToBallotButton id={metric.id} />
-              </div>
-            </>
+            <Heading variant="h3" className="hover:underline">
+              <Link href={`/$${domain}/metrics/${metric?.id}`}>
+                {snakeToTitleCase(metric?.name)}
+              </Link>
+            </Heading>
+          )}
+          {isLoading ? (
+            <Skeleton isLoading className="block h-12" />
+          ) : (
+            <Markdown className={"line-clamp-2 text-gray-700"}>
+              {metric?.description}
+            </Markdown>
           )}
         </div>
+        <AddToBallotButton id={metric?.id} />
       </div>
-    </Card>
+    </div>
   );
 }

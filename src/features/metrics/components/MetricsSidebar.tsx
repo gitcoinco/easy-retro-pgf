@@ -25,8 +25,8 @@ import { Allocation } from "~/features/ballot/types";
 import { ScrollArea } from "~/components/ui/ScrollArea";
 import { Badge } from "~/components/ui/Badge";
 import { cn } from "~/utils/classNames";
-import { api } from "~/utils/api";
 import MetricDistributionChart from "./MetricDistributionChart";
+import { snakeToTitleCase } from "~/utils/formatStrings";
 
 type ProjectAllocation = {
   name: string;
@@ -150,11 +150,9 @@ export function MetricsSidebar({
 function MetricPopover({
   is_os,
   list,
-  onOpenManual,
 }: {
   is_os: boolean;
   list?: Allocation[];
-  onOpenManual: () => void;
 }) {
   if (!list?.length) return null;
   return (
@@ -178,7 +176,6 @@ function MetricPopover({
             variant={"ghost"}
             size="sm"
             iconRight={ChevronRight}
-            onClick={onOpenManual}
           >
             This project is open source
           </Button>
@@ -196,7 +193,6 @@ function AllocationItem({
   isLoading,
   children,
 }: PropsWithChildren<Partial<ProjectAllocation>> & { isLoading?: boolean }) {
-  const [isOpen, setOpen] = useState(false);
   return (
     <>
       <TooltipProvider delayDuration={metrics?.length ? 500 : 1000000}>
@@ -211,7 +207,7 @@ function AllocationItem({
                   }}
                 />
                 <div className="truncate">
-                  {name || <Skeleton className="h-3 w-16" />}
+                  {name || <Skeleton isLoading className="h-3 w-16" />}
                 </div>
                 {is_os && <SquareCode className="mr-1 size-3 flex-shrink-0" />}
               </div>
@@ -226,11 +222,7 @@ function AllocationItem({
             align="end"
             alignOffset={-14}
           >
-            <MetricPopover
-              is_os={is_os}
-              list={metrics}
-              onOpenManual={() => setOpen(true)}
-            />
+            <MetricPopover is_os={is_os} list={metrics} />
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -261,11 +253,9 @@ export function MetricSort({
 }
 
 export function MetricNameFromId({ id = "" }) {
-  const { data, isPending } = api.metrics.get.useQuery({ ids: [id] });
-  console.log("name", data);
   return (
     <span className={cn("truncate", { ["animate-pulse"]: isPending })}>
-      {Object.values(data ?? {})[0] ?? id}
+      {snakeToTitleCase(id)}
     </span>
   );
 }

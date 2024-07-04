@@ -4,40 +4,42 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Heading } from "~/components/ui/Heading";
 import { Markdown } from "~/components/ui/Markdown";
-import { Spinner } from "~/components/ui/Spinner";
 import { AddToBallotButton } from "./AddToBallotButton";
 import { Button } from "~/components/ui/Button";
+import { api } from "~/utils/api";
+import { Skeleton } from "~/components/ui/Skeleton";
 
 type MetricDetailsProps = {
-  name: string;
-  description: string;
-  isPending?: boolean;
-  id?: string;
+  id: string;
 };
 
-export default function MetricDetails({
-  name = "",
-  description = "",
-  isPending = false,
-  id,
-}: MetricDetailsProps) {
-  const calculationUrl = ""; // Provide a valid URL here
-
+export default function MetricDetails({ id }: MetricDetailsProps) {
+  const calculationUrl = "#"; // Provide a valid URL here
+  const { data = [], isPending } = api.metrics.get.useQuery(
+    { ids: [id] },
+    { enabled: !!id },
+  );
+  const { name, description } = data[0] ?? {};
   return (
     <div className="space-y-6">
       {isPending ? (
-        <div className="flex h-[500px] w-[580px] flex-col items-center justify-center rounded-[20px] bg-gray-200 shadow-md">
-          <Spinner className="mb-4 h-8 w-8" />
-          <p className="text-gray-700">Loading...</p>
-        </div>
+        <>
+          <Skeleton isLoading className="h-8 w-96" />
+          <div className="space-y-2">
+            <Skeleton isLoading className="h-4 w-full" />
+            <Skeleton isLoading className="h-4 w-full" />
+            <Skeleton isLoading className="h-4 w-4/5" />
+          </div>
+        </>
       ) : (
         <>
-          <Heading as="h2" size="2xl">
+          <Heading variant="h2" size="2xl">
             {name}
           </Heading>
           <Markdown>{description}</Markdown>
         </>
       )}
+
       <div className="flex items-center gap-2">
         <AddToBallotButton variant="primary" id={id} />
         <Link href={calculationUrl} target="_blank">
