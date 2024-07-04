@@ -43,7 +43,7 @@ function MetricCard({
             <Skeleton isLoading className="block h-6 w-48" />
           ) : (
             <Heading variant="h3" className="hover:underline">
-              <Link href={`/$${domain}/metrics/${metric?.id}`}>
+              <Link href={`/${domain}/metrics/${metric?.id}`}>
                 {snakeToTitleCase(metric?.name)}
               </Link>
             </Heading>
