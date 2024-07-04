@@ -8,6 +8,7 @@ import { AddToBallotButton } from "./AddToBallotButton";
 import { Button } from "~/components/ui/Button";
 import { api } from "~/utils/api";
 import { Skeleton } from "~/components/ui/Skeleton";
+import { snakeToTitleCase } from "~/utils/formatStrings";
 
 type MetricDetailsProps = {
   id: string;
@@ -34,7 +35,7 @@ export default function MetricDetails({ id }: MetricDetailsProps) {
       ) : (
         <>
           <Heading variant="h2" size="2xl">
-            {name}
+            {snakeToTitleCase(name)}
           </Heading>
           <Markdown>{description}</Markdown>
         </>
