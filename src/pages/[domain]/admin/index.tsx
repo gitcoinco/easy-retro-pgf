@@ -137,7 +137,11 @@ function Metrics({ disabled = false }) {
             key={metricId}
             className="flex flex-1 cursor-pointer items-center gap-2 p-1"
           >
-            <Checkbox value={metricId} {...register(`metrics`)} />
+            <Checkbox
+              disabled={disabled}
+              value={metricId}
+              {...register(`metrics`)}
+            />
             {name}
           </label>
         ))}
