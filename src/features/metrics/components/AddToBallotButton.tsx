@@ -5,7 +5,7 @@ import {
   useBallot,
   useRemoveAllocation,
   useSaveAllocation,
-} from "~/features/ballotV2/hooks/useBallot";
+} from "~/features/ballot/hooks/useBallot";
 import { RoundTypes } from "~/features/rounds/types";
 
 export function AddToBallotButton({

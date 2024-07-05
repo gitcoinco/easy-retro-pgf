@@ -1,14 +1,12 @@
-import { type PropsWithChildren, type ReactNode, useState } from "react";
+import { type PropsWithChildren, type ReactNode } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Progress } from "~/components/ui/Progress";
-import { useSubmitBallot, sumBallot } from "~/features/ballot/hooks/useBallot";
+import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { formatNumber } from "~/utils/formatNumber";
-import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { useIsMutating } from "@tanstack/react-query";
@@ -16,16 +14,12 @@ import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import dynamic from "next/dynamic";
-import {
-  useCurrentDomain,
-  useCurrentRound,
-} from "~/features/rounds/hooks/useRound";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { Spinner } from "~/components/ui/Spinner";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
-import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
-import { useAccount } from "wagmi";
-import { useBallot } from "~/features/ballotV2/hooks/useBallot";
+import { useBallot } from "~/features/ballot/hooks/useBallot";
+import { SubmitBallotButton } from "./SubmitBallotButton";
 
 function BallotOverview() {
   const router = useRouter();
@@ -119,122 +113,10 @@ function BallotOverview() {
           <div>{formatNumber(maxVotesTotal ?? 0)} votes</div>
         </div>
       </BallotSection>
-      {ballot?.publishedAt ? (
-        <Button
-          className="w-full"
-          as={Link}
-          href={`/${domain}/ballot/confirmation`}
-        >
-          View submitted ballot
-        </Button>
-      ) : isSaving ? (
-        <Button isLoading className="w-full" variant="primary">
-          Updating
-        </Button>
-      ) : canSubmit ? (
-        <SubmitBallotButton disabled={sum > maxVotesTotal} />
-      ) : allocations.length ? (
-        <Button
-          className="w-full"
-          variant="primary"
-          as={Link}
-          href={`/${domain}/ballot`}
-        >
-          View ballot
-        </Button>
-      ) : (
-        <Button className={"w-full"} disabled>
-          No projects added yet
-        </Button>
-      )}
+      <SubmitBallotButton disabled={sum > maxVotesTotal} />
     </div>
   );
 }
-
-const SubmitBallotButton = ({ disabled = false }) => {
-  const isSaving = useIsMutating({ mutationKey: getQueryKey(api.ballot.save) });
-  const router = useRouter();
-  const { address } = useAccount();
-  const { data: isApprovedVoter } = useApprovedVoter(address!);
-  const [isOpen, setOpen] = useState(false);
-  const domain = useCurrentDomain();
-  const submit = useSubmitBallot({
-    onSuccess: async () => void router.push(`/${domain}/ballot/confirmation`),
-  });
-
-  if (!isApprovedVoter) {
-    return (
-      <Button disabled className="w-full">
-        Only approved voters can vote
-      </Button>
-    );
-  }
-
-  const messages = {
-    signing: {
-      title: "Sign ballot",
-      instructions:
-        "Confirm the transactions in your wallet to submit your  ballot.",
-    },
-    submitting: {
-      title: "Submit ballot",
-      instructions:
-        "Once you submit your ballot, you won’t be able to change it. If you are ready, go ahead and submit!",
-    },
-    error: {
-      title: "Error submitting ballot",
-      instructions: (
-        <Alert
-          variant="warning"
-          title={(submit.error as { message?: string })?.message}
-        >
-          There was an error submitting the ballot.
-        </Alert>
-      ),
-    },
-  };
-
-  const { title, instructions } =
-    messages[
-      submit.isPending ? "signing" : submit.error ? "error" : "submitting"
-    ];
-
-  return (
-    <>
-      <Button
-        className="w-full"
-        variant="primary"
-        disabled={disabled || isSaving}
-        onClick={async () => setOpen(true)}
-      >
-        {isSaving ? "Ballot is updating..." : "Submit ballot"}
-      </Button>
-      <Dialog size="sm" isOpen={isOpen} onOpenChange={setOpen} title={title}>
-        <p className="pb-8">{instructions}</p>
-        <div
-          className={clsx("flex gap-2", {
-            ["hidden"]: submit.isPending,
-          })}
-        >
-          <Button
-            variant="ghost"
-            className="flex-1"
-            onClick={() => setOpen(false)}
-          >
-            Back
-          </Button>
-          <Button
-            className="flex-1"
-            variant="primary"
-            onClick={() => submit.mutate()}
-          >
-            Submit ballot
-          </Button>
-        </div>
-      </Dialog>
-    </>
-  );
-};
 
 const BallotMessage = createComponent(
   "div",

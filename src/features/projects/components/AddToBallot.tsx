@@ -17,7 +17,7 @@ import {
   useBallot,
   useRemoveAllocation,
   useSaveAllocation,
-} from "~/features/ballotV2/hooks/useBallot";
+} from "~/features/ballot/hooks/useBallot";
 
 type Props = { id: string; name?: string };
 

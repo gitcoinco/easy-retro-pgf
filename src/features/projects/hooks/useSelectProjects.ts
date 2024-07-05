@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import {
   useBallot,
   useSaveAllocation,
-} from "~/features/ballotV2/hooks/useBallot";
+} from "~/features/ballot/hooks/useBallot";
 
 export function useSelectProjects() {
   const add = useSaveAllocation();

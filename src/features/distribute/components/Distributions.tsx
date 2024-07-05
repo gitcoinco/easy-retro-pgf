@@ -129,7 +129,7 @@ export function Distributions() {
 }
 
 function ExportVotes() {
-  const { mutateAsync, isPending } = api.ballot.export.useMutation();
+  const { mutateAsync, isPending } = api.ballotV2.export.useMutation();
   const exportCSV = useCallback(async () => {
     const ballots = await mutateAsync();
     // Generate CSV file
@@ -140,7 +140,7 @@ function ExportVotes() {
         "publishedAt",
         "project",
         "amount",
-        "projectId",
+        "id",
       ],
     });
     window.open(`data:text/csv;charset=utf-8,${csv}`);

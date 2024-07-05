@@ -5,10 +5,11 @@ import {
   useBallot,
   useRemoveAllocation,
   useSaveAllocation,
-} from "~/features/ballotV2/hooks/useBallot";
+} from "~/features/ballot/hooks/useBallot";
 import { useBallotEditor } from "../hooks/useBallotEditor";
 import { BallotV2 } from "../types";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { RoundTypes } from "~/features/rounds/types";
 
 type BallotContext = ReturnType<typeof useBallotEditor>;
 const BallotContext = createContext(
@@ -24,8 +25,13 @@ export function BallotProvider({ children }: PropsWithChildren) {
   const remove = useRemoveAllocation();
 
   const round = useCurrentRound();
-  const maxAllocation = round?.data?.maxVotesTotal ?? 100;
-  const allocationCap = round?.data?.maxVotesProject ?? 100;
+
+  // When Round type is impact, always use percetages (100)
+  const [maxAllocation, allocationCap] =
+    round.data?.type === RoundTypes.impact
+      ? [100, 100]
+      : [round.data?.maxVotesTotal ?? 0, round.data?.maxVotesProject ?? 0];
+
   const editor = useBallotEditor({
     maxAllocation,
     allocationCap,

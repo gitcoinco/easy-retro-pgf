@@ -103,7 +103,6 @@ export function MetricsSidebar({
               </TooltipTrigger>
               <TooltipContent
                 className="max-w-[300px] text-center text-xs"
-                // align={"center"}
                 sideOffset={-60}
               >
                 <p>
@@ -117,7 +116,7 @@ export function MetricsSidebar({
             <MetricSort sort={sort} setSort={setSort} />
           </div>
         </div>
-        <ScrollArea className="relative h-[328px]">
+        <ScrollArea className="relative max-h-[328px]">
           {isLoading &&
             Array(8)
               .fill(0)

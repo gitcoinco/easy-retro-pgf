@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useMemo, useState } from "react";
 
-import { useBallotContext } from "../components/provider";
+import { useBallotContext } from "../components/BallotProvider";
 import { Allocation } from "../types";
 import {
   createSortFn,

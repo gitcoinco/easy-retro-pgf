@@ -1,0 +1,39 @@
+<html>
+  <script>
+    // const apiURL = "http://localhost:3000/api/trpc/";
+    const apiURL = "https://ezrf-impact.vercel.app/api/trpc/";
+
+    const encodeInput = (json = {}) =>
+      "?input=" + encodeURIComponent(JSON.stringify({ json }));
+
+    const callAPI = async (path) =>
+      fetch(apiURL + path, {
+        headers: {
+          "content-type": "application/json",
+          "round-id": "on-chain-summer-test",
+        },
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          console.log(res);
+          if (res.error) throw new Error(res.error);
+          return res.result.data.json;
+        })
+        .catch(console.error);
+
+    callAPI(
+      "projects.list" +
+        encodeInput({
+          orderBy: "time",
+          sortOrder: "asc",
+          limit: 10,
+          skip: 0,
+        }),
+    ).then((projects) => {
+const projectIds = projects.map((p) => p.id);
+callAPI("metrics.projects" + encodeInput({ projectIds })).then(r => console.log(r))
+
+      document.write(`<pre>${JSON.stringify(projects, null, 2)}</pre>`);
+    });
+  </script>
+</html>

@@ -1,4 +1,8 @@
-import { ballotProcedure, createTRPCRouter } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  ballotProcedure,
+  createTRPCRouter,
+} from "~/server/api/trpc";
 import type { Prisma, PrismaClient, Round } from "@prisma/client";
 
 import { z } from "zod";
@@ -10,12 +14,16 @@ import {
 import { calculateBalancedAllocations } from "~/features/ballot/hooks/useBallotEditor";
 import { TRPCError } from "@trpc/server";
 import { isAfter } from "date-fns";
-import { fetchApprovedVoter } from "~/utils/fetchAttestations";
+import {
+  createAttestationFetcher,
+  fetchApprovedVoter,
+} from "~/utils/fetchAttestations";
 import {
   verifyBallotCount,
   verifyBallotHash,
   verifyBallotSignature,
 } from "~/utils/ballot";
+import { RoundTypes } from "~/features/rounds/types";
 
 export const defaultBallotSelect = {
   id: true,
@@ -135,6 +143,49 @@ export const ballotV2Router = createTRPCRouter({
         data: { publishedAt: new Date(), signature },
       });
     }),
+
+  export: adminProcedure.mutation(({ ctx }) => {
+    return ctx.db.ballotV2
+      .findMany({
+        where: { publishedAt: { not: null } },
+        include: { allocations: true },
+      })
+      .then(async (ballots) => {
+        // Get all unique projectIds from all the votes
+        const projectIds = Object.keys(
+          Object.fromEntries(
+            ballots.flatMap((b) =>
+              b.allocations.map((v) => v.id).map((n) => [n, n]),
+            ),
+          ),
+        );
+        if (ctx.round?.type !== "project") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Export not implemented for impact Rounds",
+          });
+        }
+        const projectsById = await createAttestationFetcher(ctx.round!)(
+          ["metadata"],
+          {
+            where: { id: { in: projectIds } },
+          },
+        ).then((projects) =>
+          Object.fromEntries(projects.map((p) => [p.id, p.name])),
+        );
+        return ballots.flatMap(
+          ({ voterId, signature, publishedAt, allocations }) =>
+            allocations.map(({ amount, id }) => ({
+              voterId,
+              signature,
+              publishedAt,
+              amount,
+              id,
+              project: projectsById?.[id],
+            })),
+        );
+      });
+  }),
 });
 
 async function autobalanceAllocations(
@@ -160,11 +211,16 @@ async function autobalanceAllocations(
         id === input?.id ? input : { id, amount, locked },
       ),
     );
+  // When Round type is impact, always use percetages (100)
+  const [maxAllocation, allocationCap] =
+    round?.type === RoundTypes.impact
+      ? [100, 100]
+      : [round?.maxVotesTotal ?? 0, round?.maxVotesProject ?? 0];
 
   const updates = calculateBalancedAllocations(
     allocations,
-    round?.maxVotesTotal ?? 100,
-    round?.maxVotesProject ?? 100,
+    maxAllocation,
+    allocationCap,
   );
 
   await Promise.all(

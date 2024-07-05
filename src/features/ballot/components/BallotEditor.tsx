@@ -7,30 +7,36 @@ import { Skeleton } from "~/components/ui/Skeleton";
 import { Button } from "~/components/ui/Button";
 import { cn } from "~/utils/classNames";
 import { useSortBallot } from "~/features/ballot/hooks/useBallotEditor";
-import { useBallotContext } from "~/features/ballot/components/provider";
+import { useBallotContext } from "~/features/ballot/components/BallotProvider";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { RoundTypes } from "~/features/rounds/types";
 
 export function BallotEditor({
-  projects = [],
+  items = [],
   isLoading,
   maxAllocation = 100,
+  type,
 }: {
-  projects?: { id: string; name: string }[];
+  items?: { id: string; name: string }[];
   isLoading: boolean;
   maxAllocation?: number;
+  type: RoundTypes;
 }) {
   const domain = useCurrentDomain();
   const { state, inc, dec, set, remove } = useBallotContext();
-  const { sorted } = useSortBallot(projects);
+  const { sorted } = useSortBallot(items);
 
   const projectById = useMemo(
-    () => Object.fromEntries(projects.map((p) => [p.id, p])),
-    [projects],
+    () => Object.fromEntries(items.map((p) => [p.id, p])),
+    [items],
   );
 
-  console.log(projects.map((p) => ({ ...p, state: state[p.id] })));
   return (
     <div>
+      <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
+      <p className="mb-6">
+        Once you have reviewed your vote allocation, you can submit your ballot.
+      </p>
       <div className="divide-y rounded-xl border">
         {isLoading &&
           Array(3)
@@ -49,7 +55,7 @@ export function BallotEditor({
             return (
               <div key={id} className="flex items-center justify-between p-4">
                 <h3 className="text-lg underline-offset-4 hover:underline">
-                  <Link href={`/${domain}/projects/${id}`} tabIndex={-1}>
+                  <Link href={`/${domain}/${type}/${id}`} tabIndex={-1}>
                     {name}
                   </Link>
                 </h3>
@@ -90,7 +96,11 @@ export function BallotEditor({
                       )}
                       placeholder="--"
                       thousandSeparator=","
-                      value={amount !== undefined ? amount : undefined}
+                      value={
+                        amount !== undefined
+                          ? amount.toFixed(maxAllocation === 100 ? 2 : 0)
+                          : undefined
+                      }
                       onBlur={(e) => {
                         e.preventDefault();
                         const updated = e.target.value
