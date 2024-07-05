@@ -128,7 +128,7 @@ const ConnectedDetails = ({
     </div>
   );
 };
-
+let _hasIdentified = false;
 const UserInfo = ({
   address,
   children,
@@ -139,7 +139,10 @@ const UserInfo = ({
   const avatar = useEnsAvatar({ name, chainId: 1 });
 
   useEffect(() => {
-    address && !ens.isPending && posthog.identify(address, { name });
+    if (address && !ens.isPending && _hasIdentified) {
+      posthog.identify(address, { name });
+      _hasIdentified = true;
+    }
   }, [address, ens]);
   return (
     <Chip className="gap-2" {...props}>

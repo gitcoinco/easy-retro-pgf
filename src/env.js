@@ -47,6 +47,9 @@ export const env = createEnv({
     NEXT_PUBLIC_ALCHEMY_ID: z.string().optional(),
 
     NEXT_PUBLIC_ALLO2_ADDRESS: z.string().startsWith("0x"),
+
+    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string(),
   },
 
   /**
@@ -76,6 +79,8 @@ export const env = createEnv({
     NEXT_PUBLIC_METADATA_SCHEMA: process.env.NEXT_PUBLIC_METADATA_SCHEMA,
 
     NEXT_PUBLIC_ALLO2_ADDRESS: process.env.NEXT_PUBLIC_ALLO2_ADDRESS,
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
