@@ -1,6 +1,5 @@
 import { apiKeysRouter } from "~/server/api/routers/apiKeys";
 import { ballotRouter } from "~/server/api/routers/ballot";
-import { ballotV2Router } from "~/server/api/routers/ballotV2";
 import { resultsRouter } from "~/server/api/routers/results";
 import { roundsRouter } from "~/server/api/routers/rounds";
 import { commentsRouter } from "~/server/api/routers/comments";
@@ -21,7 +20,6 @@ export const appRouter = createTRPCRouter({
   rounds: roundsRouter,
   comments: commentsRouter,
   results: resultsRouter,
-  ballotV2: ballotV2Router,
   ballot: ballotRouter,
   voters: votersRouter,
   applications: applicationsRouter,

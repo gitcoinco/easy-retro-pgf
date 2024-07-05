@@ -12,15 +12,15 @@ import { useBallotContext } from "~/features/ballot/components/BallotProvider";
 import { api } from "~/utils/api";
 
 export function useBallot() {
-  return api.ballotV2.get.useQuery();
+  return api.ballot.get.useQuery();
 }
 
 export function useSaveAllocation() {
   const utils = api.useUtils();
-  return api.ballotV2.save.useMutation({
+  return api.ballot.save.useMutation({
     // Refetch the ballot to update the UI
     onSuccess: (ballot) => {
-      utils.ballotV2.get.setData(undefined, ballot);
+      utils.ballot.get.setData(undefined, ballot);
       utils.metrics.forBallot.invalidate();
     },
   });
@@ -28,10 +28,10 @@ export function useSaveAllocation() {
 
 export function useRemoveAllocation() {
   const utils = api.useUtils();
-  return api.ballotV2.remove.useMutation({
+  return api.ballot.remove.useMutation({
     // Refetch the ballot to update the UI
     onSuccess: (ballot) => {
-      utils.ballotV2.get.setData(undefined, ballot);
+      utils.ballot.get.setData(undefined, ballot);
       utils.metrics.forBallot.invalidate();
     },
   });
@@ -44,7 +44,7 @@ export function useSubmitBallot({
   const chainId = useChainId();
   const { refetch } = useBallot();
 
-  const { mutateAsync, isPending } = api.ballotV2.publish.useMutation({
+  const { mutateAsync, isPending } = api.ballot.publish.useMutation({
     onSuccess,
   });
   useBeforeUnload(isPending, "You have unsaved changes, are you sure?");
@@ -81,7 +81,7 @@ export const sumBallot = (allocations?: Allocation[]) =>
   );
 
 export function useIsSavingBallot() {
-  return Boolean(useIsMutating({ mutationKey: getQueryKey(api.ballotV2) }));
+  return Boolean(useIsMutating({ mutationKey: getQueryKey(api.ballot) }));
 }
 
 export function useBallotWeightSum() {
