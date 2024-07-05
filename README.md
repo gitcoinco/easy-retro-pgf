@@ -54,11 +54,13 @@ All networks EAS is deployed to are supported
 To run locally follow these instructions:
 
 ```sh
-git clone https://github.com/gitcoinco/easy-rpgf-multiround
+git clone https://github.com/gitcoinco/easy-retro-pgf
 
 bun install # (or pnpm / yarn / npm)
 
 cp .env.example .env # and update .env variables
+
+docker-compose up # starts a local postgres instance
 
 bun run dev
 
