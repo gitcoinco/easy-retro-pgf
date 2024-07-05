@@ -28,6 +28,8 @@ export function Distributions() {
 
   const poolAmount = usePoolAmount();
   const votes = api.results.votes.useQuery();
+  console.log("votes", votes.data);
+
   const projectIds = Object.keys(votes.data?.projects ?? {});
 
   const projects = api.projects.payoutAddresses.useQuery(

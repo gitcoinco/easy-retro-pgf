@@ -163,6 +163,8 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
           reviewAt: true,
           votingAt: true,
           resultAt: true,
+          calculationConfig: true,
+          calculationType: true,
           payoutAt: true,
           maxVotesProject: true,
           maxVotesTotal: true,
