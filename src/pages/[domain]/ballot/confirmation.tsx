@@ -1,5 +1,5 @@
 import { BallotConfirmation } from "~/features/ballot/components/BallotConfirmation";
-import { useBallot } from "~/features/ballot/hooks/useBallot";
+import { useBallot } from "~/features/ballotV2/hooks/useBallot";
 import { Layout } from "~/layouts/DefaultLayout";
 
 export default function BallotConfirmationPage() {
@@ -10,7 +10,7 @@ export default function BallotConfirmationPage() {
   return (
     <Layout requireAuth>
       <BallotConfirmation
-        votes={ballot?.votes.sort((a, b) => +b.amount - +a.amount)}
+        allocations={ballot?.allocations.sort((a, b) => +b.amount - +a.amount)}
       />
     </Layout>
   );

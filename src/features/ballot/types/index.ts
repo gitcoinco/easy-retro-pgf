@@ -13,9 +13,9 @@ export const BallotPublishSchema = z.object({
   chainId: z.number(),
   signature: z.custom<`0x${string}`>(),
   message: z.object({
-    total_votes: z.bigint(),
-    project_count: z.bigint(),
-    hashed_votes: z.string(),
+    allocations_sum: z.bigint(),
+    allocations_count: z.bigint(),
+    hashed_allocations: z.string(),
   }),
 });
 

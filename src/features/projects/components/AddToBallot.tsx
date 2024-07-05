@@ -9,37 +9,37 @@ import { Button, IconButton } from "~/components/ui/Button";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { Form } from "~/components/ui/Form";
-import {
-  ballotContains,
-  useAddToBallot,
-  useBallot,
-  useRemoveFromBallot,
-  sumBallot,
-} from "~/features/ballot/hooks/useBallot";
+import { sumBallot } from "~/features/ballot/hooks/useBallot";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { AllocationInput } from "~/components/AllocationInput";
+import {
+  useBallot,
+  useRemoveAllocation,
+  useSaveAllocation,
+} from "~/features/ballotV2/hooks/useBallot";
 
-type Props = { id?: string; name?: string };
+type Props = { id: string; name?: string };
 
 export const ProjectAddToBallot = ({ id, name }: Props) => {
   const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
-  const add = useAddToBallot();
-  const remove = useRemoveFromBallot();
-  const round = useCurrentRound();
-  const { data: ballot } = useBallot();
 
-  const inBallot = ballotContains(id!, ballot);
-  const allocations = ballot?.votes ?? [];
-  const sum = sumBallot(allocations.filter((p) => p.projectId !== id));
+  const ballot = useBallot();
+  const add = useSaveAllocation();
+  const remove = useRemoveAllocation();
+
+  const round = useCurrentRound();
+  const allocations = ballot.data?.allocations ?? [];
+  const inBallot = allocations.find((a) => a.id === id);
+  const sum = sumBallot(allocations.filter((p) => p.id !== id));
   if (useRoundState() !== "VOTING") return null;
 
   const maxVotesProject = round.data?.maxVotesProject ?? 0;
   const maxVotesTotal = round.data?.maxVotesTotal ?? 0;
   return (
     <div>
-      {ballot?.publishedAt ? (
+      {ballot.data?.publishedAt ? (
         <Button disabled>Ballot published</Button>
       ) : inBallot ? (
         <IconButton
@@ -80,7 +80,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
               .default(0),
           })}
           onSubmit={({ amount }) => {
-            add.mutate([{ projectId: id!, amount }]);
+            add.mutate({ id, amount });
             setOpen(false);
           }}
         >
@@ -90,7 +90,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             maxVotesProject={maxVotesProject}
             maxVotesTotal={maxVotesTotal}
             onRemove={() => {
-              remove.mutate(id!);
+              remove.mutate({ id });
               setOpen(false);
             }}
           />

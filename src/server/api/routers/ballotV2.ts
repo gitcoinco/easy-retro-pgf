@@ -1,8 +1,21 @@
 import { ballotProcedure, createTRPCRouter } from "~/server/api/trpc";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient, Round } from "@prisma/client";
 
 import { z } from "zod";
-import { AllocationSchema, Allocation } from "~/features/ballot/types";
+import {
+  AllocationSchema,
+  Allocation,
+  BallotPublishSchema,
+} from "~/features/ballot/types";
+import { calculateBalancedAllocations } from "~/features/ballot/hooks/useBallotEditor";
+import { TRPCError } from "@trpc/server";
+import { isAfter } from "date-fns";
+import { fetchApprovedVoter } from "~/utils/fetchAttestations";
+import {
+  verifyBallotCount,
+  verifyBallotHash,
+  verifyBallotSignature,
+} from "~/utils/ballot";
 
 export const defaultBallotSelect = {
   id: true,
@@ -57,7 +70,71 @@ export const ballotV2Router = createTRPCRouter({
       });
       return autobalanceAllocations(ctx);
     }),
-  publish: ballotProcedure.mutation(({ ctx }) => {}),
+  publish: ballotProcedure
+    .input(BallotPublishSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { round, ballot, voterId } = ctx;
+      if (!round || !ballot) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Round or ballot not found",
+        });
+      }
+      if (![round.resultAt, round.maxVotesTotal].every(Boolean)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Round not configured properly",
+        });
+      }
+
+      if (isAfter(new Date(), round.resultAt!)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
+      }
+
+      if (ballot.publishedAt) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Ballot already published",
+        });
+      }
+      if (!verifyBallotCount(ballot.allocations, round)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Ballot must have a maximum of ${round.maxVotesTotal} votes and ${round.maxVotesProject} per project.`,
+        });
+      }
+
+      if (!(await fetchApprovedVoter(round, voterId))) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Voter is not approved",
+        });
+      }
+
+      if (
+        !(await verifyBallotHash(
+          input.message.hashed_allocations,
+          ballot.allocations,
+        ))
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Votes hash mismatch",
+        });
+      }
+      const { signature } = input;
+      if (!(await verifyBallotSignature({ ...input, address: voterId }))) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Signature couldn't be verified",
+        });
+      }
+
+      return ctx.db.ballotV2.update({
+        where: { id: ballot.id },
+        data: { publishedAt: new Date(), signature },
+      });
+    }),
 });
 
 async function autobalanceAllocations(
@@ -66,7 +143,14 @@ async function autobalanceAllocations(
     ballotId,
     voterId,
     roundId,
-  }: { db: PrismaClient; ballotId: string; voterId: string; roundId: string },
+    round,
+  }: {
+    db: PrismaClient;
+    ballotId: string;
+    voterId: string;
+    roundId: string;
+    round?: Round;
+  },
   input?: Allocation,
 ) {
   const allocations = await db.allocation
@@ -77,16 +161,12 @@ async function autobalanceAllocations(
       ),
     );
 
-  const locked = allocations.filter((alloc) => alloc.locked);
-  const lockedAmount = locked.reduce((sum, x) => sum + Number(x.amount), 0);
+  const updates = calculateBalancedAllocations(
+    allocations,
+    round?.maxVotesTotal ?? 100,
+    round?.maxVotesProject ?? 100,
+  );
 
-  const unlocked = allocations
-    .filter((alloc) => !alloc.locked)
-    .map((alloc, i, arr) => ({
-      ...alloc,
-      amount: (100 - lockedAmount) / arr.length,
-    }));
-  const updates = [...locked, ...unlocked];
   await Promise.all(
     updates.map(({ id, ...data }) =>
       db.allocation.update({

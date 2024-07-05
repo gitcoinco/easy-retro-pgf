@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
 import {
-  ballotContains,
-  useAddToBallot,
   useBallot,
-} from "~/features/ballot/hooks/useBallot";
+  useSaveAllocation,
+} from "~/features/ballotV2/hooks/useBallot";
 
 export function useSelectProjects() {
-  const add = useAddToBallot();
+  const add = useSaveAllocation();
   const { data: ballot, isPending } = useBallot();
 
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -15,7 +14,7 @@ export function useSelectProjects() {
     () =>
       Object.keys(selected)
         .filter((id) => selected[id])
-        .map((projectId) => ({ projectId, amount: 0 })),
+        .map((id) => ({ id, amount: 0 })),
     [selected],
   );
 
@@ -23,7 +22,7 @@ export function useSelectProjects() {
     count: toAdd.length,
     isPending: isPending || add.isPending,
     add: () => {
-      add.mutate(toAdd);
+      toAdd.map((a) => add.mutate(a));
       setSelected({});
     },
     reset: () => setSelected({}),
@@ -34,6 +33,10 @@ export function useSelectProjects() {
         : setSelected((s) => ({ ...s, [id]: true }));
     },
     getState: (id: string) =>
-      Boolean(ballotContains(id, ballot)) ? 2 : selected[id] ? 1 : 0,
+      Boolean(ballot?.allocations.map((a) => a.id).includes(id))
+        ? 2
+        : selected[id]
+          ? 1
+          : 0,
   };
 }

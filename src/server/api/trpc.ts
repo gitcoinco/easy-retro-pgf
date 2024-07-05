@@ -7,6 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 
+import { Round } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NextApiResponse } from "next";
@@ -34,17 +35,18 @@ import { hashApiKey } from "~/utils/hashApiKey";
 export interface CreateContextOptions {
   session: Session | null;
   domain?: string;
-  round?: {
-    id: string;
-    admins: string[];
-    network: string | null;
-    type: string | null;
-    startsAt: Date | null;
-    reviewAt: Date | null;
-    votingAt: Date | null;
-    resultAt: Date | null;
-    payoutAt: Date | null;
-  } | null;
+  round?: Round;
+  // round?: {
+  //   id: string;
+  //   admins: string[];
+  //   network: string | null;
+  //   type: string | null;
+  //   startsAt: Date | null;
+  //   reviewAt: Date | null;
+  //   votingAt: Date | null;
+  //   resultAt: Date | null;
+  //   payoutAt: Date | null;
+  // } | null;
   res: NextApiResponse;
   fetchAttestations?: AttestationFetcher;
 }
@@ -162,6 +164,8 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
           votingAt: true,
           resultAt: true,
           payoutAt: true,
+          maxVotesProject: true,
+          maxVotesTotal: true,
           metrics: true,
         },
       })

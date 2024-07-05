@@ -6,8 +6,7 @@ import { Lock } from "lucide-react";
 import { AllocationList } from "../../../components/AllocationList";
 import { Button } from "~/components/ui/Button";
 import { createComponent } from "~/components/ui";
-import { type Vote } from "../types";
-import { config } from "~/config";
+import { Allocation } from "../types";
 
 const feedbackUrl = process.env.NEXT_PUBLIC_FEEDBACK_URL;
 
@@ -16,7 +15,11 @@ const Card = createComponent(
   tv({ base: "rounded-3xl border p-8 dark:border-gray-700" }),
 );
 
-export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
+export const BallotConfirmation = ({
+  allocations,
+}: {
+  allocations: Allocation[];
+}) => {
   return (
     <section>
       <div className="grid gap-6">
@@ -27,9 +30,8 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
                 Your vote has been received 🥳
               </h3>
               <p className="mb-10 text-gray-700 dark:text-gray-300">
-                Thank you for participating in RetroPGF 3. Please help us
-                improve the process by providing feedback on your experience as
-                a badgeholder!
+                Thank you for participating. Please help us improve the process
+                by providing feedback on your experience as a badgeholder!
               </p>
               <Button
                 variant="primary"
@@ -55,32 +57,13 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
             </div>
           </div>
           <div className="flex items-center justify-between border-b py-3 text-gray-600 dark:border-gray-700 dark:text-gray-300">
-            <p>Project name</p>
+            <p>Name</p>
             <p>votes allocated by you</p>
           </div>
 
           <section className="max-h-[480px] overflow-y-scroll">
-            {votes && <AllocationList votes={votes} />}
+            {allocations && <AllocationList allocations={allocations} />}
           </section>
-        </Card>
-        <Card>
-          <div>
-            <h5 className="mb-3 text-2xl font-bold">
-              Help us improve next round of RetroPGF
-            </h5>
-            <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Your anonymized feedback will be influential to help us iterate on
-              the RetroPGF process.
-            </p>
-            <Button
-              variant="primary"
-              as={Link}
-              target="_blank"
-              href={feedbackUrl}
-            >
-              Share your feedback
-            </Button>
-          </div>
         </Card>
       </div>
     </section>

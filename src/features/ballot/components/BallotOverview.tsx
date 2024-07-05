@@ -6,11 +6,7 @@ import { useRouter } from "next/router";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Progress } from "~/components/ui/Progress";
-import {
-  useSubmitBallot,
-  useBallot,
-  sumBallot,
-} from "~/features/ballot/hooks/useBallot";
+import { useSubmitBallot, sumBallot } from "~/features/ballot/hooks/useBallot";
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
@@ -29,17 +25,18 @@ import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
 import { useAccount } from "wagmi";
+import { useBallot } from "~/features/ballotV2/hooks/useBallot";
 
 function BallotOverview() {
   const router = useRouter();
 
   const { data: ballot } = useBallot();
-  const isSaving = useIsMutating(getQueryKey(api.ballot.save));
+  const isSaving = useIsMutating({ mutationKey: getQueryKey(api.ballot.save) });
 
   const round = useCurrentRound();
-  const sum = sumBallot(ballot?.votes);
+  const allocations = ballot?.allocations ?? [];
+  const sum = sumBallot(allocations);
 
-  const allocations = ballot?.votes ?? [];
   const canSubmit = router.route.includes("ballot") && allocations.length;
 
   const { data: projectCount } = useProjectCount();
