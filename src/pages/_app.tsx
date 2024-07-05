@@ -8,6 +8,8 @@ import { Providers } from "~/providers";
 import { api } from "~/utils/api";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
@@ -32,6 +34,16 @@ const heading = Teko({
 });
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
+  const router = useRouter();
+  useEffect(() => {
+    // Track page views
+    const handleRouteChange = () => posthog.capture("$pageview");
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, []);
   return (
     <Providers session={pageProps.session}>
       <style jsx global>{`
