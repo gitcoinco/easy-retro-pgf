@@ -40,7 +40,7 @@ export default function ProjectsPage({}) {
           as={Link}
           target="_blank"
           size="lg"
-          href={`https://github.com/gitcoinco/easy-rpgf-multiround`}
+          href={`https://github.com/gitcoinco/easy-retro-pgf`}
         >
           Self-hosted
         </Button>
@@ -61,7 +61,7 @@ export default function ProjectsPage({}) {
       <div className="flex justify-center gap-12 py-16">
         <Meta
           target="_blank"
-          href={"https://github.com/gitcoinco/easy-rpgf-multiround"}
+          href={"https://github.com/gitcoinco/easy-retro-pgf"}
         >
           <MetaIcon as={Github} />
           Github

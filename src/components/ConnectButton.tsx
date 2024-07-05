@@ -1,6 +1,11 @@
+import posthog from "posthog-js";
 import Image from "next/image";
 import Link from "next/link";
-import { type PropsWithChildren, type ComponentPropsWithRef } from "react";
+import {
+  type PropsWithChildren,
+  type ComponentPropsWithRef,
+  useEffect,
+} from "react";
 
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { getAddress, type Address } from "viem";
@@ -133,6 +138,9 @@ const UserInfo = ({
   const name = ens.data ? normalize(ens.data) : "";
   const avatar = useEnsAvatar({ name, chainId: 1 });
 
+  useEffect(() => {
+    address && !ens.isPending && posthog.identify(address, { name });
+  }, [address, ens]);
   return (
     <Chip className="gap-2" {...props}>
       <div className="h-6 w-6 overflow-hidden rounded-full">

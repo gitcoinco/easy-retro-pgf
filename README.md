@@ -54,7 +54,7 @@ All networks EAS is deployed to are supported
 To run locally follow these instructions:
 
 ```sh
-git clone https://github.com/gitcoinco/easy-rpgf-multiround
+git clone https://github.com/gitcoinco/easy-retro-pgf
 
 bun install # (or pnpm / yarn / npm)
 
