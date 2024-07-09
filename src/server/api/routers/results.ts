@@ -7,10 +7,9 @@ import {
 } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
 import { calculateVotes } from "~/utils/calculateResults";
-import { type Vote } from "~/features/ballot/types";
 import { TRPCError } from "@trpc/server";
 import { getState } from "~/features/rounds/hooks/useRoundState";
-import { RoundSchema, RoundTypes } from "~/features/rounds/types";
+import { RoundTypes } from "~/features/rounds/types";
 
 export const resultsRouter = createTRPCRouter({
   votes: adminProcedure.query(async ({ ctx }) => calculateBallotResults(ctx)),
@@ -21,7 +20,7 @@ export const resultsRouter = createTRPCRouter({
         code: "NOT_FOUND",
       });
     }
-    if (getState(round as unknown as RoundSchema) !== "RESULTS") {
+    if (getState(round) !== "RESULTS") {
       throw new TRPCError({
         code: "BAD_REQUEST",
         message: "Results not available yet",
@@ -33,18 +32,16 @@ export const resultsRouter = createTRPCRouter({
   projects: attestationProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
-      const roundId = String(ctx.round?.id);
-
       if (getState(ctx.round) !== "RESULTS") {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Results not available yet",
         });
       }
-      const { projects } = await calculateBallotResults(roundId, ctx.db);
+      const { votes } = await calculateBallotResults(ctx);
 
-      const sortedIDs = Object.entries(projects ?? {})
-        .sort((a, b) => b[1].votes - a[1].votes)
+      const sortedIDs = Object.entries(votes ?? {})
+        .sort((a, b) => b[1].allocations - a[1].allocations)
         .map(([id]) => id)
         .slice(
           input.cursor * input.limit,

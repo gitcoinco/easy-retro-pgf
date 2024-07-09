@@ -1,7 +1,7 @@
+import { Round } from "@prisma/client";
 import { isBefore } from "date-fns";
 import { useMemo } from "react";
 import { useCurrentRound } from "./useRound";
-import { type RoundSchema } from "../types";
 
 type AppState =
   | "APPLICATION"
@@ -16,7 +16,7 @@ export function useRoundState() {
   return useMemo(() => getState(data), [data]);
 }
 
-export const getState = (round?: RoundSchema | null): AppState => {
+export const getState = (round?: Round | null): AppState => {
   const now = new Date();
 
   if (!round) return null;
