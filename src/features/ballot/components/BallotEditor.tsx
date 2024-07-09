@@ -15,6 +15,7 @@ import {
 import { RoundTypes } from "~/features/rounds/types";
 import { Alert } from "~/components/ui/Alert";
 import { formatDate } from "~/utils/time";
+import { ExportMetricsCSV, ExportProjectsCSV, ImportCSV } from "./ImportCSV";
 
 export function BallotEditor({
   items = [],
@@ -45,7 +46,7 @@ export function BallotEditor({
         Once you have reviewed your vote allocation, you can submit your ballot.
       </p>
       {publishedAt && (
-        <Alert variant={"success"}>
+        <Alert variant={"success"} className="mb-2">
           <div className="flex items-center gap-2 text-sm">
             <p>
               Your ballot was submitted on {formatDate(publishedAt)}. You can
@@ -56,6 +57,18 @@ export function BallotEditor({
           </div>
         </Alert>
       )}
+      <div className="mb-2 flex items-center gap-2">
+        <ImportCSV
+          onImport={(allocations) =>
+            allocations.map((alloc) => set(alloc.id, alloc.amount))
+          }
+        />
+        {type === RoundTypes.impact ? (
+          <ExportMetricsCSV allocations={ballot?.allocations} />
+        ) : (
+          <ExportProjectsCSV allocations={ballot?.allocations} />
+        )}
+      </div>
       <div className="divide-y rounded-xl border">
         {isLoading &&
           Array(3)

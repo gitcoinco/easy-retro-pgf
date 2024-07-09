@@ -87,9 +87,9 @@ export function ImportCSV({
 }
 
 export function ExportProjectsCSV({
-  allocations,
+  allocations = [],
 }: {
-  allocations: Allocation[];
+  allocations?: Allocation[];
 }) {
   // Fetch projects for allocations to get the name
   const projects = useProjectsById(allocations.map((v) => v.id));
@@ -98,9 +98,9 @@ export function ExportProjectsCSV({
 }
 
 export function ExportMetricsCSV({
-  allocations,
+  allocations = [],
 }: {
-  allocations: Allocation[];
+  allocations?: Allocation[];
 }) {
   const metrics = api.metrics.get.useQuery({
     ids: allocations.map((v) => v.id),

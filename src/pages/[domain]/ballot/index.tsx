@@ -13,10 +13,6 @@ export default function BallotPage() {
   );
   const round = useCurrentRound();
 
-  const isPending = ballot.isPending || projects.isPending || round.isPending;
-
-  if (isPending) return null;
-
   return (
     <BallotProvider>
       <LayoutWithBallot sidebar="right" requireAuth>
@@ -24,7 +20,7 @@ export default function BallotPage() {
           maxAllocation={round.data?.maxVotesProject ?? 0}
           items={projects.data}
           type={RoundTypes.project}
-          isLoading={isPending}
+          isLoading={projects.isPending}
         />
       </LayoutWithBallot>
     </BallotProvider>

@@ -9,13 +9,13 @@ import {
 import { useBallotEditor } from "../hooks/useBallotEditor";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { RoundTypes } from "~/features/rounds/types";
-import { BallotV2 } from "@prisma/client";
+import { Allocation, BallotV2 } from "@prisma/client";
 
 type BallotContext = ReturnType<typeof useBallotEditor>;
 const BallotContext = createContext(
   {} as BallotContext & {
     isPending: boolean;
-    ballot?: BallotV2 | null;
+    ballot?: (BallotV2 & { allocations: Allocation[] }) | null;
   },
 );
 
