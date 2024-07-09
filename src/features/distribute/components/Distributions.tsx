@@ -25,6 +25,8 @@ export function Distributions() {
 
   const poolAmount = usePoolAmount();
   const totalTokens = poolAmount.data?.toString() ?? "0";
+  const votes = api.results.votes.useQuery();
+  console.log("votes", votes.data);
 
   const distributionResult = api.results.distribution.useQuery({ totalTokens });
 
@@ -109,7 +111,7 @@ function ExportVotes() {
         "publishedAt",
         "project",
         "amount",
-        "projectId",
+        "id",
       ],
     });
     window.open(`data:text/csv;charset=utf-8,${csv}`);

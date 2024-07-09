@@ -16,6 +16,7 @@ export const button = tv({
       primary:
         "bg-primary-600 hover:bg-primary-500 dark:bg-white dark:hover:bg-gray-200 dark:text-gray-900 text-white dark:disabled:bg-gray-500",
       ghost: "hover:bg-gray-100 dark:hover:bg-gray-800",
+      link: "underline underline-offset-4",
       default:
         "bg-gray-100 dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800",
       danger:
@@ -23,6 +24,7 @@ export const button = tv({
       outline: "border border-gray-300 hover:bg-white/5 hover:border-gray-400",
     },
     size: {
+      xs: "px-2 h-8 text-xs",
       sm: "px-3 py-2 h-10 min-w-[40px]",
       md: "px-6 py-2 h-12",
       lg: "px-6 py-3 text-lg",

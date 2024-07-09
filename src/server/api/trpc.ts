@@ -7,6 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 
+import { Round, RoundType } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NextApiResponse } from "next";
@@ -20,6 +21,7 @@ import {
   type AttestationFetcher,
   createAttestationFetcher,
 } from "~/utils/fetchAttestations";
+import { hashApiKey } from "~/utils/hashApiKey";
 
 /**
  * 1. CONTEXT
@@ -29,21 +31,10 @@ import {
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-export interface PartialRound {
-    id: string;
-    admins: string[];
-    network: string | null;
-    startsAt: Date | null;
-    reviewAt: Date | null;
-    votingAt: Date | null;
-    resultAt: Date | null;
-    payoutAt: Date | null;
-}
-
-interface CreateContextOptions {
+export interface CreateContextOptions {
   session: Session | null;
   domain?: string;
-  round?: PartialRound | null;
+  round?: Round | null;
   res: NextApiResponse;
   fetchAttestations?: AttestationFetcher;
 }
@@ -80,13 +71,9 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const session = await getServerAuthSession({ req, res });
 
   // Get the current round domain
-  const domain = req.headers.referer?.split("/")[3];
+  const domain = req.headers["round-id"] as string;
 
-  return createInnerTRPCContext({
-    session,
-    res,
-    domain,
-  });
+  return createInnerTRPCContext({ session, res, domain });
 };
 
 /**
@@ -153,19 +140,25 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
   const domain = ctx.domain;
 
   const round = domain
-    ? ((await ctx.db.round.findFirst({
+    ? await ctx.db.round.findFirst({
         where: { domain },
         select: {
           id: true,
           admins: true,
           network: true,
+          type: true,
           startsAt: true,
           reviewAt: true,
           votingAt: true,
           resultAt: true,
+          calculationConfig: true,
+          calculationType: true,
           payoutAt: true,
+          maxVotesProject: true,
+          maxVotesTotal: true,
+          metrics: true,
         },
-      })) as PartialRound)
+      })
     : null;
 
   if (!round)
@@ -211,6 +204,25 @@ export const roundProcedure = publicProcedure.use(roundMiddleware);
 export const protectedRoundProcedure = publicProcedure
   .use(enforceUserIsAuthed)
   .use(roundMiddleware);
+
+export const ballotProcedure = protectedRoundProcedure.use(
+  t.middleware(async ({ ctx, next }) => {
+    const voterId = ctx.session?.user.name!;
+    const roundId = ctx.round?.id!;
+    const type = ctx.round?.type as RoundType;
+
+    // Find or create ballot
+    const ballot = await ctx.db.ballotV2.upsert({
+      where: { voterId_roundId_type: { voterId, roundId, type } },
+      update: {},
+      create: { voterId, roundId, type },
+      include: { allocations: true },
+    });
+    return next({
+      ctx: { ...ctx, voterId, roundId, ballotId: ballot.id, ballot },
+    });
+  }),
+);
 export const adminProcedure = protectedProcedure
   .use(enforceUserIsAdmin)
   .use(roundMiddleware);
@@ -219,3 +231,14 @@ export const adminAttestationProcedure = protectedProcedure
   .use(enforceUserIsAdmin)
   .use(roundMiddleware)
   .use(attestationMiddleware);
+
+export async function getApiKeySession(apiKey?: string | null) {
+  if (!apiKey) return null;
+
+  // Find API key
+  const key = await db.apiKey.findFirst({ where: { key: hashApiKey(apiKey) } });
+
+  if (key?.creatorId) return { id: key.creatorId };
+
+  return null;
+}

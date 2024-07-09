@@ -1,4 +1,4 @@
-import { type Vote } from "~/features/ballot/types";
+import { Allocation, type Vote } from "~/features/ballot/types";
 
 export type PayoutOptions = {
   calculation: "average" | "median" | "sum";
@@ -8,14 +8,14 @@ export type BallotResults = Record<
   string,
   {
     voters: number;
-    votes: number;
+    allocations: number;
   }
 >;
 export function calculateVotes(
-  ballots: { voterId: string; votes: Vote[] }[],
+  ballots: { voterId: string; allocations: Allocation[] }[],
   payoutOpts: PayoutOptions,
 ): BallotResults {
-  const projectVotes: Record<
+  const votes: Record<
     string,
     {
       total: number;
@@ -25,16 +25,16 @@ export function calculateVotes(
   > = {};
 
   for (const ballot of ballots) {
-    for (const vote of ballot.votes) {
-      if (!projectVotes[vote.projectId]) {
-        projectVotes[vote.projectId] = {
+    for (const vote of ballot.allocations) {
+      if (!votes[vote.id]) {
+        votes[vote.id] = {
           total: 0,
           amounts: [],
           voterIds: new Set(),
         };
       }
-      projectVotes[vote.projectId]!.amounts.push(vote.amount);
-      projectVotes[vote.projectId]!.voterIds.add(ballot.voterId);
+      votes[vote.id]!.amounts.push(vote.amount);
+      votes[vote.id]!.voterIds.add(ballot.voterId);
     }
   }
 
@@ -45,15 +45,16 @@ export function calculateVotes(
     median: calculateMedian,
     sum: calculateSum,
   };
-  for (const projectId in projectVotes) {
-    const { amounts, voterIds } = projectVotes[projectId]!;
+
+  for (const id in votes) {
+    const { amounts, voterIds } = votes[id]!;
     const voteIsCounted =
       payoutOpts.threshold && voterIds.size >= payoutOpts.threshold;
 
     if (voteIsCounted) {
-      projects[projectId] = {
+      projects[id] = {
         voters: voterIds.size,
-        votes: calcFunctions[payoutOpts.calculation ?? "average"]?.(
+        allocations: calcFunctions[payoutOpts.calculation ?? "average"]?.(
           amounts.sort((a, b) => a - b),
         ),
       };
