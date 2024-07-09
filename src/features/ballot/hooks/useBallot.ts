@@ -36,17 +36,11 @@ export function useRemoveAllocation() {
     },
   });
 }
-export function useSubmitBallot({
-  onSuccess,
-}: {
-  onSuccess: () => Promise<void>;
-}) {
+export function useSubmitBallot() {
   const chainId = useChainId();
   const { refetch } = useBallot();
 
-  const { mutateAsync, isPending } = api.ballot.publish.useMutation({
-    onSuccess,
-  });
+  const { mutateAsync, isPending } = api.ballot.publish.useMutation();
   useBeforeUnload(isPending, "You have unsaved changes, are you sure?");
 
   const { signTypedDataAsync } = useSignTypedData();

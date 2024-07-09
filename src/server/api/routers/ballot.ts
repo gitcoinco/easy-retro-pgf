@@ -99,12 +99,6 @@ export const ballotRouter = createTRPCRouter({
         throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
       }
 
-      if (ballot.publishedAt) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Ballot already published",
-        });
-      }
       if (!verifyBallotCount(ballot.allocations, round)) {
         throw new TRPCError({
           code: "BAD_REQUEST",

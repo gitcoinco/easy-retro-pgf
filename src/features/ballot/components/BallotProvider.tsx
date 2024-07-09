@@ -7,9 +7,9 @@ import {
   useSaveAllocation,
 } from "~/features/ballot/hooks/useBallot";
 import { useBallotEditor } from "../hooks/useBallotEditor";
-import { BallotV2 } from "../types";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { RoundTypes } from "~/features/rounds/types";
+import { BallotV2 } from "@prisma/client";
 
 type BallotContext = ReturnType<typeof useBallotEditor>;
 const BallotContext = createContext(

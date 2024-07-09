@@ -20,29 +20,15 @@ export const SubmitBallotButton = ({ disabled = false }) => {
   const { data: ballot } = useBallot();
   const isSaving = useIsSavingBallot();
 
-  const { data: isApprovedVoter } = useApprovedVoter(address!);
+  const { data: isApprovedVoter, isPending } = useApprovedVoter(address!);
   const [isOpen, setOpen] = useState(false);
   const domain = useCurrentDomain();
-  const submit = useSubmitBallot({
-    onSuccess: async () => void router.push(`/${domain}/ballot/confirmation`),
-  });
+  const submit = useSubmitBallot({});
 
   const onBallotPage =
     router.route.includes("ballot") && ballot?.allocations.length;
 
-  if (ballot?.publishedAt) {
-    return (
-      <Button
-        className="w-full"
-        as={Link}
-        href={`/${domain}/ballot/confirmation`}
-      >
-        View submitted ballot
-      </Button>
-    );
-  }
-
-  if (!isApprovedVoter) {
+  if (!isApprovedVoter && !isPending) {
     return (
       <Button disabled className="w-full">
         Only approved voters can vote
@@ -72,7 +58,12 @@ export const SubmitBallotButton = ({ disabled = false }) => {
     submitting: {
       title: "Submit ballot",
       instructions:
-        "Once you submit your ballot, you won’t be able to change it. If you are ready, go ahead and submit!",
+        "Once you submit your ballot, you can change it until the voting period ends. If you are ready, go ahead and submit!",
+    },
+    success: {
+      title: "Your vote has been submitted! 🥳",
+      instructions:
+        "Thank you for participating in the round. You can view your ballot and make changes until the voting period ends.",
     },
     error: {
       title: "Error submitting ballot",
@@ -87,9 +78,20 @@ export const SubmitBallotButton = ({ disabled = false }) => {
     },
   };
 
+  function handleOpen(bool: boolean) {
+    submit.reset();
+    setOpen(bool);
+  }
+
   const { title, instructions } =
     messages[
-      submit.isPending ? "signing" : submit.error ? "error" : "submitting"
+      submit.isSuccess
+        ? "success"
+        : submit.isPending
+          ? "signing"
+          : submit.error
+            ? "error"
+            : "submitting"
     ];
 
   return (
@@ -97,12 +99,13 @@ export const SubmitBallotButton = ({ disabled = false }) => {
       <Button
         className="w-full"
         variant="primary"
+        isLoading={submit.isPending || isSaving}
         disabled={disabled || isSaving}
         onClick={async () => setOpen(true)}
       >
         Submit ballot
       </Button>
-      <Dialog size="sm" isOpen={isOpen} onOpenChange={setOpen} title={title}>
+      <Dialog size="sm" isOpen={isOpen} onOpenChange={handleOpen} title={title}>
         <p className="pb-8">{instructions}</p>
         <div
           className={clsx("flex gap-2", {
@@ -112,17 +115,19 @@ export const SubmitBallotButton = ({ disabled = false }) => {
           <Button
             variant="ghost"
             className="flex-1"
-            onClick={() => setOpen(false)}
+            onClick={() => handleOpen(false)}
           >
             Back
           </Button>
-          <Button
-            className="flex-1"
-            variant="primary"
-            onClick={() => submit.mutate()}
-          >
-            Submit ballot
-          </Button>
+          {!submit.isSuccess && (
+            <Button
+              className="flex-1"
+              variant="primary"
+              onClick={() => submit.mutate()}
+            >
+              Submit ballot
+            </Button>
+          )}
         </div>
       </Dialog>
     </>

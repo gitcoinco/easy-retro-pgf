@@ -8,8 +8,13 @@ import { Button } from "~/components/ui/Button";
 import { cn } from "~/utils/classNames";
 import { useSortBallot } from "~/features/ballot/hooks/useBallotEditor";
 import { useBallotContext } from "~/features/ballot/components/BallotProvider";
-import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+} from "~/features/rounds/hooks/useRound";
 import { RoundTypes } from "~/features/rounds/types";
+import { Alert } from "~/components/ui/Alert";
+import { formatDate } from "~/utils/time";
 
 export function BallotEditor({
   items = [],
@@ -23,7 +28,8 @@ export function BallotEditor({
   type: RoundTypes;
 }) {
   const domain = useCurrentDomain();
-  const { state, inc, dec, set, remove } = useBallotContext();
+  const round = useCurrentRound();
+  const { ballot, state, inc, dec, set, remove } = useBallotContext();
   const { sorted } = useSortBallot(items);
 
   const projectById = useMemo(
@@ -31,12 +37,25 @@ export function BallotEditor({
     [items],
   );
 
+  const publishedAt = ballot?.publishedAt;
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
       <p className="mb-6">
         Once you have reviewed your vote allocation, you can submit your ballot.
       </p>
+      {publishedAt && (
+        <Alert variant={"success"}>
+          <div className="flex items-center gap-2 text-sm">
+            <p>
+              Your ballot was submitted on {formatDate(publishedAt)}. You can
+              make changes and resubmit until{" "}
+              {round.data?.resultAt && formatDate(round.data?.resultAt)}. To do
+              so, simply edit the ballot below and submit again.
+            </p>
+          </div>
+        </Alert>
+      )}
       <div className="divide-y rounded-xl border">
         {isLoading &&
           Array(3)
