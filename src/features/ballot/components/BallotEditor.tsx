@@ -47,7 +47,7 @@ export function BallotEditor({
       </p>
       {publishedAt && (
         <Alert variant={"success"} className="mb-2">
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
             <p>
               Your ballot was submitted on {formatDate(publishedAt)}. You can
               make changes and resubmit until{" "}
