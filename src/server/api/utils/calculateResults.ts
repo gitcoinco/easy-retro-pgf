@@ -75,7 +75,7 @@ function calculateAverage(arr: number[]) {
   const sum = arr.reduce((sum, x) => sum + x, 0);
   const average = sum / arr.length;
 
-  return Math.round(average);
+  return Math.floor(average);
 }
 
 function calculateMedian(arr: number[]): number {

@@ -5,56 +5,56 @@ describe("Calculate results", () => {
   const ballots = [
     {
       voterId: "voterA",
-      votes: [
+      allocations: [
         {
-          projectId: "projectA",
+          id: "projectA",
           amount: 20,
         },
         {
-          projectId: "projectB",
+          id: "projectB",
           amount: 30,
         },
       ],
     },
     {
       voterId: "voterB",
-      votes: [
+      allocations: [
         {
-          projectId: "projectA",
+          id: "projectA",
           amount: 22,
         },
         {
-          projectId: "projectB",
+          id: "projectB",
           amount: 50,
         },
       ],
     },
     {
       voterId: "voterC",
-      votes: [
+      allocations: [
         {
-          projectId: "projectA",
+          id: "projectA",
           amount: 30,
         },
         {
-          projectId: "projectB",
+          id: "projectB",
           amount: 40,
         },
         {
-          projectId: "projectC",
+          id: "projectC",
           amount: 60,
         },
       ],
     },
     {
       voterId: "voterD",
-      votes: [
+      allocations: [
         {
-          projectId: "projectA",
+          id: "projectA",
           amount: 35,
         },
         {
-          projectId: "projectC",
+          id: "projectC",
           amount: 70,
         },
       ],
@@ -68,15 +68,15 @@ describe("Calculate results", () => {
       {
         "projectA": {
           "voters": 4,
-          "votes": 107,
+          "allocations": 107,
         },
         "projectB": {
           "voters": 3,
-          "votes": 120,
+          "allocations": 120,
         },
         "projectC": {
           "voters": 2,
-          "votes": 130,
+          "allocations": 130,
         },
       }
     `);
@@ -87,12 +87,12 @@ describe("Calculate results", () => {
     expect(actual).toMatchInlineSnapshot(`
       {
         "projectA": {
+          "allocations": 26,
           "voters": 4,
-          "votes": 26,
         },
         "projectB": {
+          "allocations": 40,
           "voters": 3,
-          "votes": 40,
         },
       }
     `);
