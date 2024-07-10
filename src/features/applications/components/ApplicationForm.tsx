@@ -1,3 +1,5 @@
+"use client";
+
 import { z } from "zod";
 import { type Address } from "viem";
 import { toast } from "sonner";
@@ -51,6 +53,7 @@ export function ApplicationForm({ address }: { address: Address }) {
         description: err.reason ?? err.data?.message,
       }),
   });
+
   if (create.isSuccess) {
     return (
       <Alert variant="success" title="Application created!">
@@ -59,6 +62,7 @@ export function ApplicationForm({ address }: { address: Address }) {
     );
   }
   const error = create.error;
+
   return (
     <div>
       <Form

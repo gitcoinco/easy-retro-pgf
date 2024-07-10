@@ -12,9 +12,13 @@ import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
 import { Skeleton } from "~/components/ui/Skeleton";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 export default function RoundPage() {
   const { data, isPending } = useCurrentRound();
+
+  const roundState = useRoundState();
+  const isApplicationPeriod = roundState === "APPLICATION";
 
   const { startsAt, reviewAt, votingAt, resultAt, payoutAt } = data ?? {};
   const steps = [];
@@ -34,6 +38,7 @@ export default function RoundPage() {
         <Button
           icon={Plus}
           as={Link}
+          disabled={!isApplicationPeriod}
           href={`/${data?.domain}/applications/new`}
         >
           Apply with your project
