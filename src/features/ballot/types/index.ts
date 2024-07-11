@@ -32,5 +32,5 @@ export const BallotV2Schema = z.object({
   allocations: z.array(AllocationSchema),
 });
 
-export type Allocation = z.infer<typeof AllocationSchema>;
+export type Allocation = z.input<typeof AllocationSchema>;
 export type BallotV2 = z.infer<typeof BallotV2Schema>;
