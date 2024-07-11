@@ -19,7 +19,7 @@ export function calculateDistributionsByProject({
     ?.map((projectId) => ({
       projectId,
       payoutAddress: payoutAddresses[projectId] ?? "",
-      amount: projectVotes[projectId]?.votes ?? 0,
+      amount: projectVotes[projectId]?.allocations ?? 0,
     }))
     .filter((p) => p.amount > 0)
     .sort((a, b) => b.amount - a.amount)
