@@ -7,13 +7,14 @@
  * need to use are documented accordingly near the end.
  */
 
-import { Round, RoundType } from "@prisma/client";
+import { Round } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { RoundTypes } from "~/features/rounds/types";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -209,7 +210,7 @@ export const ballotProcedure = protectedRoundProcedure.use(
   t.middleware(async ({ ctx, next }) => {
     const voterId = ctx.session?.user.name!;
     const roundId = ctx.round?.id!;
-    const type = ctx.round?.type as RoundType;
+    const type = ctx.round?.type as RoundTypes;
 
     // Find or create ballot
     const ballot = await ctx.db.ballotV2.upsert({
