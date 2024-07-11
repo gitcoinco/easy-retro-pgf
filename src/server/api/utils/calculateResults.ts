@@ -15,6 +15,7 @@ export function calculateVotes(
   ballots: { voterId: string; allocations: Allocation[] }[],
   payoutOpts: PayoutOptions,
 ): BallotResults {
+  const { calculation: calculationType, threshold = 0 } = payoutOpts;
   const votes: Record<
     string,
     {
@@ -48,13 +49,12 @@ export function calculateVotes(
 
   for (const id in votes) {
     const { amounts, voterIds } = votes[id]!;
-    const voteIsCounted =
-      payoutOpts.threshold && voterIds.size >= payoutOpts.threshold;
+    const voteIsCounted = voterIds.size >= threshold;
 
     if (voteIsCounted) {
       projects[id] = {
         voters: voterIds.size,
-        allocations: calcFunctions[payoutOpts.calculation ?? "average"]?.(
+        allocations: calcFunctions[calculationType ?? "average"]?.(
           amounts.sort((a, b) => a - b),
         ),
       };
