@@ -1,4 +1,4 @@
-import { Allocation, type Vote } from "~/features/ballot/types";
+import type { Allocation } from "~/features/ballot/types";
 
 export type PayoutOptions = {
   calculation: "average" | "median" | "sum";
