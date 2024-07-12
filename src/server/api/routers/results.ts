@@ -49,7 +49,6 @@ export const resultsRouter = createTRPCRouter({
                   payoutAddress: string;
                 };
 
-                console.log({ payoutAddress });
                 return { projectId: attestation.id, payoutAddress };
               }),
             ),

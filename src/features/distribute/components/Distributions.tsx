@@ -36,9 +36,6 @@ export function Distributions() {
 
   const totalTokens = poolAmount.data?.toString() ?? "0";
 
-  const votes = api.results.votes.useQuery();
-  console.log("votes", votes.data);
-
   const distributionResult = api.results.distribution.useQuery({ totalTokens });
 
   if (distributionResult.isPending) {
@@ -69,7 +66,6 @@ export function Distributions() {
         })}
         values={{ votes: distributions }}
         onSubmit={(values) => {
-          console.log("Distribute", values.votes[0]);
           setConfirmDistribution(values.votes);
         }}
       >

@@ -191,7 +191,6 @@ describe("Calculate results", () => {
     const actual = calculateVotes([], {
       calculation: "sum",
     });
-    console.log("No allocations", actual);
     expect(actual).toEqual({});
   });
 
@@ -218,7 +217,6 @@ describe("Calculate results", () => {
     const actual = calculateVotes(ballotsSingleVoterSingleProject, {
       calculation: "sum",
     });
-    console.log("Single voter single project", actual);
     expect(actual).toEqual({
       projectA: {
         allocations: 21,
@@ -231,7 +229,6 @@ describe("Calculate results", () => {
     const actual = calculateVotes(ballotsMultipleVotersSingleProject, {
       calculation: "sum",
     });
-    console.log("Multiple voters single project", actual);
     expect(actual).toEqual({
       projectA: {
         allocations: 50,
