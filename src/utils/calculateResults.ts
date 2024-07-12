@@ -1,4 +1,4 @@
-import { Allocation, type Vote } from "~/features/ballot/types";
+import type { Allocation } from "~/features/ballot/types";
 
 export type PayoutOptions = {
   calculation: "average" | "median" | "sum";
@@ -15,6 +15,8 @@ export function calculateVotes(
   ballots: { voterId: string; allocations: Allocation[] }[],
   payoutOpts: PayoutOptions,
 ): BallotResults {
+  const { calculation: calculationType, threshold = 0 } = payoutOpts;
+
   const votes: Record<
     string,
     {
@@ -48,13 +50,12 @@ export function calculateVotes(
 
   for (const id in votes) {
     const { amounts, voterIds } = votes[id]!;
-    const voteIsCounted =
-      payoutOpts.threshold && voterIds.size >= payoutOpts.threshold;
+    const voteIsCounted = voterIds.size >= threshold;
 
     if (voteIsCounted) {
       projects[id] = {
         voters: voterIds.size,
-        allocations: calcFunctions[payoutOpts.calculation ?? "average"]?.(
+        allocations: calcFunctions[calculationType ?? "average"]?.(
           amounts.sort((a, b) => a - b),
         ),
       };
@@ -75,7 +76,7 @@ function calculateAverage(arr: number[]) {
   const sum = arr.reduce((sum, x) => sum + x, 0);
   const average = sum / arr.length;
 
-  return Math.round(average);
+  return Math.floor(average);
 }
 
 function calculateMedian(arr: number[]): number {
