@@ -4,14 +4,82 @@ import {
   attestationProcedure,
   roundProcedure,
   createTRPCRouter,
+  adminAttestationProcedure,
 } from "~/server/api/trpc";
 import { FilterSchema } from "~/features/filter/types";
-import { calculateVotes } from "~/utils/calculateResults";
+import { BallotResults, calculateVotes } from "~/utils/calculateResults";
 import { TRPCError } from "@trpc/server";
 import { getState } from "~/features/rounds/hooks/useRoundState";
 import { RoundTypes } from "~/features/rounds/types";
+import { formatUnits } from "viem";
+import { z } from "zod";
+import { fetchMetadata } from "~/utils/fetchMetadata";
 
 export const resultsRouter = createTRPCRouter({
+  distribution: adminAttestationProcedure
+    .input(
+      z.object({
+        totalTokens: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const votes = await calculateBallotResults(ctx);
+
+      const totalVotes = votes.totalVotes;
+      const projectVotes = votes.votes ?? {};
+      const projectIds = Object.keys(votes.votes ?? {});
+
+      let totalTokens = 0n;
+
+      try {
+        totalTokens = BigInt(input.totalTokens);
+      } catch (error) {
+        throw new Error("Invalid totalTokens value, can not convert to bigint");
+      }
+
+      const payoutAddresses = await ctx
+        .fetchAttestations(["metadata"], {
+          where: { id: { in: projectIds } },
+        })
+        .then((attestations) =>
+          Promise.all(
+            attestations.map((attestation) =>
+              fetchMetadata(attestation.metadataPtr).then((data) => {
+                const { payoutAddress } = data as unknown as {
+                  payoutAddress: string;
+                };
+
+                return { projectId: attestation.id, payoutAddress };
+              }),
+            ),
+          ),
+        )
+        .then((projects) =>
+          projects.reduce(
+            (acc, x) => ({ ...acc, [x.projectId]: x.payoutAddress }),
+            {},
+          ),
+        );
+
+      const distributions = calculateDistributionsByProject({
+        projectIds,
+        projectVotes,
+        totalTokens,
+        totalVotes,
+        payoutAddresses,
+      });
+
+      return { totalVotes, projectIds, distributions };
+    }),
+  totalVoters: adminProcedure.query(async ({ ctx }) => {
+    const roundId = ctx.round?.id || "";
+    const { db } = ctx;
+    const ballots = await db.ballot.findMany({
+      where: { roundId, publishedAt: { not: null } },
+      select: { voterId: true, votes: true },
+    });
+    return ballots.length;
+  }),
   votes: adminProcedure.query(async ({ ctx }) => calculateBallotResults(ctx)),
   results: roundProcedure.query(async ({ ctx }) => {
     const round = await ctx.db.round.findFirst({ where: { id: ctx.round.id } });
@@ -97,4 +165,51 @@ async function calculateBallotResults({
   const totalVoters = ballots.length;
 
   return { votes, totalVoters, totalVotes, averageVotes };
+}
+
+function calculateDistributionsByProject({
+  projectIds,
+  payoutAddresses,
+  projectVotes,
+  totalVotes,
+  totalTokens,
+}: {
+  projectIds: Array<string>;
+  payoutAddresses: Record<string, string>;
+  projectVotes: BallotResults;
+  totalVotes: number;
+  totalTokens: bigint;
+}) {
+  return projectIds
+    ?.map((projectId) => ({
+      projectId,
+      payoutAddress: payoutAddresses[projectId] ?? "",
+      amount: projectVotes[projectId]?.allocations ?? 0,
+    }))
+    .filter((p) => p.amount > 0)
+    .sort((a, b) => b.amount - a.amount)
+    .map((p) => {
+      return {
+        ...p,
+        amount:
+          totalTokens > 0n
+            ? parseFloat(
+                formatUnits(
+                  calculatePayout(p.amount, totalVotes, totalTokens),
+                  18,
+                ),
+              )
+            : p.amount,
+      };
+    });
+}
+
+function calculatePayout(
+  votes: number,
+  totalVotes: number,
+  totalTokens: bigint,
+) {
+  return (
+    (BigInt(Math.round(votes * 100)) * totalTokens) / BigInt(totalVotes) / 100n
+  );
 }
