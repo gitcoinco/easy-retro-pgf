@@ -87,13 +87,15 @@ export function useCreatePool() {
       // This will properly cast the type into address (and also validate)
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       const token = getAddress(round.tokenAddress || nativeToken);
-      const managers = round.admins.map(getAddress);
+
+      //! Commented because we are not using due to an error on pool creation for libp2p-r-pgf-1 round
+      // const managers = round.admins.map(getAddress);
 
       const tx = alloSDK.createPool({
         profileId: params.profileId as Address,
         strategy,
         token,
-        managers,
+        managers: round.admins,
         amount: params.initialFunding ?? 0n,
         // TODO: We could point this to an http endpoint that returns the round details
         metadata: { protocol: 1n, pointer: "" },
