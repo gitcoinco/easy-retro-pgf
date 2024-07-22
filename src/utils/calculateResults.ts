@@ -47,8 +47,9 @@ export function calculateVotes(
   };
   for (const projectId in projectVotes) {
     const { amounts, voterIds } = projectVotes[projectId]!;
-    const voteIsCounted =
-      payoutOpts.threshold && voterIds.size >= payoutOpts.threshold;
+
+    const { threshold = 0 } = payoutOpts;
+    const voteIsCounted = voterIds.size >= threshold;
 
     if (voteIsCounted) {
       projects[projectId] = {
