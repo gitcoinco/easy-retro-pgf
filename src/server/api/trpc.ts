@@ -274,8 +274,8 @@ export const ballotProcedure = protectedProcedure.use(roundMiddleware).use(
  * the round data in the context, allowing the handling of admin-specific logic for the round.
  */
 export const adminProcedure = protectedProcedure
-  .use(enforceUserIsAdmin)
-  .use(roundMiddleware);
+  .use(roundMiddleware)
+  .use(enforceUserIsAdmin);
 
 /**
  * Protected Procedure that uses enforceUserIsAdmin to ensure the user is an admin,
