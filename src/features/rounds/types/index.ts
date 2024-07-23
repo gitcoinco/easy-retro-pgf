@@ -72,16 +72,26 @@ export const RoundDatesSchema = RoundDates.superRefine(
     }
   },
 );
+export enum RoundTypes {
+  impact = "impact",
+  project = "project",
+}
+export const roundTypes: Record<RoundTypes, string> = {
+  impact: "Impact",
+  project: "Project",
+};
 export const RoundSchema = z
   .object({
     id: z.string(),
     name: RoundNameSchema,
     domain: z.string(),
+    type: z.enum(Object.keys(roundTypes) as [string, ...string[]]),
     creatorId: z.string(),
     admins: z.array(EthAddressSchema),
     description: z.string().nullable(),
     bannerImageUrl: z.string().url(),
     categories: z.array(z.object({ id: z.string(), label: z.string() })),
+    metrics: z.array(z.string()),
     network: z.string().nullable(),
     tokenAddress: EthAddressSchema.or(z.string().nullish()),
     poolId: z.number().nullable(),

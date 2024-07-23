@@ -22,3 +22,15 @@ export const BallotPublishSchema = z.object({
 export type Vote = z.infer<typeof VoteSchema>;
 export type Ballot = z.infer<typeof BallotSchema>;
 export type BallotPublish = z.infer<typeof BallotPublishSchema>;
+
+export const AllocationSchema = z.object({
+  id: z.string(),
+  amount: z.number().min(0),
+  locked: z.boolean().default(true),
+});
+export const BallotV2Schema = z.object({
+  allocations: z.array(AllocationSchema),
+});
+
+export type Allocation = z.infer<typeof AllocationSchema>;
+export type BallotV2 = z.infer<typeof BallotV2Schema>;

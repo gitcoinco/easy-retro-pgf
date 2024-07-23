@@ -1,0 +1,21 @@
+"use client";
+
+import { api } from "~/utils/api";
+import { MetricsSidebar } from "./MetricsSidebar";
+
+export function MetricDetailsSidebar({ metricId = "" }) {
+  const { data, error, isPending } = api.metrics.forProjects.useQuery(
+    { metricIds: [metricId] },
+    { enabled: !!metricId },
+  );
+
+  return (
+    <MetricsSidebar
+      title="Distribution"
+      isLoading={isPending}
+      formatAllocation={(v) => v.toFixed(2) + "%"}
+      formatChartTick={(v) => v + "%"}
+      projects={data?.[0]?.projects}
+    />
+  );
+}

@@ -13,6 +13,7 @@ import type { NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { RoundTypes } from "~/features/rounds/types";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -20,6 +21,7 @@ import {
   type AttestationFetcher,
   createAttestationFetcher,
 } from "~/utils/fetchAttestations";
+import { hashApiKey } from "~/utils/hashApiKey";
 
 /**
  * 1. CONTEXT
@@ -29,13 +31,14 @@ import {
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-interface CreateContextOptions {
+export interface CreateContextOptions {
   session: Session | null;
   domain?: string;
   round?: {
     id: string;
     admins: string[];
     network: string | null;
+    type: string | null;
     startsAt: Date | null;
     reviewAt: Date | null;
     votingAt: Date | null;
@@ -78,13 +81,9 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const session = await getServerAuthSession({ req, res });
 
   // Get the current round domain
-  const domain = req.headers.referer?.split("/")[3];
+  const domain = req.headers["round-id"] as string;
 
-  return createInnerTRPCContext({
-    session,
-    res,
-    domain,
-  });
+  return createInnerTRPCContext({ session, res, domain });
 };
 
 /**
@@ -157,11 +156,13 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
           id: true,
           admins: true,
           network: true,
+          type: true,
           startsAt: true,
           reviewAt: true,
           votingAt: true,
           resultAt: true,
           payoutAt: true,
+          metrics: true,
         },
       })
     : null;
@@ -204,12 +205,42 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  */
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
-export const roundProcedure = publicProcedure.use(roundMiddleware);
-export const protectedRoundProcedure = publicProcedure
+export const roundProcedure = t.procedure.use(roundMiddleware);
+export const protectedRoundProcedure = t.procedure
   .use(roundMiddleware)
   .use(enforceUserIsAuthed);
+
+export const ballotProcedure = protectedRoundProcedure.use(
+  t.middleware(async ({ ctx, next }) => {
+    const voterId = ctx.session?.user.name!;
+    const roundId = ctx.round?.id!;
+    const type = ctx.round?.type as RoundTypes;
+
+    // Find or create ballot
+    const ballot = await ctx.db.ballotV2.upsert({
+      where: { voterId_roundId_type: { voterId, roundId, type } },
+      update: {},
+      create: { voterId, roundId, type },
+      include: { allocations: true },
+    });
+    return next({
+      ctx: { ...ctx, voterId, roundId, ballotId: ballot.id, ballot },
+    });
+  }),
+);
 export const adminProcedure = protectedProcedure
   .use(roundMiddleware)
   .use(enforceUserIsAdmin);
 
 export const attestationProcedure = roundProcedure.use(attestationMiddleware);
+
+export async function getApiKeySession(apiKey?: string | null) {
+  if (!apiKey) return null;
+
+  // Find API key
+  const key = await db.apiKey.findFirst({ where: { key: hashApiKey(apiKey) } });
+
+  if (key?.creatorId) return { id: key.creatorId };
+
+  return null;
+}

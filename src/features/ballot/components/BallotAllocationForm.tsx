@@ -13,6 +13,7 @@ import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 
 export function BallotAllocationForm({ isPublished = false }) {
   const form = useFormContext<{ votes: Vote[] }>();
@@ -212,23 +213,25 @@ function ClearBallot() {
   );
 }
 
-const EmptyBallot = () => (
-  <div className="flex flex-1 items-center justify-center">
-    <div className=" max-w-[360px] space-y-4">
-      <h3 className="text-center text-lg font-bold">Your ballot is empty</h3>
-      <p className="text-center text-sm text-gray-700">
-        Your ballot currently doesn&apos;t have any projects added. Browse
-        through the available projects.
-      </p>
-      <div className="flex items-center justify-center gap-3">
-        <Button as={Link} href={"/projects"}>
-          View projects
-        </Button>
+const EmptyBallot = () => {
+  const domain = useCurrentDomain();
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <div className=" max-w-[360px] space-y-4">
+        <h3 className="text-center text-lg font-bold">Your ballot is empty</h3>
+        <p className="text-center text-sm text-gray-700">
+          Your ballot currently doesn&apos;t have any projects added. Browse
+          through the available projects.
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <Button as={Link} href={`/${domain}/projects`}>
+            View projects
+          </Button>
+        </div>
       </div>
     </div>
-  </div>
-);
-
+  );
+};
 const TotalAllocation = () => {
   const form = useFormContext<{ votes: Vote[] }>();
   const votes = form.watch("votes") ?? [];

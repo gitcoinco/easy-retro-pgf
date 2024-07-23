@@ -4,6 +4,7 @@ import {
   ChevronLeft,
   Coins,
   Files,
+  KeyRound,
   Pencil,
   Settings2,
   ShieldCheck,
@@ -103,6 +104,12 @@ function RoundConfigSidebar() {
       description: "Transfer tokens to the projects",
       icon: Coins,
       href: `/${domain}/admin/distribute`,
+    },
+    {
+      children: "API Keys",
+      description: "Integrate external services",
+      icon: KeyRound,
+      href: `/${domain}/admin/api-keys`,
     },
   ];
   return (

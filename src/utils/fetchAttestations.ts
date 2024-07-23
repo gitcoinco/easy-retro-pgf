@@ -113,6 +113,18 @@ export async function fetchApprovedVoter(round: PartialRound, address: string) {
   }).then((attestations) => attestations.length);
 }
 
+export async function fetchProfiles(round: PartialRound, recipients: string[]) {
+  if (!round.id) throw new Error("Round ID must be defined");
+  if (!round.network) throw new Error("Round network must be configured");
+
+  return createAttestationFetcher(round)(["metadata"], {
+    where: {
+      recipient: { in: recipients },
+      ...createDataFilter("type", "bytes32", "profile"),
+    },
+  });
+}
+
 function parseAttestation({
   decodedDataJson,
   ...attestation

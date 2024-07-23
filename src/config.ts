@@ -120,6 +120,8 @@ export const easApiEndpoints = {
     "http://ec2-35-174-143-89.compute-1.amazonaws.com:32768/",
 } as const;
 
+
+export const openSourceObserverEndpoint = String(process.env.OPENSOURCE_OBSERVER_API)
 // TODO: Remove and move to round config
 export const impactCategories = {
   ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },

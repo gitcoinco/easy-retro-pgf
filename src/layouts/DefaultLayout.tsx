@@ -12,6 +12,7 @@ import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/Button";
 import Link from "next/link";
+import { RoundTypes } from "~/features/rounds/types";
 
 type Props = PropsWithChildren<
   {
@@ -26,10 +27,15 @@ export const Layout = ({ children, ...props }: Props) => {
   const { data: round, isPending } = useCurrentRound();
 
   const navLinks = [
-    {
-      href: `/${domain}/projects`,
-      children: `Projects`,
-    },
+    round?.type === RoundTypes.impact
+      ? {
+          href: `/${domain}/metrics`,
+          children: `Metrics`,
+        }
+      : {
+          href: `/${domain}/projects`,
+          children: `Projects`,
+        },
   ];
 
   if (useRoundState() === "RESULTS") {
