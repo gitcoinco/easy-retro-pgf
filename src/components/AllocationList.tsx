@@ -31,18 +31,22 @@ const AllocationListWrapper = createComponent(
   tv({ base: "flex flex-col gap-2 flex-1" }),
 );
 
-export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
+export const AllocationList = ({
+  allocations,
+}: {
+  allocations?: Allocation[];
+}) => {
   return (
     <AllocationListWrapper>
       <Table>
         <Tbody>
-          {votes?.map((project) => (
-            <Tr key={project.projectId}>
+          {allocations?.map((alloc) => (
+            <Tr key={alloc.id}>
               <Td className={"w-full"}>
-                <ProjectAvatarWithName link id={project.projectId} />
+                <ProjectAvatarWithName link id={alloc.id} />
               </Td>
               <Td className="whitespace-nowrap text-right">
-                {formatNumber(project.amount)}
+                {formatNumber(alloc.amount)}
               </Td>
             </Tr>
           ))}
@@ -51,78 +55,6 @@ export const AllocationList = ({ votes }: { votes?: Vote[] }) => {
     </AllocationListWrapper>
   );
 };
-
-export function AllocationFormWithSearch() {
-  const form = useFormContext<{ projects: Vote[] }>();
-
-  const { fields, append, remove } = useFieldArray({
-    name: "projects",
-    keyName: "key",
-    control: form.control,
-  });
-
-  const { errors } = form.formState;
-
-  return (
-    <AllocationListWrapper>
-      <ProjectsSearch
-        addedProjects={fields}
-        onSelect={(projectId) => append({ projectId, amount: 0 })}
-      />
-      <Table>
-        <Tbody>
-          {fields.length ? (
-            fields.map((project, i) => {
-              const error = errors.projects?.[i]?.amount?.message;
-              return (
-                <Tr key={project.key}>
-                  <Td className={"w-full"}>
-                    <ProjectAvatarWithName id={project.projectId} />
-                    {error ? (
-                      <div className="text-xs text-error-600">{error}</div>
-                    ) : null}
-                  </Td>
-
-                  <Td>
-                    <AllocationInput name={`projects.${i}.amount`} />
-                  </Td>
-                  <Td>
-                    <IconButton
-                      tabIndex={-1}
-                      type="button"
-                      variant="outline"
-                      icon={Trash}
-                      onClick={() => {
-                        remove(i);
-                      }}
-                    />
-                  </Td>
-                </Tr>
-              );
-            })
-          ) : (
-            <Tr>
-              <Td
-                colSpan={3}
-                className="flex flex-1 items-center justify-center py-4"
-              >
-                <div className=" max-w-[360px] space-y-4">
-                  <h3 className="text-center text-lg font-bold">
-                    List is empty
-                  </h3>
-                  <p className="text-center text-sm text-gray-700">
-                    Search projects to add them to the list.
-                  </p>
-                </div>
-              </Td>
-            </Tr>
-          )}
-        </Tbody>
-      </Table>
-      <button type="submit" className="hidden" />
-    </AllocationListWrapper>
-  );
-}
 
 type AllocationFormProps = {
   renderHeader?: () => ReactNode;

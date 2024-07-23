@@ -16,12 +16,11 @@ import { ListChecks } from "lucide-react";
 
 import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
-import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
-import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { EnsureCorrectNetwork } from "./EnureCorrectNetwork";
+import { useBallot } from "~/features/ballot/hooks/useBallot";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -100,7 +99,7 @@ const ConnectedDetails = ({
   isMobile: boolean;
 }) => {
   const { data: ballot } = useBallot();
-  const ballotSize = (ballot?.votes ?? []).length;
+  const ballotSize = (ballot?.allocations ?? []).length;
   const domain = useCurrentDomain();
 
   const { eligibilityCheck, showBallot } = useLayoutOptions();

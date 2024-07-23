@@ -1,20 +1,23 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useBallotContext } from "../components/provider";
+import { useBallotContext } from "../components/BallotProvider";
 import { Allocation } from "../types";
 import {
   createSortFn,
   useBallotFilter,
 } from "~/features/metrics/hooks/useFilter";
-import { useMetrics } from "~/features/metrics/hooks/useMetrics";
 
-export type BallotState = Record<string, { amount: number; locked: boolean }>;
+export type BallotState = Record<string, { amount: number; locked?: boolean }>;
 
 export function useBallotEditor({
+  maxAllocation,
+  allocationCap,
   onRemove,
   onUpdate,
 }: {
+  maxAllocation: number;
+  allocationCap: number;
   onRemove?: ({ id }: { id: string }) => void;
   onUpdate?: (amount: Allocation) => void;
 }) {
@@ -35,13 +38,16 @@ export function useBallotEditor({
 
   const set = (id: string, value: number, unlock: boolean = false) => {
     setState((s) => {
-      // Must be between 0 - 100
-      const amount = Math.max(Math.min(value || 0, 100), 0);
+      const amount = value;
       const locked = !unlock;
-      const _state = calculateBalancedAmounts({
-        ...s,
-        [id]: { ...s[id], amount, locked },
-      });
+      const _state = calculateBalancedAmounts(
+        {
+          ...s,
+          [id]: { ...s[id], amount, locked },
+        },
+        maxAllocation,
+        allocationCap,
+      );
 
       onUpdate?.({ id, amount: 0, locked: false, ..._state[id] });
 
@@ -51,10 +57,14 @@ export function useBallotEditor({
   const inc = (id: string) => set(id, Math.floor((state[id]?.amount ?? 0) + 1));
   const dec = (id: string) => set(id, Math.ceil((state[id]?.amount ?? 0) - 1));
   const add = (id: string, amount = 0) => {
-    const _state = calculateBalancedAmounts({
-      ...state,
-      [id]: { ...state[id], amount, locked: false },
-    });
+    const _state = calculateBalancedAmounts(
+      {
+        ...state,
+        [id]: { ...state[id], amount, locked: false },
+      },
+      maxAllocation,
+      allocationCap,
+    );
 
     set(id, _state[id]?.amount ?? 0, true);
   };
@@ -62,55 +72,70 @@ export function useBallotEditor({
     setState((s) => {
       const { [id]: _remove, ..._state } = s;
       onRemove?.({ id });
-      return calculateBalancedAmounts(_state);
+      return calculateBalancedAmounts(_state, maxAllocation, allocationCap);
     });
   const reset = setInitialState;
 
   return { set, inc, dec, add, remove, reset, state };
 }
 
-function calculateBalancedAmounts(state: BallotState): BallotState {
-  // Autobalance non-locked fields
-  const locked = Object.entries(state).filter(([_, m]) => m.locked);
-  const nonLocked = Object.entries(state).filter(([_, m]) => !m.locked);
+export function calculateBalancedAllocations(
+  allocations: Allocation[],
+  maxAllocation: number,
+  allocationCap: number,
+) {
+  const locked = allocations.filter((alloc) => alloc.locked);
+  const lockedAmount = locked.reduce((sum, x) => sum + Number(x.amount), 0);
 
-  const amountToBalance =
-    100 - locked.reduce((sum, [_, m]) => sum + m.amount, 0);
+  const unlocked = allocations
+    .filter((alloc) => !alloc.locked)
+    .map((alloc, i, arr) => ({
+      ...alloc,
+      amount: Math.min(
+        allocationCap,
+        (maxAllocation - lockedAmount) / arr.length,
+      ),
+    }));
 
-  return Object.fromEntries(
-    Object.entries(state).map(([id, { amount, locked }]) => [
-      id,
-      {
-        amount: locked
-          ? amount
-          : amountToBalance
-            ? amountToBalance / nonLocked.length
-            : 0,
-        locked,
-      },
-    ]),
-  );
+  return [...locked, ...unlocked];
 }
 
-export function useSortBallot(initialState: BallotState) {
-  const { state } = useBallotContext();
-  const { data: metrics, isPending } = useMetrics();
-  const [filter, setFilter] = useBallotFilter();
+function calculateBalancedAmounts(
+  state: BallotState,
+  maxAllocation: number,
+  allocationCap: number,
+): BallotState {
+  const updates = calculateBalancedAllocations(
+    Object.entries(state).map(([id, alloc]) => ({ id, ...alloc })),
+    maxAllocation,
+    allocationCap,
+  );
 
+  return Object.fromEntries(updates.map((alloc) => [alloc.id, alloc]));
+}
+export function useSortBallot(list: { id: string }[] = []) {
+  const { state, remove } = useBallotContext();
+  const [filter, setFilter] = useBallotFilter();
   const sorted = useMemo(
     () =>
-      metrics
+      list
         ?.map((m) => ({ ...m, ...state[m.id] }))
         .sort(createSortFn({ order: filter.order, sort: filter.sort }))
         .map((m) => m?.id ?? "")
         .filter(Boolean) ?? [],
-    [filter, metrics], // Don't put state here because we don't want to sort when allocation changes
+    [filter, list], // Don't put state here because we don't want to sort when allocation changes
   );
+
+  useEffect(() => {
+    // Remove any IDs have been added to the ballot that might not exist anymore
+    Object.keys(state)
+      .filter((id) => !sorted.includes(id))
+      .forEach(remove);
+  }, [state, sorted, list]);
 
   return {
     filter,
     sorted,
-    isPending,
     setFilter,
   };
 }

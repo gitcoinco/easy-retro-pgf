@@ -1,25 +1,28 @@
-import { Form } from "~/components/ui/Form";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
-import { BallotSchema } from "~/features/ballot/types";
-import { BallotAllocationForm } from "~/features/ballot/components/BallotAllocationForm";
 import { LayoutWithBallot } from "~/layouts/DefaultLayout";
+import { BallotProvider } from "~/features/ballot/components/BallotProvider";
+import { useProjectsById } from "~/features/projects/hooks/useProjects";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { BallotEditor } from "~/features/ballot/components/BallotEditor";
+import { RoundTypes } from "~/features/rounds/types";
 
 export default function BallotPage() {
-  const { data: ballot, isPending } = useBallot();
+  const ballot = useBallot();
+  const projects = useProjectsById(
+    ballot.data?.allocations.map((v) => v.id) ?? [],
+  );
+  const round = useCurrentRound();
 
-  if (isPending) return null;
-
-  const votes = ballot?.votes.sort((a, b) => b.amount - a.amount);
   return (
-    <LayoutWithBallot sidebar="right" requireAuth>
-      <Form
-        schema={BallotSchema}
-        defaultValues={{ votes }}
-        onSubmit={console.log}
-      >
-        <BallotAllocationForm isPublished={Boolean(ballot?.publishedAt)} />
-      </Form>
-      <div className="py-8" />
-    </LayoutWithBallot>
+    <BallotProvider>
+      <LayoutWithBallot sidebar="right" requireAuth>
+        <BallotEditor
+          maxAllocation={round.data?.maxVotesProject ?? 0}
+          items={projects.data}
+          type={RoundTypes.project}
+          isLoading={projects.isPending}
+        />
+      </LayoutWithBallot>
+    </BallotProvider>
   );
 }

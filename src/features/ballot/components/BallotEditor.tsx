@@ -1,47 +1,73 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { NumericFormat } from "react-number-format";
 import { Lock, Minus, Plus, Trash2, Unlock } from "lucide-react";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { Button } from "~/components/ui/Button";
 import { cn } from "~/utils/classNames";
-import { useBallotContext } from "../ballot/components/provider";
-import { useSortBallot } from "../ballot/hooks/useBallotEditor";
-import { Metric } from "./types";
-import { useCurrentDomain } from "../rounds/hooks/useRound";
-import { snakeToTitleCase } from "~/utils/formatStrings";
+import { useSortBallot } from "~/features/ballot/hooks/useBallotEditor";
+import { useBallotContext } from "~/features/ballot/components/BallotProvider";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+} from "~/features/rounds/hooks/useRound";
+import { RoundTypes } from "~/features/rounds/types";
+import { Alert } from "~/components/ui/Alert";
+import { formatDate } from "~/utils/time";
+import { ExportMetricsCSV, ExportProjectsCSV, ImportCSV } from "./ImportCSV";
 
-const BallotFilter = () => <div></div>;
 export function BallotEditor({
-  metrics = [],
+  items = [],
   isLoading,
+  maxAllocation = 100,
+  type,
 }: {
-  metrics?: Metric[];
+  items?: { id: string; name: string }[];
   isLoading: boolean;
+  maxAllocation?: number;
+  type: RoundTypes;
 }) {
   const domain = useCurrentDomain();
-  const { state, inc, dec, set, remove } = useBallotContext();
-  const { sorted } = useSortBallot(state);
-
-  const count = useMemo(() => Object.keys(state).length, [state]);
-  const metricById = useMemo(
-    () => Object.fromEntries(metrics.map((m) => [m.id, m])),
-    [metrics],
+  const round = useCurrentRound();
+  const { ballot, state, inc, dec, set, remove } = useBallotContext();
+  const { sorted } = useSortBallot(items);
+  const projectById = useMemo(
+    () => Object.fromEntries(items.map((p) => [p.id, p])),
+    [items],
   );
 
+  const publishedAt = ballot?.publishedAt;
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div className="mb-4">
-          <h3 className="mb-2 text-3xl font-semibold">Your ballot</h3>
-          <div className="">
-            You&apos;ve added {count} of {metrics.length} metrics
+      <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
+      <p className="mb-6">
+        Once you have reviewed your vote allocation, you can submit your ballot.
+      </p>
+      {publishedAt && (
+        <Alert variant={"success"} className="mb-2">
+          <div className="flex items-center gap-2">
+            <p>
+              Your ballot was submitted on {formatDate(publishedAt)}. You can
+              make changes and resubmit until{" "}
+              {round.data?.resultAt && formatDate(round.data?.resultAt)}. To do
+              so, simply edit the ballot below and submit again.
+            </p>
           </div>
-        </div>
-        <BallotFilter />
+        </Alert>
+      )}
+      <div className="mb-2 flex items-center gap-2">
+        <ImportCSV
+          onImport={(allocations) =>
+            allocations.map((alloc) => set(alloc.id, alloc.amount))
+          }
+        />
+        {type === RoundTypes.impact ? (
+          <ExportMetricsCSV allocations={ballot?.allocations} />
+        ) : (
+          <ExportProjectsCSV allocations={ballot?.allocations} />
+        )}
       </div>
-
       <div className="divide-y rounded-xl border">
         {isLoading &&
           Array(3)
@@ -55,13 +81,13 @@ export function BallotEditor({
           .filter((id) => state[id])
           .map((id) => {
             const { amount = 0, locked } = state[id] ?? {};
-            const { name } = metricById[id] ?? {};
+            const { name } = projectById[id] ?? {};
 
             return (
               <div key={id} className="flex items-center justify-between p-4">
                 <h3 className="text-lg underline-offset-4 hover:underline">
-                  <Link href={`/${domain}/metrics/${id}`} tabIndex={-1}>
-                    {snakeToTitleCase(name)}
+                  <Link href={`/${domain}/${type}/${id}`} tabIndex={-1}>
+                    {name}
                   </Link>
                 </h3>
                 <div className="flex gap-2">
@@ -87,27 +113,34 @@ export function BallotEditor({
                       }}
                     />
                     <NumericFormat
-                      min={0}
-                      max={100}
-                      suffix={"%"}
+                      suffix={maxAllocation === 100 ? "%" : undefined}
                       allowNegative={false}
                       allowLeadingZeros={false}
-                      isAllowed={(values) => (values?.floatValue ?? 0) <= 100}
+                      isAllowed={(values) =>
+                        (values?.floatValue ?? 0) <= maxAllocation
+                      }
                       customInput={(p) => (
                         <input
                           className="w-24 border-none text-center"
                           {...p}
-                          max={100}
-                          min={0}
                         />
                       )}
-                      placeholder="--%"
+                      placeholder="--"
+                      thousandSeparator=","
                       value={
-                        amount !== undefined ? amount.toFixed(2) : undefined
+                        amount !== undefined
+                          ? amount.toFixed(maxAllocation === 100 ? 2 : 0)
+                          : undefined
                       }
                       onBlur={(e) => {
                         e.preventDefault();
-                        const updated = parseFloat(e.target.value);
+                        const updated = e.target.value
+                          ? parseFloat(
+                              // Remove thousandSeparator (,)
+                              e.target.value.replace(/(?<=\d),(?=\d)/g, ""),
+                            )
+                          : 0;
+
                         amount !== updated && set(id, updated);
                       }}
                     />
@@ -116,7 +149,7 @@ export function BallotEditor({
                       variant="ghost"
                       icon={Plus}
                       tabIndex={-1}
-                      disabled={amount >= 100}
+                      disabled={amount >= maxAllocation}
                       onClick={() => {
                         inc(id);
                       }}
