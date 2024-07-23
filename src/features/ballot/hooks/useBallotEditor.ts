@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useBallotContext } from "../components/BallotProvider";
 import { Allocation } from "../types";
@@ -8,7 +8,7 @@ import {
   useBallotFilter,
 } from "~/features/metrics/hooks/useFilter";
 
-export type BallotState = Record<string, { amount: number; locked: boolean }>;
+export type BallotState = Record<string, { amount: number; locked?: boolean }>;
 
 export function useBallotEditor({
   maxAllocation,
@@ -114,9 +114,8 @@ function calculateBalancedAmounts(
   return Object.fromEntries(updates.map((alloc) => [alloc.id, alloc]));
 }
 export function useSortBallot(list: { id: string }[] = []) {
-  const { state } = useBallotContext();
+  const { state, remove } = useBallotContext();
   const [filter, setFilter] = useBallotFilter();
-
   const sorted = useMemo(
     () =>
       list
@@ -126,6 +125,13 @@ export function useSortBallot(list: { id: string }[] = []) {
         .filter(Boolean) ?? [],
     [filter, list], // Don't put state here because we don't want to sort when allocation changes
   );
+
+  useEffect(() => {
+    // Remove any IDs have been added to the ballot that might not exist anymore
+    Object.keys(state)
+      .filter((id) => !sorted.includes(id))
+      .forEach(remove);
+  }, [state, sorted, list]);
 
   return {
     filter,

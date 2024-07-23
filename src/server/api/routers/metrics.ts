@@ -30,6 +30,7 @@ export const metricsRouter = createTRPCRouter({
     }),
 
   forRound: roundProcedure.query(async ({ ctx }) => {
+    console.log(1111111111111, ctx.round.metrics);
     return Object.entries(AvailableMetrics)
       .filter(([id]) => ctx.round.metrics.includes(id))
       .map(([id, name]) => ({

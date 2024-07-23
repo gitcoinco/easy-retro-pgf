@@ -37,13 +37,6 @@ export function BallotEditor({
     [items],
   );
 
-  useEffect(() => {
-    // Clean up any items that doesn't exist anymore
-    Object.keys(state)
-      .filter((id) => !projectById[id])
-      .forEach(remove);
-  }, [state, projectById]);
-
   const publishedAt = ballot?.publishedAt;
   return (
     <div>

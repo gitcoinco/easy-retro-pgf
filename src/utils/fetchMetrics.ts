@@ -70,7 +70,7 @@ type Query = {
 
 export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
   if (metrics.some((id) => !(id in AvailableMetrics))) {
-    throw new Error(
+    console.warn(
       `One of the metrics provided doesn't exist:\n${metrics.join("\n")}`,
     );
   }
@@ -78,7 +78,10 @@ export function fetchImpactMetrics(variables: Query, metrics: string[] = []) {
     onchain_metrics_by_project_v1: OSOMetrics;
   }>(`${openSourceObserverEndpoint}`, {
     method: "POST",
-    body: JSON.stringify({ query: createMetricsQuery(metrics), variables }),
+    body: JSON.stringify({
+      query: createMetricsQuery(metrics.filter((id) => id in AvailableMetrics)),
+      variables,
+    }),
   }).then((r) => {
     if (r.errors) throw new Error(r.errors[0]?.message);
 
