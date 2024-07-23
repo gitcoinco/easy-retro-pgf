@@ -32,11 +32,6 @@ export async function verifyBallotHash(
   hashed_allocations: string,
   allocations: Allocation[],
 ) {
-  console.log(
-    hashed_allocations,
-    keccak256(Buffer.from(JSON.stringify(allocations))),
-    hashed_allocations === keccak256(Buffer.from(JSON.stringify(allocations))),
-  );
   return (
     hashed_allocations === keccak256(Buffer.from(JSON.stringify(allocations)))
   );
