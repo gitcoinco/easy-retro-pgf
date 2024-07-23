@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { NumericFormat } from "react-number-format";
 import { Lock, Minus, Plus, Trash2, Unlock } from "lucide-react";
@@ -32,11 +32,17 @@ export function BallotEditor({
   const round = useCurrentRound();
   const { ballot, state, inc, dec, set, remove } = useBallotContext();
   const { sorted } = useSortBallot(items);
-
   const projectById = useMemo(
     () => Object.fromEntries(items.map((p) => [p.id, p])),
     [items],
   );
+
+  useEffect(() => {
+    // Clean up any items that doesn't exist anymore
+    Object.keys(state)
+      .filter((id) => !projectById[id])
+      .forEach(remove);
+  }, [state, projectById]);
 
   const publishedAt = ballot?.publishedAt;
   return (
