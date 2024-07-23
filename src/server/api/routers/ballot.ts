@@ -44,8 +44,9 @@ export const ballotRouter = createTRPCRouter({
       }));
   }),
   export: adminProcedure.mutation(({ ctx }) => {
+    const roundId = ctx.round?.id;
     return ctx.db.ballot
-      .findMany({ where: { publishedAt: { not: null } } })
+      .findMany({ where: { publishedAt: { not: null }, roundId } })
       .then(async (ballots) => {
         // Get all unique projectIds from all the votes
         const projectIds = Object.keys(
