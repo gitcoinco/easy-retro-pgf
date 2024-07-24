@@ -1,3 +1,4 @@
+import { type ReactNode } from "react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
@@ -6,8 +7,8 @@ import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
-import { type ReactNode } from "react";
 import { type Attestation } from "~/utils/fetchAttestations";
+import { Markdown } from "~/components/ui/Markdown";
 
 export default function ProjectDetails({
   attestation,
@@ -22,7 +23,7 @@ export default function ProjectDetails({
     metadata.data ?? {};
 
   return (
-    <div className="relative">
+    <div className="relative mb-24">
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
@@ -48,18 +49,18 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
-      <p className="text-2xl">{bio}</p>
+      <Markdown>{bio}</Markdown>
       <div>
         <Heading as="h2" size="3xl">
           Impact statements
         </Heading>
 
         <ProjectContributions
-          isLoading={metadata.isLoading}
+          isLoading={metadata.isPending}
           project={metadata.data}
         />
 
-        <ProjectImpact isLoading={metadata.isLoading} project={metadata.data} />
+        <ProjectImpact isLoading={metadata.isPending} project={metadata.data} />
         <Heading as="h3" size="2xl">
           Past grants and funding
         </Heading>

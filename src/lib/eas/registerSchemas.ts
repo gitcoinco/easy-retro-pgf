@@ -1,14 +1,25 @@
 import "dotenv/config";
-import { ethers } from "ethers";
-import { formatEther } from "ethers/lib/utils";
-import {
-  SchemaRegistry,
-  ZERO_ADDRESS,
-  getSchemaUID,
-} from "@ethereum-attestation-service/eas-sdk";
-import type { SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
+import { SchemaRegistry } from "@ethereum-attestation-service/eas-sdk";
+import { type Address, formatEther, publicActions } from "viem";
+import { createWalletClient, http } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import * as allChains from "viem/chains";
+import { getContracts } from "./createEAS";
+import { clientToSigner } from "~/hooks/useEthersSigner";
 
-import { eas, config } from "~/config";
+const account = privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address);
+const contracts = getContracts(process.env.NETWORK!);
+const chain = allChains[process.env.NETWORK as keyof typeof allChains];
+if (!chain)
+  throw new Error(
+    "Environment variable NETWORK must be set to a valid network",
+  );
+
+const client = createWalletClient({
+  account,
+  chain,
+  transport: http(),
+}).extend(publicActions);
 
 /*
 This file defines and registers the EAS schemas. 
@@ -25,36 +36,21 @@ const metadataSchema =
   "string name, string metadataPtr, uint256 metadataType, bytes32 type, bytes32 round";
 
 const schemas = [
-  { name: "Voter Approval", schema: approvalSchema },
-  { name: "Application Approval", schema: approvalSchema },
-  { name: "Application Metadata", schema: metadataSchema },
-  { name: "Profile Metadata", schema: metadataSchema },
-  { name: "List Metadata", schema: metadataSchema },
+  { name: "Approval", schema: approvalSchema },
+  { name: "Metadata", schema: metadataSchema },
 ];
 
-const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY!).connect(
-  new ethers.providers.AlchemyProvider(
-    config.network.network,
-    process.env.NEXT_PUBLIC_ALCHEMY_ID,
-  ),
-);
-
-const schemaRegistry = new SchemaRegistry(eas.contracts.schemaRegistry);
-schemaRegistry.connect(wallet as unknown as SignerOrProvider);
+const schemaRegistry = new SchemaRegistry(contracts.registry);
+schemaRegistry.connect(clientToSigner(client));
 
 export async function registerSchemas() {
-  console.log("Balance: ", await wallet.getBalance().then(formatEther));
+  console.log(
+    "Balance: ",
+    await client.getBalance({ address: account.address }).then(formatEther),
+  );
   return Promise.all(
     schemas.map(async ({ name, schema }) => {
       console.log(`Registering schema: ${name}`);
-
-      const exists = await schemaRegistry
-        .getSchema({
-          uid: getSchemaUID(schema, ZERO_ADDRESS, true),
-        })
-        .catch();
-      console.log("exists", exists);
-      if (exists) return { name, ...exists };
 
       return schemaRegistry
         .register({ schema, revocable: true })

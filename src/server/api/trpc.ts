@@ -7,16 +7,22 @@
  * need to use are documented accordingly near the end.
  */
 
+import { Round } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { config } from "~/config";
+import { RoundTypes } from "~/features/rounds/types";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
+import {
+  type AttestationFetcher,
+  createAttestationFetcher,
+} from "~/utils/fetchAttestations";
+import { hashApiKey } from "~/utils/hashApiKey";
 
 /**
  * 1. CONTEXT
@@ -26,9 +32,23 @@ import { db } from "~/server/db";
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-interface CreateContextOptions {
+export interface CreateContextOptions {
   session: Session | null;
+  domain?: string;
+  round?: Round;
+  // round?: {
+  //   id: string;
+  //   admins: string[];
+  //   network: string | null;
+  //   type: string | null;
+  //   startsAt: Date | null;
+  //   reviewAt: Date | null;
+  //   votingAt: Date | null;
+  //   resultAt: Date | null;
+  //   payoutAt: Date | null;
+  // } | null;
   res: NextApiResponse;
+  fetchAttestations?: AttestationFetcher;
 }
 
 /**
@@ -43,6 +63,7 @@ interface CreateContextOptions {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
+    ...opts,
     session: opts.session,
     db,
     res: opts.res,
@@ -61,10 +82,10 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
-  return createInnerTRPCContext({
-    session,
-    res,
-  });
+  // Get the current round domain
+  const domain = req.headers["round-id"] as string;
+
+  return createInnerTRPCContext({ session, res, domain });
 };
 
 /**
@@ -103,6 +124,77 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 export const createTRPCRouter = t.router;
 
+/** Reusable middleware that enforces users are logged in before running the procedure. */
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+const roundMiddleware = t.middleware(async ({ ctx, next }) => {
+  // TODO: should really be replaced with roundId
+  const domain = ctx.domain;
+
+  if (!domain)
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Domain is required" });
+
+  const round = await ctx.db.round.findFirst({
+    where: { domain },
+    select: {
+      id: true,
+      admins: true,
+      network: true,
+      type: true,
+      startsAt: true,
+      reviewAt: true,
+      votingAt: true,
+      resultAt: true,
+      calculationConfig: true,
+      calculationType: true,
+      payoutAt: true,
+      maxVotesProject: true,
+      maxVotesTotal: true,
+      metrics: true,
+    },
+  });
+
+  if (!round)
+    throw new TRPCError({ code: "NOT_FOUND", message: "Round not found" });
+
+  return next({ ctx: { ...ctx, round: round as Round } });
+});
+
+const attestationMiddleware = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.round)
+    throw new TRPCError({ code: "BAD_REQUEST", message: "No round found" });
+
+  return next({
+    ctx: {
+      ...ctx,
+      round: ctx.round,
+      fetchAttestations: createAttestationFetcher(ctx.round),
+    },
+  });
+});
+
+const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
+  const address = ctx.session?.user.name as `0x${string}`;
+  if (!ctx.round?.admins.includes(address)) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Must be admin to access this route",
+    });
+  }
+  return next({ ctx });
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -112,29 +204,24 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
-/** Reusable middleware that enforces users are logged in before running the procedure. */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
-});
+/**
+ * Public Procedure that uses roundMiddleware to add round data to the context.
+ *
+ * This procedure is accessible to anyone and includes the round data in the context,
+ * allowing the handling of round-specific logic.
+ */
+export const roundProcedure = publicProcedure.use(roundMiddleware);
 
-const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
-  const address = ctx.session?.user.name;
-  if (!config.admins.includes(address as `0x${string}`)) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Must be admin to access this route",
-    });
-  }
-  return next({ ctx });
-});
+/**
+ * Public Procedure that uses roundMiddleware to add round data to the context,
+ * and attestationMiddleware to add attestation data to the context.
+ *
+ * This procedure is accessible to anyone and includes both round and attestation data
+ * in the context, allowing the handling of more complex logic involving attestations.
+ */
+export const attestationProcedure = publicProcedure
+  .use(roundMiddleware)
+  .use(attestationMiddleware);
 
 /**
  * Protected (authenticated) procedure
@@ -145,4 +232,77 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
-export const adminProcedure = protectedProcedure.use(enforceUserIsAdmin);
+
+/**
+ * Protected Procedure that uses roundMiddleware to add round data to the context.
+ *
+ * This procedure is accessible only to authenticated users and includes the round data in the context,
+ * allowing the handling of round-specific logic for authenticated users.
+ */
+export const protectedRoundProcedure = protectedProcedure.use(roundMiddleware);
+
+/**
+ * Protected Procedure that uses roundMiddleware to add round data to the context and ballot data.
+ *
+ * This procedure is accessible only to authenticated users and includes both round and ballot data
+ * in the context, allowing the handling of more complex logic involving ballots.
+ */
+export const ballotProcedure = protectedProcedure.use(roundMiddleware).use(
+  t.middleware(async ({ ctx, next }) => {
+    const voterId = ctx.session?.user.name!;
+    const roundId = ctx.round?.id!;
+    const type = ctx.round?.type as RoundTypes;
+
+    // Find or create ballot
+    const ballot = await ctx.db.ballotV2.upsert({
+      where: { voterId_roundId_type: { voterId, roundId, type } },
+      update: {},
+      create: { voterId, roundId, type },
+      include: { allocations: true },
+    });
+    return next({
+      ctx: { ...ctx, voterId, roundId, ballotId: ballot.id, ballot },
+    });
+  }),
+);
+
+/**
+ * Protected Procedure that uses enforceUserIsAdmin to ensure the user is an admin,
+ * and roundMiddleware to add round data to the context.
+ *
+ * This procedure is accessible only to authenticated users who are also admins, and includes
+ * the round data in the context, allowing the handling of admin-specific logic for the round.
+ */
+export const adminProcedure = protectedProcedure
+  .use(roundMiddleware)
+  .use(enforceUserIsAdmin);
+
+/**
+ * Protected Procedure that uses enforceUserIsAdmin to ensure the user is an admin,
+ * roundMiddleware to add round data to the context, and attestationMiddleware to add attestation data.
+ *
+ * This procedure is accessible only to authenticated users who are also admins, and includes both
+ * round and attestation data in the context, allowing the handling of admin-specific logic involving
+ * attestations.
+ */
+export const adminAttestationProcedure = protectedProcedure
+  .use(enforceUserIsAdmin)
+  .use(roundMiddleware)
+  .use(attestationMiddleware);
+
+/**
+ * Helper function to validate the API key and retrieve the corresponding session.
+ *
+ * @param apiKey - The API key to validate.
+ * @returns The session if the API key is valid, otherwise null.
+ */
+export async function getApiKeySession(apiKey?: string | null) {
+  if (!apiKey) return null;
+
+  // Find API key
+  const key = await db.apiKey.findFirst({ where: { key: hashApiKey(apiKey) } });
+
+  if (key?.creatorId) return { id: key.creatorId };
+
+  return null;
+}

@@ -1,19 +1,22 @@
 import z from "zod";
+import { config } from "~/config";
 
-export const SortEnum = z
-  .enum(["name", "time" /* "shuffle" */])
-  .default("name");
-export const SortOrderEnum = z.enum(["asc", "desc"]).default("asc");
+export enum OrderBy {
+  name = "name",
+  time = "time",
+}
+export enum SortOrder {
+  asc = "asc",
+  desc = "desc",
+}
 
 export const FilterSchema = z.object({
-  limit: z.number().default(3 * 8),
+  limit: z.number().default(config.pageSize),
   cursor: z.number().default(0),
   seed: z.number().default(0),
-  orderBy: SortEnum,
-  sortOrder: SortOrderEnum,
+  orderBy: z.nativeEnum(OrderBy).default(OrderBy.name),
+  sortOrder: z.nativeEnum(SortOrder).default(SortOrder.asc),
   search: z.string().default(""),
 });
 
-export type Sort = z.infer<typeof SortEnum>;
-export type SortOrder = z.infer<typeof SortOrderEnum>;
 export type Filter = z.infer<typeof FilterSchema>;

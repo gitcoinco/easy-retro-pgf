@@ -1,4 +1,3 @@
-import { SignerOrProvider } from "@ethereum-attestation-service/eas-sdk/dist/transaction";
 import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
 import { ImageIcon } from "lucide-react";
@@ -20,17 +19,19 @@ export function ImageUpload({
   const { control } = useFormContext();
 
   const upload = useUploadMetadata();
-  const select = useMutation(async (file: File) => {
-    if (file?.size >= maxSize) {
-      toast.error("Image too large", {
-        description: `The image to selected is: ${(file.size / 1024).toFixed(
-          2,
-        )} / ${(maxSize / 1024).toFixed(2)} kb`,
-      });
-      throw new Error("IMAGE_TOO_LARGE");
-    }
+  const select = useMutation({
+    mutationFn: async (file: File) => {
+      if (file?.size >= maxSize) {
+        toast.error("Image too large", {
+          description: `The image to selected is: ${(file.size / 1024).toFixed(
+            2,
+          )} / ${(maxSize / 1024).toFixed(2)} kb`,
+        });
+        throw new Error("IMAGE_TOO_LARGE");
+      }
 
-    return URL.createObjectURL(file);
+      return URL.createObjectURL(file);
+    },
   });
 
   return (
@@ -42,9 +43,9 @@ export function ImageUpload({
         return (
           <div className={clsx("relative overflow-hidden", className)}>
             <IconButton
-              disabled={upload.isLoading}
+              disabled={upload.isPending}
               onClick={() => ref.current?.click()}
-              icon={upload.isLoading ? Spinner : ImageIcon}
+              icon={upload.isPending ? Spinner : ImageIcon}
               className="absolute bottom-1 right-1"
             ></IconButton>
 
@@ -52,7 +53,7 @@ export function ImageUpload({
               className={clsx(
                 "h-full rounded-xl bg-gray-200 bg-cover bg-center bg-no-repeat dark:bg-gray-800",
                 {
-                  ["animate-pulse opacity-50"]: upload.isLoading,
+                  ["animate-pulse opacity-50"]: upload.isPending,
                 },
               )}
               style={{

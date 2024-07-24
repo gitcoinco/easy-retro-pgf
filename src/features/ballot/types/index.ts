@@ -13,12 +13,24 @@ export const BallotPublishSchema = z.object({
   chainId: z.number(),
   signature: z.custom<`0x${string}`>(),
   message: z.object({
-    total_votes: z.bigint(),
-    project_count: z.bigint(),
-    hashed_votes: z.string(),
+    allocations_sum: z.bigint(),
+    allocations_count: z.bigint(),
+    hashed_allocations: z.string(),
   }),
 });
 
 export type Vote = z.infer<typeof VoteSchema>;
 export type Ballot = z.infer<typeof BallotSchema>;
 export type BallotPublish = z.infer<typeof BallotPublishSchema>;
+
+export const AllocationSchema = z.object({
+  id: z.string(),
+  amount: z.number().min(0),
+  locked: z.boolean().default(true),
+});
+export const BallotV2Schema = z.object({
+  allocations: z.array(AllocationSchema),
+});
+
+export type Allocation = z.input<typeof AllocationSchema>;
+export type BallotV2 = z.infer<typeof BallotV2Schema>;

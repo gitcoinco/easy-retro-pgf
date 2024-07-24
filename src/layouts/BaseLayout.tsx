@@ -5,6 +5,7 @@ import {
   type PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
 } from "react";
 import { useAccount } from "wagmi";
 
@@ -42,10 +43,12 @@ export const BaseLayout = ({
   const router = useRouter();
   const { address, isConnecting } = useAccount();
 
-  if (requireAuth && !address && !isConnecting) {
-    void router.push("/");
-    return null;
-  }
+  useEffect(() => {
+    if (requireAuth && !address && !isConnecting) {
+      void router.push("/");
+      return null;
+    }
+  }, [requireAuth, address, isConnecting]);
 
   const wrappedSidebar = <Sidebar side={sidebar}>{sidebarComponent}</Sidebar>;
 
@@ -79,7 +82,7 @@ export const BaseLayout = ({
         )}
       >
         {header}
-        <div className="mx-auto w-full flex-1 pt-12 2xl:container md:flex">
+        <div className="mx-auto w-full flex-1 pt-2 2xl:container md:flex">
           {sidebar === "left" ? wrappedSidebar : null}
           <div
             className={clsx("w-full min-w-0 px-2 pb-24", {

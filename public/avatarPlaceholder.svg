@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg fill="none" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+ <g opacity=".7">
+  <rect width="16" height="16" rx="4" fill="#F2F3F8"/>
+ </g>
+ <defs>
+  <clipPath>
+   <rect transform="translate(1.3857 4.373)" width="5.3269" height="5.434" fill="#fff"/>
+  </clipPath>
+  <clipPath>
+   <rect transform="translate(9.2734 4.373)" width="5.3269" height="5.434" fill="#fff"/>
+  </clipPath>
+ </defs>
+</svg>

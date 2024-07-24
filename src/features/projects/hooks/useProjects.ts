@@ -1,4 +1,3 @@
-import { config } from "~/config";
 import { useMetadata } from "~/hooks/useMetadata";
 import { api } from "~/utils/api";
 import { type Application } from "~/features/applications/types";
@@ -20,9 +19,9 @@ export function useProjectsById(ids: string[]) {
 
 const seed = 0;
 export function useSearchProjects(filterOverride?: Partial<Filter>) {
-  const { data: filter } = useFilter("projects");
+  const { setFilter, ...filter } = useFilter();
   return api.projects.search.useInfiniteQuery(
-    { limit: config.pageSize, seed, ...filter, ...filterOverride },
+    { seed, ...filter, ...filterOverride },
     {
       getNextPageParam: (_, pages) => pages.length,
     },

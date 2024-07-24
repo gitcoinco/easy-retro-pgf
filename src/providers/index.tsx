@@ -1,10 +1,12 @@
 import { type PropsWithChildren } from "react";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider, createConfig, http } from "wagmi";
 import {
   RainbowKitProvider,
-  getDefaultWallets,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
+
 import {
   argentWallet,
   trustWallet,
@@ -12,14 +14,11 @@ import {
   frameWallet,
   injectedWallet,
   metaMaskWallet,
-  braveWallet,
   safeWallet,
   coinbaseWallet,
+  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { configureChains, Connector, createConfig, WagmiConfig } from "wagmi";
-import * as wagmiChains from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+import * as allChains from "viem/chains";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ThemeProvider } from "next-themes";
@@ -30,25 +29,14 @@ import {
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
-import { MockConnector } from "wagmi/connectors/mock";
-import {
-  generatePrivateKey,
-  mnemonicToAccount,
-  privateKeyToAccount,
-} from "viem/accounts";
-import { Wallet } from "ethers";
-import { createWalletClient, http } from "viem";
-import {
-  connectorsForTestWallet,
-  createTestWallet,
-  getTestWallet,
-} from "./testWallet";
+import { mock } from "wagmi/connectors";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
 });
 
-const { config, chains, appInfo } = createWagmiConfig();
+const queryClient = new QueryClient();
+const config = createWagmiConfig();
 
 export function Providers({
   children,
@@ -57,81 +45,96 @@ export function Providers({
   return (
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>
-        <WagmiConfig config={config}>
-          <RainbowKitSiweNextAuthProvider
-            getSiweMessageOptions={getSiweMessageOptions}
-          >
-            <RainbowKitProvider appInfo={appInfo} chains={chains}>
-              {children}
-              <Toaster />
-            </RainbowKitProvider>
-          </RainbowKitSiweNextAuthProvider>
-        </WagmiConfig>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitSiweNextAuthProvider
+              getSiweMessageOptions={getSiweMessageOptions}
+            >
+              <RainbowKitProvider>
+                {children}
+                <Toaster />
+              </RainbowKitProvider>
+            </RainbowKitSiweNextAuthProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
       </SessionProvider>
     </ThemeProvider>
   );
 }
 
 function createWagmiConfig() {
-  const activeChains: wagmiChains.Chain[] = [
-    appConfig.config.network,
-    wagmiChains.mainnet,
-  ];
-
-  // if (configuredChain) {
-  //   activeChains.push(configuredChain);
-  // }
-  if (process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true") {
-    activeChains.push(wagmiChains.optimismGoerli);
-  }
-  const { chains, publicClient, webSocketPublicClient } = configureChains(
-    activeChains,
-    [
-      alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ID! }),
-      publicProvider(),
-    ],
-  );
-
-  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
   const appName = appConfig.metadata.title;
+  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
 
-  const appInfo = { appName };
+  const wallets = process.env.NEXT_PUBLIC_E2E_TEST
+    ? [
+        {
+          groupName: "Testing",
+          wallets: [
+            mock({
+              accounts: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"],
+            }),
+          ],
+        },
+      ]
+    : [
+        {
+          groupName: "Popular",
+          wallets: [
+            metaMaskWallet,
+            injectedWallet,
+            safeWallet,
+            coinbaseWallet,
+            frameWallet,
+            ledgerWallet,
+            argentWallet,
+            trustWallet,
+            ...(projectId ? [walletConnectWallet] : []),
+          ],
+        },
+      ];
 
-  const connectors = connectorsForWallets(
-    process.env.NEXT_PUBLIC_E2E_TEST
-      ? getTestWallet()
-      : projectId
-        ? getDefaultWallets({ appName, chains, projectId }).wallets
-        : getInjectedWallets({ appName, chains }),
-  );
-
-  const config = createConfig({
-    autoConnect: true,
-    connectors,
-    publicClient,
-    webSocketPublicClient,
-  });
-
-  return { chains, config, appInfo };
-}
-
-function getInjectedWallets({
-  appName,
-  chains,
-}: {
-  appName: string;
-  chains: wagmiChains.Chain[];
-}) {
-  return [
-    {
-      groupName: "Popular",
-      wallets: [
-        injectedWallet({ chains }),
-        safeWallet({ chains }),
-        coinbaseWallet({ appName, chains }),
-        braveWallet({ chains }),
-        frameWallet({ chains }),
-      ],
+  const connectors = connectorsForWallets(wallets, {
+    projectId,
+    appName,
+    walletConnectParameters: {
+      // TODO: Define these
+      metadata: {
+        name: appName,
+        description: appName,
+        url: global.location?.href,
+        icons: [],
+      },
     },
+  });
+  const chains = appConfig.supportedNetworks as unknown as [
+    allChains.Chain,
+    ...allChains.Chain[],
   ];
+
+  const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_ID;
+
+  const networkMap: Record<string, string> = {
+    [allChains.mainnet.id]: "eth-mainnet",
+    [allChains.optimism.id]: "opt-mainnet",
+    [allChains.optimismSepolia.id]: "opt-sepolia",
+    [allChains.arbitrum.id]: "arb-mainnet",
+    [allChains.base.id]: "base-mainnet",
+    [allChains.baseGoerli.id]: "base-goerli",
+  };
+
+  const transports = Object.fromEntries(
+    chains.map((chain) => {
+      const _network = networkMap[chain.id];
+      return [
+        chain.id,
+        http(
+          alchemyApiKey && _network
+            ? `https://${_network}.g.alchemy.com/v2/${alchemyApiKey}`
+            : undefined,
+        ),
+      ];
+    }),
+  );
+  return createConfig({ connectors, chains, transports, ssr: true });
 }

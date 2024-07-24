@@ -1,21 +1,30 @@
+import posthog from "posthog-js";
 import Image from "next/image";
 import Link from "next/link";
-import { type ComponentPropsWithRef } from "react";
-import { type Address, useEnsAvatar, useEnsName } from "wagmi";
-import { FaListCheck } from "react-icons/fa6";
+import {
+  type PropsWithChildren,
+  type ComponentPropsWithRef,
+  useEffect,
+} from "react";
 
+import { useEnsAvatar, useEnsName } from "wagmi";
+import { getAddress, type Address } from "viem";
+import { normalize } from "viem/ens";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { createBreakpoint } from "react-use";
+import { ListChecks } from "lucide-react";
 
 import { Button } from "./ui/Button";
 import { Chip } from "./ui/Chip";
-import { useBallot } from "~/features/ballot/hooks/useBallot";
 import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { EnsureCorrectNetwork } from "./EnureCorrectNetwork";
+import { useBallot } from "~/features/ballot/hooks/useBallot";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
-export const ConnectButton = () => {
+export const ConnectButton = ({ children }: PropsWithChildren) => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
 
@@ -25,7 +34,6 @@ export const ConnectButton = () => {
         account,
         chain,
         openAccountModal,
-        openChainModal,
         openConnectModal,
         mounted,
         authenticationStatus,
@@ -63,16 +71,16 @@ export const ConnectButton = () => {
                 );
               }
 
-              if (chain.unsupported) {
-                return <Chip onClick={openChainModal}>Wrong network</Chip>;
-              }
-
               return (
-                <ConnectedDetails
-                  account={account}
-                  openAccountModal={openAccountModal}
-                  isMobile={isMobile}
-                />
+                children ?? (
+                  <EnsureCorrectNetwork>
+                    <ConnectedDetails
+                      account={account}
+                      openAccountModal={openAccountModal}
+                      isMobile={isMobile}
+                    />
+                  </EnsureCorrectNetwork>
+                )
               );
             })()}
           </div>
@@ -92,25 +100,26 @@ const ConnectedDetails = ({
   isMobile: boolean;
 }) => {
   const { data: ballot } = useBallot();
-  const ballotSize = (ballot?.votes ?? []).length;
+  const ballotSize = (ballot?.allocations ?? []).length;
+  const domain = useCurrentDomain();
 
   const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (
     <div>
-      <div className="flex gap-2 text-white">
+      <div className="flex gap-2">
         {!showBallot ? null : ballot?.publishedAt ? (
           <Chip>Already submitted</Chip>
         ) : (
-          <Chip className="gap-2" as={Link} href={"/ballot"}>
-            {isMobile ? <FaListCheck className="h-4 w-4" /> : `View Ballot`}
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs">
+          <Chip className="gap-2" as={Link} href={`/${domain}/ballot`}>
+            {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
+            <div className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold">
               {ballotSize}
             </div>
           </Chip>
         )}
         <UserInfo
           onClick={openAccountModal}
-          address={account.address as Address}
+          address={getAddress(account.address)}
         >
           {isMobile ? null : account.displayName}
         </UserInfo>
@@ -119,23 +128,29 @@ const ConnectedDetails = ({
     </div>
   );
 };
-
+let _hasIdentified = false;
 const UserInfo = ({
   address,
   children,
   ...props
 }: { address: Address } & ComponentPropsWithRef<typeof Chip>) => {
-  const ens = useEnsName({ address, chainId: 1, enabled: Boolean(address) });
-  const name = ens.data;
-  const avatar = useEnsAvatar({ name, chainId: 1, enabled: Boolean(name) });
+  const ens = useEnsName({ address, chainId: 1 });
+  const name = ens.data ? normalize(ens.data) : "";
+  const avatar = useEnsAvatar({ name, chainId: 1 });
 
+  useEffect(() => {
+    if (address && !ens.isPending && _hasIdentified) {
+      posthog.identify(address, { name });
+      _hasIdentified = true;
+    }
+  }, [address, ens]);
   return (
     <Chip className="gap-2" {...props}>
       <div className="h-6 w-6 overflow-hidden rounded-full">
         {avatar.data ? (
-          <Image width={24} height={24} alt={name!} src={avatar.data} />
+          <Image width={24} height={24} alt={name} src={avatar.data} />
         ) : (
-          <div className="h-full bg-gray-200" />
+          <div className="h-full bg-gray-700" />
         )}
       </div>
       {children}

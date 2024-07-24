@@ -12,7 +12,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
       <Heading as="h3" size="2xl">
         Impact
       </Heading>
-      <div className="flex gap-4">
+      <div className="mb-4 flex flex-col gap-4 md:flex-row">
         <div className="md:w-2/3">
           <Markdown isLoading={isLoading}>
             {project?.impactDescription}

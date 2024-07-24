@@ -7,29 +7,31 @@ import { Button } from "~/components/ui/Button";
 import { useSearchProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
 import { ProjectSelectButton } from "./ProjectSelectButton";
-import { getAppState } from "~/utils/state";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useResults } from "~/hooks/useResults";
 import { SortFilter } from "~/components/SortFilter";
-import { useFilter } from "~/features/filter/hooks/useFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 
 export function Projects() {
   const projects = useSearchProjects();
   const select = useSelectProjects();
   const results = useResults();
-  const { data: filter } = useFilter("projects");
+  const domain = useCurrentDomain();
 
+  const roundState = useRoundState();
   return (
     <div>
       <div
         className={clsx(
-          "sticky top-4 z-20 mb-4 mt-4 flex justify-end gap-4 lg:-mt-8",
+          "fixed right-0 top-0 z-20 flex justify-end gap-2 rounded-bl-3xl bg-white px-2 pb-2 pt-4 dark:bg-gray-900",
           {
             ["invisible"]: !select.count,
           },
         )}
       >
         <Button
+          size="sm"
           variant="primary"
           onClick={select.add}
           disabled={!select.count}
@@ -37,28 +39,20 @@ export function Projects() {
         >
           Add {select.count} projects to ballot
         </Button>
-        <Button size="icon" onClick={select.reset}>
-          <XIcon />
-        </Button>
+        <Button icon={XIcon} size="sm" onClick={select.reset} />
       </div>
 
-      <div className="flex justify-end">
-        <SortFilter
-          type="projects"
-          sortOptions={["name_asc", "name_desc", "time_asc", "time_desc"]}
-          filter={filter!}
-        />
-      </div>
+      <SortFilter />
       <InfiniteLoading
         {...projects}
         renderItem={(item, { isLoading }) => {
           return (
             <Link
               key={item.id}
-              href={`/projects/${item.id}`}
+              href={`/${domain}/projects/${item.id}`}
               className={clsx("relative", { ["animate-pulse"]: isLoading })}
             >
-              {!isLoading && getAppState() === "VOTING" ? (
+              {!isLoading && roundState === "VOTING" ? (
                 <div className="absolute right-2 top-[100px] z-10 -mt-2">
                   <ProjectSelectButton
                     state={select.getState(item.id)}
@@ -69,7 +63,7 @@ export function Projects() {
                   />
                 </div>
               ) : null}
-              {!results.isLoading && getAppState() === "RESULTS" ? (
+              {!results.isPending && roundState === "RESULTS" ? (
                 <ProjectItemAwarded
                   amount={results.data?.projects?.[item.id]?.votes}
                 />

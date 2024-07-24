@@ -4,8 +4,15 @@ import { useAccount } from "wagmi";
 import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
-import { getAppState } from "~/utils/state";
-import { config } from "~/config";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+} from "~/features/rounds/hooks/useRound";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { useSession } from "next-auth/react";
+import { Button } from "~/components/ui/Button";
+import Link from "next/link";
+import { RoundTypes } from "~/features/rounds/types";
 
 type Props = PropsWithChildren<
   {
@@ -15,44 +22,50 @@ type Props = PropsWithChildren<
 >;
 export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
+
+  const domain = useCurrentDomain();
+  const { data: round, isPending } = useCurrentRound();
+
   const navLinks = [
-    {
-      href: "/projects",
-      children: "Projects",
-    },
-    {
-      href: "/lists",
-      children: "Lists",
-    },
+    round?.type === RoundTypes.impact
+      ? {
+          href: `/${domain}/metrics`,
+          children: `Metrics`,
+        }
+      : {
+          href: `/${domain}/projects`,
+          children: `Projects`,
+        },
   ];
 
-  if (getAppState() === "RESULTS") {
+  if (useRoundState() === "RESULTS") {
     navLinks.push({
-      href: "/stats",
-      children: "Stats",
+      href: `/${domain}/stats`,
+      children: `Stats`,
     });
   }
 
-  if (config.admins.includes(address!)) {
+  if (round?.admins.includes(address!)) {
     navLinks.push(
       ...[
         {
-          href: "/applications",
-          children: "Applications",
-        },
-        {
-          href: "/voters",
-          children: "Voters",
-        },
-        {
-          href: "/distribute",
-          children: "Distribute",
-        },
-        {
-          href: "/info",
-          children: "Info",
+          href: `/${domain}/admin`,
+          children: `Admin`,
         },
       ],
+    );
+  }
+
+  if (!isPending && !round) {
+    return (
+      <BaseLayout>
+        <div className="flex flex-col items-center gap-4 py-8">
+          Round not found
+          <Button as={Link} href={"/"}>
+            Go home
+          </Button>
+        </div>
+      </BaseLayout>
     );
   }
 
@@ -65,10 +78,11 @@ export const Layout = ({ children, ...props }: Props) => {
 
 export function LayoutWithBallot(props: Props) {
   const { address } = useAccount();
+  const { data: session } = useSession();
   return (
     <Layout
       sidebar="left"
-      sidebarComponent={address && <BallotOverview />}
+      sidebarComponent={address && session && <BallotOverview />}
       {...props}
     />
   );

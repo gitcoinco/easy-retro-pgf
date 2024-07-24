@@ -1,79 +1,112 @@
+import {
+  adminProcedure,
+  ballotProcedure,
+  createTRPCRouter,
+} from "~/server/api/trpc";
+import type { Prisma, PrismaClient, Round } from "@prisma/client";
+
+import { z } from "zod";
+import {
+  AllocationSchema,
+  Allocation,
+  BallotPublishSchema,
+} from "~/features/ballot/types";
+import { calculateBalancedAllocations } from "~/features/ballot/hooks/useBallotEditor";
 import { TRPCError } from "@trpc/server";
-import { type Address, verifyTypedData, keccak256 } from "viem";
 import { isAfter } from "date-fns";
 import {
-  type BallotPublish,
-  BallotPublishSchema,
-  BallotSchema,
-  type Vote,
-} from "~/features/ballot/types";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { ballotTypedData } from "~/utils/typedData";
-import type { db } from "~/server/db";
-import { config } from "~/config";
-import { sumBallot } from "~/features/ballot/hooks/useBallot";
-import { type Prisma } from "@prisma/client";
-import { fetchApprovedVoter } from "~/utils/fetchAttestations";
+  createAttestationFetcher,
+  fetchApprovedVoter,
+} from "~/utils/fetchAttestations";
+import {
+  verifyBallotCount,
+  verifyBallotHash,
+  verifyBallotSignature,
+} from "~/utils/ballot";
+import { RoundTypes } from "~/features/rounds/types";
 
-const defaultBallotSelect = {
-  votes: true,
+export const defaultBallotSelect = {
+  id: true,
+  allocations: true,
   createdAt: true,
   updatedAt: true,
   publishedAt: true,
   signature: true,
-} satisfies Prisma.BallotSelect;
+} satisfies Prisma.BallotV2Select;
 
 export const ballotRouter = createTRPCRouter({
-  get: protectedProcedure.query(({ ctx }) => {
-    const voterId = ctx.session.user.name!;
-    return ctx.db.ballot
-      .findUnique({ select: defaultBallotSelect, where: { voterId } })
-      .then((ballot) => ({
-        ...ballot,
-        votes: (ballot?.votes as Vote[]) ?? [],
-      }));
-  }),
-  save: protectedProcedure
-    .input(BallotSchema)
-    .mutation(async ({ input, ctx }) => {
-      const voterId = ctx.session.user.name!;
-      if (isAfter(new Date(), config.votingEndsAt)) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
-      }
-      await verifyUnpublishedBallot(voterId, ctx.db);
+  get: ballotProcedure.query(({ ctx }) => {
+    const { roundId, voterId } = ctx;
 
-      return ctx.db.ballot.upsert({
-        select: defaultBallotSelect,
-        where: { voterId },
+    return ctx.db.ballotV2.findFirst({
+      where: { voterId, roundId },
+      select: defaultBallotSelect,
+    });
+  }),
+  save: ballotProcedure
+    .input(AllocationSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { voterId, roundId, ballotId } = ctx;
+      await ctx.db.allocation.upsert({
+        where: {
+          voterId_roundId_ballotId_id: {
+            voterId,
+            roundId,
+            ballotId,
+            id: input.id,
+          },
+        },
         update: input,
-        create: { voterId, ...input },
+        create: { ...input, voterId, roundId, ballotId },
       });
+
+      return autobalanceAllocations(ctx, input);
     }),
-  publish: protectedProcedure
+  remove: ballotProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const { ballotId, roundId, voterId } = ctx;
+      await ctx.db.allocation.delete({
+        where: {
+          voterId_roundId_ballotId_id: {
+            id: input.id,
+            voterId,
+            roundId,
+            ballotId,
+          },
+        },
+      });
+      return autobalanceAllocations(ctx);
+    }),
+  publish: ballotProcedure
     .input(BallotPublishSchema)
     .mutation(async ({ input, ctx }) => {
-      const voterId = ctx.session.user.name!;
+      const { round, ballot, voterId } = ctx;
+      if (!round || !ballot) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Round or ballot not found",
+        });
+      }
+      if (![round.resultAt, round.maxVotesTotal].every(Boolean)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Round not configured properly",
+        });
+      }
 
-      if (isAfter(new Date(), config.votingEndsAt)) {
+      if (isAfter(new Date(), round.resultAt!)) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
       }
 
-      const ballot = await verifyUnpublishedBallot(voterId, ctx.db);
-      if (!ballot) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Ballot doesn't exist",
-        });
-      }
-
-      if (!verifyBallotCount(ballot.votes as Vote[])) {
+      if (!verifyBallotCount(ballot.allocations, round)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: `Ballot must have a maximum of ${config.votingMaxTotal} votes and ${config.votingMaxProject} per project.`,
+          message: `Ballot must have a maximum of ${round.maxVotesTotal} votes and ${round.maxVotesProject} per project.`,
         });
       }
 
-      if (!(await fetchApprovedVoter(voterId))) {
+      if (!(await fetchApprovedVoter(round, voterId))) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Voter is not approved",
@@ -82,8 +115,8 @@ export const ballotRouter = createTRPCRouter({
 
       if (
         !(await verifyBallotHash(
-          input.message.hashed_votes,
-          ballot.votes as Vote[],
+          input.message.hashed_allocations,
+          ballot.allocations,
         ))
       ) {
         throw new TRPCError({
@@ -99,50 +132,104 @@ export const ballotRouter = createTRPCRouter({
         });
       }
 
-      return ctx.db.ballot.update({
-        where: { voterId },
+      return ctx.db.ballotV2.update({
+        where: { id: ballot.id },
         data: { publishedAt: new Date(), signature },
       });
     }),
+
+  export: adminProcedure.mutation(({ ctx }) => {
+    return ctx.db.ballotV2
+      .findMany({
+        where: { publishedAt: { not: null } },
+        include: { allocations: true },
+      })
+      .then(async (ballots) => {
+        // Get all unique projectIds from all the votes
+        const projectIds = Object.keys(
+          Object.fromEntries(
+            ballots.flatMap((b) =>
+              b.allocations.map((v) => v.id).map((n) => [n, n]),
+            ),
+          ),
+        );
+        if (ctx.round?.type !== "project") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Export not implemented for impact Rounds",
+          });
+        }
+        const projectsById = await createAttestationFetcher(ctx.round!)(
+          ["metadata"],
+          {
+            where: { id: { in: projectIds } },
+          },
+        ).then((projects) =>
+          Object.fromEntries(projects.map((p) => [p.id, p.name])),
+        );
+        return ballots.flatMap(
+          ({ voterId, signature, publishedAt, allocations }) =>
+            allocations.map(({ amount, id }) => ({
+              voterId,
+              signature,
+              publishedAt,
+              amount,
+              id,
+              project: projectsById?.[id],
+            })),
+        );
+      });
+  }),
 });
 
-function verifyBallotCount(votes: Vote[]) {
-  const sum = sumBallot(votes);
-  const validVotes = votes.every(
-    (vote) => vote.amount <= config.votingMaxProject,
+async function autobalanceAllocations(
+  {
+    db,
+    ballotId,
+    voterId,
+    roundId,
+    round,
+  }: {
+    db: PrismaClient;
+    ballotId: string;
+    voterId: string;
+    roundId: string;
+    round?: Round;
+  },
+  input?: Allocation,
+) {
+  const allocations = await db.allocation
+    .findMany({ where: { ballotId } })
+    .then((r) =>
+      r.map(({ id, amount, locked }) =>
+        id === input?.id ? input : { id, amount, locked },
+      ),
+    );
+  // When Round type is impact, always use percetages (100)
+  const [maxAllocation, allocationCap] =
+    round?.type === RoundTypes.impact
+      ? [100, 100]
+      : [round?.maxVotesTotal ?? 0, round?.maxVotesProject ?? 0];
+
+  const updates = calculateBalancedAllocations(
+    allocations,
+    maxAllocation,
+    allocationCap,
   );
-  return sum <= config.votingMaxTotal && validVotes;
-}
 
-async function verifyBallotHash(hashed_votes: string, votes: Vote[]) {
-  return hashed_votes === keccak256(Buffer.from(JSON.stringify(votes)));
-}
-async function verifyUnpublishedBallot(voterId: string, { ballot }: typeof db) {
-  const existing = await ballot.findUnique({
+  await Promise.all(
+    updates.map(({ id, ...data }) =>
+      db.allocation.update({
+        where: {
+          voterId_roundId_ballotId_id: { voterId, ballotId, roundId, id },
+        },
+        data,
+      }),
+    ),
+  );
+
+  return db.ballotV2.findFirst({
+    where: { voterId, roundId },
     select: defaultBallotSelect,
-    where: { voterId },
-  });
-
-  // Can only be submitted once
-  if (existing?.publishedAt) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Ballot already published",
-    });
-  }
-  return existing;
-}
-
-async function verifyBallotSignature({
-  address,
-  signature,
-  message,
-  chainId,
-}: { address: string } & BallotPublish) {
-  return await verifyTypedData({
-    ...ballotTypedData(chainId),
-    address: address as Address,
-    message,
-    signature,
   });
 }

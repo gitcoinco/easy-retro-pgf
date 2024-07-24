@@ -58,7 +58,9 @@ model VerificationToken {
 }
 
 model Ballot {
+    id      String @id @default(cuid())
     voterId String
+    roundId String
 
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
@@ -67,11 +69,99 @@ model Ballot {
 
     votes Json[]
 
-    @@unique([voterId]) // Only one ballot per voter
+    // Only one ballot per voter and round
+    @@unique([voterId, roundId])
 }
 
-model Settings {
-    id     String @id @default(cuid())
+model BallotV2 {
+    id      String @id @default(cuid())
+    voterId String
+    roundId String
+
+    type RoundType @default(project)
+
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    publishedAt DateTime?
+    signature   String?
+
+    allocations Allocation[]
+
+    // Only one ballot per voter and round
+    @@unique([voterId, roundId, type])
+}
+
+model Allocation {
+    id        String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    ballot    BallotV2 @relation(fields: [ballotId], references: [id])
+    ballotId  String
+    voterId   String
+    roundId   String
+    amount    Int
+    locked    Boolean  @default(true)
+
+    @@id([voterId, roundId, ballotId, id])
+}
+
+enum RoundType {
+    impact
+    project
+}
+
+model Round {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    creatorId      String
+    name           String
+    description    String?
+    bannerImageUrl String?
+    domain         String    @unique
+    type           RoundType @default(project)
+
+    network String?
+    admins  String[]
+
+    startsAt DateTime?
+    reviewAt DateTime?
+    votingAt DateTime?
+    resultAt DateTime?
+    payoutAt DateTime?
+
+    categories Json[]
+    metrics    String[] @default([])
+
+    maxVotesTotal   Int?
+    maxVotesProject Int?
+    tokenAddress    String?
+
+    calculationType   String
+    calculationConfig Json?
+
     poolId Int?
-    config Json
+
+    comments Comment[]
+}
+
+model Comment {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    content   String
+    creatorId String
+    projectId String
+
+    roundId String
+    round   Round  @relation(fields: [roundId], references: [id])
+}
+
+model ApiKey {
+    id        String   @id @default(cuid())
+    key       String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    creatorId String
 }

@@ -1,29 +1,23 @@
-import { type Vote } from "~/features/ballot/types";
+import type { Allocation } from "~/features/ballot/types";
 
-/*
-Payout styles:
-Custom: 
-- Sum up all the votes
-OP-style:
-- A project must have a minimum of x voters (threshold)
-- Median value is counted
-*/
-
-export type PayoutOptions = { style: "custom" | "op"; threshold?: number };
+export type PayoutOptions = {
+  calculation: "average" | "median" | "sum";
+  threshold?: number;
+};
 export type BallotResults = Record<
   string,
   {
     voters: number;
-    votes: number;
+    allocations: number;
   }
 >;
 export function calculateVotes(
-  ballots: { voterId: string; votes: Vote[] }[],
-  payoutOpts: PayoutOptions = { style: "custom" },
+  ballots: { voterId: string; allocations: Allocation[] }[],
+  payoutOpts: PayoutOptions,
 ): BallotResults {
-  const totalVotes = ballots.reduce((sum, { votes }) => sum + votes.length, 0);
+  const { calculation: calculationType, threshold = 0 } = payoutOpts;
 
-  const projectVotes: Record<
+  const votes: Record<
     string,
     {
       total: number;
@@ -33,34 +27,37 @@ export function calculateVotes(
   > = {};
 
   for (const ballot of ballots) {
-    for (const vote of ballot.votes) {
-      if (!projectVotes[vote.projectId]) {
-        projectVotes[vote.projectId] = {
+    for (const vote of ballot.allocations) {
+      if (!votes[vote.id]) {
+        votes[vote.id] = {
           total: 0,
           amounts: [],
           voterIds: new Set(),
         };
       }
-      projectVotes[vote.projectId]!.total += vote.amount;
-      projectVotes[vote.projectId]!.amounts.push(vote.amount);
-      projectVotes[vote.projectId]!.voterIds.add(ballot.voterId);
+      votes[vote.id]!.amounts.push(vote.amount);
+      votes[vote.id]!.voterIds.add(ballot.voterId);
     }
   }
 
   const projects: BallotResults = {};
-  for (const projectId in projectVotes) {
-    const { total, amounts, voterIds } = projectVotes[projectId]!;
-    const voteIsCounted =
-      payoutOpts.style === "custom" ||
-      (payoutOpts.threshold && voterIds.size >= payoutOpts.threshold);
+
+  const calcFunctions = {
+    average: calculateAverage,
+    median: calculateMedian,
+    sum: calculateSum,
+  };
+
+  for (const id in votes) {
+    const { amounts, voterIds } = votes[id]!;
+    const voteIsCounted = voterIds.size >= threshold;
 
     if (voteIsCounted) {
-      projects[projectId] = {
+      projects[id] = {
         voters: voterIds.size,
-        votes:
-          payoutOpts.style === "op"
-            ? calculateMedian(amounts.sort((a, b) => a - b))
-            : total,
+        allocations: calcFunctions[calculationType ?? "average"]?.(
+          amounts.sort((a, b) => a - b),
+        ),
       };
     }
   }
@@ -68,16 +65,18 @@ export function calculateVotes(
   return projects;
 }
 
-function calculateAverage(votes: number[]) {
-  if (votes.length === 0) {
+function calculateSum(arr: number[]) {
+  return arr?.reduce((sum, x) => sum + x, 0);
+}
+function calculateAverage(arr: number[]) {
+  if (arr.length === 0) {
     return 0;
   }
 
-  const sum = votes.reduce((sum, x) => sum + x, 0);
+  const sum = arr.reduce((sum, x) => sum + x, 0);
+  const average = sum / arr.length;
 
-  const average = sum / votes.length;
-
-  return Math.round(average);
+  return Math.floor(average);
 }
 
 function calculateMedian(arr: number[]): number {

@@ -1,5 +1,6 @@
 import { tv } from "tailwind-variants";
 import { createComponent } from ".";
+import { cn } from "~/utils/classNames";
 
 const ProgressWrapper = createComponent(
   "div",
@@ -11,7 +12,10 @@ const ProgressWrapper = createComponent(
 export const Progress = ({ value = 0, max = 100 }) => (
   <ProgressWrapper>
     <div
-      className="absolute h-1 rounded-full bg-primary-600 transition-all"
+      className={cn("absolute h-1 rounded-full transition-all", {
+        ["bg-primary-600"]: value <= max,
+        ["bg-red-600"]: value > max,
+      })}
       style={{ width: `${(value / max) * 100}%` }}
     />
   </ProgressWrapper>

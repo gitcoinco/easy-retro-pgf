@@ -13,7 +13,7 @@ export default function ProjectContributions({ isLoading, project }: Props) {
       <Heading as="h3" size="2xl">
         Contributions
       </Heading>
-      <div className="mb-4 gap-4 md:flex">
+      <div className="mb-4 flex flex-col gap-4 md:flex-row">
         <div className="md:w-2/3">
           <Markdown isLoading={isLoading}>
             {project?.contributionDescription}
