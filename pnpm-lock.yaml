@@ -194,7 +194,7 @@ devDependencies:
     specifier: ^14.1.0
     version: 14.2.4
   '@playwright/test':
-    specifier: ^1.42.1
+    specifier: ^1.45.3
     version: 1.45.3
   '@tailwindcss/typography':
     specifier: ^0.5.10
