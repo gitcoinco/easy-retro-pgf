@@ -30,6 +30,7 @@ import {
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
 import { mock } from "wagmi/connectors";
+import { createTestWallet } from "./testWallet";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
@@ -66,33 +67,25 @@ function createWagmiConfig() {
   const appName = appConfig.metadata.title;
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
 
-  const wallets = process.env.NEXT_PUBLIC_E2E_TEST
-    ? [
-        {
-          groupName: "Testing",
-          wallets: [
-            mock({
-              accounts: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"],
-            }),
-          ],
-        },
-      ]
-    : [
-        {
-          groupName: "Popular",
-          wallets: [
-            metaMaskWallet,
-            injectedWallet,
-            safeWallet,
-            coinbaseWallet,
-            frameWallet,
-            ledgerWallet,
-            argentWallet,
-            trustWallet,
-            ...(projectId ? [walletConnectWallet] : []),
-          ],
-        },
-      ];
+  const wallets =
+    1 || process.env.NEXT_PUBLIC_E2E_TEST
+      ? createTestWallet()
+      : [
+          {
+            groupName: "Popular",
+            wallets: [
+              metaMaskWallet,
+              injectedWallet,
+              safeWallet,
+              coinbaseWallet,
+              frameWallet,
+              ledgerWallet,
+              argentWallet,
+              trustWallet,
+              ...(projectId ? [walletConnectWallet] : []),
+            ],
+          },
+        ];
 
   const connectors = connectorsForWallets(wallets, {
     projectId,

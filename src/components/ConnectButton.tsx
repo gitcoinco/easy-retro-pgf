@@ -45,6 +45,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
 
+        console.log(account);
         return (
           <div
             {...(!mounted && {
