@@ -45,6 +45,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
 
+        console.log(account);
         return (
           <div
             {...(!mounted && {
@@ -64,6 +65,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                     onClick={openConnectModal}
                     className="rounded-full"
                     variant="primary"
+                    data-testid="connect-wallet"
                   >
                     {isMobile ? "Connect" : "Connect wallet"}
                   </Button>
