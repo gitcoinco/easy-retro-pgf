@@ -14,7 +14,8 @@
     "test:e2e": "playwright test --project=chromium",
     "test:server": "node testServer.mjs",
     "test:codegen": "playwright codegen",
-    "eas:registerSchemas": "npx tsx src/lib/eas/registerSchemas"
+    "eas:registerSchemas": "npx tsx src/lib/eas/registerSchemas",
+    "postinstall": "npx playwright install"
   },
   "dependencies": {
     "@allo-team/allo-v2-sdk": "^1.0.39",
