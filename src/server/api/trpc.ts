@@ -274,6 +274,7 @@ export const ballotProcedure = protectedProcedure.use(roundMiddleware).use(
  * the round data in the context, allowing the handling of admin-specific logic for the round.
  */
 export const adminProcedure = protectedProcedure
+  // This order is important!
   .use(roundMiddleware)
   .use(enforceUserIsAdmin);
 
@@ -286,8 +287,9 @@ export const adminProcedure = protectedProcedure
  * attestations.
  */
 export const adminAttestationProcedure = protectedProcedure
-  .use(enforceUserIsAdmin)
+  // This order is important!
   .use(roundMiddleware)
+  .use(enforceUserIsAdmin)
   .use(attestationMiddleware);
 
 /**

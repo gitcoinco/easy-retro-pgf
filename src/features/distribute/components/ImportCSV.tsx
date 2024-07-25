@@ -1,6 +1,5 @@
 import { FileUp } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
-import { useFormContext } from "react-hook-form";
 import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { parse } from "~/utils/csv";
@@ -8,8 +7,11 @@ import { type Distribution } from "../types";
 import { getAddress } from "viem";
 import { toast } from "sonner";
 
-export function ImportCSV() {
-  const form = useFormContext();
+export function ImportCSV({
+  onImport,
+}: {
+  onImport: (distribution: Distribution[]) => void;
+}) {
   const [distribution, setDistribution] = useState<Distribution[]>([]);
   const csvInputRef = useRef<HTMLInputElement>(null);
 
@@ -17,12 +19,14 @@ export function ImportCSV() {
     try {
       // Parse CSV and build the ballot data (remove name column)
       const { data } = parse<Distribution>(csvString);
-      const distribution = data.map(({ projectId, amount, payoutAddress }) => ({
-        projectId,
-        payoutAddress: getAddress(payoutAddress),
-        amount: Number(amount),
-      }));
-      console.log(123, distribution);
+      const distribution = data.map(
+        ({ projectId, name, amount, payoutAddress }) => ({
+          projectId,
+          name,
+          payoutAddress: getAddress(payoutAddress),
+          amount: Number(amount),
+        }),
+      );
       setDistribution(distribution);
     } catch (error) {
       toast.error((error as unknown as Error).message);
@@ -64,7 +68,7 @@ export function ImportCSV() {
           <Button
             variant="primary"
             onClick={() => {
-              form.reset({ votes: distribution });
+              onImport(distribution);
               setDistribution([]);
             }}
           >

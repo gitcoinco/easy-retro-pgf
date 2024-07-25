@@ -20,23 +20,18 @@ import { format } from "~/utils/csv";
 import { ImportCSV } from "./ImportCSV";
 
 export function Distributions() {
+  const [importedDistribution, setImportedDistribution] = useState<
+    Distribution[]
+  >([]);
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
-
   const poolAmount = usePoolAmount();
-
-  if (poolAmount.isPending) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner className="size-6" />
-      </div>
-    );
-  }
-
   const totalTokens = poolAmount.data?.toString() ?? "0";
-
-  const distributionResult = api.results.distribution.useQuery({ totalTokens });
+  const distributionResult = api.results.distribution.useQuery({
+    totalTokens,
+  });
+  console.log(distributionResult.data);
 
   if (distributionResult.isPending) {
     return (
@@ -46,7 +41,9 @@ export function Distributions() {
     );
   }
 
-  const distributions = distributionResult.data?.distributions || [];
+  const distributions = importedDistribution.length
+    ? importedDistribution
+    : distributionResult.data?.distributions || [];
   const projectIds = distributionResult.data?.projectIds || [];
   const totalVotes = distributionResult.data?.totalVotes;
 
@@ -58,50 +55,58 @@ export function Distributions() {
     return <EmptyState title="No distribution found" />;
   }
 
+  console.log(JSON.stringify(distributionResult.data, null, 2));
   return (
     <div>
-      <Form
-        schema={z.object({
-          votes: z.array(DistributionSchema),
-        })}
-        values={{ votes: distributions }}
-        onSubmit={(values) => {
-          setConfirmDistribution(values.votes);
-        }}
-      >
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <h1 className="text-3xl font-bold">Distribute</h1>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <h1 className="text-3xl font-bold">Distribute</h1>
 
-          <div className="flex items-center gap-2">
-            <ImportCSV />
-            <ExportCSV votes={distributions} />
-            <Button variant="primary" type="submit">
-              Distribute tokens
-            </Button>
+        <div className="flex items-center gap-2">
+          <ImportCSV onImport={setImportedDistribution} />
+          <ExportCSV votes={distributions} />
+          <Button
+            variant="primary"
+            onClick={() => setConfirmDistribution(distributions)}
+          >
+            Distribute tokens
+          </Button>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div>Total votes: {formatNumber(totalVotes)}</div>
+        <ExportVotes />
+      </div>
+      <div className="min-h-[360px] overflow-auto">
+        <DistributionTable distributions={distributions} />
+      </div>
+      <ConfirmDistributionDialog
+        distribution={confirmDistribution}
+        onOpenChange={() => setConfirmDistribution([])}
+      />
+    </div>
+  );
+}
+
+function DistributionTable({
+  distributions,
+}: {
+  distributions: Distribution[];
+}) {
+  return (
+    <div className="space-y-2 divide-y">
+      {distributions?.map((distribution) => (
+        <div key={distribution.projectId} className="flex items-center pt-3">
+          <div className="flex-1">
+            <div className="font-semibold">{distribution.name}</div>
+            <div className="font-mono text-sm">
+              {distribution.payoutAddress}
+            </div>
+          </div>
+          <div className="items-center">
+            {formatNumber(distribution.amount)}
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div>Total votes: {formatNumber(totalVotes)}</div>
-          <ExportVotes />
-        </div>
-        <div className="min-h-[360px] overflow-auto">
-          <DistributionForm
-            renderHeader={() => (
-              <Thead>
-                <Tr>
-                  <Th>Project</Th>
-                  <Th>Payout address</Th>
-                  <Th>Amount</Th>
-                </Tr>
-              </Thead>
-            )}
-          />
-        </div>
-        <ConfirmDistributionDialog
-          distribution={confirmDistribution}
-          onOpenChange={() => setConfirmDistribution([])}
-        />
-      </Form>
+      ))}
     </div>
   );
 }

@@ -51,6 +51,8 @@ export function usePoolAmount() {
     query: { enabled: Boolean(pool?.strategy) },
   });
 
+  console.log(query.data, pool, poolId);
+
   useWatch(query.queryKey);
 
   return query;

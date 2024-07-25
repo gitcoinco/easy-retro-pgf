@@ -7,13 +7,13 @@ import { format } from "~/utils/csv";
 
 export function ExportCSV({ votes }: { votes: Distribution[] }) {
   // Fetch projects for votes to get the name
-  const projects = useProjectsById(votes.map((v) => v.projectId));
+  // const projects = useProjectsById(votes.map((v) => v.projectId));
 
   const exportCSV = useCallback(async () => {
     // Append project name to votes
     const votesWithProjects = votes.map((vote) => ({
       ...vote,
-      name: projects.data?.find((p) => p.id === vote.projectId)?.name,
+      // name: projects.data?.find((p) => p.id === vote.projectId)?.name,
     }));
 
     // Generate CSV file
@@ -24,13 +24,7 @@ export function ExportCSV({ votes }: { votes: Distribution[] }) {
   }, [votes]);
 
   return (
-    <IconButton
-      type="button"
-      icon={FileDown}
-      isLoading={projects.isPending}
-      disabled={projects.isPending}
-      onClick={exportCSV}
-    >
+    <IconButton type="button" icon={FileDown} onClick={exportCSV}>
       Export CSV
     </IconButton>
   );

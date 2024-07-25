@@ -37,7 +37,7 @@ export const resultsRouter = createTRPCRouter({
         throw new Error("Invalid totalTokens value, can not convert to bigint");
       }
 
-      const payoutAddresses = await ctx
+      const metadata = await ctx
         .fetchAttestations(["metadata"], {
           where: { id: { in: projectIds } },
         })
@@ -45,20 +45,13 @@ export const resultsRouter = createTRPCRouter({
           Promise.all(
             attestations.map((attestation) =>
               fetchMetadata(attestation.metadataPtr).then((data) => {
-                const { payoutAddress } = data as unknown as {
-                  payoutAddress: string;
-                };
-
-                return { projectId: attestation.id, payoutAddress };
+                return { id: attestation.id, ...data };
               }),
             ),
           ),
         )
         .then((projects) =>
-          projects.reduce(
-            (acc, x) => ({ ...acc, [x.projectId]: x.payoutAddress }),
-            {},
-          ),
+          projects.reduce((acc, x) => ({ ...acc, [x.id]: x }), {}),
         );
 
       const distributions = calculateDistributionsByProject({
@@ -66,10 +59,10 @@ export const resultsRouter = createTRPCRouter({
         projectVotes,
         totalTokens,
         totalVotes,
-        payoutAddresses,
+        metadata,
       });
 
-      return { totalVotes, projectIds, distributions };
+      return { totalVotes, projectIds, distributions, metadata };
     }),
   totalVoters: adminProcedure.query(async ({ ctx }) => {
     const roundId = ctx.round?.id || "";
@@ -169,13 +162,13 @@ async function calculateBallotResults({
 
 function calculateDistributionsByProject({
   projectIds,
-  payoutAddresses,
+  metadata,
   projectVotes,
   totalVotes,
   totalTokens,
 }: {
   projectIds: Array<string>;
-  payoutAddresses: Record<string, string>;
+  metadata: Record<string, { payoutAddress: string; name: string }>;
   projectVotes: BallotResults;
   totalVotes: number;
   totalTokens: bigint;
@@ -183,7 +176,8 @@ function calculateDistributionsByProject({
   return projectIds
     ?.map((projectId) => ({
       projectId,
-      payoutAddress: payoutAddresses[projectId] ?? "",
+      name: metadata[projectId]?.name ?? "",
+      payoutAddress: metadata[projectId]?.payoutAddress ?? "",
       amount: projectVotes[projectId]?.allocations ?? 0,
     }))
     .filter((p) => p.amount > 0)
