@@ -1,15 +1,23 @@
 import { useFormContext } from "react-hook-form";
-import { isAddress } from "viem";
-import { type Address, useToken } from "wagmi";
+import { type Address, erc20Abi } from "viem";
+import { useReadContracts } from "wagmi";
 
 export function TokenSymbol() {
   const address = useFormContext<{ tokenAddress: Address }>().watch(
     "tokenAddress",
   );
 
-  const token = useToken({
-    address,
-    enabled: isAddress(address),
+  const result = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address,
+        abi: erc20Abi,
+        functionName: "symbol",
+      },
+    ],
   });
-  return <>{token.data?.symbol}</>;
+  result.data;
+
+  return <>{result.data?.[0]}</>;
 }
