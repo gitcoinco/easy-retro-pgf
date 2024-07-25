@@ -29,8 +29,7 @@ import {
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
-import { mock } from "wagmi/connectors";
-import { createTestWallet } from "./testWallet";
+import { mockConnector } from "./mocks";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
@@ -68,7 +67,7 @@ function createWagmiConfig() {
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
 
   const wallets = process.env.NEXT_PUBLIC_E2E_TEST
-    ? createTestWallet()
+    ? []
     : [
         {
           groupName: "Popular",
@@ -86,19 +85,21 @@ function createWagmiConfig() {
         },
       ];
 
-  const connectors = connectorsForWallets(wallets, {
-    projectId,
-    appName,
-    walletConnectParameters: {
-      // TODO: Define these
-      metadata: {
-        name: appName,
-        description: appName,
-        url: global.location?.href,
-        icons: [],
-      },
-    },
-  });
+  const connectors = process.env.NEXT_PUBLIC_E2E_TEST
+    ? [mockConnector]
+    : connectorsForWallets(wallets, {
+        projectId,
+        appName,
+        walletConnectParameters: {
+          // TODO: Define these
+          metadata: {
+            name: appName,
+            description: appName,
+            url: global.location?.href,
+            icons: [],
+          },
+        },
+      });
   const chains = appConfig.supportedNetworks as unknown as [
     allChains.Chain,
     ...allChains.Chain[],
