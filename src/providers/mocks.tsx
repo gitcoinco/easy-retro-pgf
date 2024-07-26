@@ -32,6 +32,6 @@ export function MockConnectButton({ children }: ConnectButtonRendererProps) {
     accountModalOpen: false,
     chainModalOpen: false,
     connectModalOpen: false,
-    // authenticationStatus: "unauthenticated",
+    authenticationStatus: "unauthenticated",
   });
 }
