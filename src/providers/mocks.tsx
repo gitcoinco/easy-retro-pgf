@@ -1,6 +1,7 @@
 import { mock } from "wagmi/connectors";
 import { useAccount, useConnect } from "wagmi";
 import { ConnectButtonRendererProps } from "node_modules/@rainbow-me/rainbowkit/dist/components/ConnectButton/ConnectButtonRenderer";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export const mockConnector = mock({
   accounts: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"],
@@ -9,6 +10,7 @@ export const mockConnector = mock({
 export function MockConnectButton({ children }: ConnectButtonRendererProps) {
   const { address, chain } = useAccount();
   const { connect } = useConnect();
+  const { openConnectModal } = useConnectModal();
   return children({
     account: address
       ? {
@@ -20,12 +22,16 @@ export function MockConnectButton({ children }: ConnectButtonRendererProps) {
     chain: chain
       ? { id: chain.id, name: chain.name, hasIcon: false }
       : undefined,
-    openConnectModal: () => connect({ connector: mockConnector }),
+    openConnectModal: () => {
+      connect({ connector: mockConnector });
+      openConnectModal?.();
+    },
     mounted: true,
     openChainModal: () => {},
     openAccountModal: () => {},
     accountModalOpen: false,
     chainModalOpen: false,
     connectModalOpen: false,
+    // authenticationStatus: "unauthenticated",
   });
 }
