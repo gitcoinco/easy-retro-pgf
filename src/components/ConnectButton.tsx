@@ -21,6 +21,7 @@ import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { EnsureCorrectNetwork } from "./EnureCorrectNetwork";
 import { useBallot } from "~/features/ballot/hooks/useBallot";
+import { MockConnectButton } from "~/providers/mocks";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -28,8 +29,12 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === "S";
 
+  const ButtonComponent = process.env.NEXT_PUBLIC_E2E_TEST
+    ? MockConnectButton
+    : RainbowConnectButton.Custom;
+
   return (
-    <RainbowConnectButton.Custom>
+    <ButtonComponent>
       {({
         account,
         chain,
@@ -87,7 +92,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
           </div>
         );
       }}
-    </RainbowConnectButton.Custom>
+    </ButtonComponent>
   );
 };
 

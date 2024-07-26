@@ -15,46 +15,41 @@ import {
 import * as allChains from "viem/chains";
 
 import * as appConfig from "~/config";
-import { mockConnector } from "./mocks";
 
 export function createWagmiConfig() {
   const appName = appConfig.metadata.title;
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
 
-  const wallets = process.env.NEXT_PUBLIC_E2E_TEST
-    ? []
-    : [
-        {
-          groupName: "Popular",
-          wallets: [
-            metaMaskWallet,
-            injectedWallet,
-            safeWallet,
-            coinbaseWallet,
-            frameWallet,
-            ledgerWallet,
-            argentWallet,
-            trustWallet,
-            ...(projectId ? [walletConnectWallet] : []),
-          ],
-        },
-      ];
+  const wallets = [
+    {
+      groupName: "Popular",
+      wallets: [
+        metaMaskWallet,
+        injectedWallet,
+        safeWallet,
+        coinbaseWallet,
+        frameWallet,
+        ledgerWallet,
+        argentWallet,
+        trustWallet,
+        ...(projectId ? [walletConnectWallet] : []),
+      ],
+    },
+  ];
 
-  const connectors = process.env.NEXT_PUBLIC_E2E_TEST
-    ? [mockConnector]
-    : connectorsForWallets(wallets, {
-        projectId,
-        appName,
-        walletConnectParameters: {
-          // TODO: Define these
-          metadata: {
-            name: appName,
-            description: appName,
-            url: global.location?.href,
-            icons: [],
-          },
-        },
-      });
+  const connectors = connectorsForWallets(wallets, {
+    projectId,
+    appName,
+    walletConnectParameters: {
+      // TODO: Define these
+      metadata: {
+        name: appName,
+        description: appName,
+        url: global.location?.href,
+        icons: [],
+      },
+    },
+  });
 
   const chains = appConfig.supportedNetworks as unknown as [
     allChains.Chain,
