@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import Link from "next/link";
 import { XIcon } from "lucide-react";
@@ -63,7 +65,9 @@ export function Projects() {
                   />
                 </div>
               ) : null}
-              {!results.isPending && roundState === "RESULTS" ? (
+              {!results.isPending &&
+              !results.error &&
+              roundState === "RESULTS" ? (
                 <ProjectItemAwarded
                   amount={results.data?.projects?.[item.id]?.votes}
                 />
