@@ -9,12 +9,15 @@ export type BallotResults = Record<
   {
     voters: number;
     votes: number;
+    actualVotes: number;
   }
 >;
 export function calculateVotes(
   ballots: { voterId: string; votes: Vote[] }[],
   payoutOpts: PayoutOptions,
-): BallotResults {
+): { actualTotalVotes: number; projects: BallotResults } {
+  let actualTotalVotes = 0;
+
   const projectVotes: Record<
     string,
     {
@@ -35,6 +38,8 @@ export function calculateVotes(
       }
       projectVotes[vote.projectId]!.amounts.push(vote.amount);
       projectVotes[vote.projectId]!.voterIds.add(ballot.voterId);
+      projectVotes[vote.projectId]!.total += vote.amount;
+      actualTotalVotes += vote.amount;
     }
   }
 
@@ -46,7 +51,7 @@ export function calculateVotes(
     sum: calculateSum,
   };
   for (const projectId in projectVotes) {
-    const { amounts, voterIds } = projectVotes[projectId]!;
+    const { total, amounts, voterIds } = projectVotes[projectId]!;
 
     const { threshold = 0 } = payoutOpts;
     const voteIsCounted = voterIds.size >= threshold;
@@ -57,11 +62,12 @@ export function calculateVotes(
         votes: calcFunctions[payoutOpts.calculation ?? "average"]?.(
           amounts.sort((a, b) => a - b),
         ),
+        actualVotes: total,
       };
     }
   }
 
-  return projects;
+  return { actualTotalVotes, projects };
 }
 
 function calculateSum(arr: number[]) {
