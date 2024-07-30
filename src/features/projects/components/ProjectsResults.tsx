@@ -6,11 +6,14 @@ import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useProjectsResults, useResults } from "~/hooks/useResults";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { useIsShowActualVotes } from "~/features/rounds/hooks/useIsShowActualVotes";
 
 export function ProjectsResults() {
   const projects = useProjectsResults();
   const results = useResults();
   const domain = useCurrentDomain();
+
+  const isShowActualVotes = useIsShowActualVotes();
 
   const roundState = useRoundState();
   return (
@@ -25,7 +28,11 @@ export function ProjectsResults() {
           >
             {!results.isPending && roundState === "RESULTS" ? (
               <ProjectItemAwarded
-                amount={results.data?.projects?.[item.id]?.votes}
+                amount={
+                  isShowActualVotes
+                    ? results.data?.projects?.[item.id]?.actualVotes
+                    : results.data?.projects?.[item.id]?.votes
+                }
               />
             ) : null}
             <ProjectItem isLoading={isLoading} attestation={item} />

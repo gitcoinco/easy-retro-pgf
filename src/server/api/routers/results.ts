@@ -11,6 +11,7 @@ import { type Vote } from "~/features/ballot/types";
 import { TRPCError } from "@trpc/server";
 import { getState } from "~/features/rounds/hooks/useRoundState";
 import { RoundSchema } from "~/features/rounds/types";
+import { filterKnownNullBallots } from "~/utils/filterKnownNullBallots";
 
 export const resultsRouter = createTRPCRouter({
   votes: adminProcedure.query(async ({ ctx }) =>
@@ -67,6 +68,27 @@ export const resultsRouter = createTRPCRouter({
           ),
         );
     }),
+  allProjects: attestationProcedure.query(async ({ ctx }) => {
+    const roundId = String(ctx.round?.id);
+
+    if (getState(ctx.round) !== "RESULTS") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Results not available yet",
+      });
+    }
+    const { projects } = await calculateBallotResults(roundId, ctx.db);
+
+    const sortedIDs = Object.entries(projects ?? {})
+      .sort((a, b) => b[1].votes - a[1].votes)
+      .map(([id]) => id);
+
+    return ctx.fetchAttestations(["metadata"], {
+      where: {
+        id: { in: sortedIDs },
+      },
+    });
+  }),
 });
 
 async function calculateBallotResults(roundId: string, db: PrismaClient) {
@@ -78,13 +100,15 @@ async function calculateBallotResults(roundId: string, db: PrismaClient) {
     threshold: (round.calculationConfig as { threshold: number })?.threshold,
   };
   // Fetch the ballots
-  const ballots = await db.ballot.findMany({
+  const ballots = (await db.ballot.findMany({
     where: { roundId, publishedAt: { not: null } },
     select: { voterId: true, votes: true },
-  });
+  })) as unknown as { voterId: string; votes: Vote[] }[];
 
-  const projects = calculateVotes(
-    ballots as unknown as { voterId: string; votes: Vote[] }[],
+  const filteredBallots = filterKnownNullBallots(roundId, ballots);
+
+  const { actualTotalVotes, projects } = calculateVotes(
+    filteredBallots,
     calculation,
   );
 
@@ -94,5 +118,5 @@ async function calculateBallotResults(roundId: string, db: PrismaClient) {
   );
   const totalVoters = ballots.length;
 
-  return { projects, totalVoters, totalVotes, averageVotes };
+  return { projects, totalVoters, totalVotes, actualTotalVotes, averageVotes };
 }
