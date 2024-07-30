@@ -14,12 +14,15 @@ import { useResults } from "~/hooks/useResults";
 import { SortFilter } from "~/components/SortFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { useIsShowActualVotes } from "~/features/rounds/hooks/useIsShowActualVotes";
 
 export function Projects() {
   const projects = useSearchProjects();
   const select = useSelectProjects();
   const results = useResults();
   const domain = useCurrentDomain();
+
+  const isShowActualVotes = useIsShowActualVotes();
 
   const roundState = useRoundState();
   return (
@@ -47,7 +50,7 @@ export function Projects() {
       <SortFilter />
       <InfiniteLoading
         {...projects}
-        renderItem={(item, { isLoading }) => {
+        renderItem={(item, { isLoading }: { isLoading: boolean }) => {
           return (
             <Link
               key={item.id}
@@ -69,7 +72,11 @@ export function Projects() {
               !results.error &&
               roundState === "RESULTS" ? (
                 <ProjectItemAwarded
-                  amount={results.data?.projects?.[item.id]?.votes}
+                  amount={
+                    isShowActualVotes
+                      ? results.data?.projects?.[item.id]?.actualVotes
+                      : results.data?.projects?.[item.id]?.votes
+                  }
                 />
               ) : null}
               <ProjectItem isLoading={isLoading} attestation={item} />
