@@ -83,7 +83,7 @@ open localhost:3000
 
 [Docs](https://synpress.io/docs/guides/wallet-cache)
 
-1. We need to setup envs for metamask:
+1. We need to setup envs for metamask, currently having a wallet without funds in .env.test, possible override it with .env.synpress (remove synpress cache folder and run `bun run synpress:wallet-cache` again):
 
 - SEED_PHRASE
 - PRIVATE_KEY

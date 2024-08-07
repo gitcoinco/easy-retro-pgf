@@ -5,7 +5,7 @@ import {
 } from "@synthetixio/synpress";
 import Dotenv from "dotenv";
 
-Dotenv.config({ path: [".env", ".env.test"], override: true });
+Dotenv.config({ path: [".env", ".env.test", ".env.synpress"], override: true });
 
 const SEED_PHRASE = process.env.TEST_SEED_PHRASE!;
 const PRIVATE_KEY = process.env.TEST_PRIVATE_KEY!;
