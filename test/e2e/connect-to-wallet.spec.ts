@@ -35,10 +35,9 @@ test("should connect wallet to the MetaMask Test Dapp", async ({
   await metamask.confirmSignature();
   await expect(page.getByTestId("go-to-app-button")).toBeVisible();
 
-  const selectedAddress: string = await page.evaluate(() => {
-    const ethereum = window.ethereum;
-  });
+  const selectedAddress: string = await page.evaluate(
+    () => window.ethereum.selectedAddress,
+  );
 
-  console.log(selectedAddress);
   expect(selectedAddress).toBe(process.env.TEST_WALLET_ADDRESS);
 });
