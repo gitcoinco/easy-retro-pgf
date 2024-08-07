@@ -76,3 +76,33 @@ open localhost:3000
 - **Server-side caching of requests to EAS and IPFS** - Immediately returns the data without calling EAS and locally serving ipfs cids.
 - **SQL database for ballots** - Votes are stored privately in a Postgres database
 - **Allo2 for token distribution** - Payouts are calculated based on amount of configured tokens in the pool and the vote calculation
+
+### TESTING Playwright + Synpress
+
+#### Setup Wallet Cache
+
+[Docs](https://synpress.io/docs/guides/wallet-cache)
+
+1. We need to setup envs for metamask:
+
+- SEED_PHRASE
+- PRIVATE_KEY
+- PASSWORD
+
+2. Install playwright browser
+
+```
+bun run playwright:browser
+```
+
+3. Setup wallets (./test/wallet-setup/\*)
+
+```
+bun run synpress:wallet-cache
+```
+
+4. Run tests
+
+```
+bun run test:e2e
+```
