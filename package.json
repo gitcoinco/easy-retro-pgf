@@ -13,6 +13,7 @@
     "test": "vitest",
     "playwright:browser": "playwright install chromium",
     "synpress:wallet-cache": "synpress",
+    "pretest:e2e": "npm run playwright:browser",
     "test:e2e": "playwright test --project=chromium",
     "test:server": "node testServer.mjs",
     "test:codegen": "playwright codegen",
@@ -83,8 +84,8 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.0",
-    "@playwright/test": "^1.45.3",
-    "@synthetixio/synpress": "^4.0.0-alpha.7",
+    "@playwright/test": "1.44.0",
+    "@synthetixio/synpress": "4.0.0-alpha.7",
     "@tailwindcss/typography": "^0.5.10",
     "@testing-library/jest-dom": "^6.3.0",
     "@types/eslint": "^8.56.2",
