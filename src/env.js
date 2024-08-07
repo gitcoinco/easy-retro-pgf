@@ -50,7 +50,10 @@ export const env = createEnv({
 
     NEXT_PUBLIC_ALLO2_ADDRESS: z.string().startsWith("0x"),
 
-    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+    NEXT_PUBLIC_POSTHOG_KEY:
+      process.env.NODE_ENV === "development"
+      ? z.string().optional()
+      : z.string(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
   },
 
