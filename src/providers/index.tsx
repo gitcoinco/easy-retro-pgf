@@ -67,24 +67,22 @@ function createWagmiConfig() {
   const appName = appConfig.metadata.title;
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
 
-  const wallets = process.env.NEXT_PUBLIC_E2E_TEST
-    ? createTestWallet()
-    : [
-        {
-          groupName: "Popular",
-          wallets: [
-            metaMaskWallet,
-            injectedWallet,
-            safeWallet,
-            coinbaseWallet,
-            frameWallet,
-            ledgerWallet,
-            argentWallet,
-            trustWallet,
-            ...(projectId ? [walletConnectWallet] : []),
-          ],
-        },
-      ];
+  const wallets = [
+    {
+      groupName: "Popular",
+      wallets: [
+        metaMaskWallet,
+        injectedWallet,
+        safeWallet,
+        coinbaseWallet,
+        frameWallet,
+        ledgerWallet,
+        argentWallet,
+        trustWallet,
+        ...(projectId ? [walletConnectWallet] : []),
+      ],
+    },
+  ];
 
   const connectors = connectorsForWallets(wallets, {
     projectId,
