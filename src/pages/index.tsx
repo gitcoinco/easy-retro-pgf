@@ -12,7 +12,12 @@ export default function ProjectsPage({}) {
       header={
         <div className="flex justify-end p-3">
           <ConnectButton>
-            <Button variant="primary" as={Link} href={"/app"}>
+            <Button
+              variant="primary"
+              data-testid="go-to-app-button"
+              as={Link}
+              href={"/app"}
+            >
               Go to app
             </Button>
           </ConnectButton>

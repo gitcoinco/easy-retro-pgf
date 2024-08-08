@@ -29,8 +29,6 @@ import {
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
-import { mock } from "wagmi/connectors";
-import { createTestWallet } from "./testWallet";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
