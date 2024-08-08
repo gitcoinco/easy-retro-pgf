@@ -24,6 +24,12 @@ export function ImportCSV({
       const distribution = data.map(
         ({ projectId, name, amount, payoutAddress }) => {
           if (isNaN(amount)) throw new Error("Must be a valid CSV file");
+          if (!isAddress(payoutAddress)) {
+            throw new Error(
+              "CSV contains invalid payout addresses. All addresses must be valid ETH addresses.",
+            );
+            return;
+          }
           return {
             projectId,
             name,
