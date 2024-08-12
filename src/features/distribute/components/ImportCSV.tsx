@@ -7,6 +7,10 @@ import { parse } from "~/utils/csv";
 import { type Distribution } from "../types";
 import { getAddress, isAddress } from "viem";
 import { toast } from "sonner";
+import {
+  ethAddressFromDelegated,
+  validateAddressString,
+} from "@glif/filecoin-address";
 
 export function ImportCSV({
   onImportDistribution,
@@ -24,17 +28,38 @@ export function ImportCSV({
       const distribution = data.map(
         ({ projectId, name, amount, payoutAddress }) => {
           if (isNaN(amount)) throw new Error("Must be a valid CSV file");
+          // Check if the payout address is a valid eth address
+          if (!isAddress(payoutAddress)) {
+            // If not check if the payout address is a valid filecoin address
+            if (!validateAddressString(payoutAddress)) {
+              // If not, throw an error
+              throw new Error(
+                "CSV contains invalid payout addresses. All addresses must be valid evm compatible addresses.",
+              );
+              return;
+            } else {
+              // If its a valid filecoin address, then check if the filecoin address can be converted to an eth address
+              try {
+                ethAddressFromDelegated(payoutAddress);
+              } catch (error) {
+                // If not, throw an error
+                throw new Error(
+                  "CSV contains invalid payout addresses. All addresses must be valid evm compatible addresses.",
+                );
+                return;
+              }
+            }
+          }
           return {
             projectId,
             name,
             payoutAddress: isAddress(payoutAddress)
               ? getAddress(payoutAddress)
-              : "",
+              : ethAddressFromDelegated(payoutAddress),
             amount: isNaN(amount) ? 0 : Number(amount),
           };
         },
       );
-      console.log(123, distribution);
       setDistribution(distribution);
     } catch (error) {
       toast.error((error as unknown as Error).message);
