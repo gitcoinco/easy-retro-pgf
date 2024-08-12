@@ -44,7 +44,7 @@ export function ApplicationForm({ address }: { address: Address }) {
 
   const create = useCreateApplication({
     onSuccess: () => {
-      toast.success("Application created successfully!");
+      toast.success("Your application has been submitted successfully!");
       clearDraft();
     },
     onError: (err: { reason?: string; data?: { message: string } }) =>
@@ -54,8 +54,9 @@ export function ApplicationForm({ address }: { address: Address }) {
   });
   if (create.isSuccess) {
     return (
-      <Alert variant="success" title="Application created!">
-        It will now be reviewed by our admins.
+      <Alert variant="success" title="Application Submitted!">
+        Your application has been successfully submitted. It will now be
+        reviewed by our admins.
       </Alert>
     );
   }
