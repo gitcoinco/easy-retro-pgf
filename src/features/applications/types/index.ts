@@ -67,4 +67,10 @@ export const ApplicationSchema = z.object({
     .min(1),
 });
 
+export const ApplicationVerificationSchema = z.object({
+  email: z.string().email(),
+  legalName: z.string().min(3),
+  sanctionedOrg: z.boolean(),
+});
+
 export type Application = z.infer<typeof ApplicationSchema>;
