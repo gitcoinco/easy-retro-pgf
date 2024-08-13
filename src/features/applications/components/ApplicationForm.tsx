@@ -23,6 +23,7 @@ import {
 } from "~/components/ui/Form";
 import { impactCategories } from "~/config";
 import {
+  ApplicationVerificationSchema,
   ApplicationSchema,
   ProfileSchema,
   contributionTypes,
@@ -37,6 +38,7 @@ import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
   application: ApplicationSchema,
+  applicationVerification: ApplicationVerificationSchema,
 });
 
 export function ApplicationForm({ address }: { address: Address }) {
@@ -306,6 +308,36 @@ export function ApplicationForm({ address }: { address: Address }) {
               </>
             )}
           />
+        </FormSection>
+
+        <FormSection
+          title="applicationVerification"
+          description="To comply with regulations, we need to verify your identity."
+        >
+          <FormControl
+            name="applicationVerification.legalName"
+            label="Full name"
+            required
+          >
+            <Input placeholder="Your full name" />
+          </FormControl>
+          <FormControl
+            name="applicationVerification.email"
+            label="Email"
+            required
+          >
+            <Input placeholder="Your email" />
+          </FormControl>
+          <FormControl
+            name="applicationVerification.sanctionedOrg"
+            label="Are you a sanctioned organization?"
+            required
+          >
+            <Select>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </Select>
+          </FormControl>
         </FormSection>
 
         {error ? (
