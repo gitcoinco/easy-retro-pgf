@@ -68,7 +68,7 @@ export const ApplicationSchema = z.object({
 });
 
 export const ApplicationVerificationSchema = z.object({
-  projectLegalName: z.string().min(3),
+  name: z.string().min(3),
   projectEmail: z.string().email(),
   projectPhysicalAddress: z.string().min(3),
   sanctionedOrg: z.boolean(),

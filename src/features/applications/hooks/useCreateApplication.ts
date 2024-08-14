@@ -26,6 +26,7 @@ export function useCreateApplication({
     }) => {
       if (!config.roundId) throw new Error("Round ID must be defined");
       console.log("Uploading profile and application metadata");
+      await upload.mutateAsync(values.applicationVerification);
       return Promise.all([
         upload.mutateAsync(values.application).then(({ url: metadataPtr }) => {
           console.log("Creating application attestation data");
@@ -40,21 +41,6 @@ export function useCreateApplication({
             },
           });
         }),
-        upload
-          .mutateAsync(values.applicationVerification)
-          .then(({ url: metadataPtr }) => {
-            console.log("Creating application verification attestation data");
-            return attestation.mutateAsync({
-              schemaUID: eas.schemas.metadata,
-              values: {
-                name: values.applicationVerification.projectLegalName,
-                metadataType: 0, // "http"
-                metadataPtr,
-                type: "applicationVerification",
-                round: config.roundId,
-              },
-            });
-          }),
         upload.mutateAsync(values.profile).then(({ url: metadataPtr }) => {
           console.log("Creating profile attestation data");
           return attestation.mutateAsync({

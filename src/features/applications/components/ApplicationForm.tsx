@@ -313,7 +313,7 @@ export function ApplicationForm() {
           description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
         >
           <FormControl
-            name="applicationVerification.projectLegalName"
+            name="applicationVerification.name"
             label="Legal Name of Entity or Person receiving reward, if not Entity"
             required
           >
