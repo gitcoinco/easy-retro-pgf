@@ -78,3 +78,6 @@ export type Application = z.infer<typeof ApplicationSchema>;
 export type ApplicationVerification = z.infer<
   typeof ApplicationVerificationSchema
 >;
+export type ApplicationWithVerificationData = Application & {
+  applicationVerificationData: ApplicationVerification;
+};
