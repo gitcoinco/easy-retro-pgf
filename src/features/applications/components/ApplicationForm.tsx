@@ -1,16 +1,14 @@
 import { z } from "zod";
-import { type Address } from "viem";
 import { toast } from "sonner";
-import { useController, useFormContext } from "react-hook-form";
+import { Controller, useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
 import { useAccount, useBalance } from "wagmi";
-import { newDelegatedEthAddress } from "@glif/filecoin-address";
-import { getAddress } from "viem";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
 import {
+  Checkbox,
   ErrorMessage,
   FieldArray,
   Form,
@@ -23,6 +21,7 @@ import {
 } from "~/components/ui/Form";
 import { impactCategories } from "~/config";
 import {
+  ApplicationVerificationSchema,
   ApplicationSchema,
   ProfileSchema,
   contributionTypes,
@@ -33,13 +32,16 @@ import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
+import { watch } from "fs";
+import { useEffect } from "react";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
   application: ApplicationSchema,
+  applicationVerification: ApplicationVerificationSchema,
 });
 
-export function ApplicationForm({ address }: { address: Address }) {
+export function ApplicationForm() {
   const clearDraft = useLocalStorage("application-draft")[2];
 
   const create = useCreateApplication({
@@ -68,9 +70,6 @@ export function ApplicationForm({ address }: { address: Address }) {
       <Form
         defaultValues={{
           application: {
-            payoutAddress: newDelegatedEthAddress(
-              getAddress(address),
-            ).toString(),
             contributionLinks: [{}],
             impactMetrics: [{}],
             fundingSources: [{}],
@@ -78,9 +77,8 @@ export function ApplicationForm({ address }: { address: Address }) {
         }}
         persist="application-draft"
         schema={ApplicationCreateSchema}
-        onSubmit={async ({ profile, application }) => {
-          console.log(application, profile);
-          create.mutate({ application, profile });
+        onSubmit={async ({ profile, application, applicationVerification }) => {
+          create.mutate({ application, applicationVerification, profile });
         }}
       >
         <FormSection
@@ -308,6 +306,38 @@ export function ApplicationForm({ address }: { address: Address }) {
           />
         </FormSection>
 
+        <FormSection
+          title={
+            <>
+              Project KYC Details <span className="text-red-300">*</span>
+            </>
+          }
+          description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
+        >
+          <FormControl
+            name="applicationVerification.name"
+            label="Legal name of entity or person receiving reward, if not entity"
+            required
+          >
+            <Input placeholder="Your name" />
+          </FormControl>
+          <FormControl
+            name="applicationVerification.projectEmail"
+            label="Project email"
+            required
+          >
+            <Input placeholder="Your project email" />
+          </FormControl>
+          <FormControl
+            name="applicationVerification.projectPhysicalAddress"
+            label="Project physical address (including city, state, country)"
+            required
+          >
+            <Input placeholder="Your Address" />
+          </FormControl>
+          <SanctionedOrgField />
+        </FormSection>
+
         {error ? (
           <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
             Make sure you have funds in your wallet and that you&apos;re not
@@ -416,5 +446,47 @@ function ImpactTags() {
       </div>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
+  );
+}
+
+function SanctionedOrgField() {
+  const { control } = useFormContext();
+
+  return (
+    <FormControl
+      name="applicationVerification.sanctionedOrg"
+      label="Is the project or any of its key team members associated with any sanctioned or restricted organizations?"
+      required
+    >
+      <Controller
+        name="applicationVerification.sanctionedOrg"
+        control={control}
+        rules={{ required: "This field is required" }}
+        render={({ field }) => (
+          <>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  {...field}
+                  type="radio"
+                  checked={field.value === true}
+                  onChange={() => field.onChange(true)}
+                />
+                <Label>Yes</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  {...field}
+                  type="radio"
+                  checked={field.value === false}
+                  onChange={() => field.onChange(false)}
+                />
+                <Label>No</Label>
+              </div>
+            </div>
+          </>
+        )}
+      />
+    </FormControl>
   );
 }

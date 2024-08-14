@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EthAddressSchema, FilecoinAddress } from "~/features/distribute/types";
+import { EthAddressSchema } from "~/features/distribute/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
 export const MetadataSchema = z.object({
@@ -67,4 +67,17 @@ export const ApplicationSchema = z.object({
     .min(1),
 });
 
+export const ApplicationVerificationSchema = z.object({
+  name: z.string().min(3),
+  projectEmail: z.string().email(),
+  projectPhysicalAddress: z.string().min(3),
+  sanctionedOrg: z.boolean(),
+});
+
 export type Application = z.infer<typeof ApplicationSchema>;
+export type ApplicationVerification = z.infer<
+  typeof ApplicationVerificationSchema
+>;
+export type ApplicationWithVerificationData = Application & {
+  applicationVerificationData: ApplicationVerification;
+};

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { config, eas } from "~/config";
 import { useUploadMetadata } from "~/hooks/useMetadata";
 import { useAttest, useCreateAttestation } from "~/hooks/useEAS";
-import type { Application, Profile } from "../types";
+import type { Application, ApplicationVerification, Profile } from "../types";
 import { type TransactionError } from "~/features/voters/hooks/useApproveVoters";
 
 export function useCreateApplication({
@@ -21,10 +21,12 @@ export function useCreateApplication({
     onError,
     mutationFn: async (values: {
       application: Application;
+      applicationVerification: ApplicationVerification;
       profile: Profile;
     }) => {
       if (!config.roundId) throw new Error("Round ID must be defined");
       console.log("Uploading profile and application metadata");
+      await upload.mutateAsync(values.applicationVerification);
       return Promise.all([
         upload.mutateAsync(values.application).then(({ url: metadataPtr }) => {
           console.log("Creating application attestation data");
