@@ -311,26 +311,37 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title="applicationVerification"
-          description="To comply with regulations, we need to verify your identity."
+          title={
+            <>
+              Project KYC Details <span className="text-red-300">*</span>
+            </>
+          }
+          description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
         >
           <FormControl
-            name="applicationVerification.legalName"
-            label="Full name"
+            name="applicationVerification.projectLegalName"
+            label="Legal Name of Entity or Person receiving reward, if not Entity"
             required
           >
-            <Input placeholder="Your full name" />
+            <Input placeholder="Your name" />
           </FormControl>
           <FormControl
-            name="applicationVerification.email"
-            label="Email"
+            name="applicationVerification.projectEmail"
+            label="Project Email"
             required
           >
-            <Input placeholder="Your email" />
+            <Input placeholder="Your project email" />
+          </FormControl>
+          <FormControl
+            name="applicationVerification.projectPhysicalAddress"
+            label="Project Physical Address (including city, state, country)"
+            required
+          >
+            <Input placeholder="Your Address" />
           </FormControl>
           <FormControl
             name="applicationVerification.sanctionedOrg"
-            label="Are you a sanctioned organization?"
+            label="Is the Project or Any of Its Key Team Members Associated with Any Sanctioned or Restricted Organizations?"
             required
           >
             <Select>
