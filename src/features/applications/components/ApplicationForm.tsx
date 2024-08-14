@@ -75,9 +75,8 @@ export function ApplicationForm() {
         }}
         persist="application-draft"
         schema={ApplicationCreateSchema}
-        onSubmit={async ({ profile, application }) => {
-          console.log(application, profile);
-          create.mutate({ application, profile });
+        onSubmit={async ({ profile, application, applicationVerification }) => {
+          create.mutate({ application, applicationVerification, profile });
         }}
       >
         <FormSection
