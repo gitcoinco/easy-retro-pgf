@@ -71,16 +71,19 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                 );
               }
 
-              return (
-                children ?? (
-                  <EnsureCorrectNetwork>
-                    <ConnectedDetails
-                      account={account}
-                      openAccountModal={openAccountModal}
-                      isMobile={isMobile}
-                    />
-                  </EnsureCorrectNetwork>
-                )
+              return children ? (
+                <div className="flex gap-2">
+                  <RainbowConnectButton />
+                  {children}
+                </div>
+              ) : (
+                <EnsureCorrectNetwork>
+                  <ConnectedDetails
+                    account={account}
+                    openAccountModal={openAccountModal}
+                    isMobile={isMobile}
+                  />
+                </EnsureCorrectNetwork>
               );
             })()}
           </div>
