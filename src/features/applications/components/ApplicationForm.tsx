@@ -70,9 +70,6 @@ export function ApplicationForm({ address }: { address: Address }) {
       <Form
         defaultValues={{
           application: {
-            payoutAddress: newDelegatedEthAddress(
-              getAddress(address),
-            ).toString(),
             contributionLinks: [{}],
             impactMetrics: [{}],
             fundingSources: [{}],
