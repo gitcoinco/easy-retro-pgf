@@ -1,7 +1,6 @@
 import { z } from "zod";
-import { type Address } from "viem";
 import { toast } from "sonner";
-import { useController, useFormContext } from "react-hook-form";
+import { Controller, useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
 import { useAccount, useBalance } from "wagmi";
@@ -9,6 +8,7 @@ import { useAccount, useBalance } from "wagmi";
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
 import {
+  Checkbox,
   ErrorMessage,
   FieldArray,
   Form,
@@ -32,6 +32,8 @@ import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
+import { watch } from "fs";
+import { useEffect } from "react";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -314,35 +316,26 @@ export function ApplicationForm() {
         >
           <FormControl
             name="applicationVerification.name"
-            label="Legal Name of Entity or Person receiving reward, if not Entity"
+            label="Legal name of entity or person receiving reward, if not entity"
             required
           >
             <Input placeholder="Your name" />
           </FormControl>
           <FormControl
             name="applicationVerification.projectEmail"
-            label="Project Email"
+            label="Project email"
             required
           >
             <Input placeholder="Your project email" />
           </FormControl>
           <FormControl
             name="applicationVerification.projectPhysicalAddress"
-            label="Project Physical Address (including city, state, country)"
+            label="Project physical address (including city, state, country)"
             required
           >
             <Input placeholder="Your Address" />
           </FormControl>
-          <FormControl
-            name="applicationVerification.sanctionedOrg"
-            label="Is the Project or Any of Its Key Team Members Associated with Any Sanctioned or Restricted Organizations?"
-            required
-          >
-            <Select>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </Select>
-          </FormControl>
+          <SanctionedOrgField />
         </FormSection>
 
         {error ? (
@@ -453,5 +446,47 @@ function ImpactTags() {
       </div>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
+  );
+}
+
+function SanctionedOrgField() {
+  const { control } = useFormContext();
+
+  return (
+    <FormControl
+      name="applicationVerification.sanctionedOrg"
+      label="Is the project or any of its key team members associated with any sanctioned or restricted organizations?"
+      required
+    >
+      <Controller
+        name="applicationVerification.sanctionedOrg"
+        control={control}
+        rules={{ required: "This field is required" }}
+        render={({ field }) => (
+          <>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  {...field}
+                  type="radio"
+                  checked={field.value === true}
+                  onChange={() => field.onChange(true)}
+                />
+                <Label>Yes</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  {...field}
+                  type="radio"
+                  checked={field.value === false}
+                  onChange={() => field.onChange(false)}
+                />
+                <Label>No</Label>
+              </div>
+            </div>
+          </>
+        )}
+      />
+    </FormControl>
   );
 }
