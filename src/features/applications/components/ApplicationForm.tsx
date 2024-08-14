@@ -5,8 +5,6 @@ import { useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
 import { useAccount, useBalance } from "wagmi";
-import { newDelegatedEthAddress } from "@glif/filecoin-address";
-import { getAddress } from "viem";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
@@ -41,7 +39,7 @@ const ApplicationCreateSchema = z.object({
   applicationVerification: ApplicationVerificationSchema,
 });
 
-export function ApplicationForm({ address }: { address: Address }) {
+export function ApplicationForm() {
   const clearDraft = useLocalStorage("application-draft")[2];
 
   const create = useCreateApplication({
