@@ -4,6 +4,7 @@ import { createCachedFetch } from "../fetch";
 
 import type {
   Attestation,
+  AttestationFetcher,
   AttestationsFilter,
   AttestationWithMetadata,
   PartialRound,
@@ -39,7 +40,9 @@ function parseAttestation({
   return { ...attestation, ...parseDecodedMetadata(decodedDataJson) };
 }
 
-export function createAttestationFetcher(round: PartialRound) {
+export function createAttestationFetcher(
+  round: PartialRound,
+): AttestationFetcher {
   return (schema: SchemaType[], filter?: AttestationsFilter) => {
     const startsAt = Math.floor(
       Number(round?.startsAt ?? new Date()) / 1000 - ONE_WEEK_IN_MS,
