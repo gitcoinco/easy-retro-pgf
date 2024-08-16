@@ -7,14 +7,14 @@
  * need to use are documented accordingly near the end.
  */
 
-import { Round } from "@prisma/client";
+import type { Round } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { RoundTypes } from "~/features/rounds/types";
+import type { RoundTypes } from "~/features/rounds/types";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -264,6 +264,17 @@ export const ballotProcedure = protectedProcedure.use(roundMiddleware).use(
       ctx: { ...ctx, voterId, roundId, ballotId: ballot.id, ballot },
     });
   }),
+);
+
+/**
+ * Protected procedure combining ballot and attestation middleware.
+ *
+ * This procedure is accessible only to authenticated users and enriches the context with
+ * round, ballot, and attestation data. It supports complex logic that requires access
+ * to user ballots and related attestations within the current round.
+ */
+export const ballotAttestationProcedure = ballotProcedure.use(
+  attestationMiddleware,
 );
 
 /**
