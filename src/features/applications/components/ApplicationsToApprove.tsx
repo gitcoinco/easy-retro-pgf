@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 import { type Address } from "viem";
@@ -25,6 +25,7 @@ import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
 import { useAccount } from "wagmi";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function ApplicationItem({
   id,
@@ -124,14 +125,29 @@ const ApplicationsToApproveSchema = z.object({
 type ApplicationsToApprove = z.infer<typeof ApplicationsToApproveSchema>;
 
 export function ApplicationsToApprove() {
+  const queryClient = useQueryClient();
+  const [fetched, setFetched] = useState(false);
   const applications = useApplications();
   const domain = useCurrentDomain();
   const approved = useApprovedApplications();
   const approve = useApproveApplication({});
 
+  const handleRefetch = (timeout: number) => {
+    // @ts-ignore
+    queryClient.removeQueries(["approvedApplications", {}]);
+    setTimeout(() => {
+      approved.refetch().then(() => {
+        setFetched(!fetched);
+      });
+    }, timeout);
+  };
+
   useEffect(() => {
-    approved.refetch();
-  } ,[approved.data]);
+    if (!fetched) {
+      handleRefetch(0);
+      setFetched(true);
+    }
+  }, [fetched]);
 
   const approvedById = useMemo(() => {
     return approved.data?.reduce((acc, x) => {
