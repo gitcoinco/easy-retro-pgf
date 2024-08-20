@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 import { type Address } from "viem";
@@ -35,7 +35,7 @@ export function ApplicationItem({
   approvedBy,
   isLoading,
 }: Attestation & {
-  approvedBy?: { attester: Address; uid: string };
+  approvedBy?: { attester: Address; uid: string }[];
   isLoading?: boolean;
 }) {
   const { address } = useAccount();
@@ -86,7 +86,7 @@ export function ApplicationItem({
           <Button
             size="sm"
             variant="outline"
-            disabled={approvedBy?.attester !== address}
+            disabled={approvedBy ? approvedBy[0]?.attester !== address : true}
             isLoading={revoke.isPending}
             onClick={() => {
               if (
@@ -94,7 +94,7 @@ export function ApplicationItem({
                   "Are you sure? This will revoke the application and must be done by the same person who approved it.",
                 )
               )
-                revoke.mutate([approvedBy?.uid]);
+                revoke.mutate(approvedBy?.map((x) => x.uid) ?? []);
             }}
           >
             Revoke
@@ -128,16 +128,22 @@ export function ApplicationsToApprove() {
   const domain = useCurrentDomain();
   const approved = useApprovedApplications();
   const approve = useApproveApplication({});
-  const approvedById = useMemo(
-    () =>
-      approved.data?.reduce(
-        (map, x) => (
-          map.set(x.refUID, { attester: x.attester, uid: x.id }), map
-        ),
-        new Map<string, { attester: Address; uid: string }>(),
-      ),
-    [approved.data],
-  );
+
+  useEffect(() => {
+    approved.refetch();
+  } ,[approved.data]);
+
+  const approvedById = useMemo(() => {
+    return approved.data?.reduce((acc, x) => {
+      // Check if the key (refUID) already exists in the Map
+      const existingArray = acc.get(x.refUID) || [];
+      // Append the new object to the array
+      const newArray = [...existingArray, { attester: x.attester, uid: x.id }];
+      // Set the updated array back into the Map
+      acc.set(x.refUID, newArray);
+      return acc;
+    }, new Map<string, { attester: Address; uid: string }[]>());
+  }, [approved.data]);
 
   const applicationsToApprove = applications.data?.filter(
     (application) => !approvedById?.get(application.id),
