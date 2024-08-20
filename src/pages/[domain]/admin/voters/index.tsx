@@ -40,7 +40,11 @@ export default function AdminAccountsPage() {
 
   const revoke = useRevokeAttestations({});
 
-  const voters = voterList?.map((v) => v.recipient) ?? [];
+  const voterAddresses = voterList?.map((v) => v.recipient) ?? [];
+  const voters = voterList?.map((v) => ({
+    address: v.recipient,
+    hasVoted: v.hasVoted,
+  })) ?? [];
 
   const attestedByOthers = useMemo(
     () =>
@@ -108,7 +112,7 @@ export default function AdminAccountsPage() {
                   Add voters
                 </Button>
                 <div className="flex gap-2">
-                  <SelectAllButton addresses={voters} />
+                  <SelectAllButton addresses={voterAddresses} />
                   <DeleteSelectedButton
                     onDelete={(removed) => {
                       // Find the attestation IDs for the addresses
@@ -134,7 +138,7 @@ export default function AdminAccountsPage() {
                   approve.mutate(voters);
                 }}
               />
-              <AddressList addresses={voters} disabled={attestedByOthers} />
+              <AddressList voters={voters} disabled={attestedByOthers} />
             </Form>
           </FormSection>
         </>
