@@ -6,7 +6,6 @@ import {
   createElement,
   forwardRef,
 } from "react";
-import { cn } from "~/utils/classNames";
 import { Spinner } from "./Spinner";
 
 export const button = tv({
@@ -66,15 +65,18 @@ export const IconButton = forwardRef(function IconButton(
 
 export function Button({
   icon,
+  iconRight,
   children,
   isLoading,
   ...props
 }: ComponentPropsWithRef<typeof ButtonComponent> & {
   /*eslint-disable @typescript-eslint/no-explicit-any */
   icon?: FunctionComponent<any>;
+  iconRight?: FunctionComponent<any>;
   isLoading?: boolean;
 }) {
   const Icon = isLoading ? Spinner : icon;
+  const IconRight = iconRight;
   return (
     <ButtonComponent
       type="button"
@@ -83,11 +85,17 @@ export function Button({
       size={icon && !children ? "icon" : undefined}
       {...props}
     >
-      {Icon &&
-        createElement(Icon, {
-          className: cn("size-4", { ["mr-2"]: Boolean(children) }),
-        })}
-      {children}
+      <div className="flex gap-2">
+        {Icon &&
+          createElement(Icon, {
+            className: "size-4",
+          })}
+        {children}
+        {IconRight &&
+          createElement(IconRight, {
+            className: "size-4",
+          })}
+      </div>
     </ButtonComponent>
   );
 }
