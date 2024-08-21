@@ -27,6 +27,7 @@ import { Badge } from "~/components/ui/Badge";
 import { cn } from "~/utils/classNames";
 import MetricDistributionChart from "./MetricDistributionChart";
 import { snakeToTitleCase } from "~/utils/formatStrings";
+import { SubmitBallotButton } from "~/features/ballot/components/SubmitBallotButton";
 
 type ProjectAllocation = {
   name: string;
@@ -142,6 +143,7 @@ export function MetricsSidebar({
         </ScrollArea>
 
         {footer}
+        <SubmitBallotButton />
       </div>
     </div>
   );
