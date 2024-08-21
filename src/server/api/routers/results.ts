@@ -138,6 +138,7 @@ async function calculateBallotResults({
   let results;
   switch(round.type) {
     case RoundTypes.impact:
+      // NOTE: return type is different. This is a bug.
       results = generateImpactPayouts(round, db);
       break;
 
