@@ -2,7 +2,7 @@ import { type GetServerSideProps } from "next";
 
 import ProjectDetails from "~/features/projects/components/ProjectDetails";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
-import ApproveButton from "~/features/applications/components/ApproveButton";
+import ApproveRejectButton from "~/features/applications/components/ApproveRejectButton";
 import { Layout } from "~/layouts/DefaultLayout";
 
 export default function ApplicationDetailsPage({ projectId = "" }) {
@@ -12,7 +12,7 @@ export default function ApplicationDetailsPage({ projectId = "" }) {
     <Layout title={project.data?.name}>
       <ProjectDetails
         attestation={project.data}
-        action={<ApproveButton projectIds={[projectId]} />}
+        action={<ApproveRejectButton projectIds={[projectId]} />}
       />
     </Layout>
   );
