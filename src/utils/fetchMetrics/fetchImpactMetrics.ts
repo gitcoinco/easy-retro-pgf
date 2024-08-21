@@ -1,7 +1,9 @@
 import { openSourceObserverEndpoint } from "~/config";
 import { createCachedFetch } from "../fetch";
-import { AvailableMetrics } from "~/features/metrics/types";
-import type { ImpactMetricsQuery, OSOMetrics } from "./types";
+import {} from "~/types/metrics";
+import type { ImpactMetricsQuery } from "~/utils/fetchMetrics/types";
+
+import { AvailableMetrics, type OSOMetrics } from "~/types/metrics";
 
 const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 

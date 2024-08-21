@@ -1,17 +1,25 @@
 import type { BallotV2, Allocation } from "@prisma/client";
 import { calculateMetricsBallot } from "~/utils/calculateMetrics";
-import { type OSOMetric, fetchImpactMetrics } from "~/utils/fetchMetrics";
-import type { ImpactMetricsQuery } from "~/utils/fetchMetrics/types";
+import type { MetricId, OSOMetric } from "~/types/metrics";
 import { mockedApprovedProjects } from "./mocks";
+import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics/fetchImpactMetricsFromCSV";
+import { fetchApprovedApplications } from "../applications/fetchApprovedApplications";
+import type { AttestationFetcher } from "~/utils/fetchAttestations";
 
 type Ballot = {
   allocations: Allocation[];
 } & BallotV2;
 
 export async function fetchMetricsForBallot({
+  admins,
+  attestationFetcher,
   ballot,
+  roundId,
 }: {
+  admins: string[];
+  attestationFetcher: AttestationFetcher;
   ballot: Ballot;
+  roundId: string;
 }): Promise<{
   allocations: Allocation[];
   projects: {
@@ -29,23 +37,30 @@ export async function fetchMetricsForBallot({
     ballot?.allocations.map((v) => [v.id, v.amount]),
   );
 
-  const approvedProjects = mockedApprovedProjects;
+  const approvedApplications = await fetchApprovedApplications({
+    attestationFetcher,
+    admins,
+    roundId,
+  });
 
-  const query: ImpactMetricsQuery = {
-    where: {
-      project_name: { _in: approvedProjects },
-      event_source: { _eq: "BASE" },
-    },
-    orderBy: [{ active_contract_count_90_days: "desc" }],
-    limit: 300,
-    offset: 0,
-  };
+  // const approvedProjects = mockedApprovedProjects; // For testing
 
-  const projects = await fetchImpactMetrics(query, Object.keys(metricsById));
+  const approvedProjects = approvedApplications.map(
+    (application) => application.name,
+  );
+
+  const metricsByProject = await fetchImpactMetricsFromCSV({
+    projects: approvedProjects,
+    metrics: Object.keys(metricsById) as MetricId[],
+  });
+  const calculatedMetrics = calculateMetricsBallot(
+    metricsByProject,
+    metricsById,
+  );
 
   const metricsForBallot = {
     allocations: ballot?.allocations ?? [],
-    projects: calculateMetricsBallot(projects, metricsById),
+    projects: calculatedMetrics,
   };
 
   return metricsForBallot;

@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { calculateMetricsBallot } from "./calculateMetrics";
-import { OSOMetrics } from "./fetchMetrics";
+import type { OSOMetrics } from "~/types/metrics";
 
 test("calculate metrics", () => {
   const actual = calculateMetricsBallot(projects, metricsById);

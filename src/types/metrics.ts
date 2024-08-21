@@ -1,5 +1,3 @@
-import { OSOMetric } from "~/utils/fetchMetrics";
-
 export enum AvailableMetrics {
   active_contract_count_90_days = "Active Contract Count (90 Days)",
   address_count = "Address Count",
@@ -17,6 +15,23 @@ export enum AvailableMetrics {
   transaction_count_6_months = "Transaction Count (6 Months)",
 }
 
+export type OSOMetric = {
+  active_contract_count_90_days: number;
+  address_count: number;
+  address_count_90_days: number;
+  days_since_first_transaction: number;
+  gas_fees_sum: number;
+  gas_fees_sum_6_months: number;
+  high_activity_address_count_90_days: number;
+  low_activity_address_count_90_days: number;
+  medium_activity_address_count_90_days: number;
+  multi_project_address_count_90_days: number;
+  new_address_count_90_days: number;
+  returning_address_count_90_days: number;
+  transaction_count: number;
+  transaction_count_6_months: number;
+};
+
 export type MetricId = keyof OSOMetric;
 
 export type Metric = {
@@ -24,3 +39,21 @@ export type Metric = {
   name: string;
   description?: string;
 };
+
+type OSOMetricProjectMeta = {
+  event_source: string;
+  display_name: string;
+  project_id: string;
+  project_name: string;
+  project_namespace: string;
+  project_source: string;
+};
+
+export type OSOMetrics = (OSOMetric & OSOMetricProjectMeta)[];
+
+export type OSOMetricCSVProjectMeta = {
+  project_name: string;
+  project_id?: string;
+};
+
+export type OSOMetricsCSV = OSOMetricCSVProjectMeta & OSOMetric;
