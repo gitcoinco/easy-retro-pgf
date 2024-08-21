@@ -1,4 +1,4 @@
-import type { PrismaClient, Round } from "@prisma/client";
+import { PrismaClient, Round } from "@prisma/client";
 import {
   adminProcedure,
   attestationProcedure,
@@ -132,32 +132,20 @@ async function calculateBallotResults({
   db: PrismaClient;
   round: Round;
 }) {
-  const calculation = {
-    calculation: round.calculationType as "average" | "median" | "sum",
-    threshold: (round.calculationConfig as { threshold: number })?.threshold,
-  };
-  // Fetch the ballots
-  const ballots = await db.ballotV2.findMany({
-    where: { roundId: round.id, publishedAt: { not: null } },
-    select: { voterId: true, allocations: true },
-  });
 
-  if (round.type === RoundTypes.impact) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Calculations for impact rounds not implemented yet",
-    });
+  let results;
+  switch(round.type) {
+    case RoundTypes.impact:
+      results = generateImpactPayouts(round, db);
+      break;
+
+      case RoundTypes.project:
+    default:
+      results = generateProjectPayouts(round, db);
   }
 
-  const votes = calculateVotes(ballots, calculation);
-
-  const averageVotes = 0;
-  const totalVotes = Math.floor(
-    Object.values(votes).reduce((sum, x) => sum + (x.allocations ?? 0), 0),
-  );
-  const totalVoters = ballots.length;
-
-  return { votes, totalVoters, totalVotes, averageVotes };
+  return results;
+ 
 }
 
 function calculateDistributionsByProject({
@@ -206,4 +194,64 @@ function calculatePayout(
   return (
     (BigInt(Math.round(votes * 100)) * totalTokens) / BigInt(totalVotes) / 100n
   );
+}
+
+async function generateImpactPayouts(round: Round, db: PrismaClient) {
+
+  // Fetch the allocations
+  const allocations = await db.allocation.findMany({
+    where: { roundId: round.id },
+    select: { 
+      id: true,
+      amount: true
+    },
+  });
+
+  // Group and sum the allocation amounts by impact metric id
+  const payouts = allocations.reduce((acc, allocation) => {
+    acc[allocation.id] = (acc[allocation.id] || 0) + allocation.amount;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Format the payouts for each impact metric id
+  // [{ id: 'active_contract_count_90_days', totalAmount: 300 }]
+  const metricsToTotalAmount = Object.entries(payouts).map(([id, totalAmount]) => ({
+    id,
+    totalAmount,
+  }));
+
+  // read from csv to get which project has which impact metric has what score
+
+  // based on score calculate the payout for each project from each metric
+
+  // get the toal payout for each project
+
+  // return totalPayouts by project
+
+}
+
+async function generateProjectPayouts(round: Round, db: PrismaClient) {
+
+  const calculation = {
+    calculation: round.calculationType as "average" | "median" | "sum",
+    threshold: (round.calculationConfig as { threshold: number })?.threshold,
+  };
+
+  // Fetch the ballots
+  const ballots = await db.ballotV2.findMany({
+    where: { roundId: round.id, publishedAt: { not: null } },
+    select: { voterId: true, allocations: true },
+  });
+
+  const votes = calculateVotes(ballots, calculation);
+
+  const averageVotes = 0;
+
+  const totalVotes = Math.floor(
+    Object.values(votes).reduce((sum, x) => sum + (x.allocations ?? 0), 0),
+  );
+
+  const totalVoters = ballots.length;
+
+  return { votes, totalVoters, totalVotes, averageVotes };
 }
