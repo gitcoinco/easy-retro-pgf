@@ -41,6 +41,8 @@ export function Distributions() {
     );
   }
 
+  console.log("distributionResult", distributionResult);
+
   const distributions = importedDistribution.length
     ? importedDistribution
     : distributionResult.data?.distributions || [];
