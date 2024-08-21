@@ -200,7 +200,7 @@ function calculatePayout(
 
 async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
-  // Fetch the allocations
+  // Fetch the allocations for the specified round
   const allocations = await db.allocation.findMany({
     where: { roundId: round.id },
     select: { 
@@ -211,43 +211,42 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
   // Group and sum the allocation amounts by impact metric id
   // Example: { "metric1": 100, "metric2": 200, ... }
-  const amountsByMetric = allocations.reduce((acc, allocation) => {
-    acc[allocation.id] = (acc[allocation.id] || 0) + allocation.amount;
-    return acc;
+  const metricAmounts = allocations.reduce((accumulator, allocation) => {
+    accumulator[allocation.id] = (accumulator[allocation.id] || 0) + allocation.amount;
+    return accumulator;
   }, {} as Record<string, number>);
   
 
   // Fetch metrics from the CSV
-  const osoMetricsByProject = await fetchImpactMetricsFromCSV();
+  const projectMetrics = await fetchImpactMetricsFromCSV();
 
-  // Calculate the payout for each project based on the impact metrics
-  const payoutsByProject = osoMetricsByProject.reduce((acc, osoProjectMetrics) => {
-    const { project_name } = osoProjectMetrics;
+  // Calculate payouts for each project based on impact metrics
+  const projectPayouts = projectMetrics.reduce((accumulator, projectMetric) => {
+    const { project_name } = projectMetric;
 
-    let totalPayoutForProject = 0;
+    // Compute the total payout for the project
+    let projectTotalPayout = 0;
 
-    // For each metric, calculate its contribution to the project's payout
-    for (const [metricId, totalAmount] of Object.entries(amountsByMetric)) {
-      if (metricId in osoProjectMetrics) {
-        const metricScore = osoProjectMetrics[metricId as MetricId] as number;
+    for (const [metricId, totalAmount] of Object.entries(metricAmounts)) {
+      if (metricId in projectMetric) {
+        const metricScore = projectMetric[metricId as MetricId] as number;
         const metricPayout = (totalAmount * metricScore) / 100;
-        totalPayoutForProject += metricPayout;
+        projectTotalPayout += metricPayout;
       }
     }
-
     // Store the total payout by project name
-    acc[project_name] = (acc[project_name] || 0) + totalPayoutForProject;
+    accumulator[project_name] = (accumulator[project_name] || 0) + projectTotalPayout;
 
-    return acc;
+    return accumulator;
   }, {} as Record<string, number>);
 
   // Format the final payout data by project
-  const projectsToPayout = Object.entries(payoutsByProject).map(([projectName, totalPayoutForProject]) => ({
+  const formattedPayouts = Object.entries(projectPayouts).map(([projectName, totalPayout]) => ({
     projectName,
-    totalPayoutForProject,
+    totalPayout,
   }));
 
-  return projectsToPayout;
+  return formattedPayouts;
 }
 
 async function generateProjectPayouts(round: Round, db: PrismaClient) {
