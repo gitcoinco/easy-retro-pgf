@@ -5,7 +5,10 @@ import { toast } from "sonner";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { getContracts } from "~/lib/eas/createEAS";
 
-export function useRevokeAttestations(opts?: { onSuccess?: () => void }) {
+export function useRevokeAttestations(opts?: {
+  onSuccess?: () => void,
+  onError?: (err: { reason?: string; data?: { message: string } }) => void,
+}) {
   const revoke = useRevoke();
   const signer = useEthersSigner();
 

@@ -32,7 +32,7 @@ export function useAttest() {
       if (!signer) throw new Error("Connect wallet first");
       if (!round?.network) throw new Error("Round network not configured");
       const eas = createEAS(signer, round?.network);
-      return eas.multiAttest(attestations);
+      return (await eas.multiAttest(attestations)).wait(2);
     },
   });
 }
@@ -44,7 +44,7 @@ export function useRevoke() {
       if (!signer) throw new Error("Connect wallet first");
       if (!round?.network) throw new Error("Round network not configured");
       const eas = createEAS(signer, round?.network);
-      return eas.multiRevoke(revocations);
+      return (await eas.multiRevoke(revocations)).wait(2);
     },
   });
 }

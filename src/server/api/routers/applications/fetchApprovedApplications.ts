@@ -1,6 +1,6 @@
 import { type AttestationFetcher } from "~/utils/fetchAttestations";
-import { fetchApplications } from "../applications/fetchApplications";
-import { fetchApprovals } from "../applications/fetchApprovals";
+import { fetchApplications } from "./fetchApplications";
+import { fetchApprovals } from "./fetchApprovals";
 
 export async function fetchApprovedApplications({
   attestationFetcher,
