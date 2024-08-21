@@ -1,29 +1,41 @@
-import { fetchImpactMetrics, mapMetrics } from "~/utils/fetchMetrics";
-import type {
-  ImpactMetricsQuery,
-  MetricWithProjects,
-} from "~/utils/fetchMetrics/types";
-import type { OSOMetric } from "~/types/metrics";
+import {
+  fetchImpactMetricsFromCSV,
+  mapMetrics,
+  type MetricWithProjects,
+} from "~/utils/fetchMetrics";
+import type { MetricId } from "~/types/metrics";
 import { mockedApprovedProjects } from "./mocks";
+import { fetchApprovedApplications } from "../applications/fetchApprovedApplications";
+import type { AttestationFetcher } from "~/utils/fetchAttestations";
 
 export async function fetchMetricsForProjects({
+  admins,
+  attestationFetcher,
   metricIds,
+  roundId,
 }: {
+  admins: string[];
+  attestationFetcher: AttestationFetcher;
   metricIds: string[];
+  roundId: string;
 }): Promise<MetricWithProjects[]> {
-  const approvedProjects = mockedApprovedProjects;
+  const approvedApplications = await fetchApprovedApplications({
+    attestationFetcher,
+    admins,
+    roundId,
+  });
 
-  const query: ImpactMetricsQuery = {
-    where: {
-      project_name: { _in: approvedProjects },
-      event_source: { _eq: "BASE" },
-    },
-    orderBy: [{ active_contract_count_90_days: "desc" }],
-    limit: 300,
-    offset: 0,
-  };
+  // const approvedProjects = mockedApprovedProjects; // For testing
+  const approvedProjects = approvedApplications.map(
+    (application) => application.name,
+  );
 
-  const projects = await fetchImpactMetrics(query, metricIds);
+  const metricsByProject = await fetchImpactMetricsFromCSV({
+    projects: approvedProjects,
+    metrics: metricIds as MetricId[],
+  });
 
-  return mapMetrics(projects, metricIds as (keyof OSOMetric)[]);
+  const mappedMetrics = mapMetrics(metricsByProject, metricIds as MetricId[]);
+
+  return mappedMetrics;
 }

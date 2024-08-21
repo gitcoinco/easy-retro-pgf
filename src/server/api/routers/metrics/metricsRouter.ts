@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 import {
-  ballotProcedure,
+  attestationProcedure,
+  ballotAttestationProcedure,
   createTRPCRouter,
   publicProcedure,
   roundProcedure,
@@ -31,10 +32,19 @@ export const metricsRouter = createTRPCRouter({
     return fetchMetricsForRound({ roundMetricIds });
   }),
 
-  forBallot: ballotProcedure.query(async ({ ctx }) => {
-    const { ballot } = ctx;
+  forBallot: ballotAttestationProcedure.query(async ({ ctx }) => {
+    const {
+      ballot,
+      fetchAttestations: attestationFetcher,
+      round: { admins, id: roundId },
+    } = ctx;
     try {
-      return fetchMetricsForBallot({ ballot });
+      return fetchMetricsForBallot({
+        admins,
+        attestationFetcher,
+        ballot,
+        roundId,
+      });
     } catch (error) {
       throw new TRPCError({
         code: "BAD_REQUEST",
@@ -43,11 +53,20 @@ export const metricsRouter = createTRPCRouter({
     }
   }),
 
-  forProjects: roundProcedure
+  forProjects: attestationProcedure
     .input(z.object({ metricIds: z.array(z.string()) }))
     .query(async ({ input: { metricIds }, ctx }) => {
+      const {
+        fetchAttestations: attestationFetcher,
+        round: { admins, id: roundId },
+      } = ctx;
       try {
-        return fetchMetricsForProjects({ metricIds });
+        return fetchMetricsForProjects({
+          admins,
+          attestationFetcher,
+          metricIds,
+          roundId,
+        });
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
