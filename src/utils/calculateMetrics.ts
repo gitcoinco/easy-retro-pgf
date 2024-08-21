@@ -1,4 +1,4 @@
-import { OSOMetric, OSOMetrics } from "./fetchMetrics";
+import type { OSOMetric, OSOMetrics } from "~/types/metrics";
 
 export function calculateMetricsBallot(
   projects: OSOMetrics,

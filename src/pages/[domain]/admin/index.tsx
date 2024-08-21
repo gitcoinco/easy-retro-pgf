@@ -20,7 +20,7 @@ import { ImageUpload } from "~/components/ImageUpload";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { createElement } from "react";
-import { AvailableMetrics } from "~/features/metrics/types";
+import { AvailableMetrics } from "~/types/metrics";
 
 export default function AdminPage() {
   return (

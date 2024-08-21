@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
-import { Metric } from "~/features/metrics/types";
+import type { Metric } from "~/types/metrics";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { AddToBallotButton } from "./AddToBallotButton";
 import { ErrorMessage } from "~/components/ErrorMessage";

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import { MetricId } from "../types";
+import type { MetricId } from "~/types/metrics";
 
 export function useMetricById(id: string) {
   const query = api.metrics.forProjects.useQuery({ metricIds: [id] });

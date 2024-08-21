@@ -1,5 +1,9 @@
-import { AvailableMetrics } from "~/features/metrics/types";
-import type { MetricWithProjects, OSOMetric, OSOMetrics } from "./types";
+import type { MetricWithProjects } from "~/utils/fetchMetrics/types";
+import {
+  AvailableMetrics,
+  type OSOMetric,
+  type OSOMetrics,
+} from "~/types/metrics";
 import { mockedDescription } from "./mocks";
 
 export function mapMetrics(

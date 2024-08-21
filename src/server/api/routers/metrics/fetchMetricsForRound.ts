@@ -1,4 +1,4 @@
-import { AvailableMetrics } from "~/features/metrics/types";
+import { AvailableMetrics } from "~/types/metrics";
 import { metricsList } from "~/utils/osoData";
 
 export async function fetchMetricsForRound({
