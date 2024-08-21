@@ -14,6 +14,8 @@ import { RoundTypes } from "~/features/rounds/types";
 import { formatUnits } from "viem";
 import { z } from "zod";
 import { fetchMetadata } from "~/utils/fetchMetadata";
+import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
+import { MetricId } from "~/types/metrics";
 
 export const resultsRouter = createTRPCRouter({
   distribution: adminAttestationProcedure
@@ -202,32 +204,50 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
   const allocations = await db.allocation.findMany({
     where: { roundId: round.id },
     select: { 
-      id: true,
+      id: true, // impact metric id
       amount: true
     },
   });
 
   // Group and sum the allocation amounts by impact metric id
-  const payouts = allocations.reduce((acc, allocation) => {
+  // Example: { "metric1": 100, "metric2": 200, ... }
+  const amountsByMetric = allocations.reduce((acc, allocation) => {
     acc[allocation.id] = (acc[allocation.id] || 0) + allocation.amount;
     return acc;
   }, {} as Record<string, number>);
+  
 
-  // Format the payouts for each impact metric id
-  // [{ id: 'active_contract_count_90_days', totalAmount: 300 }]
-  const metricsToTotalAmount = Object.entries(payouts).map(([id, totalAmount]) => ({
-    id,
-    totalAmount,
+  // Fetch metrics from the CSV
+  const osoMetricsByProject = await fetchImpactMetricsFromCSV();
+
+  // Calculate the payout for each project based on the impact metrics
+  const payoutsByProject = osoMetricsByProject.reduce((acc, osoProjectMetrics) => {
+    const { project_name } = osoProjectMetrics;
+
+    let totalPayoutForProject = 0;
+
+    // For each metric, calculate its contribution to the project's payout
+    for (const [metricId, totalAmount] of Object.entries(amountsByMetric)) {
+      if (metricId in osoProjectMetrics) {
+        const metricScore = osoProjectMetrics[metricId as MetricId] as number;
+        const metricPayout = (totalAmount * metricScore) / 100;
+        totalPayoutForProject += metricPayout;
+      }
+    }
+
+    // Store the total payout by project name
+    acc[project_name] = (acc[project_name] || 0) + totalPayoutForProject;
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Format the final payout data by project
+  const projectsToPayout = Object.entries(payoutsByProject).map(([projectName, totalPayoutForProject]) => ({
+    projectName,
+    totalPayoutForProject,
   }));
 
-  // read from csv to get which project has which impact metric has what score
-
-  // based on score calculate the payout for each project from each metric
-
-  // get the toal payout for each project
-
-  // return totalPayouts by project
-
+  return projectsToPayout;
 }
 
 async function generateProjectPayouts(round: Round, db: PrismaClient) {
