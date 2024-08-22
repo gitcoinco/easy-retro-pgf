@@ -1,28 +1,27 @@
 import { z } from "zod";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useFormContext } from "react-hook-form";
 import { type Address } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "~/components/ui/Button";
 import { Form, FormSection } from "~/components/ui/Form";
 import { useApplications } from "~/features/applications/hooks/useApplications";
-import { type Attestation } from "~/utils/fetchAttestations";
 import { useApproveApplication } from "../hooks/useApproveApplication";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
-import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
 import { ApplicationItem } from "./ApplicationItem";
+import { SelectAllButton } from "./SelectAllButton";
+import { ApproveButton } from "./ApproveButton";
 
 const ApplicationsListSchema = z.object({
   selected: z.array(z.string()),
 });
 
-type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
+export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
   const queryClient = useQueryClient();
@@ -117,48 +116,5 @@ export function ApplicationsList() {
         </FormSection>
       </Form>
     </div>
-  );
-}
-
-function SelectAllButton({
-  applications = [],
-}: {
-  applications: Attestation[] | undefined;
-}) {
-  const form = useFormContext<ApplicationsList>();
-  const selected = form.watch("selected");
-  const isAllSelected =
-    selected?.length > 0 && selected?.length === applications?.length;
-  return (
-    <Button
-      disabled={!applications.length}
-      type="button"
-      onClick={() => {
-        const selectAll = isAllSelected ? [] : applications.map(({ id }) => id);
-        form.setValue("selected", selectAll);
-      }}
-    >
-      {isAllSelected ? "Deselect all" : "Select all"}
-    </Button>
-  );
-}
-
-function ApproveButton({ isLoading = false }) {
-  const form = useFormContext<ApplicationsList>();
-  const selectedCount = Object.values(form.watch("selected") ?? {}).filter(
-    Boolean,
-  ).length;
-  return (
-    <EnsureCorrectNetwork>
-      <Button
-        suppressHydrationWarning
-        isLoading={isLoading}
-        disabled={!selectedCount || isLoading}
-        variant="primary"
-        type="submit"
-      >
-        Approve {selectedCount} applications
-      </Button>
-    </EnsureCorrectNetwork>
   );
 }
