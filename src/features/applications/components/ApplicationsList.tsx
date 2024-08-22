@@ -118,13 +118,13 @@ export function ApplicationItem({
   );
 }
 
-const ApplicationsToApproveSchema = z.object({
+const ApplicationsListSchema = z.object({
   selected: z.array(z.string()),
 });
 
-type ApplicationsToApprove = z.infer<typeof ApplicationsToApproveSchema>;
+type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
-export function ApplicationsToApprove() {
+export function ApplicationsList() {
   const queryClient = useQueryClient();
   const [fetched, setFetched] = useState(false);
   const applications = useApplications();
@@ -169,7 +169,7 @@ export function ApplicationsToApprove() {
     <div className="relative">
       <Form
         defaultValues={{ selected: [] }}
-        schema={ApplicationsToApproveSchema}
+        schema={ApplicationsListSchema}
         onSubmit={(values) => approve.mutate(values.selected)}
       >
         <FormSection
@@ -225,7 +225,7 @@ function SelectAllButton({
 }: {
   applications: Attestation[] | undefined;
 }) {
-  const form = useFormContext<ApplicationsToApprove>();
+  const form = useFormContext<ApplicationsList>();
   const selected = form.watch("selected");
   const isAllSelected =
     selected?.length > 0 && selected?.length === applications?.length;
@@ -244,7 +244,7 @@ function SelectAllButton({
 }
 
 function ApproveButton({ isLoading = false }) {
-  const form = useFormContext<ApplicationsToApprove>();
+  const form = useFormContext<ApplicationsList>();
   const selectedCount = Object.values(form.watch("selected") ?? {}).filter(
     Boolean,
   ).length;
