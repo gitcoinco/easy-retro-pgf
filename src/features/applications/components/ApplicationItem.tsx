@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 import { type Address } from "viem";
 import { useAccount } from "wagmi";
-import { ClockIcon } from "lucide-react";
+import { ClockIcon, EyeIcon } from "lucide-react";
 
 import { Button } from "~/components/ui/Button";
 import { Checkbox } from "~/components/ui/Form";
@@ -39,7 +39,7 @@ export function ApplicationItem({
 
   return (
     <div className="flex items-center gap-2 rounded border-b hover:bg-gray-100 dark:border-gray-800 hover:dark:bg-gray-800">
-      <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
+      <label className="flex flex-1 items-center gap-4 p-2">
         <Checkbox
           disabled={isApproved}
           value={id}
@@ -73,22 +73,34 @@ export function ApplicationItem({
           )}
         </div>
         {isApproved ? (
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={approvedBy ? approvedBy[0]?.attester !== address : true}
-            isLoading={revoke.isPending}
-            onClick={() => {
-              if (
-                window.confirm(
-                  "Are you sure? This will revoke the application and must be done by the same person who approved it.",
+          <>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={approvedBy ? approvedBy[0]?.attester !== address : true}
+              isLoading={revoke.isPending}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Are you sure? This will revoke the application and must be done by the same person who approved it.",
+                  )
                 )
-              )
-                revoke.mutate(approvedBy?.map((x) => x.uid) ?? []);
-            }}
-          >
-            Revoke
-          </Button>
+                  revoke.mutate(approvedBy?.map((x) => x.uid) ?? []);
+              }}
+            >
+              Revoke
+            </Button>
+            <Button
+              disabled={isLoading}
+              as={Link}
+              target="_blank"
+              href={`/${domain}/applications/${id}`}
+              className="transition-transform group-data-[state=closed]:rotate-180"
+              type="button"
+              variant="link"
+              icon={EyeIcon}
+            />
+          </>
         ) : (
           <Button
             disabled={isLoading}
