@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
-import { fetchApplications } from "./fetchApplications";
-import { fetchApprovals } from "./fetchApprovals";
+import { fetchApplications, fetchApprovals } from "./utils";
 
 export const FilterSchema = z.object({
   limit: z.number().default(3 * 8),
   cursor: z.number().default(0),
 });
+
 export const applicationsRouter = createTRPCRouter({
   approvals: attestationProcedure
     .input(z.object({ ids: z.array(z.string()).optional() }))
@@ -33,6 +33,12 @@ export const applicationsRouter = createTRPCRouter({
         fetchAttestations: attestationFetcher,
         round: { id: roundId },
       } = ctx;
-      return fetchApplications({ attestationFetcher, roundId });
+
+      const applications = await fetchApplications({
+        attestationFetcher,
+        roundId,
+      });
+
+      return applications;
     }),
 });

@@ -8,11 +8,11 @@ import {
   roundProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { getMetrics } from "./getMetrics";
-import { fetchMetricsForRound } from "./fetchMetricsForRound";
-import { fetchMetricsForBallot } from "./fetchMetricsForBallots";
-import { fetchMetricsForProjects } from "./fetchMetricsForProjects";
-import { getProjects } from "./getProjects";
+import { getMetrics } from "./utils/getMetrics";
+import { fetchMetricsForRound } from "./utils/fetchMetricsForRound";
+import { fetchMetricsForBallot } from "./utils/fetchMetricsForBallots";
+import { fetchMetricsForProjects } from "./utils/fetchMetricsForProjects";
+import { getProjects } from "./utils/getProjects";
 
 export const metricsRouter = createTRPCRouter({
   get: publicProcedure

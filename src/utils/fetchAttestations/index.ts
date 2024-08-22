@@ -1,5 +1,4 @@
 export { createAttestationFetcher } from "./createAttestationFetcher";
-export { fetchProfiles } from "./fetchProfiles";
 export { fetchApprovedVoter } from "./fetchApprovedVoter";
 export { parseDecodedMetadata } from "./parseDecodedMetadata";
 export { createDataFilter, createSearchFilter } from "./filters";

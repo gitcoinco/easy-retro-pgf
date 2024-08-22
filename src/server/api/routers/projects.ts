@@ -5,12 +5,12 @@ import {
   Attestation,
   createDataFilter,
   createSearchFilter,
-  fetchProfiles,
 } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { eas } from "~/config";
 import { type Filter, FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
+import { fetchProfiles } from "./profile/utils";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -41,9 +41,11 @@ export const projectsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      return ctx.fetchAttestations(["metadata"], {
+      const projects = await ctx.fetchAttestations(["metadata"], {
         where: { id: { in: ids } },
       });
+
+      return projects;
     }),
   search: attestationProcedure
     .input(FilterSchema)
@@ -91,7 +93,7 @@ export const projectsRouter = createTRPCRouter({
   list: attestationProcedure
     .input(FilterSchema)
     .query(async ({ input, ctx }) => {
-      const round = ctx.round;
+      const { fetchAttestations: attestationFetcher, round } = ctx;
       if (!round)
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -112,10 +114,11 @@ export const projectsRouter = createTRPCRouter({
           })
           .then(async (projects) => {
             // Fetch Profiles for projects
-            const profiles = await fetchProfiles(
-              ctx.round!,
-              projects.map((p) => p.recipient),
-            );
+            const profiles = await fetchProfiles({
+              attestationFetcher,
+              round,
+              recipients: projects.map((p) => p.recipient),
+            });
 
             const metadata = await fetchMetadataForProjects(projects, profiles);
 
@@ -169,7 +172,6 @@ export const projectsRouter = createTRPCRouter({
                   payoutAddress: string;
                 };
 
-                console.log({ payoutAddress });
                 return { projectId: attestation.id, payoutAddress };
               }),
             ),

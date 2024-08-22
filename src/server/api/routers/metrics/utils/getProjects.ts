@@ -1,6 +1,6 @@
 import { fetchImpactMetrics } from "~/utils/fetchMetrics";
 import type { ImpactMetricsQuery } from "~/utils/fetchMetrics/types";
-import { mockedApprovedProjects } from "./mocks";
+import { mockedApprovedProjects } from "../mocks";
 
 type ProjectMetrics = Record<string, string | number>;
 type ProjectIdToMetricsMap = Record<string, ProjectMetrics>;

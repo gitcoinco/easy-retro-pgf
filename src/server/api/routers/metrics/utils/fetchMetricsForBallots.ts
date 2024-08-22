@@ -1,9 +1,9 @@
 import type { BallotV2, Allocation } from "@prisma/client";
 import { calculateMetricsBallot } from "~/utils/calculateMetrics";
 import type { MetricId, OSOMetric } from "~/types/metrics";
-import { mockedApprovedProjects } from "./mocks";
+import { mockedApprovedProjects } from "../mocks";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics/fetchImpactMetricsFromCSV";
-import { fetchApprovedApplications } from "../applications/fetchApprovedApplications";
+import { fetchApprovedApplications } from "../../applications/utils";
 import type { AttestationFetcher } from "~/utils/fetchAttestations";
 
 type Ballot = {
