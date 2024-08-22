@@ -11,6 +11,8 @@ import type {
   SchemaType,
 } from "./types";
 import { parseDecodedMetadata } from "./parseDecodedMetadata";
+import { RoundTypes } from "~/features/rounds/types";
+import { Round } from "@prisma/client";
 
 const ONE_WEEK_IN_MS = 60 * 60 * 1000 * 24 * 7;
 const TEN_MINUTES_IN_MS = 1000 * 60 * 10;
@@ -40,10 +42,13 @@ function parseAttestation({
   return { ...attestation, ...parseDecodedMetadata(decodedDataJson) };
 }
 
-export function createAttestationFetcher(
-  round: PartialRound,
-): AttestationFetcher {
+export function createAttestationFetcher(round: Round): AttestationFetcher {
   return (schema: SchemaType[], filter?: AttestationsFilter) => {
+    const isImpactRound = round?.type === RoundTypes.impact;
+
+    const parsedSchema: SchemaType[] =
+      isImpactRound && schema[0] === "metadata" ? ["metadataV2"] : schema;
+
     const startsAt = Math.floor(
       Number(round?.startsAt ?? new Date()) / 1000 - ONE_WEEK_IN_MS,
     );
@@ -51,7 +56,7 @@ export function createAttestationFetcher(
     if (!easURL) throw new Error("Round network not configured");
 
     const contracts = getContracts(String(round?.network));
-    const schemas = schema.map((type) => contracts.schemas[type]);
+    const schemas = parsedSchema.map((type) => contracts.schemas[type]);
 
     return fetch<{ attestations: AttestationWithMetadata[] }>(easURL, {
       method: "POST",

@@ -43,15 +43,17 @@ export type AttestationsFilter = {
 
 export type PartialRound = {
   id: string | null;
+  type?: string;
   startsAt: Date | null;
   network: string | null;
 };
 
-export type SchemaType = "approval" | "metadata";
+export type SchemaType = "approval" | "metadata" | "metadataV2";
 
 export type Metadata = {
   name: string;
   metadataPtr: string;
   round: string;
   type: string;
+  uuid?: string;
 };
