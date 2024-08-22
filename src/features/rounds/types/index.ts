@@ -23,7 +23,7 @@ export const RoundVotesSchema = RoundVotes.refine(
 );
 
 export const calculationTypes = {
-  average: "Mean (average)",
+  average: "Mean",
   median: "Median",
   sum: "Sum",
 } as const;

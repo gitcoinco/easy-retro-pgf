@@ -45,16 +45,19 @@ export function CalculationForm({
         onSubmit={(values) => onUpdate(values)}
       >
         <div className="gap-2">
-          <FormControl name="calculationType" label="Payout style">
-            <Select disabled={round.isPending} className={"w-full"}>
-              {Object.entries(calculationTypes).map(([type, label]) => (
-                <option value={type} key={type}>
-                  {label}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <MinimumQuorum />
+          <div className="flex gap-2 text-[0.8rem]">
+            <FormControl name="calculationType" label="Payout style" className="flex-1">
+              <Select disabled={round.isPending} className={"w-full"}>
+                {Object.entries(calculationTypes).map(([type, label]) => (
+                  <option value={type} key={type}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <MinimumQuorum />
+          </div>
+
           <Button
             variant="primary"
             type="submit"
@@ -90,7 +93,7 @@ function VoterCount() {
       <h3 className="mb-2 text-sm font-semibold uppercase tracking-widest text-gray-500">
         Ballots submitted
       </h3>
-      <div className="pt-1 text-center text-2xl">
+      <div className="pt-1 text-center text-xl">
         <Skeleton
           className="h-8 w-20 dark:bg-gray-700"
           isLoading={voters.isPending || totalVoters.isPending}
