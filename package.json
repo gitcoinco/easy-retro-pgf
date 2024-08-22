@@ -78,6 +78,7 @@
     "tailwind-merge": "^2.2.1",
     "tailwind-variants": "^0.1.20",
     "url-slug": "^4.0.1",
+    "uuid": "^10.0.0",
     "viem": "2.x",
     "wagmi": "2",
     "zod": "3.22.4"
@@ -95,6 +96,7 @@
     "@types/papaparse": "^5.3.14",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "@vitejs/plugin-react": "^4.2.1",

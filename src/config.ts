@@ -12,7 +12,7 @@ export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
 };
- // Commented out all the networks that are not yet supported by Allo-easyRPGF 
+// Commented out all the networks that are not yet supported by Allo-easyRPGF
 export const networks = {
   // mainnet: "mainnet",
   optimism: "optimism",
@@ -65,6 +65,7 @@ export const eas = {
           "0xf01bd22db2b104f6a7096f3625307b1c03b863b73f08e71557ebf1adc20cf1bf",
         approval:
           "0xe2636f31239f7948afdd9a9c477048b7fc2a089c347af60e3aa1251e5bf63e5c",
+        metadataV2: "",
       },
     },
     [networks.avalanche]: {
@@ -75,6 +76,7 @@ export const eas = {
           "0xf01bd22db2b104f6a7096f3625307b1c03b863b73f08e71557ebf1adc20cf1bf",
         approval:
           "0xe2636f31239f7948afdd9a9c477048b7fc2a089c347af60e3aa1251e5bf63e5c",
+        metadataV2: "",
       },
     },
     // [networks.linea]: {
@@ -93,6 +95,9 @@ export const eas = {
           "0x858e0bc94997c072d762d90440966759b57c8bca892d4c9447d2eeb205f14c69",
         metadata:
           "0xd00c966351896bd3dc37d22017bf1ef23165f859d7546a2aba12a01623dec912",
+        // with uuid v2
+        metadataV2:
+          "0xf8757b1e38ff1b0c1893e47f7d815367332bec28fea4b4abdcdfda3b1d1b9061",
       },
     },
   },
@@ -120,8 +125,9 @@ export const easApiEndpoints = {
     "http://ec2-35-174-143-89.compute-1.amazonaws.com:32768/",
 } as const;
 
-
-export const openSourceObserverEndpoint = String(process.env.OPENSOURCE_OBSERVER_API)
+export const openSourceObserverEndpoint = String(
+  process.env.OPENSOURCE_OBSERVER_API,
+);
 // TODO: Remove and move to round config
 export const impactCategories = {
   ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },

@@ -2,6 +2,7 @@ import "dotenv/config";
 import { config, eas } from "~/config";
 import { createDataFilter, fetchAttestations } from "~/utils/fetchAttestations";
 
+// UNUSED CODE, asses if we should delete it
 console.log(config.roundId, process.env.NEXT_PUBLIC_ROUND_ID);
 const filters = [
   createDataFilter("type", "bytes32", "application"),
