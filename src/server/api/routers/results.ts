@@ -39,22 +39,34 @@ export const resultsRouter = createTRPCRouter({
         throw new Error("Invalid totalTokens value, can not convert to bigint");
       }
 
-      const metadata = await ctx
-        .fetchAttestations(["metadata"], {
-          where: { id: { in: projectIds } },
-        })
-        .then((attestations) =>
-          Promise.all(
-            attestations.map((attestation) =>
-              fetchMetadata(attestation.metadataPtr).then((data) => {
-                return { id: attestation.id, ...data };
-              }),
+      let metadata = {};
+
+      if (ctx.round.type === RoundTypes.impact) {
+        // TODO: Figure out how to get metadata for impact metric
+      } else {
+        metadata = await ctx
+          .fetchAttestations(["metadata"], {
+            where: { id: { in: projectIds } },
+          })
+          .then((attestations) =>
+            Promise.all(
+              attestations.map((attestation) =>
+                fetchMetadata(attestation.metadataPtr).then((data) => {
+                  return { id: attestation.id, ...data };
+                }),
+              ),
             ),
-          ),
-        )
-        .then((projects) =>
-          projects.reduce((acc, x) => ({ ...acc, [x.id]: x }), {}),
-        );
+          )
+          .then((projects) =>
+            projects.reduce((acc, x) => ({ ...acc, [x.id]: x }), {}),
+          );
+      }
+
+      console.log("----> projectids", projectIds);
+      console.log("----> projectVotes", projectVotes);
+      console.log("----> totalTokens", totalTokens);
+      console.log("----> totalVotes", totalVotes);
+      console.log("----> metadata", metadata);
 
       const distributions = calculateDistributionsByProject({
         projectIds,
