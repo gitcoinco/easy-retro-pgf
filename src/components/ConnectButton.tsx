@@ -66,7 +66,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                     variant="primary"
                     data-testid="connect-wallet"
                   >
-                    {isMobile ? "Connect" : "Connect wallet"}
+                    Connect wallet
                   </Button>
                 );
               }
