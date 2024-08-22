@@ -65,6 +65,7 @@ export const eas = {
           "0xf01bd22db2b104f6a7096f3625307b1c03b863b73f08e71557ebf1adc20cf1bf",
         approval:
           "0xe2636f31239f7948afdd9a9c477048b7fc2a089c347af60e3aa1251e5bf63e5c",
+        metadataV2: "",
       },
     },
     [networks.avalanche]: {
@@ -75,6 +76,7 @@ export const eas = {
           "0xf01bd22db2b104f6a7096f3625307b1c03b863b73f08e71557ebf1adc20cf1bf",
         approval:
           "0xe2636f31239f7948afdd9a9c477048b7fc2a089c347af60e3aa1251e5bf63e5c",
+        metadataV2: "",
       },
     },
     // [networks.linea]: {
@@ -95,7 +97,7 @@ export const eas = {
           "0xd00c966351896bd3dc37d22017bf1ef23165f859d7546a2aba12a01623dec912",
         // with uuid v2
         metadataV2:
-          "0x47598771ccd47573b8411188872e3a1e3aec7c92f9354a8d21de67de8c29a8be",
+          "0xf8757b1e38ff1b0c1893e47f7d815367332bec28fea4b4abdcdfda3b1d1b9061",
       },
     },
   },
