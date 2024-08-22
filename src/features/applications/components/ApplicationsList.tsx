@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { type Address } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 
 import { Button } from "~/components/ui/Button";
 import { Form, FormSection } from "~/components/ui/Form";
@@ -16,6 +17,7 @@ import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { ApplicationItem } from "./ApplicationItem";
 import { SelectAllButton } from "./SelectAllButton";
 import { ApproveButton } from "./ApproveButton";
+import { api } from "~/utils/api";
 
 const ApplicationsListSchema = z.object({
   selected: z.array(z.string()),
@@ -24,20 +26,27 @@ const ApplicationsListSchema = z.object({
 export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
-  const queryClient = useQueryClient();
   const [fetched, setFetched] = useState(false);
   const applications = useApplications();
   const domain = useCurrentDomain();
   const approved = useApprovedApplications();
   const approve = useApproveApplication({});
 
+  const queryClient = useQueryClient();
+  const approvedApplicationsQuery = getQueryKey(api.applications.approvals);
+
   const handleRefetch = (timeout: number) => {
-    // @ts-ignore
-    queryClient.removeQueries(["approvedApplications", {}]);
+    queryClient.removeQueries({ queryKey: approvedApplicationsQuery });
     setTimeout(() => {
-      approved.refetch().then(() => {
-        setFetched(!fetched);
-      });
+      approved
+        .refetch()
+        .then(() => {
+          setFetched(!fetched);
+        })
+        .catch((error) => {
+          console.error(error);
+          throw error;
+        });
     }, timeout);
   };
 
@@ -51,7 +60,7 @@ export function ApplicationsList() {
   const approvedById = useMemo(() => {
     return approved.data?.reduce((acc, x) => {
       // Check if the key (refUID) already exists in the Map
-      const existingArray = acc.get(x.refUID) || [];
+      const existingArray = acc.get(x.refUID) ?? [];
       // Append the new object to the array
       const newArray = [...existingArray, { attester: x.attester, uid: x.id }];
       // Set the updated array back into the Map
