@@ -1,3 +1,3 @@
 project_name,address_count_90_days,low_activity_address_count_90_days,gas_fees_sum,multi_project_address_count_90_days,medium_activity_address_count_90_days,transaction_count,gas_fees_sum_6_months,returning_address_count_90_days,new_address_count_90_days,transaction_count_6_months,days_since_first_transaction,active_contract_count_90_days,high_activity_address_count_90_days,address_count
-Yuri Weaver,1068,787,0.593020627776043,890,50,1119,0.5993449587636913,16,924,1156,1734,5,0,1068
-Test Project Perma,1903,1653,1.0934404858974302,1395,139,1795,1.1214594897761546,59,1469,1871,2124,7,7,1903
+Test Project Huss 1,1068,787,0.593020627776043,890,50,1119,0.5993449587636913,16,924,1156,1734,5,0,1068
+Unipig,1903,1653,1.0934404858974302,1395,139,1795,1.1214594897761546,59,1469,1871,2124,7,7,1903

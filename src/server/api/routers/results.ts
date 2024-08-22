@@ -263,6 +263,7 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
   console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
 
   const projectPayouts: BallotResults = {};
+  let totalMetricsAmount = 0;
 
   // Calculate payouts and unique voters for each project
   for (const projectMetric of projectMetrics) {
@@ -278,6 +279,7 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
         const metricPayout =
           totalValue > 0 ? (metricScore * 100) / totalValue : 0;
         projectTotalPayout += metricPayout;
+        totalMetricsAmount += metricPayout;
       }
     }
 
@@ -298,19 +300,10 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
   console.log("projectPayouts before normalization", projectPayouts);
 
-  // Normalize allocations to the pool amount
-  const totalPayouts = Object.values(projectPayouts).reduce(
-    (sum, result) => sum + result.allocations,
-    0
-  );
-
-  const POOL_AMOUNT = 100; // Hardcoded pool amount (TODO: get this from the round)
-  const scalingFactor = totalPayouts > 0 ? POOL_AMOUNT / totalPayouts : 0;
-
   // Adjust each project's payout based on the scaling factor
   for (const projectName in projectPayouts) {
     if (projectPayouts[projectName]) {
-      projectPayouts[projectName].allocations *= scalingFactor;
+      projectPayouts[projectName].allocations = projectPayouts[projectName].allocations * 100 / totalMetricsAmount
     }
   }
 
