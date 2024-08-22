@@ -188,7 +188,7 @@ function PoolDetails({ poolId = 0 }) {
 
 
       <h3 className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-        Fund pool Amount
+        Fund Pool Amount
       </h3>
 
       <Form
