@@ -249,7 +249,6 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
   );
 
   console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
-  let totalMetricAmount = 0;
 
   const projectPayouts: BallotResults = {};
 
@@ -281,13 +280,32 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     // Store the results in BallotResults format
     projectPayouts[project_name] = {
       voters: projectVoters,
-      allocations: projectTotalPayout,
+      allocations: projectTotalPayout, // This needs to be normalized
     };
   }
 
-  console.log("projectPayouts", projectPayouts);
+  console.log("projectPayouts before normalization", projectPayouts);
 
-  const totalVotes = Object.values(projectPayouts).reduce(
+  // Normalize allocations to the pool amount
+  const totalPayouts = Object.values(projectPayouts).reduce(
+    (sum, result) => sum + result.allocations,
+    0
+  );
+
+  const POOL_AMOUNT = 100; // Hardcoded pool amount (TODO: get this from the round)
+  const scalingFactor = totalPayouts > 0 ? POOL_AMOUNT / totalPayouts : 0;
+
+  // Adjust each project's payout based on the scaling factor
+  for (const projectName in projectPayouts) {
+    if (projectPayouts[projectName]) {
+      projectPayouts[projectName].allocations *= scalingFactor;
+    }
+  }
+
+  console.log("projectPayouts after normalization", projectPayouts);
+
+  // Compute additional metrics
+  const normalizedTotalVotes = Object.values(projectPayouts).reduce(
     (sum, result) => sum + result.allocations,
     0
   );
@@ -295,12 +313,12 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     (sum, result) => sum + result.voters,
     0
   );
-  const averageVotes = totalVotes / (Object.keys(projectPayouts).length || 1);
+  const averageVotes = totalVoters > 0 ? normalizedTotalVotes / totalVoters : 0;
 
   return {
     votes: projectPayouts,
     totalVoters,
-    totalVotes,
+    totalVotes: normalizedTotalVotes,
     averageVotes,
   };
 }
