@@ -227,7 +227,9 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
   console.log("projectMetrics", projectMetrics);
 
-  const totalAmounts = Object.keys(metricAmounts).reduce(
+  // Used to calculate the percentage contribution of each project towards each metric,
+  // which then helps in distributing the metricAmounts proportionally
+  const totalMetricScoresFromCSV = Object.keys(metricAmounts).reduce(
     (accumulator, key) => {
       // Initialize the total for each metric key
       accumulator[key] = 0;
@@ -245,7 +247,7 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     {} as Record<string, number>,
   );
 
-  console.log("totalAmounts", totalAmounts);
+  console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
   let totalMetricAmount = 0;
 
   // Calculate payouts for each project based on impact metrics
@@ -258,7 +260,7 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
       for (const [metricId, totalAmount] of Object.entries(metricAmounts)) {
         if (metricId in projectMetric) {
-          const totalValue = totalAmounts[metricId as MetricId] as number;
+          const totalValue = totalMetricScoresFromCSV[metricId as MetricId] as number;
 
           const metricScore = projectMetric[metricId as MetricId] as number;
           const metricPayout =
@@ -288,7 +290,18 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
   console.log("formattedPayouts", formattedPayouts);
 
-  return formattedPayouts;
+  // todo: make formattedPayouts return BallotResults
+
+  const totalVotes = totalMetricAmount;
+  const totalVoters = (new Set(allocations.map(allocation => allocation.voterId))).size;
+  const averageVotes = 0;
+
+  return {
+    votes,
+    totalVoters,
+    totalVotes,
+    averageVotes,
+  };
 }
 
 async function generateProjectPayouts(round: Round, db: PrismaClient) {
