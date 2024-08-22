@@ -19,8 +19,7 @@ export default function DistributePage() {
   return (
     <RoundAdminLayout>
       {() => (
-        <div className="max-w-screen-md">
-
+        <div className={round.data?.type == RoundType.impact ? "max-w-screen-md" : ""}>
           <div className="flex gap-3 mb-3">
             <div className="flex-1">
               <ConfigurePool/>
