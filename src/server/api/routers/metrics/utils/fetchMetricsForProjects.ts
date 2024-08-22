@@ -4,8 +4,8 @@ import {
   type MetricWithProjects,
 } from "~/utils/fetchMetrics";
 import type { MetricId } from "~/types/metrics";
-import { mockedApprovedProjects } from "./mocks";
-import { fetchApprovedApplications } from "../applications/fetchApprovedApplications";
+import { mockedApprovedProjects } from "../mocks";
+import { fetchApprovedApplications } from "../../applications/utils";
 import type { AttestationFetcher } from "~/utils/fetchAttestations";
 
 export async function fetchMetricsForProjects({
