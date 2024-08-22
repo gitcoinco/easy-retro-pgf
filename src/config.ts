@@ -12,7 +12,7 @@ export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
 };
- // Commented out all the networks that are not yet supported by Allo-easyRPGF 
+// Commented out all the networks that are not yet supported by Allo-easyRPGF
 export const networks = {
   // mainnet: "mainnet",
   optimism: "optimism",
@@ -93,6 +93,9 @@ export const eas = {
           "0x858e0bc94997c072d762d90440966759b57c8bca892d4c9447d2eeb205f14c69",
         metadata:
           "0xd00c966351896bd3dc37d22017bf1ef23165f859d7546a2aba12a01623dec912",
+        // with uuid v2
+        metadataV2:
+          "0x47598771ccd47573b8411188872e3a1e3aec7c92f9354a8d21de67de8c29a8be",
       },
     },
   },
@@ -120,8 +123,9 @@ export const easApiEndpoints = {
     "http://ec2-35-174-143-89.compute-1.amazonaws.com:32768/",
 } as const;
 
-
-export const openSourceObserverEndpoint = String(process.env.OPENSOURCE_OBSERVER_API)
+export const openSourceObserverEndpoint = String(
+  process.env.OPENSOURCE_OBSERVER_API,
+);
 // TODO: Remove and move to round config
 export const impactCategories = {
   ETHEREUM_INFRASTRUCTURE: { label: "Ethereum Infrastructure" },
