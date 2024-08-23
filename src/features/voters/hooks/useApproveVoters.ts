@@ -25,6 +25,8 @@ export function useApproveVoters({
   const signer = useEthersSigner();
   const { data: round } = useCurrentRound();
 
+  const saveBallot = api.ballot.saveBallot.useMutation();
+
   return useMutation({
     mutationFn: async (voters: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
@@ -45,8 +47,18 @@ export function useApproveVoters({
           ),
         ),
       );
-      return attest.mutateAsync(
+      await attest.mutateAsync(
         attestations.map((att) => ({ ...att, data: [att.data] })),
+      );
+
+      await Promise.all(
+        voters.map((voter) =>
+          saveBallot.mutateAsync({
+            voterId: voter,
+            roundId: round.id,
+            type: round.type,
+          }),
+        ),
       );
     },
     onSuccess,
