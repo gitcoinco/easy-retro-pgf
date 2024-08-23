@@ -16,6 +16,7 @@ import { z } from "zod";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { MetricId } from "~/types/metrics";
+import { createDataFilter } from "~/utils/fetchAttestations";
 
 export const resultsRouter = createTRPCRouter({
   distribution: adminAttestationProcedure
@@ -42,25 +43,30 @@ export const resultsRouter = createTRPCRouter({
       let metadata = {};
 
       if (ctx.round.type === RoundTypes.impact) {
+
+        const ORFilters = projectIds.map(projectId => 
+          createDataFilter("uuid", "string", projectId)
+        );
+
         metadata = await ctx
           .fetchAttestations(["metadata"], {
-            where: { uuid: { in: projectIds } }, // TODO: FIX 
+            where: { 
+              OR: ORFilters,
+              AND: [createDataFilter("type", "bytes32", "application"),]
+            },
           })
-        console.log(metadata, "METADATA");
-        console.log(projectIds, "PROJECTIDS");
-          // .then((attestations) =>
-          //   Promise.all(
-          //     attestations.map((attestation) =>
-          //       fetchMetadata(attestation.metadataPtr).then((data) => {
-          //         return { id: attestation.id, ...data };
-          //       }),
-          //     ),
-          //   ),
-          // )
-          // .then((projects) =>
-          //   projects.reduce((acc, x) => ({ ...acc, [x.id]: x }), {}),
-          // );
-          
+          .then((attestations) =>
+            Promise.all(
+              attestations.map((attestation) =>
+                fetchMetadata(attestation.metadataPtr).then((data) => {
+                  return { uuid: attestation.uuid, ...data };
+                }),
+              ),
+            ),
+          )
+          .then((projects) =>
+            projects.reduce((acc, x) => ({ ...acc, [x.uuid]: x }), {}),
+        );          
       } else {
         metadata = await ctx
           .fetchAttestations(["metadata"], {
@@ -79,12 +85,6 @@ export const resultsRouter = createTRPCRouter({
             projects.reduce((acc, x) => ({ ...acc, [x.id]: x }), {}),
           );
       }
-
-      console.log("----> projectids", projectIds);
-      console.log("----> projectVotes", projectVotes);
-      console.log("----> totalTokens", totalTokens);
-      console.log("----> totalVotes", totalVotes);
-      console.log("----> metadata", metadata);
 
       const distributions = calculateDistributionsByProject({
         projectIds,
