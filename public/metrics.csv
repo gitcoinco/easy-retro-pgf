@@ -1,3 +1,4 @@
-project_name,address_count_90_days,low_activity_address_count_90_days,gas_fees_sum,multi_project_address_count_90_days,medium_activity_address_count_90_days,transaction_count,gas_fees_sum_6_months,returning_address_count_90_days,new_address_count_90_days,transaction_count_6_months,days_since_first_transaction,active_contract_count_90_days,high_activity_address_count_90_days,address_count
-Test Project Huss 1,1068,787,0.593020627776043,890,50,1119,0.5993449587636913,16,924,1156,1734,5,0,1068
-Unipig,1903,1653,1.0934404858974302,1395,139,1795,1.1214594897761546,59,1469,1871,2124,7,7,1903
+uuid,project_name,address_count_90_days,low_activity_address_count_90_days,gas_fees_sum,multi_project_address_count_90_days,medium_activity_address_count_90_days,transaction_count,gas_fees_sum_6_months,returning_address_count_90_days,new_address_count_90_days,transaction_count_6_months,days_since_first_transaction,active_contract_count_90_days,high_activity_address_count_90_days,address_count
+d51f7e0b-2f71-4818-b674-c9859b242a15,Test Project Huss 1,1068,787,0.593020627776043,890,50,1119,0.5993449587636913,16,924,1156,1734,5,0,1068
+1575c733-bec4-4e72-8620-79b3ff67e74f,Unipig,1903,1653,1.0934404858974302,1395,139,1795,1.1214594897761546,59,1469,1871,2124,7,7,1903
+7a2b2cee-7512-4b9f-9dbc-677a8fa88388,Test Project Huss 2,1500,1120,0.8024503978820304,1100,90,1550,0.8256789032145678,25,1300,1600,1850,6,3,1500
