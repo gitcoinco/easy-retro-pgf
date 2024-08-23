@@ -53,7 +53,7 @@ export type OSOMetrics = (OSOMetric & OSOMetricProjectMeta)[];
 
 export type OSOMetricCSVProjectMeta = {
   project_name: string;
-  project_id?: string;
+  project_id: string;
 };
 
 export type OSOMetricsCSV = OSOMetricCSVProjectMeta & OSOMetric;

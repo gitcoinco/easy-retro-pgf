@@ -42,7 +42,25 @@ export const resultsRouter = createTRPCRouter({
       let metadata = {};
 
       if (ctx.round.type === RoundTypes.impact) {
-        // TODO: Figure out how to get metadata for impact metric
+        metadata = await ctx
+          .fetchAttestations(["metadata"], {
+            where: { uuid: { in: projectIds } }, // TODO: FIX 
+          })
+        console.log(metadata, "METADATA");
+        console.log(projectIds, "PROJECTIDS");
+          // .then((attestations) =>
+          //   Promise.all(
+          //     attestations.map((attestation) =>
+          //       fetchMetadata(attestation.metadataPtr).then((data) => {
+          //         return { id: attestation.id, ...data };
+          //       }),
+          //     ),
+          //   ),
+          // )
+          // .then((projects) =>
+          //   projects.reduce((acc, x) => ({ ...acc, [x.id]: x }), {}),
+          // );
+          
       } else {
         metadata = await ctx
           .fetchAttestations(["metadata"], {
@@ -149,7 +167,6 @@ async function calculateBallotResults({
   let results;
   switch (round.type) {
     case RoundTypes.impact:
-      // NOTE: return type is different. This is a bug.
       results = generateImpactPayouts(round, db);
       break;
 
@@ -267,7 +284,6 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
   // Calculate payouts and unique voters for each project
   for (const projectMetric of projectMetrics) {
-    const { project_name } = projectMetric;
 
     // Compute the total payout for the project
     let projectTotalPayout = 0;
@@ -290,9 +306,10 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
     const uniqueVoters = new Set(projectAllocations.map(a => a.voterId));
     const projectVoters = uniqueVoters.size;
+    const projectId = projectMetric.project_id;
 
     // Store the results in BallotResults format
-    projectPayouts[project_name] = {
+    projectPayouts[projectId] = {
       voters: projectVoters,
       allocations: projectTotalPayout, // This needs to be normalized
     };
