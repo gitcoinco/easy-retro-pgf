@@ -181,10 +181,15 @@ function PoolDetails({ poolId = 0 }) {
         <h3 className="mb-2 text-sm font-semibold uppercase tracking-widest text-gray-500">
           Currently in pool
         </h3>
-        <div className="text-2xl">
+        <div className="text-xl">
           {formatUnits(amount.data ?? 0n, decimals)} {symbol}
         </div>
       </div>
+
+
+      <h3 className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+        Fund Pool Amount
+      </h3>
 
       <Form
         schema={z.object({ amount: z.number() })}

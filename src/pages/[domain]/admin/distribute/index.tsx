@@ -1,3 +1,4 @@
+import { RoundType } from "@prisma/client";
 import { Spinner } from "~/components/ui/Spinner";
 import { CalculationForm } from "~/features/admin/components/CalculationForm";
 import { RoundAdminLayout } from "~/features/admin/layouts/AdminLayout";
@@ -16,32 +17,37 @@ export default function DistributePage() {
   const update = useUpdateRound();
 
   return (
-    <RoundAdminLayout
-      sidebarComponent={
-        <div className="space-y-4">
-          <ConfigurePool />
-          {round.isPending ? (
-            <div />
-          ) : (
-            <CalculationForm
-              isLoading={update.isPending}
-              onUpdate={({ calculationType, ...calculationConfig }) => {
-                update.mutate(
-                  { id: round.data?.id, calculationType, calculationConfig },
-                  {
-                    async onSuccess() {
-                      return utils.results.votes.invalidate();
-                    },
-                  },
-                );
-              }}
-            />
-          )}
-        </div>
-      }
-    >
+    <RoundAdminLayout>
       {() => (
-        <div className="max-w-screen-md">
+        <div className={round.data?.type == RoundType.impact ? "max-w-screen-md" : ""}>
+          <div className="flex gap-3 mb-3">
+            <div className="flex-1">
+              <ConfigurePool/>
+            </div>
+
+            {
+              !round.isPending &&
+              round.data?.type == RoundType.project &&
+              (
+                <div className="flex-1">
+                  <CalculationForm
+                    isLoading={update.isPending}
+                    onUpdate={({ calculationType, ...calculationConfig }) => {
+                      update.mutate(
+                        { id: round.data?.id, calculationType, calculationConfig },
+                        {
+                          async onSuccess() {
+                            return utils.results.votes.invalidate();
+                          },
+                        },
+                      );
+                    }}
+                  />
+                </div>
+              )
+            }
+          </div>
+
           {update.isPending ? (
             <div className="flex justify-center py-8">
               <Spinner className="size-6" />

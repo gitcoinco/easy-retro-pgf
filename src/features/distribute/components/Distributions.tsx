@@ -41,6 +41,8 @@ export function Distributions() {
     );
   }
 
+  console.log("distributionResult", distributionResult);
+
   const distributions = importedDistribution.length
     ? importedDistribution
     : distributionResult.data?.distributions || [];
@@ -58,23 +60,18 @@ export function Distributions() {
   console.log(JSON.stringify(distributionResult.data, null, 2));
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <h1 className="text-3xl font-bold">Distribute</h1>
-
-        <div className="flex items-center gap-2">
+      <div className="my-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-sm">
+          <ExportVotes totalVotes={formatNumber(totalVotes)} />
           <ImportCSV onImport={setImportedDistribution} />
           <ExportCSV votes={distributions} />
-          <Button
-            variant="primary"
-            onClick={() => setConfirmDistribution(distributions)}
-          >
-            Distribute tokens
-          </Button>
         </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <div>Total votes: {formatNumber(totalVotes)}</div>
-        <ExportVotes />
+        <Button
+          variant="primary"
+          onClick={() => setConfirmDistribution(distributions)}
+        >
+          Distribute tokens
+        </Button>
       </div>
       <div className="min-h-[360px] overflow-auto">
         <DistributionTable distributions={distributions} />
@@ -111,7 +108,9 @@ function DistributionTable({
   );
 }
 
-function ExportVotes() {
+function ExportVotes(props:{
+  totalVotes: string
+}) {
   const { mutateAsync, isPending } = api.ballot.export.useMutation();
   const exportCSV = useCallback(async () => {
     const ballots = await mutateAsync();
@@ -131,7 +130,7 @@ function ExportVotes() {
 
   return (
     <Button variant="outline" isLoading={isPending} onClick={exportCSV}>
-      Download votes
+      Download votes ({props.totalVotes})
     </Button>
   );
 }

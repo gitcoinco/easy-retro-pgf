@@ -39,7 +39,8 @@ function MetricCard({
     <div className={"rounded border p-6 "}>
       <div className="flex gap-8">
         <div className="flex-1 space-y-4">
-          {isLoading ? (
+          {/* Review: Do we need to show metric name as this is included in description */}
+          {/* {isLoading ? (
             <Skeleton isLoading className="block h-6 w-48" />
           ) : (
             <Heading variant="h3" className="hover:underline">
@@ -47,13 +48,15 @@ function MetricCard({
                 {snakeToTitleCase(metric?.name)}
               </Link>
             </Heading>
-          )}
+          )} */}
           {isLoading ? (
             <Skeleton isLoading className="block h-12" />
           ) : (
-            <Markdown className={"line-clamp-2 text-gray-700"}>
-              {metric?.description}
-            </Markdown>
+            <Link href={`/${domain}/metrics/${metric?.id}`} className="hover:underline  underline-offset-2">
+              <Markdown className={"line-clamp-2 text-gray-700"}>
+                {metric?.description}
+              </Markdown>
+            </Link>
           )}
         </div>
         <AddToBallotButton id={metric?.id} />

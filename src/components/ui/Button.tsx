@@ -88,12 +88,12 @@ export function Button({
       <div className="flex gap-2">
         {Icon &&
           createElement(Icon, {
-            className: "size-4",
+            className: "size-4 mt-1",
           })}
         {children}
         {IconRight &&
           createElement(IconRight, {
-            className: "size-4",
+            className: "size-4 mt-1",
           })}
       </div>
     </ButtonComponent>

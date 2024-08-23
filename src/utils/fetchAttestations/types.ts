@@ -14,6 +14,7 @@ export type AttestationWithMetadata = {
   time: number;
   decodedDataJson: string;
   schemaId: string;
+  uuid: string;
 };
 
 export type Attestation = Omit<AttestationWithMetadata, "decodedDataJson"> & {
@@ -31,6 +32,7 @@ type MatchWhere = {
   time?: MatchFilter;
   decodedDataJson?: { contains: string };
   AND?: MatchWhere[];
+  OR?: MatchWhere[];
 };
 export type AttestationsFilter = {
   take?: number;

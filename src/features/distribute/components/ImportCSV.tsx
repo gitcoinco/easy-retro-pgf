@@ -1,4 +1,4 @@
-import { FileUp } from "lucide-react";
+import { FileDown } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
@@ -34,7 +34,7 @@ export function ImportCSV({
   }, []);
   return (
     <div>
-      <IconButton icon={FileUp} onClick={() => csvInputRef.current?.click()}>
+      <IconButton icon={FileDown} onClick={() => csvInputRef.current?.click()}>
         Import CSV
       </IconButton>
 

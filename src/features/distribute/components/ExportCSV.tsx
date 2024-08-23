@@ -1,4 +1,4 @@
-import { FileDown } from "lucide-react";
+import { FileUp } from "lucide-react";
 import { useCallback } from "react";
 import { IconButton } from "~/components/ui/Button";
 import { type Distribution } from "~/features/distribute/types";
@@ -24,7 +24,7 @@ export function ExportCSV({ votes }: { votes: Distribution[] }) {
   }, [votes]);
 
   return (
-    <IconButton type="button" icon={FileDown} onClick={exportCSV}>
+    <IconButton type="button" icon={FileUp} onClick={exportCSV}>
       Export CSV
     </IconButton>
   );
