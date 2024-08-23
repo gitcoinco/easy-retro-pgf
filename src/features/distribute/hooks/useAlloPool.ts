@@ -71,10 +71,11 @@ export function useCreatePool() {
     onSuccess: () => {
       toast.success("Pool created successfully!");
     },
-    onError: (err: { reason?: string; data?: { message: string } }) =>
+    onError: (err: { reason?: string; data?: { message: string } }) => {
       toast.error("Pool creation error", {
         description: err.reason ?? err.data?.message,
-      }),
+      });
+    },
     mutationFn: async (params: {
       profileId: string;
       initialFunding?: bigint;
@@ -89,7 +90,7 @@ export function useCreatePool() {
       // This will properly cast the type into address (and also validate)
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       const token = getAddress(round.tokenAddress || nativeToken);
-      const managers = round.admins.map(getAddress);
+      const managers = round.admins.map(admin => getAddress(admin));
 
       const tx = alloSDK.createPool({
         profileId: params.profileId as Address,
