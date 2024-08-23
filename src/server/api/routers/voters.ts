@@ -24,23 +24,43 @@ export const votersRouter = createTRPCRouter({
         },
       })
       .then(async (voters) => {
-        const publishedBallots = await ctx.db.ballot
-          .findMany({
-            where: {
-              voterId: { in: voters.map((v) => v.recipient) },
-              publishedAt: { not: null },
-            },
-            select: { voterId: true, publishedAt: true },
-          })
-          .then((r) =>
-            Object.fromEntries(
-              r.map((v) => [v.voterId, Boolean(v.publishedAt)]),
-            ),
-          );
-        return voters.map((v) => ({
-          ...v,
-          hasVoted: publishedBallots?.[v.recipient],
-        }));
+        if (ctx.round?.type === "project") {
+          const publishedBallots = await ctx.db.ballot
+            .findMany({
+              where: {
+                voterId: { in: voters.map((v) => v.recipient) },
+                publishedAt: { not: null },
+              },
+              select: { voterId: true, publishedAt: true },
+            })
+            .then((r) =>
+              Object.fromEntries(
+                r.map((v) => [v.voterId, Boolean(v.publishedAt)]),
+              ),
+            );
+          return voters.map((v) => ({
+            ...v,
+            hasVoted: publishedBallots?.[v.recipient],
+          }));
+        } else if (ctx.round?.type === "impact") {
+          const publishedBallots = await ctx.db.ballotV2
+            .findMany({
+              where: {
+                voterId: { in: voters.map((v) => v.recipient) },
+                publishedAt: { not: null },
+              },
+              select: { voterId: true, publishedAt: true },
+            })
+            .then((r) =>
+              Object.fromEntries(
+                r.map((v) => [v.voterId, Boolean(v.publishedAt)]),
+              ),
+            );
+          return voters.map((v) => ({
+            ...v,
+            hasVoted: publishedBallots?.[v.recipient],
+          }));
+        }
       });
   }),
 });
