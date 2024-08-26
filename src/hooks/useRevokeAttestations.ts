@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { eas } from "~/config";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { toast } from "sonner";
+import { getIsFilecoinActorError } from "~/utils/errorHandler";
 
 export function useRevokeAttestations(opts?: { onSuccess?: () => void }) {
   const revoke = useRevoke();
@@ -14,8 +15,11 @@ export function useRevokeAttestations(opts?: { onSuccess?: () => void }) {
       opts?.onSuccess?.();
     },
     onError: (err: { reason?: string; data?: { message: string } }) => {
-      toast.error("Attestations revoke error", {
-        description: err.reason ?? err.data?.message,
+      const actorNotFound = getIsFilecoinActorError(err as string);
+      toast.error("Application approve error", {
+        description: actorNotFound
+          ? "Insufficient Funds"
+          : err.reason ?? err.data?.message,
       });
     },
     mutationFn: async (attestationIds: string[]) => {
