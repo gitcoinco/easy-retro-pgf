@@ -29,6 +29,30 @@ export const fundingSourceTypes = {
   OTHER: "Other",
 } as const;
 
+export const SunnyAwardsSchema = z.object({
+  projectType: z.enum(["creator", "app", "other"]),
+  avatarUrl: z.string().url(),
+  coverImageUrl: z.string().url(),
+  category: z.string().nullable().optional(),
+  categoryDetails: z.string().optional(),
+
+  contracts: z
+    .array(
+      z.object({
+        chainId: z.string(),
+        address: z.string(),
+      }),
+    )
+    .optional(),
+
+  mintingWalletAddress: z.string().optional(),
+
+  projectReferences: z.object({
+    charmverseId: z.string(),
+    agoraProjectRefUID: z.string().optional(),
+  }),
+});
+
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
@@ -65,6 +89,7 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
+  sunnyAwards: SunnyAwardsSchema.optional(),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;
