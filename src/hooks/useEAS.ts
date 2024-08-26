@@ -9,7 +9,7 @@ import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { createAttestation } from "~/lib/eas/createAttestation";
 import { getContracts } from "~/lib/eas/createEAS";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
-import { getAddress } from "viem";
+import { getAddress, zeroHash } from "viem";
 import { handleTransactionError } from "~/utils/errorHandler";
 import { usePublicClient, useWalletClient } from "wagmi";
 
@@ -48,8 +48,8 @@ export function useAttest() {
             return {
               recipient: a.recipient as `0x${string}`,
               expirationTime: BigInt(a.expirationTime ?? 0),
-              revocable: a.revocable ?? false,
-              refUID: a.refUID as `0x${string}`,
+              revocable: a.revocable ?? true,
+              refUID: (a.refUID ?? zeroHash) as `0x${string}`,
               data: a.data as `0x${string}`,
               value: BigInt(a.value ?? 0),
             };
