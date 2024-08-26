@@ -233,7 +233,7 @@ function calculatePayout(
   totalTokens: bigint,
 ) {
   return (
-    (BigInt(Math.round(votes * 100)) * totalTokens) / BigInt(totalVotes) / 100n
+    (BigInt(Math.round(votes * 100)) * totalTokens) / BigInt(Math.round(totalVotes)) / 100n
   );
 }
 
@@ -383,11 +383,16 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     (sum, result) => sum + result.allocations,
     0,
   );
+  console.log("normalizedTotalVotes", normalizedTotalVotes);
+  
   const totalVoters = Object.values(combinedPayouts).reduce(
     (sum, result) => sum + result.voters,
     0,
   );
+  console.log("totalVoters", totalVoters);
+  
   const averageVotes = totalVoters > 0 ? normalizedTotalVotes / totalVoters : 0;
+  console.log("averageVotes", averageVotes);
 
   return {
     votes: combinedPayouts,
