@@ -1,4 +1,5 @@
 import { getAddress, isAddress } from "viem";
+import { rpc } from "viem/utils";
 import * as wagmiChains from "wagmi/chains";
 
 export const metadata = {
@@ -10,7 +11,7 @@ export const metadata = {
 
 export const config = {
   logoUrl: "https://filecoin.io/images/filecoin-logo.svg",
-  pageSize: 3 * 4,
+  pageSize: 3 * 500,
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
   reviewEndsAt: new Date(process.env.NEXT_PUBLIC_REVIEW_END_DATE!),

@@ -1,13 +1,8 @@
-import {
-  parseAsInteger,
-  parseAsString,
-  parseAsStringEnum,
-  useQueryStates,
-} from "nuqs";
-
+import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import { OrderBy, SortOrder } from "../types";
 
 export const sortLabels = {
+  time_random: "Random",
   name_asc: "A to Z",
   name_desc: "Z to A",
   time_asc: "Oldest",
@@ -22,12 +17,13 @@ export function useFilter() {
       orderBy: parseAsStringEnum<OrderBy>(Object.values(OrderBy)).withDefault(
         OrderBy.name,
       ),
-      sortOrder: parseAsStringEnum<SortOrder>(
+      sortOrder: parseAsStringEnum<SortOrder | "random">(
         Object.values(SortOrder),
-      ).withDefault(SortOrder.asc),
+      ).withDefault(SortOrder.random),
     },
     { history: "replace" },
   );
 
-  return { ...filter, setFilter };
+  const isRandom = filter.sortOrder === "random";
+  return { ...filter, setFilter, isRandom };
 }

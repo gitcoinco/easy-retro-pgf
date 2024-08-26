@@ -31,8 +31,8 @@ export const ProjectsSearch = ({ addedProjects, onSelect }: Props) => {
   const projects = useSearchProjects(filter);
 
   const projectsData =
-    (projects.data?.pages.flat() ?? []).filter(
-      (project) => !addedProjects.find((p) => p.projectId === project.id),
+    (projects.data ?? []).filter(
+      (project: any) => !addedProjects.find((p) => p.projectId === project?.id),
     ) ?? [];
 
   return (
@@ -63,7 +63,7 @@ export const ProjectsSearch = ({ addedProjects, onSelect }: Props) => {
             {projects.isPending ? (
               <Command.Loading>Loading...</Command.Loading>
             ) : !projectsData.length ? null : (
-              projectsData?.map((item) => (
+              projectsData?.map((item: any) => (
                 <Command.Item
                   key={item.id}
                   value={item.id}
@@ -78,7 +78,7 @@ export const ProjectsSearch = ({ addedProjects, onSelect }: Props) => {
                     className="h-6 w-6"
                     profileId={item.recipient}
                   />
-                  {item.name}
+                  {item?.name}
                 </Command.Item>
               ))
             )}

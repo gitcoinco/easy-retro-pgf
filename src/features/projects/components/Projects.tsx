@@ -2,7 +2,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { XIcon } from "lucide-react";
 
-import { InfiniteLoading } from "~/components/InfiniteLoading";
+import { ProjectsLoading } from "~/components/ProjectsLoading";
 import { Button } from "~/components/ui/Button";
 import { useSearchProjects } from "../hooks/useProjects";
 import { useSelectProjects } from "../hooks/useSelectProjects";
@@ -11,6 +11,7 @@ import { getAppState } from "~/utils/state";
 import { useResults } from "~/hooks/useResults";
 import { SortFilter } from "~/components/SortFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
+import { Attestation } from "@ethereum-attestation-service/eas-sdk";
 
 export function Projects() {
   const projects = useSearchProjects();
@@ -40,9 +41,10 @@ export function Projects() {
       </div>
 
       <SortFilter />
-      <InfiniteLoading
-        {...projects}
-        renderItem={(item, { isLoading }) => {
+      <ProjectsLoading
+        data={(projects.data ?? []) as Attestation[]}
+        isLoading={projects.isLoading}
+        renderItem={(item: any, { isLoading }) => {
           return (
             <Link
               key={item.id}

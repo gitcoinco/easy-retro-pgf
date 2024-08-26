@@ -8,6 +8,7 @@ export enum OrderBy {
 export enum SortOrder {
   asc = "asc",
   desc = "desc",
+  random = "random",
 }
 
 export const FilterSchema = z.object({

@@ -1,19 +1,23 @@
 import clsx from "clsx";
 import Link from "next/link";
 
-import { InfiniteLoading } from "~/components/InfiniteLoading";
+import { ProjectsLoading } from "~/components/ProjectsLoading";
 import { getAppState } from "~/utils/state";
 import { useProjectsResults, useResults } from "~/hooks/useResults";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
+import { Attestation } from "@ethereum-attestation-service/eas-sdk";
 
 export function ProjectsResults() {
   const projects = useProjectsResults();
   const results = useResults();
 
+  const data = projects.data ?? [];
+
   return (
-    <InfiniteLoading
-      {...projects}
-      renderItem={(item, { isLoading }) => {
+    <ProjectsLoading
+      data={data as Attestation[]} // Pass the flattened array here
+      isLoading={projects.isLoading}
+      renderItem={(item: any, { isLoading }) => {
         return (
           <Link
             key={item.id}

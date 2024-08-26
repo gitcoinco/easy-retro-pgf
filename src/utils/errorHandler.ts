@@ -5,8 +5,7 @@ import {
   UserRejectedRequestError,
 } from "viem";
 
-export function handleTransactionError(error: any) {
-  console.log("error", error);
+export function handleTransactionError(error: BaseError) {
   if (error instanceof BaseError) {
     const revertError = error.walk(
       (err) => err instanceof ContractFunctionRevertedError,

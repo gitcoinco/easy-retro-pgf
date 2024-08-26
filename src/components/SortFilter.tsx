@@ -20,7 +20,13 @@ export const SortFilter = () => {
         onChange={(e) => setSearch(e.target.value)}
       />
       <SortByDropdown
-        options={["name_asc", "name_desc", "time_asc", "time_desc"]}
+        options={[
+          "time_random",
+          "name_asc",
+          "name_desc",
+          "time_asc",
+          "time_desc",
+        ]}
         value={`${orderBy}_${sortOrder}`}
         onChange={async (sort) => {
           const [orderBy, sortOrder] = sort.split("_") as [OrderBy, SortOrder];
