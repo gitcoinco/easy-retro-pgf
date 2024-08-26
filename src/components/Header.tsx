@@ -8,6 +8,7 @@ import { IconButton } from "./ui/Button";
 import { metadata } from "~/config";
 import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
+import { check } from "prettier";
 
 const Logo = () => (
   <div className="">
@@ -33,6 +34,14 @@ const NavLink = ({
 );
 
 type NavLink = { href: string; children: string };
+
+const checkLinkIsActive: Record<
+  string,
+  (path: string, href: string) => boolean
+> = {
+  Round: (path: string, href: string) => path === href,
+};
+
 export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
   const { asPath } = useRouter();
   const [isOpen, setOpen] = useState(false);
@@ -52,13 +61,17 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
           </Link>
         </div>
         <div className="hidden h-full items-center gap-2 overflow-x-auto md:flex">
-          {navLinks?.map((link) => (
+          {navLinks?.map(({ href, children: displayName }) => (
             <NavLink
-              isActive={asPath.startsWith(link.href)}
-              key={link.href}
-              href={link.href}
+              isActive={
+                checkLinkIsActive[displayName]
+                  ? checkLinkIsActive[displayName](asPath, href)
+                  : asPath.startsWith(href)
+              }
+              key={href}
+              href={href}
             >
-              {link.children}
+              {displayName}
             </NavLink>
           ))}
         </div>
