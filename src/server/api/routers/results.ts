@@ -17,6 +17,7 @@ import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { MetricId } from "~/types/metrics";
 import { createDataFilter } from "~/utils/fetchAttestations";
+import { awards } from "~/utils/awards";
 
 export const resultsRouter = createTRPCRouter({
   distribution: adminAttestationProcedure
@@ -43,16 +44,15 @@ export const resultsRouter = createTRPCRouter({
       let metadata = {};
 
       if (ctx.round.type === RoundTypes.impact) {
-
-        const ORFilters = projectIds.map(projectId => 
-          createDataFilter("uuid", "string", projectId)
+        const ORFilters = projectIds.map((projectId) =>
+          createDataFilter("uuid", "string", projectId),
         );
 
         metadata = await ctx
           .fetchAttestations(["metadata"], {
-            where: { 
+            where: {
               OR: ORFilters,
-              AND: [createDataFilter("type", "bytes32", "application"),]
+              AND: [createDataFilter("type", "bytes32", "application")],
             },
           })
           .then((attestations) =>
@@ -66,7 +66,7 @@ export const resultsRouter = createTRPCRouter({
           )
           .then((projects) =>
             projects.reduce((acc, x) => ({ ...acc, [x.uuid]: x }), {}),
-        );          
+          );
       } else {
         metadata = await ctx
           .fetchAttestations(["metadata"], {
@@ -236,7 +236,6 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
       voterId: true,
     },
   });
-
   console.log("allocations", allocations);
 
   // Group and sum the allocation amounts by impact metric id
@@ -249,96 +248,140 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     },
     {} as Record<string, number>,
   );
-
   console.log("metricAmounts", metricAmounts);
 
   // Fetch metrics from the CSV
   const projectMetrics = await fetchImpactMetricsFromCSV();
-
   console.log("projectMetrics", projectMetrics);
 
-  // Used to calculate the percentage contribution of each project towards each metric,
-  // which then helps in distributing the metricAmounts proportionally
+  // Used to calculate the total score for each metric across all projects
   const totalMetricScoresFromCSV = Object.keys(metricAmounts).reduce(
     (accumulator, key) => {
-      // Initialize the total for each metric key
       accumulator[key] = 0;
-
-      // Iterate over each project
       for (const projectMetric of projectMetrics) {
         if (key in projectMetric) {
-          // Add the project's value for this metric key to the total
           accumulator[key] += projectMetric[key as MetricId] as number;
         }
       }
-
       return accumulator;
     },
     {} as Record<string, number>,
   );
-
   console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
 
-  const projectPayouts: BallotResults = {};
-  let totalMetricsAmount = 0;
+  const projectPayouts: Record<string, BallotResults> = {};
+  let totalAmountForRound = 0;
 
-  // Calculate payouts and unique voters for each project
-  for (const projectMetric of projectMetrics) {
+  // Iterate over each award
+  for (const award of awards) {
+    const { metrics, amount, eligibleProjects } = award;
+    
+    totalAmountForRound += amount;
 
-    // Compute the total payout for the project
-    let projectTotalPayout = 0;
+    let totalMetricsAmount = 0;
+    const awardPayouts: BallotResults = {};
 
-    for (const [metricId, totalAmount] of Object.entries(metricAmounts)) {
-      if (metricId in projectMetric) {
-        const totalValue = totalMetricScoresFromCSV[metricId as MetricId] as number;
-        const metricScore = projectMetric[metricId as MetricId] as number;
-        const metricPayout =
-          totalValue > 0 ? (metricScore * 100) / totalValue : 0;
-        projectTotalPayout += metricPayout;
-        totalMetricsAmount += metricPayout;
+    // Calculate payouts and unique voters for each eligible project
+    for (const projectMetric of projectMetrics) {
+      const { project_id } = projectMetric;
+
+      if (!eligibleProjects.includes(project_id)) continue;
+
+      // Compute the total payout for the project
+      let projectTotalPayout = 0;
+
+      // Calculate payout based on specified metrics for this award
+      for (const metricId of metrics) {
+        if (metricId in projectMetric) {
+          // totalValue is the sum of all scores for this metric across all projects
+          const totalValue = totalMetricScoresFromCSV[
+            metricId as MetricId
+          ] as number;
+          const metricScore = projectMetric[metricId as MetricId] as number;
+
+          // Payout for this metric based on its score relative to totalValue
+          const metricPayout =
+            totalValue > 0
+              ? (metricScore * (metricAmounts[metricId] || 0)) / totalValue
+              : 0;
+
+          projectTotalPayout += metricPayout;
+          totalMetricsAmount += metricPayout;
+        }
+      }
+
+      // Count unique voters for this project
+      const projectAllocations = allocations.filter(
+        (allocation) => allocation.id in projectMetric,
+      );
+
+      const uniqueVoters = new Set(projectAllocations.map((a) => a.voterId));
+      const projectVoters = uniqueVoters.size;
+
+      // Store the results in BallotResults format for this award
+      awardPayouts[project_id] = {
+        voters: projectVoters,
+        allocations: projectTotalPayout, // This will be normalized to poolAmount later
+      };
+    }
+
+    // Normalize the project allocations to the pool amount for this award
+    for (const projectId in awardPayouts) {
+      if (awardPayouts[projectId]) {
+        awardPayouts[projectId].allocations =
+          (awardPayouts[projectId].allocations * amount) /
+          totalMetricsAmount;
+
+        awardPayouts[projectId].allocationPercentage =
+          (awardPayouts[projectId].allocations * 100) / amount;
       }
     }
 
-    // Count unique voters for this project
-    const projectAllocations = allocations.filter(
-      allocation => allocation.id in projectMetric
-    );
-
-    const uniqueVoters = new Set(projectAllocations.map(a => a.voterId));
-    const projectVoters = uniqueVoters.size;
-    const projectId = projectMetric.project_id;
-
-    // Store the results in BallotResults format
-    projectPayouts[projectId] = {
-      voters: projectVoters,
-      allocations: projectTotalPayout, // This needs to be normalized
-    };
+    // Store the award payouts
+    projectPayouts[award.id] = awardPayouts;
   }
 
-  console.log("projectPayouts before normalization", projectPayouts);
+  console.log("projectPayouts by award (after normalized)", projectPayouts);
 
-  // Adjust each project's payout based on the scaling factor
-  for (const projectName in projectPayouts) {
-    if (projectPayouts[projectName]) {
-      projectPayouts[projectName].allocations = projectPayouts[projectName].allocations * 100 / totalMetricsAmount
+  // Combine payouts across all awards for each project
+  const combinedPayouts: BallotResults = {};
+
+  for (const awardId in projectPayouts) {
+    const awardPayouts = projectPayouts[awardId];
+    for (const projectId in awardPayouts) {
+      if (!awardPayouts[projectId]) continue;
+
+      if (!combinedPayouts[projectId]) {
+        combinedPayouts[projectId] = {
+          voters: awardPayouts[projectId].voters,
+          allocations: awardPayouts[projectId].allocations,
+        };
+      } else {
+        combinedPayouts[projectId].voters += awardPayouts[projectId].voters;
+        combinedPayouts[projectId].allocations +=
+          awardPayouts[projectId].allocations;
+      }
+
+      combinedPayouts[projectId].allocationPercentage = (combinedPayouts[projectId].allocations * 100) / totalAmountForRound;
     }
   }
 
-  console.log("projectPayouts after normalization", projectPayouts);
+  console.log("totalAmountForRound", totalAmountForRound);
+  console.log("combinedPayouts", combinedPayouts);
 
   // Compute additional metrics
-  const normalizedTotalVotes = Object.values(projectPayouts).reduce(
+  const normalizedTotalVotes = Object.values(combinedPayouts).reduce(
     (sum, result) => sum + result.allocations,
-    0
+    0,
   );
-  const totalVoters = Object.values(projectPayouts).reduce(
+  const totalVoters = Object.values(combinedPayouts).reduce(
     (sum, result) => sum + result.voters,
-    0
+    0,
   );
   const averageVotes = totalVoters > 0 ? normalizedTotalVotes / totalVoters : 0;
 
   return {
-    votes: projectPayouts,
+    votes: combinedPayouts,
     totalVoters,
     totalVotes: normalizedTotalVotes,
     averageVotes,
