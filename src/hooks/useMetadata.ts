@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { Application } from "~/features/applications/types";
 import { api } from "~/utils/api";
 
 export function useMetadata<T>(metadataPtr?: string) {
@@ -10,6 +11,18 @@ export function useMetadata<T>(metadataPtr?: string) {
   return {
     ...query,
     data: query.data as T,
+  };
+}
+
+export function useBatchMetadata(metadataPtrs?: string[]) {
+  // Utilize the trpc hook generated based on the 'getBatch' procedure defined in your tRPC router
+  const query = api.metadata.getBatch.useQuery(
+    { metadataPtrs: metadataPtrs??[].map(metadataPtr => String(metadataPtr)) },
+    { enabled: Boolean(metadataPtrs) },
+  );
+  return {
+    ...query,
+    data: query.data as unknown as Application[] | undefined,
   };
 }
 

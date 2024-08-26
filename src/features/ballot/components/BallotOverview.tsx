@@ -14,7 +14,10 @@ import {
 import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
-import { useProjectCount } from "~/features/projects/hooks/useProjects";
+import {
+  useProjectCount,
+  useDownloadProjects,
+} from "~/features/projects/hooks/useProjects";
 import { config } from "~/config";
 import { useIsMutating } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
@@ -36,95 +39,135 @@ function BallotOverview() {
 
   const allocations = ballot?.votes ?? [];
   const canSubmit = router.route === "/ballot" && allocations.length;
+  const isProjectsPage = router.route === "/projects";
+
+  const DownloadProjectsButton = () => {
+    const download = useDownloadProjects();
+
+    return (
+      <BallotMessage>
+        <BallotHeader>Download Projects CSV</BallotHeader>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={download.downloadMetadata}
+          isLoading={download.isLoading || download.fetched}
+          disabled={download.isLoading}
+        >
+          Download
+        </Button>
+      </BallotMessage>
+    );
+  };
 
   const { data: projectCount } = useProjectCount();
 
   const appState = getAppState();
   if (appState === "RESULTS")
     return (
-      <BallotMessage>
-        <BallotHeader>Results are live!</BallotHeader>
-        <BallotSection title="Results are being tallied"></BallotSection>
-        <Button as={Link} href={"/projects/results"}>
-          Go to results
-        </Button>
-      </BallotMessage>
+      <>
+        {isProjectsPage && <DownloadProjectsButton />}
+
+        <BallotMessage>
+          <BallotHeader>Results are live!</BallotHeader>
+          <BallotSection title="Results are being tallied"></BallotSection>
+          <Button as={Link} href={"/projects/results"}>
+            Go to results
+          </Button>
+        </BallotMessage>
+      </>
     );
   if (appState === "TALLYING")
     return (
-      <BallotMessage>
-        <BallotHeader>Voting has ended</BallotHeader>
-        <BallotSection title="Results are being tallied"></BallotSection>
-      </BallotMessage>
+      <>
+        {isProjectsPage && <DownloadProjectsButton />}
+        <BallotMessage>
+          <BallotHeader>Voting has ended</BallotHeader>
+          <BallotSection title="Results are being tallied"></BallotSection>
+        </BallotMessage>
+      </>
     );
   if (appState !== "VOTING")
     return (
-      <BallotMessage>
-        <BallotHeader>Voting hasn't started yet</BallotHeader>
-        {appState === "REVIEWING" ? (
-          <BallotSection title="Applications are being reviewed" />
-        ) : (
-          <Button as={Link} href={"/applications/new"}>
-            Create application
-          </Button>
-        )}
-      </BallotMessage>
+      <>
+        {isProjectsPage && <DownloadProjectsButton />}
+        <BallotMessage>
+          <BallotHeader>Voting hasn't started yet</BallotHeader>
+          {appState === "REVIEWING" ? (
+            <BallotSection title="Applications are being reviewed" />
+          ) : (
+            <Button as={Link} href={"/applications/new"}>
+              Create application
+            </Button>
+          )}
+        </BallotMessage>
+      </>
     );
 
   return (
-    <div className="mb-2 space-y-6">
-      <BallotHeader>Your ballot</BallotHeader>
-      <BallotSection title="Voting ends in:">
-        <VotingEndsIn />
-      </BallotSection>
-      <BallotSection title="Projects added:">
-        <div>
-          <span className="text-gray-900 dark:text-gray-300">
-            {allocations.length}
-          </span>
-          /{projectCount?.count}
-        </div>
-      </BallotSection>
-      <BallotSection
-        title={
-          <div className="flex justify-between">
-            Votes allocated:
-            <div
-              className={clsx("text-gray-900 dark:text-gray-300", {
-                ["text-red-500"]: sum > config.votingMaxTotal,
-              })}
-            >
-              {formatNumber(sum)} votes
-            </div>
+    <>
+      <div className="mb-2 space-y-6">
+        {isProjectsPage && <DownloadProjectsButton />}
+      </div>
+      <div className="mb-2 space-y-6">
+        <BallotHeader>Your ballot</BallotHeader>
+        <BallotSection title="Voting ends in:">
+          <VotingEndsIn />
+        </BallotSection>
+        <BallotSection title="Projects added:">
+          <div>
+            <span className="text-gray-900 dark:text-gray-300">
+              {allocations.length}
+            </span>
+            /{projectCount?.count}
           </div>
-        }
-      >
-        <Progress value={sum} max={config.votingMaxTotal} />
-        <div className="flex justify-between text-xs">
-          <div>Total</div>
-          <div>{formatNumber(config.votingMaxTotal ?? 0)} votes</div>
-        </div>
-      </BallotSection>
-      {ballot?.publishedAt ? (
-        <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
-          View submitted ballot
-        </Button>
-      ) : isSaving ? (
-        <Button disabled className="w-full" variant="primary">
-          Adding to ballot...
-        </Button>
-      ) : canSubmit ? (
-        <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
-      ) : allocations.length ? (
-        <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
-          View ballot
-        </Button>
-      ) : (
-        <Button className={"w-full"} variant="primary" disabled>
-          No projects added yet
-        </Button>
-      )}
-    </div>
+        </BallotSection>
+        <BallotSection
+          title={
+            <div className="flex justify-between">
+              Votes allocated:
+              <div
+                className={clsx("text-gray-900 dark:text-gray-300", {
+                  ["text-red-500"]: sum > config.votingMaxTotal,
+                })}
+              >
+                {formatNumber(sum)} votes
+              </div>
+            </div>
+          }
+        >
+          <Progress value={sum} max={config.votingMaxTotal} />
+          <div className="flex justify-between text-xs">
+            <div>Total</div>
+            <div>{formatNumber(config.votingMaxTotal ?? 0)} votes</div>
+          </div>
+        </BallotSection>
+        {ballot?.publishedAt ? (
+          <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
+            View submitted ballot
+          </Button>
+        ) : isSaving ? (
+          <Button disabled className="w-full" variant="primary">
+            Adding to ballot...
+          </Button>
+        ) : canSubmit ? (
+          <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
+        ) : allocations.length ? (
+          <Button
+            className="w-full"
+            variant="primary"
+            as={Link}
+            href={"/ballot"}
+          >
+            View ballot
+          </Button>
+        ) : (
+          <Button className={"w-full"} variant="primary" disabled>
+            No projects added yet
+          </Button>
+        )}
+      </div>
+    </>
   );
 }
 
