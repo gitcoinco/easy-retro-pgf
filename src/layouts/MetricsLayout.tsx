@@ -1,11 +1,8 @@
 import type { ReactNode, PropsWithChildren } from "react";
 import Header from "~/components/Header";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
-import {
-  useCurrentDomain,
-  useCurrentRound,
-} from "~/features/rounds/hooks/useRound";
-import { useAccount } from "wagmi";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { useCurrentUser } from "~/hooks/useCurrentUser";
 
 type Props = PropsWithChildren<
   {
@@ -16,21 +13,27 @@ type Props = PropsWithChildren<
 
 export const MetricsLayout = ({ children, ...props }: Props) => {
   const domain = useCurrentDomain();
-  const { address } = useAccount();
-  const { data: round, isPending } = useCurrentRound();
+  const { isAdmin, isVoter } = useCurrentUser();
 
   const navLinks = [
+    {
+      href: `/${domain}`,
+      children: `Round`,
+    },
     {
       href: `/${domain}/metrics`,
       children: `Metrics`,
     },
-    {
-      href: `/${domain}/ballot/metrics`,
-      children: `Ballot`,
-    },
   ];
 
-  if (round?.admins.includes(address!)) {
+  if (isVoter) {
+    navLinks.push({
+      href: `/${domain}/ballot/metrics`,
+      children: `Ballot`,
+    });
+  }
+
+  if (isAdmin) {
     navLinks.push(
       ...[
         {
