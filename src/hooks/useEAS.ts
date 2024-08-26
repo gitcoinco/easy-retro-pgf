@@ -11,6 +11,7 @@ import {
   EstimateContractGasParameters,
   getAddress,
   SimulateContractParameters,
+  zeroHash,
 } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { handleTransactionError } from "~/utils/errorHandler";
@@ -48,8 +49,8 @@ export function useAttest() {
               return {
                 recipient: a.recipient as `0x${string}`,
                 expirationTime: BigInt(a.expirationTime ?? 0),
-                revocable: a.revocable ?? false,
-                refUID: a.refUID as `0x${string}`,
+                revocable: a.revocable ?? true,
+                refUID: (a.refUID ?? zeroHash) as `0x${string}`,
                 data: a.data as `0x${string}`,
                 value: BigInt(a.value ?? 0),
               };
