@@ -4,6 +4,7 @@ import { EthAddressSchema } from "~/features/rounds/types";
 export const DistributionSchema = z.object({
   projectId: z.string(),
   amount: z.number(),
+  amountPercentage: z.number().optional(),
   payoutAddress: EthAddressSchema,
 });
 

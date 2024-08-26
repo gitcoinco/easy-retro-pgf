@@ -35,15 +35,12 @@ export const resultsRouter = createTRPCRouter({
 
       let totalTokens = 0n;
 
-      try {
-        totalTokens = BigInt(input.totalTokens);
-      } catch (error) {
-        throw new Error("Invalid totalTokens value, can not convert to bigint");
-      }
-
       let metadata = {};
 
       if (ctx.round.type === RoundTypes.impact) {
+
+        totalTokens = BigInt(getTotalAmountForImpactRound());
+
         const ORFilters = projectIds.map((projectId) =>
           createDataFilter("uuid", "string", projectId),
         );
@@ -68,6 +65,13 @@ export const resultsRouter = createTRPCRouter({
             projects.reduce((acc, x) => ({ ...acc, [x.uuid]: x }), {}),
           );
       } else {
+
+        try {
+          totalTokens = BigInt(input.totalTokens);
+        } catch (error) {
+          throw new Error("Invalid totalTokens value, can not convert to bigint");
+        }
+          
         metadata = await ctx
           .fetchAttestations(["metadata"], {
             where: { id: { in: projectIds } },
@@ -93,6 +97,8 @@ export const resultsRouter = createTRPCRouter({
         totalVotes,
         metadata,
       });
+
+      console.log("distributions", distributions);
 
       return { totalVotes, projectIds, distributions, metadata };
     }),
@@ -178,6 +184,10 @@ async function calculateBallotResults({
   return results;
 }
 
+function getTotalAmountForImpactRound() {
+  return awards.reduce((sum, award) => sum + award.amount, 0);
+}
+
 function calculateDistributionsByProject({
   projectIds,
   metadata,
@@ -197,6 +207,7 @@ function calculateDistributionsByProject({
       name: metadata[projectId]?.name ?? "",
       payoutAddress: metadata[projectId]?.payoutAddress ?? "",
       amount: projectVotes[projectId]?.allocations ?? 0,
+      amountPercentage: projectVotes[projectId]?.allocationPercentage ?? 0,
     }))
     .filter((p) => p.amount > 0)
     .sort((a, b) => b.amount - a.amount)
@@ -270,14 +281,12 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
   console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
 
   const projectPayouts: Record<string, BallotResults> = {};
-  let totalAmountForRound = 0;
+  const totalAmountForRound = getTotalAmountForImpactRound();
 
   // Iterate over each award
   for (const award of awards) {
     const { metrics, amount, eligibleProjects } = award;
     
-    totalAmountForRound += amount;
-
     let totalMetricsAmount = 0;
     const awardPayouts: BallotResults = {};
 
