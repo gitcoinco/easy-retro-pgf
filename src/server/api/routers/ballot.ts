@@ -145,22 +145,42 @@ export const ballotRouter = createTRPCRouter({
         include: { allocations: true },
       })
       .then(async (ballots) => {
-        // Get all unique projectIds from all the votes
-        const projectIds = Object.keys(
-          Object.fromEntries(
-            ballots.flatMap((b) =>
-              b.allocations.map((v) => v.id).map((n) => [n, n]),
+        let projectsById: Record<string, string> = {};
+        if (ctx.round?.type === "project") {
+          // Get all unique projectIds from all the votes
+          const projectIds = Object.keys(
+            Object.fromEntries(
+              ballots.flatMap((b) =>
+                b.allocations.map((v) => v.id).map((n) => [n, n]),
+              ),
             ),
-          ),
-        );
-        const projectsById = await createAttestationFetcher(ctx.round!)(
-          ["metadata"],
-          {
-            where: { id: { in: projectIds } },
-          },
-        ).then((projects) =>
-          Object.fromEntries(projects.map((p) => [p.id, p.name])),
-        );
+          );
+          projectsById = await createAttestationFetcher(ctx.round!)(
+            ["metadata"],
+            {
+              where: { id: { in: projectIds } },
+            },
+          ).then((projects) =>
+            Object.fromEntries(projects.map((p) => [p.id, p.name])),
+          );
+        } else if (ctx.round?.type === "impact") {
+          // Get all unique projectIds from all the votes
+          const projectIds = Object.keys(
+            Object.fromEntries(
+              ballots.flatMap((b) =>
+                b.allocations.map((v) => v.id).map((n) => [n, n]),
+              ),
+            ),
+          );
+          projectsById = await createAttestationFetcher(ctx.round!)(
+            ["metadata"],
+            {
+              where: { id: { in: projectIds } },
+            },
+          ).then((projects) =>
+            Object.fromEntries(projects.map((p) => [p.id, p.name])),
+          );
+        }
         return ballots.flatMap(
           ({ voterId, signature, publishedAt, allocations }) =>
             allocations.map(({ amount, id }) => ({
