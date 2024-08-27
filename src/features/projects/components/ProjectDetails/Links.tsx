@@ -6,11 +6,13 @@ import { type Application } from "~/features/applications/types";
 type Props = {
   label: string;
   links?: Application["contributionLinks"];
+  showUrl?: boolean;
+  fullWidth?: boolean;
 };
 
-export default function Links({ label, links }: Props) {
+export default function Links({ label, links, showUrl, fullWidth }: Props) {
   return (
-    <div className="md:w-1/3">
+    <div className={fullWidth ? "" : "md:w-1/3"}>
       <LinkBox
         label={label}
         links={links}
@@ -26,7 +28,7 @@ export default function Links({ label, links }: Props) {
                 className: "w-4 h-4 mt-1",
               })}
               <div className="flex-1 truncate" title={link.description}>
-                {link.description}
+                {showUrl ? link.url : link.description}
               </div>
             </>
           );
