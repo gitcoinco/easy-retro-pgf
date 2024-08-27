@@ -1,16 +1,9 @@
 import { useCallback, useState } from "react";
-import { z } from "zod";
 
 import { EmptyState } from "~/components/EmptyState";
 import { Button } from "~/components/ui/Button";
-import { Form } from "~/components/ui/Form";
 import { Spinner } from "~/components/ui/Spinner";
-import { Th, Thead, Tr } from "~/components/ui/Table";
-import { DistributionForm } from "~/components/AllocationList";
-import {
-  type Distribution,
-  DistributionSchema,
-} from "~/features/distribute/types";
+import { type Distribution } from "~/features/distribute/types";
 import { api } from "~/utils/api";
 import { usePoolAmount } from "../hooks/useAlloPool";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
@@ -18,6 +11,7 @@ import { ExportCSV } from "./ExportCSV";
 import { formatNumber } from "~/utils/formatNumber";
 import { format } from "~/utils/csv";
 import { ImportCSV } from "./ImportCSV";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 
 export function Distributions() {
   const [importedDistribution, setImportedDistribution] = useState<
@@ -31,7 +25,6 @@ export function Distributions() {
   const distributionResult = api.results.distribution.useQuery({
     totalTokens,
   });
-  console.log(distributionResult.data);
 
   if (distributionResult.isPending) {
     return (
@@ -40,8 +33,6 @@ export function Distributions() {
       </div>
     );
   }
-
-  console.log("distributionResult", distributionResult);
 
   const distributions = importedDistribution.length
     ? importedDistribution
@@ -131,22 +122,28 @@ function DistributionTable({
   );
 }
 
-function ExportVotes(props:{
-  totalVotes: string
-}) {
+function ExportVotes(props: { totalVotes: string }) {
   const { mutateAsync, isPending } = api.ballot.export.useMutation();
+  const round = useCurrentRound();
+  const roundType = round.data?.type;
+  let columns: string[] = [];
+  if (roundType === "project") {
+    columns = [
+      "voterId",
+      "signature",
+      "publishedAt",
+      "project",
+      "amount",
+      "id",
+    ];
+  } else if (roundType === "impact") {
+    columns = ["voterId", "signature", "publishedAt", "amount", "id"];
+  }
   const exportCSV = useCallback(async () => {
     const ballots = await mutateAsync();
     // Generate CSV file
     const csv = format(ballots, {
-      columns: [
-        "voterId",
-        "signature",
-        "publishedAt",
-        "project",
-        "amount",
-        "id",
-      ],
+      columns: columns,
     });
     window.open(`data:text/csv;charset=utf-8,${csv}`);
   }, [mutateAsync]);
