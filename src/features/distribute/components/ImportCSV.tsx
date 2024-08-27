@@ -19,15 +19,25 @@ export function ImportCSV({
     try {
       // Parse CSV and build the ballot data (remove name column)
       const { data } = parse<Distribution>(csvString);
-      const distribution = data.map(
-        ({ projectId, name, amount, payoutAddress }) => ({
+      const distribution = data
+        .filter((d) => d.projectId !== "" && d.payoutAddress !== "")
+        .map(({ projectId, name, amountPercentage, payoutAddress }) => ({
           projectId,
           name,
           payoutAddress: getAddress(payoutAddress),
-          amount: Number(amount),
-        }),
+          amountPercentage: Number(amountPercentage),
+        }));
+      const totalPercentage = distribution.reduce(
+        (acc, d) => acc + d.amountPercentage,
+        0,
       );
-      setDistribution(distribution);
+      if (totalPercentage < 99.99 || totalPercentage > 100) {
+        toast.error(
+          `Amount percentage should sum to 100%. Current sum is ${totalPercentage}%`,
+        );
+      } else {
+        setDistribution(distribution);
+      }
     } catch (error) {
       toast.error((error as unknown as Error).message);
     }

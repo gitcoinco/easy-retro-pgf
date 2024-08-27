@@ -5,13 +5,14 @@ import { Button } from "~/components/ui/Button";
 import { Spinner } from "~/components/ui/Spinner";
 import { type Distribution } from "~/features/distribute/types";
 import { api } from "~/utils/api";
-import { usePoolAmount } from "../hooks/useAlloPool";
+import { usePoolAmount, usePoolToken } from "../hooks/useAlloPool";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
 import { formatNumber } from "~/utils/formatNumber";
 import { format } from "~/utils/csv";
 import { ImportCSV } from "./ImportCSV";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { parseUnits } from "viem";
 
 export function Distributions() {
   const [importedDistribution, setImportedDistribution] = useState<
@@ -21,6 +22,7 @@ export function Distributions() {
     Distribution[]
   >([]);
   const poolAmount = usePoolAmount();
+  const token = usePoolToken();
   const totalTokens = poolAmount.data?.toString() ?? "0";
   const distributionResult = api.results.distribution.useQuery({
     totalTokens,
@@ -35,8 +37,14 @@ export function Distributions() {
   }
 
   const distributions = importedDistribution.length
-    ? importedDistribution
-    : distributionResult.data?.distributions || [];
+  ? importedDistribution.map((d) => ({
+      ...d,
+      amount: (
+        ((d.amountPercentage || 0) / 100) * Number(totalTokens)
+      ) / (10 ** token.data.decimals),
+    }))
+  : distributionResult.data?.distributions || [];
+
   const projectIds = distributionResult.data?.projectIds || [];
   const totalVotes = distributionResult.data?.totalVotes;
 
