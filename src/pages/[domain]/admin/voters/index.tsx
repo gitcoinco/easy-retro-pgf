@@ -4,7 +4,6 @@ import { Button } from "~/components/ui/Button";
 import { Form, FormControl, FormSection } from "~/components/ui/Form";
 import {
   AddAddressesModal,
-  AddressList,
   AddressSchema,
   DeleteSelectedButton,
   SelectAllButton,
@@ -21,6 +20,7 @@ import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { Alert } from "~/components/ui/Alert";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
 import { useAccount } from "wagmi";
+import { VotersList } from "~/features/admin/components/VotersList";
 
 export default function AdminAccountsPage() {
   const [isOpen, setOpen] = useState(false);
@@ -41,10 +41,11 @@ export default function AdminAccountsPage() {
   const revoke = useRevokeAttestations({});
 
   const voterAddresses = voterList?.map((v) => v.recipient) ?? [];
-  const voters = voterList?.map((v) => ({
-    address: v.recipient,
-    hasVoted: v.hasVoted,
-  })) ?? [];
+  const voters =
+    voterList?.map((v) => ({
+      address: v.recipient,
+      hasVoted: v.hasVoted,
+    })) ?? [];
 
   const attestedByOthers = useMemo(
     () =>
@@ -138,7 +139,7 @@ export default function AdminAccountsPage() {
                   approve.mutate(voters);
                 }}
               />
-              <AddressList voters={voters} disabled={attestedByOthers} />
+              <VotersList voters={voters} disabled={attestedByOthers} />
             </Form>
           </FormSection>
         </>
