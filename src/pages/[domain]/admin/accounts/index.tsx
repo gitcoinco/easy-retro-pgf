@@ -3,11 +3,11 @@ import { Button } from "~/components/ui/Button";
 import { Form, FormSection } from "~/components/ui/Form";
 import {
   AddAddressesModal,
-  AddressList,
   AddressSchema,
   DeleteSelectedButton,
   SelectAllButton,
 } from "~/features/admin/components/AddAddresses";
+import { AddressList } from "~/features/admin/components/AddressList";
 import { RoundAdminLayout } from "~/features/admin/layouts/AdminLayout";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { api } from "~/utils/api";
