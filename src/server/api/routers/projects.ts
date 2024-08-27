@@ -155,6 +155,74 @@ export const projectsRouter = createTRPCRouter({
       }
     }),
 
+  listApproved: attestationProcedure
+    .input(FilterSchema)
+    .query(async ({ input, ctx }) => {
+      const { fetchAttestations: attestationFetcher, round } = ctx;
+      if (!round)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Round not found",
+        });
+      try {
+        const filter = [
+          createDataFilter("type", "bytes32", "application"),
+          createDataFilter("round", "bytes32", round.id),
+        ];
+        // Fetch Project applications
+        return ctx
+          .fetchAttestations(["metadata"], {
+            where: { AND: filter },
+            take: input.limit,
+            skip: input.cursor * input.limit,
+            orderBy: [createOrderBy(input.orderBy, input.sortOrder)],
+          })
+          .then(async (projects) => {
+            // Fetch Profiles for projects
+            const profiles = await fetchProfiles({
+              attestationFetcher,
+              round,
+              recipients: projects.map((p) => p.recipient),
+            });
+
+            const metadata = await fetchMetadataForProjects(projects, profiles);
+
+            // Fetch application approvals for round by admins
+            const approvals = await ctx.fetchAttestations(["approval"], {
+              where: {
+                AND: [...filter, { attester: { in: round.admins } }],
+              },
+            });
+
+            const approvalsById = Object.fromEntries(
+              approvals.map((a) => [a.refUID, a]),
+            );
+
+            const projectsWithMetadata = projects.map((project) => {
+              const approval = approvalsById[project.id];
+              return {
+                ...project,
+                profile: metadata.profiles[project.recipient],
+                metadata: metadata.projects[project.id],
+                status: !approval
+                  ? "pending"
+                  : approval.revoked
+                    ? "rejected"
+                    : "approved",
+              };
+            });
+            return projectsWithMetadata.filter(
+              (project) => project.status === "approved",
+            );
+          });
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+        });
+      }
+    }),
+
   // Used for distribution to get the projects' payoutAddress
   // To get this data we need to fetch all projects and their metadata
   payoutAddresses: attestationProcedure
