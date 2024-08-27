@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 import { type Address } from "viem";
@@ -7,6 +9,7 @@ import { ClockIcon, EyeIcon } from "lucide-react";
 import { Button } from "~/components/ui/Button";
 import { Checkbox } from "~/components/ui/Form";
 import { useMetadata } from "~/hooks/useMetadata";
+import { ProfileAvatar } from "~/features/projects/components/ProfileAvatar";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { type Application } from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
@@ -34,7 +37,11 @@ export function ApplicationItem({
   const form = useFormContext();
   const revoke = useRevokeAttestations({});
 
-  const { fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
+  const {
+    fundingSources = [],
+    impactMetrics = [],
+    sunnyAwards,
+  } = metadata.data ?? {};
   const isApproved = Boolean(approvedBy);
 
   return (
@@ -47,17 +54,44 @@ export function ApplicationItem({
           type="checkbox"
         />
 
-        <ProjectAvatar isLoading={isLoading} size="sm" profileId={recipient} />
+        {sunnyAwards ? (
+          <ProjectAvatar
+            isLoading={isLoading}
+            size="sm"
+            avatarUrl={sunnyAwards?.avatarUrl}
+          />
+        ) : (
+          <ProfileAvatar
+            isLoading={isLoading}
+            size="sm"
+            profileId={recipient}
+          />
+        )}
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
               {name}
             </Skeleton>
           </div>
-          <div className="flex gap-4 text-xs dark:text-gray-400">
-            <div>{fundingSources.length} funding sources</div>
-            <div>{impactMetrics.length} impact metrics</div>
-          </div>
+          {sunnyAwards ? (
+            <div className="flex gap-4 text-xs dark:text-gray-400">
+              {sunnyAwards.projectType && (
+                <Badge size="xs" variant="info">
+                  {sunnyAwards.projectType}
+                </Badge>
+              )}
+              {sunnyAwards.category && (
+                <Badge size="xs" variant="success">
+                  {sunnyAwards.category}
+                </Badge>
+              )}
+            </div>
+          ) : (
+            <div className="flex gap-4 text-xs dark:text-gray-400">
+              <div>{fundingSources.length} funding sources</div>
+              <div>{impactMetrics.length} impact metrics</div>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
           <ClockIcon className="size-3" />
