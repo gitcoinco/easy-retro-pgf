@@ -129,10 +129,15 @@ export default function ProjectDetails({
 
         <ProjectContributions
           isLoading={metadata.isPending}
-          project={metadata.data}
+          description={contributionDescription}
+          links={contributionLinks}
         />
 
-        <ProjectImpact isLoading={metadata.isPending} project={metadata.data} />
+        <ProjectImpact
+          isLoading={metadata.isPending}
+          description={impactDescription}
+          metrics={impactMetrics}
+        />
         <Heading as="h3" size="2xl">
           Past grants and funding
         </Heading>
