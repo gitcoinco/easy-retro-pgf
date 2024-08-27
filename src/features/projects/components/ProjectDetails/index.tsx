@@ -11,6 +11,8 @@ import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
 import { ProfileAvatar } from "../ProfileAvatar";
 import { ProfileBanner } from "../ProfileBanner";
+import Links from "./Links";
+import { Badge } from "~/components/ui/Badge";
 
 export default function ProjectDetails({
   attestation,
@@ -22,10 +24,20 @@ export default function ProjectDetails({
   const { name, recipient: profileId, metadataPtr } = attestation ?? {};
   const metadata = useProjectMetadata(metadataPtr);
 
-  const { bio, websiteUrl, payoutAddress, fundingSources, sunnyAwards } =
-    metadata.data ?? {};
+  const {
+    bio,
+    websiteUrl,
+    payoutAddress,
+    fundingSources,
+    sunnyAwards,
+    contributionDescription,
+    contributionLinks,
+    impactMetrics,
+    impactDescription,
+  } = metadata.data ?? {};
 
-  const { avatarUrl, coverImageUrl } = sunnyAwards ?? {};
+  const { avatarUrl, coverImageUrl, projectType, category, categoryDetails } =
+    sunnyAwards ?? {};
 
   return (
     <div className="relative mb-24">
@@ -71,7 +83,45 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
+      {sunnyAwards && (
+        <div className="mb-6 flex flex-col gap-4">
+          <div className="flex gap-4 font-bold">
+            {projectType && (
+              <div className="flex items-center gap-2">
+                {"Project Type:"}
+                <Badge size="lg" variant="info">
+                  {projectType}
+                </Badge>
+              </div>
+            )}
+            {category && (
+              <div className="flex items-center gap-2">
+                {"Category:"}
+                <Badge size="lg" variant="success">
+                  {category}
+                </Badge>
+              </div>
+            )}
+          </div>
+          {categoryDetails && (
+            <div className="flex items-center gap-2">
+              {"Category details:"}
+              <Markdown>{categoryDetails}</Markdown>
+            </div>
+          )}
+        </div>
+      )}
+      <Heading as="h3" size="2xl">
+        Description
+      </Heading>
+      <div className="mb-4 flex flex-col gap-4 md:flex-row">
+        <div className="md:w-2/3">
       <Markdown>{bio}</Markdown>
+        </div>
+        {sunnyAwards && contributionLinks && (
+          <Links label="Links" links={contributionLinks} />
+        )}
+      </div>
       <div>
         <Heading as="h2" size="3xl">
           Impact statements
