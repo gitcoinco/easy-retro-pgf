@@ -163,35 +163,29 @@ export const ballotRouter = createTRPCRouter({
           ).then((projects) =>
             Object.fromEntries(projects.map((p) => [p.id, p.name])),
           );
-        } else if (ctx.round?.type === "impact") {
-          // Get all unique projectIds from all the votes
-          const projectIds = Object.keys(
-            Object.fromEntries(
-              ballots.flatMap((b) =>
-                b.allocations.map((v) => v.id).map((n) => [n, n]),
-              ),
-            ),
+          return ballots.flatMap(
+            ({ voterId, signature, publishedAt, allocations }) =>
+              allocations.map(({ amount, id }) => ({
+                voterId,
+                signature,
+                publishedAt,
+                amount,
+                id,
+                project: projectsById?.[id],
+              })),
           );
-          projectsById = await createAttestationFetcher(ctx.round!)(
-            ["metadata"],
-            {
-              where: { id: { in: projectIds } },
-            },
-          ).then((projects) =>
-            Object.fromEntries(projects.map((p) => [p.id, p.name])),
+        } else if (ctx.round?.type === "impact") {
+          return ballots.flatMap(
+            ({ voterId, signature, publishedAt, allocations }) =>
+              allocations.map(({ amount, id }) => ({
+                voterId,
+                signature,
+                publishedAt,
+                amount,
+                id,
+              })),
           );
         }
-        return ballots.flatMap(
-          ({ voterId, signature, publishedAt, allocations }) =>
-            allocations.map(({ amount, id }) => ({
-              voterId,
-              signature,
-              publishedAt,
-              amount,
-              id,
-              project: projectsById?.[id],
-            })),
-        );
       });
   }),
 });
