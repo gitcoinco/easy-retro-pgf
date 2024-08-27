@@ -6,11 +6,11 @@ import ProjectContributions from "./ProjectContributions";
 import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
-import { useProjectMetadata } from "../hooks/useProjects";
+import { useProjectMetadata } from "../../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
-import { ProfileAvatar } from "./ProfileAvatar";
-import { ProfileBanner } from "./ProfileBanner";
+import { ProfileAvatar } from "../ProfileAvatar";
+import { ProfileBanner } from "../ProfileBanner";
 
 export default function ProjectDetails({
   attestation,
