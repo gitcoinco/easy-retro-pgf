@@ -11,7 +11,7 @@ import { BallotResults, calculateVotes } from "~/utils/calculateResults";
 import { TRPCError } from "@trpc/server";
 import { getState } from "~/features/rounds/hooks/useRoundState";
 import { RoundTypes } from "~/features/rounds/types";
-import { formatUnits } from "viem";
+import { formatUnits, parseAbi } from "viem";
 import { z } from "zod";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
@@ -27,20 +27,23 @@ export const resultsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
+      let totalTokens = 0n;
+
+      try {
+        totalTokens = BigInt(input.totalTokens);
+      } catch (error) {
+        throw new Error("Invalid totalTokens value, can not convert to bigint");
+      }
+
       const votes = await calculateBallotResults(ctx);
 
       const totalVotes = votes.totalVotes;
       const projectVotes = votes.votes ?? {};
       const projectIds = Object.keys(votes.votes ?? {});
 
-      let totalTokens = 0n;
-
       let metadata = {};
 
       if (ctx.round.type === RoundTypes.impact) {
-
-        totalTokens = BigInt(getTotalAmountForImpactRound());
-
         const ORFilters = projectIds.map((projectId) =>
           createDataFilter("uuid", "string", projectId),
         );
@@ -65,13 +68,6 @@ export const resultsRouter = createTRPCRouter({
             projects.reduce((acc, x) => ({ ...acc, [x.uuid]: x }), {}),
           );
       } else {
-
-        try {
-          totalTokens = BigInt(input.totalTokens);
-        } catch (error) {
-          throw new Error("Invalid totalTokens value, can not convert to bigint");
-        }
-          
         metadata = await ctx
           .fetchAttestations(["metadata"], {
             where: { id: { in: projectIds } },
@@ -184,10 +180,6 @@ async function calculateBallotResults({
   return results;
 }
 
-function getTotalAmountForImpactRound() {
-  return awards.reduce((sum, award) => sum + award.amount, 0);
-}
-
 function calculateDistributionsByProject({
   projectIds,
   metadata,
@@ -233,7 +225,9 @@ function calculatePayout(
   totalTokens: bigint,
 ) {
   return (
-    (BigInt(Math.round(votes * 100)) * totalTokens) / BigInt(Math.round(totalVotes)) / 100n
+    (BigInt(Math.round(votes * 100)) * totalTokens) /
+    BigInt(Math.round(totalVotes)) /
+    100n
   );
 }
 
@@ -281,14 +275,14 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
   console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
 
   const projectPayouts: Record<string, BallotResults> = {};
-  const totalAmountForRound = getTotalAmountForImpactRound();
 
   // Iterate over each award
   for (const award of awards) {
-    const { metrics, amount, eligibleProjects } = award;
-    
+    const { metrics, percentage, eligibleProjects } = award;
+
     let totalMetricsAmount = 0;
     const awardPayouts: BallotResults = {};
+    const amount = Number(totalAmountForRound) * (percentage / 100);
 
     // Calculate payouts and unique voters for each eligible project
     for (const projectMetric of projectMetrics) {
@@ -338,8 +332,7 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     for (const projectId in awardPayouts) {
       if (awardPayouts[projectId]) {
         awardPayouts[projectId].allocations =
-          (awardPayouts[projectId].allocations * amount) /
-          totalMetricsAmount;
+          (awardPayouts[projectId].allocations * amount) / totalMetricsAmount;
 
         awardPayouts[projectId].allocationPercentage =
           (awardPayouts[projectId].allocations * 100) / amount;
@@ -371,7 +364,9 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
           awardPayouts[projectId].allocations;
       }
 
-      combinedPayouts[projectId].allocationPercentage = (combinedPayouts[projectId].allocations * 100) / totalAmountForRound;
+      combinedPayouts[projectId].allocationPercentage =
+        (combinedPayouts[projectId].allocations * 100) /
+        Number(totalAmountForRound);
     }
   }
 
@@ -384,13 +379,13 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     0,
   );
   console.log("normalizedTotalVotes", normalizedTotalVotes);
-  
+
   const totalVoters = Object.values(combinedPayouts).reduce(
     (sum, result) => sum + result.voters,
     0,
   );
   console.log("totalVoters", totalVoters);
-  
+
   const averageVotes = totalVoters > 0 ? normalizedTotalVotes / totalVoters : 0;
   console.log("averageVotes", averageVotes);
 
