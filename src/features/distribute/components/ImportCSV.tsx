@@ -19,7 +19,6 @@ export function ImportCSV({
     try {
       // Parse CSV and build the ballot data (remove name column)
       const { data } = parse<Distribution>(csvString);
-      console.log("==> parsed csv data", data);
       const distribution = data
         .filter((d) => d.projectId !== "" && d.payoutAddress !== "")
         .map(({ projectId, name, amountPercentage, payoutAddress }) => ({
@@ -28,12 +27,10 @@ export function ImportCSV({
           payoutAddress: getAddress(payoutAddress),
           amountPercentage: Number(amountPercentage),
         }));
-      console.log("==> distribution", distribution);
       const totalPercentage = distribution.reduce(
         (acc, d) => acc + d.amountPercentage,
         0,
       );
-      console.log("==> totalPercentage", totalPercentage);
       if (totalPercentage < 99.99 || totalPercentage > 100) {
         toast.error(
           `Amount percentage should sum to 100%. Current sum is ${totalPercentage}%`,
