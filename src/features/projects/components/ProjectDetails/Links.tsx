@@ -17,9 +17,9 @@ export default function Links({ label, links }: Props) {
         renderItem={(link) => {
           const icon: LucideIcon | undefined = {
             CONTRACT_ADDRESS: FileCode,
-            GITHUB_REPO: Github,
+            GITHUB_REPO: Globe, // Find the correct icon for this
             OTHER: Globe,
-          }[link.type];
+          }[link.type.toUpperCase()];
           return (
             <>
               {createElement(icon ?? "div", {
