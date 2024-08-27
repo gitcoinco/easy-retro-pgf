@@ -4,9 +4,17 @@ import { LinkBox } from "./LinkBox";
 import { suffixNumber } from "~/utils/suffixNumber";
 import { type Application } from "~/features/applications/types";
 
-type Props = { isLoading: boolean; project?: Application };
+type Props = {
+  isLoading: boolean;
+  metrics?: Application["impactMetrics"];
+  description?: Application["impactDescription"];
+};
 
-export default function ProjectImpact({ isLoading, project }: Props) {
+export default function ProjectImpact({
+  isLoading,
+  description,
+  metrics,
+}: Props) {
   return (
     <>
       <Heading as="h3" size="2xl">
@@ -14,14 +22,12 @@ export default function ProjectImpact({ isLoading, project }: Props) {
       </Heading>
       <div className="mb-4 flex flex-col gap-4 md:flex-row">
         <div className="md:w-2/3">
-          <Markdown isLoading={isLoading}>
-            {project?.impactDescription}
-          </Markdown>
+          <Markdown isLoading={isLoading}>{description}</Markdown>
         </div>
         <div className="md:w-1/3">
           <LinkBox
             label="Impact Metrics"
-            links={project?.impactMetrics}
+            links={metrics}
             renderItem={(link) => (
               <>
                 <div className="flex-1 truncate" title={link.description}>
