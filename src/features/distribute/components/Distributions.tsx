@@ -37,14 +37,14 @@ export function Distributions() {
   }
 
   const distributions = importedDistribution.length
-    ? importedDistribution.map((d) => ({
-        ...d, // todo: fix parsing
-        amount: parseUnits(
-          ((d.amountPercentage || 0 / 100) * Number(totalTokens)).toString(),
-          token.data.decimals,
-        ),
-      }))
-    : distributionResult.data?.distributions || [];
+  ? importedDistribution.map((d) => ({
+      ...d,
+      amount: (
+        ((d.amountPercentage || 0) / 100) * Number(totalTokens)
+      ) / (10 ** token.data.decimals),
+    }))
+  : distributionResult.data?.distributions || [];
+
   const projectIds = distributionResult.data?.projectIds || [];
   const totalVotes = distributionResult.data?.totalVotes;
 
