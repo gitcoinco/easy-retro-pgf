@@ -9,6 +9,7 @@ export type BallotResults = Record<
   {
     voters: number;
     allocations: number;
+    allocationPercentage?: number;
   }
 >;
 export function calculateVotes(

@@ -90,20 +90,43 @@ function DistributionTable({
   distributions: Distribution[];
 }) {
   return (
-    <div className="space-y-2 divide-y">
-      {distributions?.map((distribution) => (
-        <div key={distribution.projectId} className="flex items-center pt-3">
-          <div className="flex-1">
-            <div className="font-semibold">{distribution.name}</div>
-            <div className="font-mono text-sm">
-              {distribution.payoutAddress}
-            </div>
-          </div>
-          <div className="items-center">
-            {formatNumber(distribution.amount)}
-          </div>
-        </div>
-      ))}
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Project Name
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Payout Address
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Amount
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Amount Percentage
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {distributions?.map((distribution) => (
+            <tr key={distribution.projectId}>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {distribution.name}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {distribution.payoutAddress}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {distribution.amount}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {distribution.amountPercentage?.toFixed(2)} %
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -130,7 +153,7 @@ function ExportVotes(props:{
 
   return (
     <Button variant="outline" isLoading={isPending} onClick={exportCSV}>
-      Download votes ({props.totalVotes})
+      Download votes
     </Button>
   );
 }

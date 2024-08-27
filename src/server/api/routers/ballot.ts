@@ -153,12 +153,6 @@ export const ballotRouter = createTRPCRouter({
             ),
           ),
         );
-        if (ctx.round?.type !== "project") {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Export not implemented for impact Rounds",
-          });
-        }
         const projectsById = await createAttestationFetcher(ctx.round!)(
           ["metadata"],
           {
