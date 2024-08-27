@@ -12,6 +12,7 @@ import Links from "./Links";
 import { Badge } from "~/components/ui/Badge";
 import { ImpactStatements } from "./ImpactStatements";
 import { FundingSources } from "./FundingSources";
+import { AddressBox } from "./AddressBox";
 
 export default function ProjectDetails({
   attestation,
@@ -22,6 +23,8 @@ export default function ProjectDetails({
 }) {
   const { name, recipient: profileId, metadataPtr } = attestation ?? {};
   const metadata = useProjectMetadata(metadataPtr);
+
+  const isLoading = metadata.isPending;
 
   const {
     bio,
@@ -35,8 +38,27 @@ export default function ProjectDetails({
     impactDescription,
   } = metadata.data ?? {};
 
-  const { avatarUrl, coverImageUrl, projectType, category, categoryDetails } =
-    sunnyAwards ?? {};
+  const {
+    avatarUrl,
+    coverImageUrl,
+    projectType,
+    category,
+    categoryDetails,
+    contracts,
+    mintingWalletAddress,
+  } = sunnyAwards ?? {};
+
+  console.log(
+    JSON.stringify({
+      avatarUrl,
+      coverImageUrl,
+      projectType,
+      category,
+      categoryDetails,
+      contracts,
+      mintingWalletAddress,
+    }),
+  );
 
   return (
     <div className="relative mb-24">
@@ -72,7 +94,7 @@ export default function ProjectDetails({
         <div>
           <div>
             {sunnyAwards && !payoutAddress ? (
-              <div>{"Missing payout address"}</div>
+              <div className="text-red-500">{"Missing payout address"}</div>
             ) : (
               <NameENS address={payoutAddress} />
             )}
@@ -117,24 +139,52 @@ export default function ProjectDetails({
         <div className="md:w-2/3">
           <Markdown>{bio}</Markdown>
         </div>
-        {sunnyAwards && contributionLinks && (
-          <Links label="Links" links={contributionLinks} />
+        {sunnyAwards && !isLoading && (
+          <div className="flex flex-col gap-4">
+            <>
+              {mintingWalletAddress && (
+                <AddressBox
+                  label="Minting wallet address"
+                  addresses={[mintingWalletAddress]}
+                />
+              )}
+              {contracts?.length !== undefined &&
+                contracts.length > 0 &&
+                contracts[0]?.address && (
+                  <AddressBox
+                    label={`Contract in chain id: ${contracts[0]?.chainId}`}
+                    addresses={[contracts[0].address]}
+                  />
+                )}
+            </>
+            {contributionLinks && (
+              <Links
+                label="Links"
+                links={contributionLinks}
+                showUrl
+                fullWidth
+              />
+            )}
+          </div>
         )}
       </div>
-      <div>
-        <ImpactStatements
-          isLoading={metadata.isPending}
-          impactMetrics={{
-            description: impactDescription,
-            metrics: impactMetrics,
-          }}
-          contributions={{
-            description: contributionDescription,
-            links: contributionLinks,
-          }}
-        />
-        <FundingSources fundingSources={fundingSources} />
-      </div>
+
+      {!sunnyAwards && !isLoading && (
+        <div>
+          <ImpactStatements
+            isLoading={metadata.isPending}
+            impactMetrics={{
+              description: impactDescription,
+              metrics: impactMetrics,
+            }}
+            contributions={{
+              description: contributionDescription,
+              links: contributionLinks,
+            }}
+          />
+          <FundingSources fundingSources={fundingSources} />
+        </div>
+      )}
     </div>
   );
 }
