@@ -4,8 +4,10 @@ import { api } from "~/utils/api";
 import { MetricsSidebar } from "./MetricsSidebar";
 import { useIsSavingBallot } from "~/features/ballot/hooks/useBallot";
 import { SubmitBallotButton } from "~/features/ballot/components/SubmitBallotButton";
+import { useCurrentUser } from "~/hooks/useCurrentUser";
 export function BallotSidebar() {
   const { data, error, isPending } = api.metrics.forBallot.useQuery();
+  const { isVoter } = useCurrentUser()
 
   return (
     <div>
@@ -17,7 +19,7 @@ export function BallotSidebar() {
         formatChartTick={(v) => v + "%"}
         projects={data?.projects}
       />
-      <SubmitBallotButton />
+      {isVoter &&  <SubmitBallotButton />}
     </div>
   );
 }

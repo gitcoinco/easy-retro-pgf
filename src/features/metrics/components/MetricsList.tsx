@@ -6,9 +6,8 @@ import { Skeleton } from "~/components/ui/Skeleton";
 import { AddToBallotButton } from "./AddToBallotButton";
 import { ErrorMessage } from "~/components/ErrorMessage";
 import { useMetrics } from "../hooks/useMetrics";
-import { Heading } from "~/components/ui/Heading";
 import { Markdown } from "~/components/ui/Markdown";
-import { snakeToTitleCase } from "~/utils/formatStrings";
+import { useCurrentUser } from "~/hooks/useCurrentUser";
 
 export function MetricsList() {
   const { data, error, isPending } = useMetrics();
@@ -35,6 +34,8 @@ function MetricCard({
   metric?: Metric;
 }) {
   const domain = useCurrentDomain();
+  const { isVoter} =  useCurrentUser();
+
   return (
     <div className={"rounded border p-6 "}>
       <div className="flex gap-8">
@@ -59,7 +60,7 @@ function MetricCard({
             </Link>
           )}
         </div>
-        <AddToBallotButton id={metric?.id} />
+        {isVoter &&  <AddToBallotButton id={metric?.id} /> }
       </div>
     </div>
   );
