@@ -81,7 +81,7 @@ export function MetricsSidebar({
 
   return (
     <div
-      className={cn("sticky top-4 w-[300px]", {
+      className={cn("top-4 w-[300px]", {
         ["animate-pulse opacity-50"]: isUpdating,
       })}
     >
