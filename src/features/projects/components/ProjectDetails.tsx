@@ -19,45 +19,52 @@ export default function ProjectDetails({
   action: ReactNode;
   attestation?: Attestation;
 }) {
-  const metadata = useProjectMetadata(attestation?.metadataPtr);
+  const { name, recipient: profileId, metadataPtr } = attestation ?? {};
+  const metadata = useProjectMetadata(metadataPtr);
 
   const { bio, websiteUrl, payoutAddress, fundingSources, sunnyAwards } =
     metadata.data ?? {};
+
+  const { avatarUrl, coverImageUrl } = sunnyAwards ?? {};
 
   return (
     <div className="relative mb-24">
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{attestation?.name}</h1>
+          <h1 className="text-2xl font-bold">{name}</h1>
           {action}
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        {sunnyAwards?.coverImageUrl ? (
-          <ProjectBanner size="lg" bannerImageUrl={sunnyAwards.coverImageUrl} />
+        {coverImageUrl ? (
+          <ProjectBanner size="lg" bannerImageUrl={coverImageUrl} />
         ) : (
-          <ProfileBanner size="lg" profileId={attestation?.recipient} />
+          <ProfileBanner size="lg" profileId={profileId} />
         )}
       </div>
       <div className="mb-8 flex items-end gap-4">
-        {sunnyAwards ? (
+        {avatarUrl ? (
           <ProjectAvatar
             rounded="full"
             size={"lg"}
             className="-mt-20 ml-8"
-            avatarUrl={sunnyAwards.avatarUrl}
+            avatarUrl={avatarUrl}
           />
         ) : (
           <ProfileAvatar
             rounded="full"
             size={"lg"}
             className="-mt-20 ml-8"
-            profileId={attestation?.recipient}
+            profileId={profileId}
           />
         )}
         <div>
-          <div className="">
-            <NameENS address={payoutAddress} />
+          <div>
+            {sunnyAwards && !payoutAddress ? (
+              <div>{"Missing payout address"}</div>
+            ) : (
+              <NameENS address={payoutAddress} />
+            )}
             <a href={websiteUrl} target="_blank" className="hover:underline">
               {websiteUrl}
             </a>
