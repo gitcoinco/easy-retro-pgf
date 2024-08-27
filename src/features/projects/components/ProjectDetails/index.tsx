@@ -2,8 +2,6 @@ import { type ReactNode } from "react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
-import ProjectContributions from "./ProjectContributions";
-import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../../hooks/useProjects";
@@ -13,6 +11,7 @@ import { ProfileAvatar } from "../ProfileAvatar";
 import { ProfileBanner } from "../ProfileBanner";
 import Links from "./Links";
 import { Badge } from "~/components/ui/Badge";
+import { ImpactStatements } from "./ImpactStatements";
 
 export default function ProjectDetails({
   attestation,
@@ -116,27 +115,23 @@ export default function ProjectDetails({
       </Heading>
       <div className="mb-4 flex flex-col gap-4 md:flex-row">
         <div className="md:w-2/3">
-      <Markdown>{bio}</Markdown>
+          <Markdown>{bio}</Markdown>
         </div>
         {sunnyAwards && contributionLinks && (
           <Links label="Links" links={contributionLinks} />
         )}
       </div>
       <div>
-        <Heading as="h2" size="3xl">
-          Impact statements
-        </Heading>
-
-        <ProjectContributions
+        <ImpactStatements
           isLoading={metadata.isPending}
-          description={contributionDescription}
-          links={contributionLinks}
-        />
-
-        <ProjectImpact
-          isLoading={metadata.isPending}
-          description={impactDescription}
-          metrics={impactMetrics}
+          impactMetrics={{
+            description: impactDescription,
+            metrics: impactMetrics,
+          }}
+          contributions={{
+            description: contributionDescription,
+            links: contributionLinks,
+          }}
         />
         <Heading as="h3" size="2xl">
           Past grants and funding
