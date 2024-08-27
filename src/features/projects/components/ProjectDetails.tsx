@@ -9,6 +9,8 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
+import { ProfileAvatar } from "./ProfileAvatar";
+import { ProfileBanner } from "./ProfileBanner";
 
 export default function ProjectDetails({
   attestation,
@@ -19,7 +21,7 @@ export default function ProjectDetails({
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
 
-  const { bio, websiteUrl, payoutAddress, fundingSources } =
+  const { bio, websiteUrl, payoutAddress, fundingSources, sunnyAwards } =
     metadata.data ?? {};
 
   return (
@@ -31,15 +33,28 @@ export default function ProjectDetails({
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        <ProjectBanner size="lg" profileId={attestation?.recipient} />
+        {sunnyAwards?.coverImageUrl ? (
+          <ProjectBanner size="lg" bannerImageUrl={sunnyAwards.coverImageUrl} />
+        ) : (
+          <ProfileBanner size="lg" profileId={attestation?.recipient} />
+        )}
       </div>
       <div className="mb-8 flex items-end gap-4">
-        <ProjectAvatar
-          rounded="full"
-          size={"lg"}
-          className="-mt-20 ml-8"
-          profileId={attestation?.recipient}
-        />
+        {sunnyAwards ? (
+          <ProjectAvatar
+            rounded="full"
+            size={"lg"}
+            className="-mt-20 ml-8"
+            avatarUrl={sunnyAwards.avatarUrl}
+          />
+        ) : (
+          <ProfileAvatar
+            rounded="full"
+            size={"lg"}
+            className="-mt-20 ml-8"
+            profileId={attestation?.recipient}
+          />
+        )}
         <div>
           <div className="">
             <NameENS address={payoutAddress} />
