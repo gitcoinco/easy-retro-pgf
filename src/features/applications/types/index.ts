@@ -65,6 +65,7 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
+  encryptedData: z.object({ iv: z.string(), data: z.string() }).optional(),
 });
 
 export const ApplicationVerificationSchema = z.object({
