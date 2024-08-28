@@ -3,6 +3,7 @@ import { type Address } from "viem";
 export type AttestationFetcher = (
   schema: SchemaType[],
   filter?: AttestationsFilter,
+  keys?: string[],
 ) => Promise<Attestation[]>;
 
 export type AttestationWithMetadata = {
@@ -18,8 +19,8 @@ export type AttestationWithMetadata = {
 };
 
 export type Attestation = Omit<AttestationWithMetadata, "decodedDataJson"> & {
-  name: string;
-  metadataPtr: string;
+  name?: string;
+  metadataPtr?: string;
 };
 
 type MatchFilter = { equals?: string; in?: string[]; gte?: number };

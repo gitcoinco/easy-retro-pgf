@@ -7,7 +7,10 @@ import { getQueryKey } from "@trpc/react-query";
 
 import { Button } from "~/components/ui/Button";
 import { Form, FormSection } from "~/components/ui/Form";
-import { useApplications } from "~/features/applications/hooks/useApplications";
+import {
+  useApplications,
+  useApplicationsFilter,
+} from "~/features/applications/hooks/useApplications";
 import { useApproveApplication } from "../hooks/useApproveApplication";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
@@ -27,35 +30,25 @@ export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
   const [fetched, setFetched] = useState(false);
-  const applications = useApplications();
   const domain = useCurrentDomain();
-  const approved = useApprovedApplications();
+  // const approved = useApprovedApplications();
+  // const approvedIds = [
+  //   "0xd0c7baaf753ff42fdd62e9c0c85ddb36dbe29cd9263c33979777c9c12ba354bd",
+  // ];
+  // const approvedIds = approved.data?.map((a) => a.id) ?? [];
+
+  // console.log({ approvedIds }, approved.isPending);
+  // const applications = useApplications(approvedIds, {
+  //   enabled: !approved.isPending,
+  // });
+  const applications = useApplications({
+    status: "pending",
+    take: 10,
+    skip: 0,
+  });
   const approve = useApproveApplication({});
 
-  const queryClient = useQueryClient();
-  const approvedApplicationsQuery = getQueryKey(api.applications.approvals);
-
-  const handleRefetch = (timeout: number) => {
-    queryClient.removeQueries({ queryKey: approvedApplicationsQuery });
-    setTimeout(() => {
-      approved
-        .refetch()
-        .then(() => {
-          setFetched(!fetched);
-        })
-        .catch((error) => {
-          console.error(error);
-          throw error;
-        });
-    }, timeout);
-  };
-
-  useEffect(() => {
-    if (!fetched) {
-      handleRefetch(0);
-      setFetched(true);
-    }
-  }, [fetched]);
+  console.log("applciations", applications.data);
 
   const approvedById = useMemo(() => {
     return approved.data?.reduce((acc, x) => {
@@ -126,4 +119,8 @@ export function ApplicationsList() {
       </Form>
     </div>
   );
+}
+
+function ApplicationsPagination() {
+  const [filter, setFilter] = useApplicationsFilter();
 }

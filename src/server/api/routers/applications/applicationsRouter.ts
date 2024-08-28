@@ -1,16 +1,10 @@
-import { z } from "zod";
-
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { fetchApplications, fetchApprovals } from "./utils";
-
-export const FilterSchema = z.object({
-  limit: z.number().default(3 * 8),
-  cursor: z.number().default(0),
-});
+import { FilterSchema } from "./utils/fetchApplications";
 
 export const applicationsRouter = createTRPCRouter({
   approvals: attestationProcedure
-    .input(z.object({ ids: z.array(z.string()).optional() }))
+    .input(FilterSchema)
     .query(async ({ input, ctx }) => {
       const {
         fetchAttestations: attestationFetcher,
@@ -27,16 +21,27 @@ export const applicationsRouter = createTRPCRouter({
     }),
 
   list: attestationProcedure
-    .input(z.object({ ids: z.array(z.string()).optional() }))
-    .query(async ({ ctx }) => {
+    .input(FilterSchema)
+    .query(async ({ input, ctx }) => {
       const {
         fetchAttestations: attestationFetcher,
-        round: { id: roundId },
+        round: { id: roundId, admins },
       } = ctx;
 
+      const approved = await fetchApprovals({
+        attestationFetcher,
+        admins,
+        projectIds: input.ids,
+        roundId,
+      });
       const applications = await fetchApplications({
         attestationFetcher,
         roundId,
+        filter: {
+          ...input,
+          ids:
+            input.status === "pending" ? approved.map((a) => a.id) : undefined,
+        },
       });
 
       return applications;
