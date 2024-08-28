@@ -10,7 +10,13 @@ export function AddressBox({
       <div className="mb-2 font-bold tracking-wider text-gray-600 dark:text-gray-500">
         {label}
       </div>
-      <div className="space-y-2">{addresses}</div>
+      <div className="space-y-2">
+        {addresses?.map((address) => (
+          <div className="truncate" title={address}>
+            {address}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
