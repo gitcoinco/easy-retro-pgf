@@ -15,7 +15,7 @@ import { formatUnits, parseAbi } from "viem";
 import { z } from "zod";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
-import { MetricId } from "~/types/metrics";
+import { MetricId, OSOMetricsCSV } from "~/types/metrics";
 import { createDataFilter } from "~/utils/fetchAttestations";
 import { awards } from "~/utils/awards";
 
@@ -232,6 +232,65 @@ function calculatePayout(
 }
 
 async function generateImpactPayouts(round: Round, db: PrismaClient) {
+  const metrics = await fetchImpactMetricsFromCSV();
+  const allocations = await db.allocation.findMany({
+    where: { roundId: round.id },
+    select: {
+      id: true, // impact metric id
+      amount: true,
+      voterId: true,
+    },
+  });
+
+  const allocationMetricWeights = allocations.reduce(
+    (acc, allocation) => {
+      acc[allocation.id] = (acc[allocation.id] || 0) + allocation.amount;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const awardsAndProjectPercentages = awards.map((award) => {
+    const eligibleProjects = metrics.filter((metric) =>
+      award.eligibleProjects.includes(metric.project_id),
+    );
+
+    const projectScores = eligibleProjects.map((project) => {
+      const score = award.metrics.reduce((sum, metricId) => {
+        const metricValue = Number(project[metricId as MetricId]) || 0;
+        const metricWeight = allocationMetricWeights[metricId] || 0;
+        return sum + metricValue * metricWeight;
+      }, 0);
+
+      return {
+        projectId: project.project_id,
+        projectName: project.project_name,
+        score,
+      };
+    });
+
+    const totalScore = projectScores.reduce(
+      (sum, project) => sum + project.score,
+      0,
+    );
+
+    const projectPercentages = projectScores.map((project) => ({
+      projectId: project.projectId,
+      projectName: project.projectName,
+      percentage: totalScore > 0 ? (project.score / totalScore) * 100 : 0,
+    }));
+
+    return {
+      awardId: award.id,
+      totalReward: award.percentage,
+      projects: projectPercentages,
+    };
+  });
+
+  console.log("awardsAndProjectPercentages", awardsAndProjectPercentages);
+}
+
+async function generateImpactPayoutsOld(round: Round, db: PrismaClient) {
   // Fetch the allocations for the specified round
   const allocations = await db.allocation.findMany({
     where: { roundId: round.id },
@@ -282,7 +341,7 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
     let totalMetricsAmount = 0;
     const awardPayouts: BallotResults = {};
-    const amount = Number(totalAmountForRound) * (percentage / 100);
+    // const amount = Number(totalAmountForRound) * (percentage / 100);
 
     // Calculate payouts and unique voters for each eligible project
     for (const projectMetric of projectMetrics) {
