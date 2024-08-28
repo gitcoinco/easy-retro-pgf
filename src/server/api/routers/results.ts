@@ -17,8 +17,7 @@ import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { MetricId } from "~/types/metrics";
 import { createDataFilter } from "~/utils/fetchAttestations";
-import { awards } from "~/utils/awards";
-import { fetchApprovedApplications } from "./applications/utils";
+import { roundAwards } from "~/utils/awards";
 
 export const resultsRouter = createTRPCRouter({
   distribution: adminAttestationProcedure
@@ -28,14 +27,6 @@ export const resultsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-
-      const application = await ctx.fetchAttestations(["metadata"], {
-        where: { AND: [ createDataFilter("round", "bytes32", ctx.round.id)] },
-      });
-
-      if (application.length == 0) {
-        return [];
-      }
 
       const votes = await calculateBallotResults(ctx);
 
@@ -49,7 +40,7 @@ export const resultsRouter = createTRPCRouter({
 
       if (ctx.round.type === RoundTypes.impact) {
 
-        totalTokens = BigInt(getTotalAmountForImpactRound());
+        totalTokens = BigInt(getTotalAmountForImpactRound(ctx.round.id));
 
         const ORFilters = projectIds.map((projectId) =>
           createDataFilter("uuid", "string", projectId),
@@ -194,8 +185,9 @@ async function calculateBallotResults({
   return results;
 }
 
-function getTotalAmountForImpactRound() {
-  return awards.reduce((sum, award) => sum + award.amount, 0);
+function getTotalAmountForImpactRound(roundId: string) {
+  const awards = roundAwards[roundId];
+  return awards?.reduce((sum, award) => sum + award.amount, 0) || 0;
 }
 
 function calculateDistributionsByProject({
@@ -248,6 +240,17 @@ function calculatePayout(
 }
 
 async function generateImpactPayouts(round: Round, db: PrismaClient) {
+
+  const awards = roundAwards[round.id];
+  if (!awards) {
+    return {
+      votes: {},
+      totalVoters: 0,
+      totalVotes: 0,
+      averageVotes: 0,
+    }
+  }
+
   // Fetch the allocations for the specified round
   const allocations = await db.allocation.findMany({
     where: { roundId: round.id },
@@ -291,7 +294,7 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
   console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
 
   const projectPayouts: Record<string, BallotResults> = {};
-  const totalAmountForRound = getTotalAmountForImpactRound();
+  const totalAmountForRound = getTotalAmountForImpactRound(round.id);
 
   // Iterate over each award
   for (const award of awards) {
