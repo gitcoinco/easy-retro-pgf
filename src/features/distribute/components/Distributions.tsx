@@ -26,27 +26,28 @@ export function Distributions() {
     Distribution[]
   >([]);
 
-  const {
-    distributionResult,
-    fetched,
-    payoutsByTransaction,
-    poolAmount,
-    token,
-    explorerUrl,
-  } = useDistributeInfo();
+  const info = useDistributeInfo();
+  const { data, isFetched } = info;
 
-  const totalTokens = poolAmount.data?.toString() ?? "0";
+  const payoutEventsByTransaction = data?.payoutEventsByTransaction;
+  const distributionResult = data?.distributionResult.data;
+  const poolAmount = data?.poolAmount;
+  const token = data?.token.data;
+  const explorerUrl = data?.explorerLink;
 
+  const projectIds = distributionResult?.projectIds || [];
+  const totalVotes = distributionResult?.totalVotes || 0;
+  const totalTokens = poolAmount?.toString() ?? "0";
   const distributions = importedDistribution.length
     ? importedDistribution.map((d) => ({
         ...d,
         amount:
           (((d.amountPercentage || 0) / 100) * Number(totalTokens)) /
-          10 ** token.data.decimals,
+          10 ** (token?.decimals ?? 1e18),
       }))
-    : distributionResult.data?.distributions || [];
+    : distributionResult?.distributions || [];
 
-  if (distributionResult.isPending) {
+  if (!isFetched) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner className="size-6" />
@@ -54,14 +55,11 @@ export function Distributions() {
     );
   }
 
-  const projectIds = distributionResult.data?.projectIds || [];
-  const totalVotes = distributionResult.data?.totalVotes;
-
-  if (!projectIds.length) {
+  if (projectIds.length === 0) {
     return <EmptyState title="No project votes found" />;
   }
 
-  if (!distributions.length) {
+  if (distributions.length === 0) {
     return <EmptyState title="No distribution found" />;
   }
 
@@ -84,11 +82,11 @@ export function Distributions() {
         <DistributionTable distributions={distributions} />
       </div>
 
-      {fetched && (
+      {isFetched && (
         <div className="min-h-[360px] overflow-auto">
           <PayoutsTable
-            payoutEventsByTransaction={payoutsByTransaction}
-            explorerUrl={explorerUrl}
+            payoutEventsByTransaction={payoutEventsByTransaction || {}}
+            explorerUrl={explorerUrl || ""}
           />
         </div>
       )}
