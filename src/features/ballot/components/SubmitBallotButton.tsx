@@ -5,7 +5,10 @@ import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { useSubmitBallot } from "~/features/ballot/hooks/useBallot";
 import { Dialog } from "~/components/ui/Dialog";
-import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+} from "~/features/rounds/hooks/useRound";
 import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
 import { useAccount } from "wagmi";
 import {
@@ -20,10 +23,11 @@ export const SubmitBallotButton = ({ disabled = false }) => {
   const { data: ballot } = useBallot();
   const isSaving = useIsSavingBallot();
 
-  const { data: isApprovedVoter, isPending } = useApprovedVoter(address!);
+  const { data: isApprovedVoter, isPending } = useApprovedVoter(address);
   const [isOpen, setOpen] = useState(false);
   const domain = useCurrentDomain();
-  const submit = useSubmitBallot({});
+  const round = useCurrentRound();
+  const submit = useSubmitBallot();
 
   const onBallotPage =
     router.route.includes("ballot") && ballot?.allocations.length;
@@ -37,12 +41,13 @@ export const SubmitBallotButton = ({ disabled = false }) => {
   }
 
   if (!onBallotPage) {
+    const isImpactRound = round.data?.type === "impact";
     return (
       <Button
         className="w-full"
         variant="primary"
         as={Link}
-        href={`/${domain}/ballot`}
+        href={`/${domain}${isImpactRound ? "/metrics" : ""}/ballot`}
       >
         View ballot
       </Button>
