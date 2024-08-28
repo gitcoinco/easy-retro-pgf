@@ -23,7 +23,9 @@ export default function ProjectContributions({
         <div className="md:w-2/3">
           <Markdown isLoading={isLoading}>{description}</Markdown>
         </div>
-        <Links label="Contribution Links" links={links} />
+        <div className="md:w-1/3">
+          <Links label="Contribution Links" links={links} />
+        </div>
       </div>
     </>
   );

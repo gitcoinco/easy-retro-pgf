@@ -1,3 +1,5 @@
+"use client";
+
 import { type ReactNode } from "react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
@@ -106,7 +108,7 @@ export default function ProjectDetails({
       </div>
       {sunnyAwards && (
         <div className="mb-6 flex flex-col gap-4">
-          <div className="flex gap-4 font-bold">
+          <div className="flex flex-col gap-4 font-bold md:flex-row">
             {projectType && (
               <div className="flex items-center gap-2">
                 {"Project Type:"}
@@ -140,7 +142,7 @@ export default function ProjectDetails({
           <Markdown>{bio}</Markdown>
         </div>
         {sunnyAwards && !isLoading && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 md:w-1/3">
             <>
               {mintingWalletAddress && (
                 <AddressBox
@@ -158,12 +160,7 @@ export default function ProjectDetails({
                 )}
             </>
             {contributionLinks && (
-              <Links
-                label="Links"
-                links={contributionLinks}
-                showUrl
-                fullWidth
-              />
+              <Links label="Links" links={contributionLinks} showUrl />
             )}
           </div>
         )}
