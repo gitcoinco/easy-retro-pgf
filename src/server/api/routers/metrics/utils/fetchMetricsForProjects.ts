@@ -25,10 +25,13 @@ export async function fetchMetricsForProjects({
     roundId,
   });
 
-  // const approvedProjects = mockedApprovedProjects; // For testing
   const approvedProjects = approvedApplications.map(
     (application) => application.name,
   );
+
+  if (approvedProjects.length === 0) {
+    return [];
+  }
 
   const metricsByProject = await fetchImpactMetricsFromCSV({
     projects: approvedProjects,

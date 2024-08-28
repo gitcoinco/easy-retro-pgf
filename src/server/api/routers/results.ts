@@ -18,6 +18,7 @@ import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { MetricId } from "~/types/metrics";
 import { createDataFilter } from "~/utils/fetchAttestations";
 import { awards } from "~/utils/awards";
+import { fetchApprovedApplications } from "./applications/utils";
 
 export const resultsRouter = createTRPCRouter({
   distribution: adminAttestationProcedure
@@ -27,6 +28,15 @@ export const resultsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
+
+      const application = await ctx.fetchAttestations(["metadata"], {
+        where: { AND: [ createDataFilter("round", "bytes32", ctx.round.id)] },
+      });
+
+      if (application.length == 0) {
+        return [];
+      }
+
       const votes = await calculateBallotResults(ctx);
 
       const totalVotes = votes.totalVotes;

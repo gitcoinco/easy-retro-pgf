@@ -112,34 +112,40 @@ export function MetricsSidebar({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <div className="flex justify-end gap-1">
-            <MetricSort sort={sort} setSort={setSort} />
-          </div>
+          {list.length > 0 &&
+            <div className="flex justify-end gap-1">
+              <MetricSort sort={sort} setSort={setSort} />
+            </div>
+          }
         </div>
-        <ScrollArea className="relative max-h-[328px]">
-          {isLoading &&
-            Array(8)
-              .fill(0)
-              .map((_, i) => (
-                <AllocationItem key={i} isLoading>
-                  --
-                </AllocationItem>
-              ))}
-          {list.map((item) => (
-            <AllocationItem key={item.name} {...item}>
-              {formatAllocation(item.amount)}
-            </AllocationItem>
-          ))}
-          <div ref={intersectionRef} />
-          {(intersection?.intersectionRatio ?? 0) < 1 && (
-            <Badge
-              variant="outline"
-              className="animate-in fade-in zoom-in absolute bottom-2 left-1/2 -translate-x-1/2 bg-white"
-            >
-              More <ArrowDown className="ml-2 size-3 " />
-            </Badge>
-          )}
-        </ScrollArea>
+
+        {list.length > 0 ?
+          <ScrollArea className="relative max-h-[328px]">
+            {isLoading &&
+              Array(8)
+                .fill(0)
+                .map((_, i) => (
+                  <AllocationItem key={i} isLoading>
+                    --
+                  </AllocationItem>
+                ))}
+            {list.map((item) => (
+              <AllocationItem key={item.name} {...item}>
+                {formatAllocation(item.amount)}
+              </AllocationItem>
+            ))}
+            <div ref={intersectionRef} />
+            {(intersection?.intersectionRatio ?? 0) < 1 && (
+              <Badge
+                variant="outline"
+                className="animate-in fade-in zoom-in absolute bottom-2 left-1/2 -translate-x-1/2 bg-white"
+              >
+                More <ArrowDown className="ml-2 size-3 " />
+              </Badge>
+            )}
+          </ScrollArea>
+        : <div className="border py-3 rounded text-center text-muted-foreground text-sm">Metrics not set</div>
+        } 
 
         {footer}
       </div>

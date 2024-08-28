@@ -43,16 +43,22 @@ export async function fetchMetricsForBallot({
     roundId,
   });
 
-  // const approvedProjects = mockedApprovedProjects; // For testing
-
   const approvedProjects = approvedApplications.map(
     (application) => application.name,
   );
+
+  if (approvedProjects.length === 0) {
+    return {
+      allocations: [],
+      projects: []
+    };
+  }
 
   const metricsByProject = await fetchImpactMetricsFromCSV({
     projects: approvedProjects,
     metrics: Object.keys(metricsById) as MetricId[],
   });
+
   const calculatedMetrics = calculateMetricsBallot(
     metricsByProject,
     metricsById,
