@@ -1,23 +1,24 @@
-import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
+import { z } from "zod";
+
+import {
+  attestationProcedure,
+  createTRPCRouter,
+  roundProcedure,
+} from "~/server/api/trpc";
 import { fetchApplications, fetchApprovals } from "./utils";
 import { FilterSchema } from "./utils/fetchApplications";
 import { createDataFilter } from "~/utils/fetchAttestations";
 
 export const applicationsRouter = createTRPCRouter({
-  approvals: attestationProcedure
-    .input(FilterSchema)
+  approvals: roundProcedure
+    .input(z.object({ ids: z.array(z.string()).optional() })) // TODO: add filter schema
     .query(async ({ input, ctx }) => {
-      const {
-        fetchAttestations: attestationFetcher,
-        round: { id: roundId, admins },
-      } = ctx;
+      const { round } = ctx;
       const { ids: projectIds } = input;
 
       return fetchApprovals({
-        attestationFetcher,
-        admins,
+        round,
         projectIds,
-        roundId,
       });
     }),
 

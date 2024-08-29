@@ -1,28 +1,25 @@
+import type { Round } from "@prisma/client";
 import {
   fetchImpactMetricsFromCSV,
   mapMetrics,
   type MetricWithProjects,
 } from "~/utils/fetchMetrics";
 import type { MetricId } from "~/types/metrics";
-import { mockedApprovedProjects } from "../mocks";
 import { fetchApprovedApplications } from "../../applications/utils";
 import type { AttestationFetcher } from "~/utils/fetchAttestations";
 
 export async function fetchMetricsForProjects({
-  admins,
   attestationFetcher,
   metricIds,
-  roundId,
+  round,
 }: {
-  admins: string[];
   attestationFetcher: AttestationFetcher;
   metricIds: string[];
-  roundId: string;
+  round: Round;
 }): Promise<MetricWithProjects[]> {
   const approvedApplications = await fetchApprovedApplications({
     attestationFetcher,
-    admins,
-    roundId,
+    round,
   });
 
   const approvedProjects = approvedApplications.map(
