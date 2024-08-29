@@ -15,14 +15,21 @@ import {
 
 export const applicationsRouter = createTRPCRouter({
   approvals: roundProcedure
-    .input(FilterSchema)
+    .input(
+      FilterSchema.merge(
+        z.object({
+          noCache: z.boolean().default(false),
+        }),
+      ),
+    )
     .query(async ({ input, ctx }) => {
       const { round } = ctx;
-      const { ids: projectIds } = input;
+      const { ids: projectIds, noCache } = input;
 
       return fetchApprovals({
         round,
         projectIds,
+        noCache,
       });
     }),
 
