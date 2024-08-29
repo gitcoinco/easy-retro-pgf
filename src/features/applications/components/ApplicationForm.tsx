@@ -32,7 +32,10 @@ import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
-import { encryptData } from "~/lib/encryption/encryptData";
+import {
+  type EncryptedData,
+  useEncryption,
+} from "~/lib/encryption/encryptData";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -42,6 +45,7 @@ const ApplicationCreateSchema = z.object({
 
 export function ApplicationForm() {
   const clearDraft = useLocalStorage("application-draft")[2];
+  const encryption = useEncryption<EncryptedData>();
   const create = useCreateApplication({
     onSuccess: () => {
       toast.success("Your application has been submitted successfully!");
@@ -76,9 +80,17 @@ export function ApplicationForm() {
         persist="application-draft"
         schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application, applicationVerification }) => {
-          const encryptedData = encryptData(applicationVerification);
-          application = { ...application, encryptedData };
-          create.mutate({ application, profile });
+          const res = await encryption.mutateAsync({
+            action: "encrypt",
+            data: applicationVerification,
+          });
+          if (res.success && res.data) {
+            const encryptedData = res.data;
+            application = { ...application, encryptedData };
+            create.mutate({ application, profile });
+          } else {
+            throw new Error("Failed to encrypt application data");
+          }
         }}
       >
         <FormSection

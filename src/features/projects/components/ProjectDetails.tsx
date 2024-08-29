@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
@@ -9,7 +9,7 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
-import { decryptData } from "~/lib/encryption/encryptData";
+import { useEncryption } from "~/lib/encryption/encryptData";
 import { type ApplicationVerification } from "~/features/applications/types";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 
@@ -22,10 +22,31 @@ export default function ProjectDetails({
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
   const isAdmin = useIsAdmin();
-  const applicationVerificationData: ApplicationVerification | undefined =
-    metadata.data?.encryptedData !== undefined && isAdmin
-      ? (decryptData(metadata.data?.encryptedData) as ApplicationVerification)
-      : undefined;
+  const [applicationVerificationData, setApplicationVerificationData] =
+    useState<ApplicationVerification | undefined>(undefined);
+  const encryption = useEncryption<ApplicationVerification>();
+
+  useEffect(() => {
+    const decryptData = async () => {
+      if (metadata.data?.encryptedData && isAdmin) {
+        try {
+          const result = await encryption.mutateAsync({
+            action: "decrypt",
+            data: metadata.data.encryptedData,
+          });
+          if (result.success && result.data) {
+            setApplicationVerificationData(
+              result.data as ApplicationVerification,
+            );
+          }
+        } catch (error) {
+          console.error("Decryption failed:", error);
+        }
+      }
+    };
+
+    decryptData();
+  }, [metadata.data?.encryptedData, isAdmin]);
 
   const { bio, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
@@ -97,7 +118,7 @@ export default function ProjectDetails({
             );
           })}
         </div>
-        {applicationVerificationData! ? (
+        {isAdmin && applicationVerificationData! ? (
           <div>
             <Heading as="h3" size="2xl">
               Project kyc information

@@ -1,39 +1,47 @@
 import crypto from "crypto";
+import { useMutation } from "@tanstack/react-query";
 
-const algorithm = "aes-256-cbc";
-const key = process.env.NEXT_PUBLIC_ENCRYPTION_KEY;
-const iv = crypto.randomBytes(16); // generate a random initialization vector
-
-if (!key) {
-  throw new Error("ENCRYPTION_KEY is not set");
-}
-interface EncryptedData {
+export interface EncryptedData {
   iv: string;
   data: string;
 }
 
-export const encryptData = (data: object): EncryptedData => {
-  const cipher = crypto.createCipheriv(algorithm, Buffer.from(key, "hex"), iv);
-  let encrypted = cipher.update(JSON.stringify(data), "utf8", "hex");
-  encrypted += cipher.final("hex");
-  return {
-    iv: iv.toString("hex"),
-    data: encrypted,
-  };
-};
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
 
-export const decryptData = (encryptedData: EncryptedData): object => {
-  const iv = Buffer.from(encryptedData.iv, "hex");
-  const encryptedText = encryptedData.data;
-  const decipher = crypto.createDecipheriv(
-    algorithm,
-    Buffer.from(key, "hex"),
-    iv,
-  );
-  let decrypted = decipher.update(encryptedText, "hex", "utf8");
-  decrypted += decipher.final("utf8");
-  return JSON.parse(decrypted) as object;
-};
+async function encryptionApiRequest<T>(
+  action: "encrypt" | "decrypt",
+  data?: object | EncryptedData,
+): Promise<ApiResponse<T>> {
+  const response = await fetch("/api/encryption", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ action, data }),
+  });
+
+  if (!response.ok) {
+    const errorData = (await response.json()) as { error: string };
+    throw new Error(errorData.error || "Request failed");
+  }
+
+  const resultData = (await response.json()) as T;
+  return { success: true, data: resultData };
+}
+
+export function useEncryption<T>() {
+  return useMutation<
+    ApiResponse<T>,
+    Error,
+    { action: "encrypt" | "decrypt"; data?: object | EncryptedData }
+  >({
+    mutationFn: ({ action, data }) => encryptionApiRequest<T>(action, data),
+  });
+}
 
 export const generateKey = () => {
   return crypto.randomBytes(32).toString("hex");
