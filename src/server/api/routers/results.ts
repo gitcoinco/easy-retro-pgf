@@ -283,19 +283,17 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     const projectMetrics = normalizeData(eligibleProjectMetrics);
     console.log("normalize metric from 0 -> 1", projectMetrics);
 
-    // Filter allocations to include only those relevant to the current award metrics
-    const filteredAllocations = allocations.filter((allocation) => {
-      // Check if the allocation's metric ID is part of the current award's metrics
-      return metrics.includes(allocation.id);
-    });
-    console.log("Filtered Allocations", filteredAllocations.length, filteredAllocations);
-
     // Calculate metricAmounts considering only eligible projects for this award
-    const filteredMetricAmounts = filteredAllocations.reduce(
+    const filteredMetricAmounts = allocations.reduce(
       (accumulator, allocation) => {
-        if (metrics.includes(allocation.id as MetricId)) {
+        // Check if the allocation's metric ID is part of the current award's metrics
+        if (metrics.includes(allocation.id)) {
+          // Update the accumulator with the allocation amount
           accumulator[allocation.id] =
             (accumulator[allocation.id] || 0) + allocation.amount;
+
+          // Print the filtered metric and its updated amount
+          console.log(`Filtered Metric ID: ${allocation.id}, Amount: ${accumulator[allocation.id]}`);
         }
         return accumulator;
       },
