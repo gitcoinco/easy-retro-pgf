@@ -17,7 +17,8 @@ import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { MetricId } from "~/types/metrics";
 import { createDataFilter } from "~/utils/fetchAttestations";
-import { awards } from "~/utils/awards";
+import { roundAwards } from "~/utils/awards";
+import { normalizeData } from "~/utils/fetchMetrics/fetchImpactMetricsFromCSV";
 
 export const resultsRouter = createTRPCRouter({
   distribution: adminAttestationProcedure
@@ -27,6 +28,7 @@ export const resultsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
+
       const votes = await calculateBallotResults(ctx);
 
       const totalVotes = votes.totalVotes;
@@ -39,7 +41,7 @@ export const resultsRouter = createTRPCRouter({
 
       if (ctx.round.type === RoundTypes.impact) {
 
-        totalTokens = BigInt(getTotalAmountForImpactRound());
+        totalTokens = BigInt(getTotalAmountForImpactRound(ctx.round.id));
 
         const ORFilters = projectIds.map((projectId) =>
           createDataFilter("uuid", "string", projectId),
@@ -184,8 +186,9 @@ async function calculateBallotResults({
   return results;
 }
 
-function getTotalAmountForImpactRound() {
-  return awards.reduce((sum, award) => sum + award.amount, 0);
+function getTotalAmountForImpactRound(roundId: string) {
+  const awards = roundAwards[roundId];
+  return awards?.reduce((sum, award) => sum + award.amount, 0) || 0;
 }
 
 function calculateDistributionsByProject({
@@ -238,6 +241,17 @@ function calculatePayout(
 }
 
 async function generateImpactPayouts(round: Round, db: PrismaClient) {
+
+  const awards = roundAwards[round.id];
+  if (!awards) {
+    return {
+      votes: {},
+      totalVoters: 0,
+      totalVotes: 0,
+      averageVotes: 0,
+    }
+  }
+
   // Fetch the allocations for the specified round
   const allocations = await db.allocation.findMany({
     where: { roundId: round.id },
@@ -247,46 +261,58 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
       voterId: true,
     },
   });
-  console.log("allocations", allocations);
-
-  // Group and sum the allocation amounts by impact metric id
-  // Example: { "metric1": 100, "metric2": 200, ... }
-  const metricAmounts = allocations.reduce(
-    (accumulator, allocation) => {
-      accumulator[allocation.id] =
-        (accumulator[allocation.id] || 0) + allocation.amount;
-      return accumulator;
-    },
-    {} as Record<string, number>,
-  );
-  console.log("metricAmounts", metricAmounts);
+  console.log("All allocations for round", allocations.length, allocations);
 
   // Fetch metrics from the CSV
-  const projectMetrics = await fetchImpactMetricsFromCSV();
-  console.log("projectMetrics", projectMetrics);
-
-  // Used to calculate the total score for each metric across all projects
-  const totalMetricScoresFromCSV = Object.keys(metricAmounts).reduce(
-    (accumulator, key) => {
-      accumulator[key] = 0;
-      for (const projectMetric of projectMetrics) {
-        if (key in projectMetric) {
-          accumulator[key] += projectMetric[key as MetricId] as number;
-        }
-      }
-      return accumulator;
-    },
-    {} as Record<string, number>,
-  );
-  console.log("totalMetricScoresFromCSV", totalMetricScoresFromCSV);
-
+  const rawProjectMetrics = await fetchImpactMetricsFromCSV();
+  console.log("CSV", rawProjectMetrics);
   const projectPayouts: Record<string, BallotResults> = {};
-  const totalAmountForRound = getTotalAmountForImpactRound();
+  const totalAmountForRound = getTotalAmountForImpactRound(round.id);
 
   // Iterate over each award
   for (const award of awards) {
     const { metrics, amount, eligibleProjects } = award;
-    
+
+    console.log(`\n============\nCALCULATING FOR Award Id: ${award.id}\n============\n`, award);
+
+    // Filter rawProjectMetrics to include only eligible projects
+    const eligibleProjectMetrics = rawProjectMetrics.filter((projectMetric) =>
+      eligibleProjects.includes(projectMetric.project_id)
+    );
+    console.log("filter csv to include projects in award", eligibleProjectMetrics);
+    const projectMetrics = normalizeData(eligibleProjectMetrics);
+    console.log("normalize metric from 0 -> 1", projectMetrics);
+
+    // Calculate metricAmounts considering only eligible projects for this award
+    const filteredMetricAmounts = allocations.reduce(
+      (accumulator, allocation) => {
+        // Check if the allocation's metric ID is part of the current award's metrics
+        if (metrics.includes(allocation.id)) {
+          // Update the accumulator with the allocation amount
+          accumulator[allocation.id] =
+            (accumulator[allocation.id] || 0) + allocation.amount;
+
+          // Print the filtered metric and its updated amount
+          console.log(`Filtered Metric ID: ${allocation.id}, Amount: ${accumulator[allocation.id]}`);
+        }
+        return accumulator;
+      },
+      {} as Record<string, number>
+    );
+    console.log("filteredMetricAmounts", filteredMetricAmounts);
+
+    // Calculate the total metric score for all metrics in this award
+    const totalMetricScoresForAward = metrics.reduce((accumulator, metricId) => {
+      accumulator[metricId] = projectMetrics.reduce((sum, projectMetric) => {
+        if (eligibleProjects.includes(projectMetric.project_id)) {
+          sum += projectMetric[metricId as MetricId] || 0;
+        }
+        return sum;
+      }, 0);
+      return accumulator;
+    }, {} as Record<string, number>);
+    console.log("totalMetricScoresForAward", totalMetricScoresForAward);
+  
     let totalMetricsAmount = 0;
     const awardPayouts: BallotResults = {};
 
@@ -303,15 +329,13 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
       for (const metricId of metrics) {
         if (metricId in projectMetric) {
           // totalValue is the sum of all scores for this metric across all projects
-          const totalValue = totalMetricScoresFromCSV[
-            metricId as MetricId
-          ] as number;
+          const totalValue = totalMetricScoresForAward[metricId] as number;
           const metricScore = projectMetric[metricId as MetricId] as number;
 
           // Payout for this metric based on its score relative to totalValue
           const metricPayout =
             totalValue > 0
-              ? (metricScore * (metricAmounts[metricId] || 0)) / totalValue
+              ? (metricScore * (filteredMetricAmounts[metricId] || 0)) / totalValue
               : 0;
 
           projectTotalPayout += metricPayout;
