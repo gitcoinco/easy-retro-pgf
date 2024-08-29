@@ -283,9 +283,9 @@ export function FormSection({
   return (
     <section className="mb-8">
       <h3 className="mb-1 text-xl font-semibold">{title}</h3>
-      <p className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
+      <div className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
         {description}
-      </p>
+      </div>
       {children}
     </section>
   );
