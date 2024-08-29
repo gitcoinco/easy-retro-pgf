@@ -155,7 +155,7 @@ export const ballotRouter = createTRPCRouter({
               ),
             ),
           );
-          projectsById = await createAttestationFetcher(ctx.round!)(
+          projectsById = await createAttestationFetcher({ round: ctx.round })(
             ["metadata"],
             {
               where: { id: { in: projectIds } },
