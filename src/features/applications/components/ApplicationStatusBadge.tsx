@@ -9,7 +9,7 @@ type Props = {
 enum StatusBadgeVariant {
   pending = "info",
   approved = "success",
-  rejected = "error",
+  rejected = "warning",
 }
 
 export function ApplicationStatusBadge({ status, size = "lg" }: Props) {
