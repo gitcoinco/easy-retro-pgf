@@ -65,3 +65,39 @@ export async function fetchImpactMetricsFromCSV(
     });
   });
 }
+
+export function normalizeData(data: OSOMetricsCSV[]): OSOMetricsCSV[] {
+  if (data.length === 0) return data; // Return empty array if no data
+
+  // Extract metric keys, excluding 'project_name' and 'project_id'
+  const metricKeys = Object.keys(data[0]!).filter(key =>
+    key !== 'project_name' && key !== 'project_id'
+  ) as (keyof OSOMetricsCSV)[];
+
+  // Initialize sum map for each metric
+  const sumMap: Record<string, number> = {};
+
+  // Calculate the sum for each metric
+  metricKeys.forEach(metric => {
+    const sum = data.reduce((acc, project) => acc + (project[metric] as number || 0), 0);
+    sumMap[metric] = sum;
+  });
+
+  // Normalize the data
+  return data.map(project => {
+    const normalizedProject: Partial<OSOMetricsCSV> | any = {
+      project_name: project.project_name,
+      project_id: project.project_id
+    };
+
+    metricKeys.forEach(metric => {
+      const value = project[metric] as number;
+      const total = sumMap[metric] || 0;
+
+      // Normalize value
+      normalizedProject[metric] = total === 0 ? 0 : value / total;
+    });
+
+    return normalizedProject as OSOMetricsCSV;
+  });
+}
