@@ -2,7 +2,6 @@ import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { fetchApplications, fetchApprovals } from "./utils";
 import { FilterSchema } from "./utils/fetchApplications";
 import { createDataFilter } from "~/utils/fetchAttestations";
-import { TRPCError } from "@trpc/server";
 
 export const applicationsRouter = createTRPCRouter({
   approvals: attestationProcedure
@@ -60,13 +59,21 @@ export const applicationsRouter = createTRPCRouter({
       ]);
       const approvedIds = approved.map((a) => a.refUID);
 
+      const { status, ...filter } = input;
       const applications = await fetchApplications({
         attestationFetcher,
         roundId,
-        // filter: {
-        //   ...input,
-        //   ids: input.status === "pending" ? approvedIds : undefined,
-        // },
+        filter: {
+          ...filter,
+          ids:
+            status === "all"
+              ? undefined
+              : status === "approved"
+                ? approvedIds
+                : applicationsCount
+                    .filter((a) => !approvedIds.includes(a.id))
+                    .map((a) => a.id),
+        },
       });
 
       const approvedById = Object.fromEntries(

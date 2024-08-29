@@ -1,1 +1,1 @@
-export { applicationsRouter, FilterSchema } from "./applicationsRouter";
+export { applicationsRouter } from "./applicationsRouter";

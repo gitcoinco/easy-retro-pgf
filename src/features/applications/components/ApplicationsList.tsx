@@ -27,12 +27,9 @@ export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
   const domain = useCurrentDomain();
+  const [filter, setFilter] = useApplicationsFilter();
 
-  const applications = useApplications({
-    status: "pending",
-    take: 10,
-    skip: 0,
-  });
+  const applications = useApplications(filter);
   const approve = useApproveApplication({});
 
   console.log("applciations", applications.data);
@@ -57,7 +54,7 @@ export function ApplicationsList() {
           <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2 dark:bg-gray-900">
             <div className="text-gray-300">
               {applicationsList.length
-                ? `${applicationsList.length} applications found`
+                ? `${applications.data?.count} applications found`
                 : ""}
             </div>
             <div className="flex gap-2">
@@ -98,12 +95,32 @@ export function ApplicationsList() {
 function ApplicationsFilter() {
   const [filter, setFilter] = useApplicationsFilter();
 
+  const tabs = [
+    {
+      label: "All",
+      status: "all",
+    },
+    {
+      label: "Pending",
+      status: "pending",
+    },
+    {
+      label: "Approved",
+      status: "approved",
+    },
+  ];
   return (
     <div className="flex items-center justify-end gap-2">
       <Tabs>
-        <Tab>All</Tab>
-        <Tab>Accepted</Tab>
-        <Tab isActive>Pending</Tab>
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.status}
+            onClick={() => setFilter({ status: tab.status })}
+            isActive={filter.status === tab.status}
+          >
+            {tab.label}
+          </Tab>
+        ))}
       </Tabs>
       <div className="flex items-center gap-2">
         {/* Choosing a simple Select here rather than a Pagination component (which is a bigger lift) */}
