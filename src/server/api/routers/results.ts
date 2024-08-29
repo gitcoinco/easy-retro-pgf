@@ -18,6 +18,7 @@ import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { MetricId } from "~/types/metrics";
 import { createDataFilter } from "~/utils/fetchAttestations";
 import { roundAwards } from "~/utils/awards";
+import { normalizeData } from "~/utils/fetchMetrics/fetchImpactMetricsFromCSV";
 
 export const resultsRouter = createTRPCRouter({
   distribution: adminAttestationProcedure
@@ -263,9 +264,8 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
   console.log("All allocations for round", allocations.length, allocations);
 
   // Fetch metrics from the CSV
-  const projectMetrics = await fetchImpactMetricsFromCSV();
-  console.log("All projectMetrics", projectMetrics);
-
+  const rawProjectMetrics = await fetchImpactMetricsFromCSV();
+  console.log("CSV", rawProjectMetrics);
   const projectPayouts: Record<string, BallotResults> = {};
   const totalAmountForRound = getTotalAmountForImpactRound(round.id);
 
@@ -274,6 +274,14 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
     const { metrics, amount, eligibleProjects } = award;
 
     console.log(`\n============\nCALCULATING FOR Award Id: ${award.id}\n============\n`, award);
+
+    // Filter rawProjectMetrics to include only eligible projects
+    const eligibleProjectMetrics = rawProjectMetrics.filter((projectMetric) =>
+      eligibleProjects.includes(projectMetric.project_id)
+    );
+    console.log("filter csv to include projects in award", eligibleProjectMetrics);
+    const projectMetrics = normalizeData(eligibleProjectMetrics);
+    console.log("normalize metric from 0 -> 1", projectMetrics);
 
     // Filter allocations to only include those that belong to eligible projects
     const filteredAllocations = allocations.filter((allocation) => {
