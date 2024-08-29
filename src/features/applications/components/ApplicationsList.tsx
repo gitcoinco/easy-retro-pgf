@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "~/components/ui/Button";
 import { Form, FormSection, Label, Select } from "~/components/ui/Form";
 import {
+  PAGE_SIZE,
   useApplications,
   useApplicationsFilter,
 } from "~/features/applications/hooks/useApplications";
@@ -16,7 +17,6 @@ import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { ApplicationItem } from "./ApplicationItem";
 import { SelectAllButton } from "./SelectAllButton";
 import { ApproveButton } from "./ApproveButton";
-import { api } from "~/utils/api";
 import { Tab, Tabs } from "~/components/ui/Tabs";
 
 const ApplicationsListSchema = z.object({
@@ -27,12 +27,10 @@ export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
   const domain = useCurrentDomain();
-  const [filter, setFilter] = useApplicationsFilter();
+  const [filter] = useApplicationsFilter();
 
   const applications = useApplications(filter);
   const approve = useApproveApplication({});
-
-  console.log("applciations", applications.data);
 
   const applicationsList = applications.data?.data ?? [];
 
@@ -62,7 +60,7 @@ export function ApplicationsList() {
               <ApproveButton isLoading={approve.isPending} />
             </div>
           </div>
-          <ApplicationsFilter />
+          <ApplicationsFilter applicationCount={applications.data?.count} />
 
           {applications.isPending ? (
             <div className="flex items-center justify-center py-16">
@@ -92,7 +90,7 @@ export function ApplicationsList() {
   );
 }
 
-function ApplicationsFilter() {
+function ApplicationsFilter({ applicationCount = 0 }) {
   const [filter, setFilter] = useApplicationsFilter();
 
   const tabs = [
@@ -109,6 +107,10 @@ function ApplicationsFilter() {
       status: "approved",
     },
   ] as const;
+
+  const pageCount = Math.ceil(applicationCount / PAGE_SIZE);
+
+  const currentPage = filter.skip / filter.take + 1;
   return (
     <div className="flex items-center justify-end gap-2">
       <Tabs>
@@ -125,9 +127,18 @@ function ApplicationsFilter() {
       <div className="flex items-center gap-2">
         {/* Choosing a simple Select here rather than a Pagination component (which is a bigger lift) */}
         <Label>Page</Label>
-        <Select>
-          <option>1</option>
-          <option>2</option>
+        <Select
+          value={currentPage}
+          onChange={(e) => {
+            const skip = (Number(e.target.value) - 1) * PAGE_SIZE;
+            return setFilter({ skip });
+          }}
+        >
+          {Array.from({ length: pageCount }).map((_, page) => (
+            <option key={page} value={page + 1}>
+              {page + 1}
+            </option>
+          ))}
         </Select>
       </div>
     </div>

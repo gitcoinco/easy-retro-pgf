@@ -8,6 +8,7 @@ import {
 import { type FilterSchema } from "~/server/api/routers/applications/utils/fetchApplications";
 import { api } from "~/utils/api";
 
+export const PAGE_SIZE = 20;
 export function useApplicationsFilter() {
   return useQueryStates(
     {
@@ -15,7 +16,7 @@ export function useApplicationsFilter() {
       status: parseAsStringEnum(["all", "approved", "pending"]).withDefault(
         "pending",
       ),
-      take: parseAsInteger.withDefault(10),
+      take: parseAsInteger.withDefault(PAGE_SIZE),
       skip: parseAsInteger.withDefault(0),
     },
     { history: "replace" },
