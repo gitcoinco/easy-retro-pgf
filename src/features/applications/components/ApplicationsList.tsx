@@ -1,12 +1,9 @@
 import { z } from "zod";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { type Address } from "viem";
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
 
 import { Button } from "~/components/ui/Button";
-import { Form, FormSection } from "~/components/ui/Form";
+import { Form, FormSection, Label, Select } from "~/components/ui/Form";
 import {
   useApplications,
   useApplicationsFilter,
@@ -14,13 +11,13 @@ import {
 import { useApproveApplication } from "../hooks/useApproveApplication";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
-import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { ApplicationItem } from "./ApplicationItem";
 import { SelectAllButton } from "./SelectAllButton";
 import { ApproveButton } from "./ApproveButton";
 import { api } from "~/utils/api";
+import { Tab, Tabs } from "~/components/ui/Tabs";
 
 const ApplicationsListSchema = z.object({
   selected: z.array(z.string()),
@@ -29,18 +26,8 @@ const ApplicationsListSchema = z.object({
 export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
-  const [fetched, setFetched] = useState(false);
   const domain = useCurrentDomain();
-  // const approved = useApprovedApplications();
-  // const approvedIds = [
-  //   "0xd0c7baaf753ff42fdd62e9c0c85ddb36dbe29cd9263c33979777c9c12ba354bd",
-  // ];
-  // const approvedIds = approved.data?.map((a) => a.id) ?? [];
 
-  // console.log({ approvedIds }, approved.isPending);
-  // const applications = useApplications(approvedIds, {
-  //   enabled: !approved.isPending,
-  // });
   const applications = useApplications({
     status: "pending",
     take: 10,
@@ -50,22 +37,9 @@ export function ApplicationsList() {
 
   console.log("applciations", applications.data);
 
-  const approvedById = useMemo(() => {
-    return approved.data?.reduce((acc, x) => {
-      // Check if the key (refUID) already exists in the Map
-      const existingArray = acc.get(x.refUID) ?? [];
-      // Append the new object to the array
-      const newArray = [...existingArray, { attester: x.attester, uid: x.id }];
-      // Set the updated array back into the Map
-      acc.set(x.refUID, newArray);
-      return acc;
-    }, new Map<string, { attester: Address; uid: string }[]>());
-  }, [approved.data]);
+  const applicationsList = applications.data?.data ?? [];
 
-  const applicationsToApprove = applications.data?.filter(
-    (application) => !approvedById?.get(application.id),
-  );
-
+  const applicationsToApprove = applicationsList.filter((a) => !a.approvedBy);
   return (
     <div className="relative">
       <Form
@@ -82,8 +56,8 @@ export function ApplicationsList() {
           </Alert>
           <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2 dark:bg-gray-900">
             <div className="text-gray-300">
-              {applications.data?.length
-                ? `${applications.data?.length} applications found`
+              {applicationsList.length
+                ? `${applicationsList.length} applications found`
                 : ""}
             </div>
             <div className="flex gap-2">
@@ -91,12 +65,13 @@ export function ApplicationsList() {
               <ApproveButton isLoading={approve.isPending} />
             </div>
           </div>
+          <ApplicationsFilter />
 
           {applications.isPending ? (
             <div className="flex items-center justify-center py-16">
               <Spinner />
             </div>
-          ) : !applications.data?.length ? (
+          ) : !applicationsList.length ? (
             <EmptyState title="No applications">
               <Button
                 variant="primary"
@@ -107,12 +82,11 @@ export function ApplicationsList() {
               </Button>
             </EmptyState>
           ) : null}
-          {applications.data?.map((item) => (
+          {applicationsList.map((item) => (
             <ApplicationItem
               key={item.id}
               {...item}
               isLoading={applications.isPending}
-              approvedBy={approvedById?.get(item.id)}
             />
           ))}
         </FormSection>
@@ -121,6 +95,24 @@ export function ApplicationsList() {
   );
 }
 
-function ApplicationsPagination() {
+function ApplicationsFilter() {
   const [filter, setFilter] = useApplicationsFilter();
+
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <Tabs>
+        <Tab>All</Tab>
+        <Tab>Accepted</Tab>
+        <Tab isActive>Pending</Tab>
+      </Tabs>
+      <div className="flex items-center gap-2">
+        {/* Choosing a simple Select here rather than a Pagination component (which is a bigger lift) */}
+        <Label>Page</Label>
+        <Select>
+          <option>1</option>
+          <option>2</option>
+        </Select>
+      </div>
+    </div>
+  );
 }

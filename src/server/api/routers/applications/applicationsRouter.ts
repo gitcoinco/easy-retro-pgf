@@ -1,6 +1,8 @@
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { fetchApplications, fetchApprovals } from "./utils";
 import { FilterSchema } from "./utils/fetchApplications";
+import { createDataFilter } from "~/utils/fetchAttestations";
+import { TRPCError } from "@trpc/server";
 
 export const applicationsRouter = createTRPCRouter({
   approvals: attestationProcedure
@@ -28,22 +30,58 @@ export const applicationsRouter = createTRPCRouter({
         round: { id: roundId, admins },
       } = ctx;
 
-      const approved = await fetchApprovals({
-        attestationFetcher,
-        admins,
-        projectIds: input.ids,
-        roundId,
-      });
+      // Fetch approved applications + application count
+      const [approved, applicationsCount] = await Promise.all([
+        attestationFetcher(
+          ["approval"],
+          {
+            where: {
+              attester: { in: admins },
+              AND: [
+                createDataFilter("type", "bytes32", "application"),
+                createDataFilter("round", "bytes32", roundId),
+              ],
+            },
+          },
+          ["id", "refUID", "attester"], // Only fetch the required fields for smaller data payload
+        ),
+        attestationFetcher(
+          ["metadata"],
+          {
+            where: {
+              AND: [
+                createDataFilter("type", "bytes32", "application"),
+                createDataFilter("round", "bytes32", roundId),
+              ],
+            },
+          },
+          ["id"],
+        ),
+      ]);
+      const approvedIds = approved.map((a) => a.refUID);
+
       const applications = await fetchApplications({
         attestationFetcher,
         roundId,
-        filter: {
-          ...input,
-          ids:
-            input.status === "pending" ? approved.map((a) => a.id) : undefined,
-        },
+        // filter: {
+        //   ...input,
+        //   ids: input.status === "pending" ? approvedIds : undefined,
+        // },
       });
 
-      return applications;
+      const approvedById = Object.fromEntries(
+        approved.map((a) => [a.refUID, { attester: a.attester, uid: a.id }]),
+      );
+
+      const data = applications.map((a) => ({
+        ...a,
+        status: approvedById[a.id] ? "approved" : "pending",
+        approvedBy: approvedById[a.id],
+      }));
+
+      return {
+        count: applicationsCount.length,
+        data,
+      };
     }),
 });

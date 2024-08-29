@@ -28,7 +28,7 @@ export function ApplicationItem({
   approvedBy,
   isLoading,
 }: Attestation & {
-  approvedBy?: { attester: Address; uid: string }[];
+  approvedBy?: { attester: Address; uid: string };
   isLoading?: boolean;
 }) {
   const { address } = useAccount();
@@ -111,7 +111,7 @@ export function ApplicationItem({
             <Button
               size="sm"
               variant="outline"
-              disabled={approvedBy ? approvedBy[0]?.attester !== address : true}
+              disabled={approvedBy?.attester !== address}
               isLoading={revoke.isPending}
               onClick={() => {
                 if (
@@ -119,7 +119,7 @@ export function ApplicationItem({
                     "Are you sure? This will revoke the application and must be done by the same person who approved it.",
                   )
                 )
-                  revoke.mutate(approvedBy?.map((x) => x.uid) ?? []);
+                  revoke.mutate([approvedBy?.uid]);
               }}
             >
               Revoke

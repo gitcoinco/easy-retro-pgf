@@ -24,7 +24,7 @@ export type Attestation = Omit<AttestationWithMetadata, "decodedDataJson"> & {
 };
 
 type MatchFilter = { equals?: string; in?: string[]; gte?: number };
-type MatchWhere = {
+export type MatchWhere = {
   id?: MatchFilter;
   attester?: MatchFilter;
   recipient?: MatchFilter;

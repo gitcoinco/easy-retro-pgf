@@ -19,22 +19,6 @@ const TEN_MINUTES_IN_MS = 1000 * 60 * 10;
 
 const fetch = createCachedFetch({ ttl: TEN_MINUTES_IN_MS });
 
-const AttestationsQuery = `
-  query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByWithRelationInput!], $take: Int, $skip: Int) {
-    attestations(take: $take, skip: $skip, orderBy: $orderBy, where: $where) {
-      id
-      refUID
-      decodedDataJson
-      attester
-      recipient
-      revoked
-      schemaId
-      time
-      time
-    }
-  }
-`;
-
 function parseAttestation({
   decodedDataJson,
   ...attestation
@@ -42,8 +26,22 @@ function parseAttestation({
   return { ...attestation, ...parseDecodedMetadata(decodedDataJson) };
 }
 
+const defaultQueryKeys = [
+  "id",
+  "refUID",
+  "decodedDataJson",
+  "attester",
+  "recipient",
+  "revoked",
+  "schemaId",
+  "time",
+];
 export function createAttestationFetcher(round: Round): AttestationFetcher {
-  return (schema: SchemaType[], filter?: AttestationsFilter) => {
+  return (
+    schema: SchemaType[],
+    filter?: AttestationsFilter,
+    keys = defaultQueryKeys,
+  ) => {
     const isImpactRound = round?.type === RoundTypes.impact;
 
     const parsedSchema: SchemaType[] =
@@ -61,7 +59,13 @@ export function createAttestationFetcher(round: Round): AttestationFetcher {
     return fetch<{ attestations: AttestationWithMetadata[] }>(easURL, {
       method: "POST",
       body: JSON.stringify({
-        query: AttestationsQuery,
+        query: `
+query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByWithRelationInput!], $take: Int, $skip: Int) {
+  attestations(take: $take, skip: $skip, orderBy: $orderBy, where: $where) {
+    ${keys.join("\n")}
+  }
+}
+      `,
         variables: {
           ...filter,
           where: {
