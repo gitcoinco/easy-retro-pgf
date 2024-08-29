@@ -73,25 +73,30 @@ export function ApplicationItem({
               {name}
             </Skeleton>
           </div>
-          {sunnyAwards ? (
-            <div className="flex gap-4 text-xs dark:text-gray-400">
-              {sunnyAwards.projectType && (
-                <Badge size="xs" variant="info">
-                  {sunnyAwards.projectType}
-                </Badge>
-              )}
-              {sunnyAwards.category && (
-                <Badge size="xs" variant="success">
-                  {sunnyAwards.category}
-                </Badge>
-              )}
-            </div>
-          ) : (
-            <div className="flex gap-4 text-xs dark:text-gray-400">
-              <div>{fundingSources.length} funding sources</div>
-              <div>{impactMetrics.length} impact metrics</div>
-            </div>
-          )}
+          <Skeleton
+            isLoading={isLoading || metadata.isPending}
+            className="mb-1 h-3 min-w-48"
+          >
+            {sunnyAwards ? (
+              <div className="flex gap-4 text-xs dark:text-gray-400">
+                {sunnyAwards.projectType && (
+                  <Badge size="xs" variant="info">
+                    {sunnyAwards.projectType}
+                  </Badge>
+                )}
+                {sunnyAwards.category && (
+                  <Badge size="xs" variant="success">
+                    {sunnyAwards.category}
+                  </Badge>
+                )}
+              </div>
+            ) : (
+              <div className="flex gap-4 text-xs dark:text-gray-400">
+                <div>{fundingSources.length} funding sources</div>
+                <div>{impactMetrics.length} impact metrics</div>
+              </div>
+            )}
+          </Skeleton>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
           <ClockIcon className="size-3" />

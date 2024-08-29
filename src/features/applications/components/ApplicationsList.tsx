@@ -63,9 +63,13 @@ export function ApplicationsList() {
           <ApplicationsFilter applicationCount={applications.data?.count} />
 
           {applications.isPending ? (
-            <div className="flex items-center justify-center py-16">
-              <Spinner />
-            </div>
+            Array.from({ length: 10 }).map((_, i) => (
+              <ApplicationItem
+                key={i}
+                {...{ time: new Date() }}
+                isLoading={applications.isPending}
+              />
+            ))
           ) : !applicationsList.length ? (
             <EmptyState title="No applications">
               <Button
