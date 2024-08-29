@@ -9,7 +9,7 @@ import { Button } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Checkbox, Form, FormControl, Textarea } from "~/components/ui/Form";
 import { NameENS } from "~/components/ENS";
-import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 import { cn } from "~/utils/classNames";
 
 type Props = {
