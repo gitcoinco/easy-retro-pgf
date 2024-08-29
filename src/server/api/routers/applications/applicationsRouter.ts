@@ -60,20 +60,17 @@ export const applicationsRouter = createTRPCRouter({
       const approvedIds = approved.map((a) => a.refUID);
 
       const { status, ...filter } = input;
+      let ids;
+      if (status === "approved") ids = approvedIds.length ? approvedIds : [""]; // empty string otherwise will fetch all
+      if (status === "pending")
+        ids = applicationsCount // non-approved applications
+          .filter((a) => !approvedIds.includes(a.id))
+          .map((a) => a.id);
+
       const applications = await fetchApplications({
         attestationFetcher,
         roundId,
-        filter: {
-          ...filter,
-          ids:
-            status === "all"
-              ? undefined
-              : status === "approved"
-                ? approvedIds
-                : applicationsCount
-                    .filter((a) => !approvedIds.includes(a.id))
-                    .map((a) => a.id),
-        },
+        filter: { ...filter, ids },
       });
 
       const approvedById = Object.fromEntries(
