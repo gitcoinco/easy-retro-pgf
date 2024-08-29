@@ -27,7 +27,7 @@ export function ApplicationItem({
   time,
   approvedBy,
   isLoading,
-}: Attestation & {
+}: Partial<Attestation> & {
   approvedBy?: { attester: Address; uid: string };
   isLoading?: boolean;
 }) {

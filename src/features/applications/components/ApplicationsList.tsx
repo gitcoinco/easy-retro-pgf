@@ -66,7 +66,7 @@ export function ApplicationsList() {
             Array.from({ length: 10 }).map((_, i) => (
               <ApplicationItem
                 key={i}
-                {...{ time: new Date() }}
+                {...{ time: Date.now() }}
                 isLoading={applications.isPending}
               />
             ))
@@ -116,7 +116,7 @@ function ApplicationsFilter({ applicationCount = 0 }) {
   const pageCount = Math.ceil(applicationCount / PAGE_SIZE) || currentPage;
 
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="mb-1 flex items-center justify-end gap-2">
       <Tabs>
         {tabs.map((tab) => (
           <Tab
