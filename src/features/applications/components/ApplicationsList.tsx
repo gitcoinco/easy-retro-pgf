@@ -108,7 +108,7 @@ function ApplicationsFilter() {
       label: "Approved",
       status: "approved",
     },
-  ];
+  ] as const;
   return (
     <div className="flex items-center justify-end gap-2">
       <Tabs>
