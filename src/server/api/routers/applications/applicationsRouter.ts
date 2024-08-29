@@ -5,13 +5,17 @@ import {
   createTRPCRouter,
   roundProcedure,
 } from "~/server/api/trpc";
-import { fetchApplications, fetchApprovals } from "./utils";
 import { FilterSchema } from "./utils/fetchApplications";
 import { createDataFilter } from "~/utils/fetchAttestations";
+import {
+  fetchApplications,
+  fetchApprovals,
+  getApplicationStatus,
+} from "./utils";
 
 export const applicationsRouter = createTRPCRouter({
   approvals: roundProcedure
-    .input(z.object({ ids: z.array(z.string()).optional() })) // TODO: add filter schema
+    .input(FilterSchema)
     .query(async ({ input, ctx }) => {
       const { round } = ctx;
       const { ids: projectIds } = input;
@@ -21,6 +25,14 @@ export const applicationsRouter = createTRPCRouter({
         projectIds,
       });
     }),
+
+  status: roundProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(({ input: { projectId }, ctx: { round } }) =>
+      getApplicationStatus({ round, projectId }).then(({ status }) => ({
+        status,
+      })),
+    ),
 
   list: attestationProcedure
     .input(FilterSchema)
