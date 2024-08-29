@@ -9,6 +9,9 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
+import { decryptData } from "~/lib/encryption/encryptData";
+import { type ApplicationVerification } from "~/features/applications/types";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
 
 export default function ProjectDetails({
   attestation,
@@ -18,6 +21,11 @@ export default function ProjectDetails({
   attestation?: Attestation;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
+  const isAdmin = useIsAdmin();
+  const applicationVerificationData: ApplicationVerification | undefined =
+    metadata.data?.encryptedData !== undefined && isAdmin
+      ? (decryptData(metadata.data?.encryptedData) as ApplicationVerification)
+      : undefined;
 
   const { bio, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
@@ -89,6 +97,31 @@ export default function ProjectDetails({
             );
           })}
         </div>
+        {applicationVerificationData! ? (
+          <div>
+            <Heading as="h3" size="2xl">
+              Project kyc information
+            </Heading>
+            <div>
+              <div>
+                <text className="mr-2">Project name:</text>{" "}
+                {applicationVerificationData.name}
+              </div>
+              <div>
+                <text className="mr-2">Project email:</text>
+                {applicationVerificationData.projectEmail}
+              </div>
+              <div>
+                <text className="mr-2">Physical address:</text>
+                {applicationVerificationData.projectPhysicalAddress}
+              </div>
+              <div>
+                <text className="mr-2">Sanctioned org:</text>
+                {applicationVerificationData.sanctionedOrg ? "Yes" : "No"}
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
