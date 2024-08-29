@@ -43,19 +43,22 @@ export const votersRouter = createTRPCRouter({
             hasVoted: publishedBallots?.[v.recipient],
           }));
         } else if (ctx.round?.type === "impact") {
-          const publishedBallots = await ctx.db.ballotV2
+          const publishedBallots = await ctx.db.allocation
             .findMany({
               where: {
+                roundId: ctx.round.id,
                 voterId: { in: voters.map((v) => v.recipient) },
-                publishedAt: { not: null },
               },
-              select: { voterId: true, publishedAt: true },
+              select: { voterId: true },
             })
-            .then((r) =>
+            .then((allocations) =>
               Object.fromEntries(
-                r.map((v) => [v.voterId, Boolean(v.publishedAt)]),
-              ),
-            );
+                voters.map((voter) => [
+                  voter.recipient,
+                  allocations.some((alloc) => alloc.voterId === voter.recipient),
+                ])
+              )
+            )
           return voters.map((v) => ({
             ...v,
             hasVoted: publishedBallots?.[v.recipient],
