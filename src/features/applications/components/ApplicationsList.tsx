@@ -108,9 +108,9 @@ function ApplicationsFilter({ applicationCount = 0 }) {
     },
   ] as const;
 
-  const pageCount = Math.ceil(applicationCount / PAGE_SIZE);
-
   const currentPage = filter.skip / filter.take + 1;
+  const pageCount = Math.ceil(applicationCount / PAGE_SIZE) || currentPage;
+
   return (
     <div className="flex items-center justify-end gap-2">
       <Tabs>
