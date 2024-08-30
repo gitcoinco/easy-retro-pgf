@@ -16,7 +16,7 @@ export async function getApplicationStatus({
     round,
     projectIds: [projectId],
     includeRevoked: true,
-    noCache: true,
+    expirationTime: Date.now(),
   });
 
   const lastAttestation = approvals.at(-1);

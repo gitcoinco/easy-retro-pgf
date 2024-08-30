@@ -12,7 +12,6 @@ export function useApplicationStatus({
     refetchInterval?: number;
     gcTime?: number;
     enabled?: boolean;
-    noCache?: boolean;
   };
 }) {
   return api.applications.status.useQuery(

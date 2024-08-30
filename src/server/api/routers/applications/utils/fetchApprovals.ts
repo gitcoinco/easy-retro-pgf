@@ -9,12 +9,12 @@ export async function fetchApprovals({
   round,
   projectIds,
   includeRevoked = false,
-  noCache = false,
+  expirationTime,
 }: {
   round: Round;
   projectIds?: string[];
   includeRevoked?: boolean;
-  noCache?: boolean;
+  expirationTime?: number;
 }) {
   if (!round)
     throw new TRPCError({ code: "BAD_REQUEST", message: "No round found" });
@@ -24,7 +24,7 @@ export async function fetchApprovals({
   const attestationFetcher = createAttestationFetcher({
     round,
     includeRevoked,
-    noCache,
+    expirationTime,
   });
 
   const approvals = await attestationFetcher(["approval"], {

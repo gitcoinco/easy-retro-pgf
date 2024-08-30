@@ -39,11 +39,11 @@ const defaultQueryKeys = [
 export function createAttestationFetcher({
   round,
   includeRevoked = false,
-  noCache = false,
+  expirationTime,
 }: {
   round: Round;
   includeRevoked?: boolean;
-  noCache?: boolean;
+  expirationTime?: number;
 }): AttestationFetcher {
   return (
     schema: SchemaType[],
@@ -75,6 +75,7 @@ query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByW
 }
       `,
         variables: {
+          orderBy: [{ time: "desc" }],
           ...filter,
           where: {
             schemaId: { in: schemas },
@@ -82,10 +83,10 @@ query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByW
             time: { gte: startsAt },
             ...filter?.where,
           },
+          expirationTime,
         },
       }),
     }).then((response) => {
-      noCache && void response.ejectCache();
       return response.data?.attestations.map(parseAttestation);
     });
   };

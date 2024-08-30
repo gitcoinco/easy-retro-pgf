@@ -18,18 +18,18 @@ export const applicationsRouter = createTRPCRouter({
     .input(
       FilterSchema.merge(
         z.object({
-          noCache: z.boolean().default(false),
+          expirationTime: z.number().optional(),
         }),
       ),
     )
     .query(async ({ input, ctx }) => {
       const { round } = ctx;
-      const { ids: projectIds, noCache } = input;
+      const { ids: projectIds, expirationTime } = input;
 
       return fetchApprovals({
         round,
         projectIds,
-        noCache,
+        expirationTime,
       });
     }),
 

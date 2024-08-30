@@ -31,7 +31,6 @@ export async function fetchApplications({
   if (filter?.search) AND.push(createSearchFilter(filter.search));
 
   return attestationFetcher(["metadata"], {
-    orderBy: [{ time: "desc" }],
     where: { AND },
     ...filter,
   });
