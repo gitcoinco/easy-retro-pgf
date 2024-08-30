@@ -8,7 +8,7 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApplicationStatus } from "./useApplicationStatus";
 import { useApproveApplication } from "./useApproveApplication";
 
-const DEFAULT_REFETCH_INTERVAL = 1000 * 30;
+const DEFAULT_REFETCH_INTERVAL = 1000 * 10;
 
 export const useApplicationReview = ({
   projectId,
@@ -65,17 +65,15 @@ export const useApplicationReview = ({
     },
   });
 
-  const unrevokedAttestations = attestations?.filter(
-    (attestation) => !attestation.revoked,
-  );
+  const lastAttestation = attestations?.[0];
 
-  const unrevokedAttestationsIds = unrevokedAttestations?.map(
-    (attestation) => attestation.id,
-  );
+  const unrevokedUserAttestationsIds = attestations
+    ?.filter(
+      (attestation) => !attestation.revoked && attestation.attester === address,
+    )
+    .map((attestation) => attestation.id);
 
-  const userCanRevoke = unrevokedAttestations?.some(
-    (attestation) => attestation?.attester === address,
-  );
+  const userCanRevoke = lastAttestation?.attester === address;
 
   const handleRevoke = useCallback(
     (attestations?: string[]) => {
@@ -109,7 +107,7 @@ export const useApplicationReview = ({
     userCanRevoke,
     isCorrectNetwork,
     onApprove: () => handleApprove([projectId]),
-    onRevoke: () => handleRevoke(unrevokedAttestationsIds),
+    onRevoke: () => handleRevoke(unrevokedUserAttestationsIds),
     revokeIsPending: revokeFlags.isPending || isRevoking,
     approveIsPending: approveFlags.isPending || isApproving,
   };

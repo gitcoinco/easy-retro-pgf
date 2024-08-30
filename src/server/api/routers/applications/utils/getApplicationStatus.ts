@@ -19,14 +19,14 @@ export async function getApplicationStatus({
     expirationTime: Date.now(),
   });
 
-  const lastAttestation = approvals.at(-1);
+  const lastAttestation = approvals[0];
 
-  if (lastAttestation) {
-    return {
-      status: lastAttestation.revoked ? "rejected" : "approved",
-      attestations: withAttestations ? approvals : undefined,
-    };
-  }
+  if (!lastAttestation) return { status: "pending" };
 
-  return { status: "pending" };
+  const status = lastAttestation?.revoked ? "rejected" : "approved";
+
+  return {
+    status,
+    attestations: withAttestations ? approvals : undefined,
+  };
 }
