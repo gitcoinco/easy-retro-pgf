@@ -49,6 +49,9 @@ export const useApplicationReview = ({
         toast.error("Attestations refresh failed");
       });
     },
+    onError: () => {
+      setIsApproving(false);
+    },
   });
 
   const { mutate: revoke, ...revokeFlags } = useRevokeAttestations({
@@ -56,6 +59,9 @@ export const useApplicationReview = ({
       refetchAttestations().catch(() => {
         toast.error("Attestations refresh failed");
       });
+    },
+    onError: () => {
+      setIsRevoking(false);
     },
   });
 
