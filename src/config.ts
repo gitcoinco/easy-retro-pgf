@@ -125,6 +125,19 @@ export const easApiEndpoints = {
     "http://ec2-35-174-143-89.compute-1.amazonaws.com:32768/",
 } as const;
 
+export const explorerLinks = {
+  // [networks.mainnet]: "https://etherscan.io",
+  [networks.optimism]: "https://optimistic.etherscan.io",
+  [networks.optimismSepolia]: "https://sepolia-optimism.etherscan.io/",
+  // [networks.arbitrum]: "https://arbiscan.io",
+  // [networks.linea]: "https://linea.etherscan.io",
+  // [networks.sepolia]: "https://sepolia.etherscan.io",
+  // [networks.base]: "https://base.etherscan.io",
+  // [networks.baseGoerli]: "https://goerli.etherscan.io",
+  [networks.celo]: "https://explorer.celo.org",
+  [networks.avalanche]: "https://cchain.explorer.avax.network",
+} as const;
+
 export const openSourceObserverEndpoint = String(
   process.env.OPENSOURCE_OBSERVER_API,
 );
