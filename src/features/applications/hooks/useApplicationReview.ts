@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { useCurrentUser } from "~/hooks/useCurrentUser";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
-import { useApplicationStatus } from "./useApplicationStatus";
 import { useApproveApplication } from "./useApproveApplication";
+import { api } from "~/utils/api";
 
 const DEFAULT_REFETCH_INTERVAL = 1000 * 10;
 
@@ -24,11 +24,15 @@ export const useApplicationReview = ({
 
   const { isCorrectNetwork, switchToCorrectChain } = useIsCorrectNetwork();
 
-  const { data, refetch: refetchAttestations } = useApplicationStatus({
-    projectId,
-    withAttestations: true,
-    opts: { enabled: true, refetchInterval },
-  });
+  const { data, refetch: refetchAttestations } =
+    api.applications.status.useQuery(
+      { projectId, withAttestations: true },
+      {
+        staleTime: 0,
+        refetchInterval,
+        enabled: true,
+      },
+    );
 
   const { status, attestations } = data ?? {};
 
