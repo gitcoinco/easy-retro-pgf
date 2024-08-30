@@ -13,13 +13,8 @@ export function useIsCorrectNetwork() {
   const network = supportedNetworks.find((n) => n.chain === round?.network);
   const isCorrectNetwork = isConnected && chainId === network?.id;
 
-  const switchToCorrectChain = () => {
-    switchChain({ chainId });
-  };
-
   return {
     switchChain,
-    switchToCorrectChain,
     isCorrectNetwork,
     correctNetwork: network,
   };

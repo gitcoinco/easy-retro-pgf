@@ -5,6 +5,7 @@ import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
 import { useApplicationReview } from "../../hooks/useApplicationReview";
 import { ApproveButton } from "./ApproveButton";
 import { RevokeButton } from "./RevokeButton";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 
 const renderActionButtons = ({
   status,
@@ -27,20 +28,24 @@ const renderActionButtons = ({
     case "pending":
     case "rejected":
       return (
-        <ApproveButton
-          disabled={approveDisabled}
-          isLoading={approveLoading}
-          onClick={onApprove}
-        />
+        <EnsureCorrectNetwork>
+          <ApproveButton
+            disabled={approveDisabled}
+            isLoading={approveLoading}
+            onClick={onApprove}
+          />
+        </EnsureCorrectNetwork>
       );
 
     case "approved":
       return (
-        <RevokeButton
-          disabled={revokeDisabled}
-          isLoading={revokeLoading}
-          onClick={onRevoke}
-        />
+        <EnsureCorrectNetwork>
+          <RevokeButton
+            disabled={revokeDisabled}
+            isLoading={revokeLoading}
+            onClick={onRevoke}
+          />
+        </EnsureCorrectNetwork>
       );
 
     default:
@@ -57,7 +62,6 @@ export function ApplicationReviewActions({ projectId, isLoading }: Props) {
   const {
     status,
     isAdmin,
-    isCorrectNetwork,
     userCanRevoke,
     onApprove,
     onRevoke,
@@ -67,8 +71,7 @@ export function ApplicationReviewActions({ projectId, isLoading }: Props) {
     projectId,
   });
 
-  if (!isCorrectNetwork || !isAdmin || isLoading)
-    return <ApplicationStatusBadge status={status} />;
+  if (!isAdmin || isLoading) return <ApplicationStatusBadge status={status} />;
 
   return (
     <div className="flex items-center gap-2">

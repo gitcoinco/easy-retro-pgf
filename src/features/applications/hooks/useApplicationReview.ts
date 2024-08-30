@@ -22,8 +22,6 @@ export const useApplicationReview = ({
 
   const { address, isAdmin } = useCurrentUser();
 
-  const { isCorrectNetwork, switchToCorrectChain } = useIsCorrectNetwork();
-
   const { data, refetch: refetchAttestations } =
     api.applications.status.useQuery(
       { projectId, withAttestations: true },
@@ -69,47 +67,40 @@ export const useApplicationReview = ({
     },
   });
 
-  const lastAttestation = attestations?.[0];
-
   const unrevokedUserAttestationsIds = attestations
     ?.filter(
       (attestation) => !attestation.revoked && attestation.attester === address,
     )
     .map((attestation) => attestation.id);
 
-  const userCanRevoke = lastAttestation?.attester === address;
+  const lastAttestation = attestations?.[0];
+  const userCanRevoke =
+    lastAttestation?.attester === address && !lastAttestation?.revoked;
 
   const handleRevoke = useCallback(
-    (attestations?: string[]) => {
-      if (!attestations) {
-        return toast.error("Error: No attestations ids to revoke");
-      } else if (!isCorrectNetwork) {
-        switchToCorrectChain();
-      } else {
-        revoke(attestations);
-        setIsRevoking(true);
+    (attestationIds?: string[]) => {
+      if (!attestationIds) {
+        console.error("No attestations ids to revoke");
+        return;
       }
+      revoke(attestationIds);
+      setIsRevoking(true);
     },
-    [revoke, isCorrectNetwork],
+    [revoke],
   );
 
   const handleApprove = useCallback(
     (projectIds: string[]) => {
-      if (!isCorrectNetwork) {
-        switchToCorrectChain();
-      } else {
-        approve(projectIds);
-        setIsApproving(true);
-      }
+      approve(projectIds);
+      setIsApproving(true);
     },
-    [approve, isCorrectNetwork],
+    [approve],
   );
 
   return {
     status,
     isAdmin,
     userCanRevoke,
-    isCorrectNetwork,
     onApprove: () => handleApprove([projectId]),
     onRevoke: () => handleRevoke(unrevokedUserAttestationsIds),
     revokeIsPending: revokeFlags.isPending || isRevoking,
