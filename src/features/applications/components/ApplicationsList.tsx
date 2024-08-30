@@ -1,23 +1,23 @@
 import { z } from "zod";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { type Address } from "viem";
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
 
 import { Button } from "~/components/ui/Button";
-import { Form, FormSection } from "~/components/ui/Form";
-import { useApplications } from "~/features/applications/hooks/useApplications";
+import { Form, FormSection, Label, Select } from "~/components/ui/Form";
+import {
+  PAGE_SIZE,
+  useApplications,
+  useApplicationsFilter,
+} from "~/features/applications/hooks/useApplications";
 import { useApproveApplication } from "../hooks/useApproveApplication";
 import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
-import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { ApplicationItem } from "./ApplicationItem";
 import { SelectAllButton } from "./SelectAllButton";
 import { ApproveButton } from "./ApproveButton";
-import { api } from "~/utils/api";
+import { Tab, Tabs } from "~/components/ui/Tabs";
 
 const ApplicationsListSchema = z.object({
   selected: z.array(z.string()),
@@ -26,53 +26,15 @@ const ApplicationsListSchema = z.object({
 export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
-  const [fetched, setFetched] = useState(false);
-  const applications = useApplications();
   const domain = useCurrentDomain();
-  const approved = useApprovedApplications();
+  const [filter] = useApplicationsFilter();
+
+  const applications = useApplications(filter);
   const approve = useApproveApplication({});
 
-  const queryClient = useQueryClient();
-  const approvedApplicationsQuery = getQueryKey(api.applications.approvals);
+  const applicationsList = applications.data?.data ?? [];
 
-  const handleRefetch = (timeout: number) => {
-    queryClient.removeQueries({ queryKey: approvedApplicationsQuery });
-    setTimeout(() => {
-      approved
-        .refetch()
-        .then(() => {
-          setFetched(!fetched);
-        })
-        .catch((error) => {
-          console.error(error);
-          throw error;
-        });
-    }, timeout);
-  };
-
-  useEffect(() => {
-    if (!fetched) {
-      handleRefetch(0);
-      setFetched(true);
-    }
-  }, [fetched]);
-
-  const approvedById = useMemo(() => {
-    return approved.data?.reduce((acc, x) => {
-      // Check if the key (refUID) already exists in the Map
-      const existingArray = acc.get(x.refUID) ?? [];
-      // Append the new object to the array
-      const newArray = [...existingArray, { attester: x.attester, uid: x.id }];
-      // Set the updated array back into the Map
-      acc.set(x.refUID, newArray);
-      return acc;
-    }, new Map<string, { attester: Address; uid: string }[]>());
-  }, [approved.data]);
-
-  const applicationsToApprove = applications.data?.filter(
-    (application) => !approvedById?.get(application.id),
-  );
-
+  const applicationsToApprove = applicationsList.filter((a) => !a.approvedBy);
   return (
     <div className="relative">
       <Form
@@ -89,8 +51,8 @@ export function ApplicationsList() {
           </Alert>
           <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2 dark:bg-gray-900">
             <div className="text-gray-300">
-              {applications.data?.length
-                ? `${applications.data?.length} applications found`
+              {applicationsList.length
+                ? `${applications.data?.count} applications found`
                 : ""}
             </div>
             <div className="flex gap-2">
@@ -98,12 +60,17 @@ export function ApplicationsList() {
               <ApproveButton isLoading={approve.isPending} />
             </div>
           </div>
+          <ApplicationsFilter applicationCount={applications.data?.count} />
 
           {applications.isPending ? (
-            <div className="flex items-center justify-center py-16">
-              <Spinner />
-            </div>
-          ) : !applications.data?.length ? (
+            Array.from({ length: 10 }).map((_, i) => (
+              <ApplicationItem
+                key={i}
+                {...{ time: Date.now() }}
+                isLoading={applications.isPending}
+              />
+            ))
+          ) : !applicationsList.length ? (
             <EmptyState title="No applications">
               <Button
                 variant="primary"
@@ -114,16 +81,70 @@ export function ApplicationsList() {
               </Button>
             </EmptyState>
           ) : null}
-          {applications.data?.map((item) => (
+          {applicationsList.map((item) => (
             <ApplicationItem
               key={item.id}
               {...item}
               isLoading={applications.isPending}
-              approvedBy={approvedById?.get(item.id)}
             />
           ))}
         </FormSection>
       </Form>
+    </div>
+  );
+}
+
+function ApplicationsFilter({ applicationCount = 0 }) {
+  const [filter, setFilter] = useApplicationsFilter();
+
+  const tabs = [
+    {
+      label: "All",
+      status: "all",
+    },
+    {
+      label: "Pending",
+      status: "pending",
+    },
+    {
+      label: "Approved",
+      status: "approved",
+    },
+  ] as const;
+
+  const currentPage = filter.skip / filter.take + 1;
+  const pageCount = Math.ceil(applicationCount / PAGE_SIZE) || currentPage;
+
+  return (
+    <div className="mb-1 flex items-center justify-end gap-2">
+      <Tabs>
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.status}
+            onClick={() => setFilter({ status: tab.status })}
+            isActive={filter.status === tab.status}
+          >
+            {tab.label}
+          </Tab>
+        ))}
+      </Tabs>
+      <div className="flex items-center gap-2">
+        {/* Choosing a simple Select here rather than a Pagination component (which is a bigger lift) */}
+        <Label>Page</Label>
+        <Select
+          value={currentPage}
+          onChange={(e) => {
+            const skip = (Number(e.target.value) - 1) * PAGE_SIZE;
+            return setFilter({ skip });
+          }}
+        >
+          {Array.from({ length: pageCount }).map((_, page) => (
+            <option key={page} value={page + 1}>
+              {page + 1}
+            </option>
+          ))}
+        </Select>
+      </div>
     </div>
   );
 }

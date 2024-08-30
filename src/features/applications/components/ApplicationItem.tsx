@@ -27,8 +27,8 @@ export function ApplicationItem({
   time,
   approvedBy,
   isLoading,
-}: Attestation & {
-  approvedBy?: { attester: Address; uid: string }[];
+}: Partial<Attestation> & {
+  approvedBy?: { attester: Address; uid: string };
   isLoading?: boolean;
 }) {
   const { address } = useAccount();
@@ -73,25 +73,30 @@ export function ApplicationItem({
               {name}
             </Skeleton>
           </div>
-          {sunnyAwards ? (
-            <div className="flex gap-4 text-xs dark:text-gray-400">
-              {sunnyAwards.projectType && (
-                <Badge size="xs" variant="info">
-                  {sunnyAwards.projectType}
-                </Badge>
-              )}
-              {sunnyAwards.category && (
-                <Badge size="xs" variant="success">
-                  {sunnyAwards.category}
-                </Badge>
-              )}
-            </div>
-          ) : (
-            <div className="flex gap-4 text-xs dark:text-gray-400">
-              <div>{fundingSources.length} funding sources</div>
-              <div>{impactMetrics.length} impact metrics</div>
-            </div>
-          )}
+          <Skeleton
+            isLoading={isLoading || metadata.isPending}
+            className="mb-1 h-3 min-w-48"
+          >
+            {sunnyAwards ? (
+              <div className="flex gap-4 text-xs dark:text-gray-400">
+                {sunnyAwards.projectType && (
+                  <Badge size="xs" variant="info">
+                    {sunnyAwards.projectType}
+                  </Badge>
+                )}
+                {sunnyAwards.category && (
+                  <Badge size="xs" variant="success">
+                    {sunnyAwards.category}
+                  </Badge>
+                )}
+              </div>
+            ) : (
+              <div className="flex gap-4 text-xs dark:text-gray-400">
+                <div>{fundingSources.length} funding sources</div>
+                <div>{impactMetrics.length} impact metrics</div>
+              </div>
+            )}
+          </Skeleton>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
           <ClockIcon className="size-3" />
@@ -111,7 +116,7 @@ export function ApplicationItem({
             <Button
               size="sm"
               variant="outline"
-              disabled={approvedBy ? approvedBy[0]?.attester !== address : true}
+              disabled={approvedBy?.attester !== address}
               isLoading={revoke.isPending}
               onClick={() => {
                 if (
@@ -119,7 +124,7 @@ export function ApplicationItem({
                     "Are you sure? This will revoke the application and must be done by the same person who approved it.",
                   )
                 )
-                  revoke.mutate(approvedBy?.map((x) => x.uid) ?? []);
+                  revoke.mutate([approvedBy?.uid]);
               }}
             >
               Revoke

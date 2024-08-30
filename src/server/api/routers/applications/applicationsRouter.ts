@@ -1,16 +1,11 @@
-import { z } from "zod";
-
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import { fetchApplications, fetchApprovals } from "./utils";
-
-export const FilterSchema = z.object({
-  limit: z.number().default(3 * 8),
-  cursor: z.number().default(0),
-});
+import { FilterSchema } from "./utils/fetchApplications";
+import { createDataFilter } from "~/utils/fetchAttestations";
 
 export const applicationsRouter = createTRPCRouter({
   approvals: attestationProcedure
-    .input(z.object({ ids: z.array(z.string()).optional() }))
+    .input(FilterSchema)
     .query(async ({ input, ctx }) => {
       const {
         fetchAttestations: attestationFetcher,
@@ -27,18 +22,70 @@ export const applicationsRouter = createTRPCRouter({
     }),
 
   list: attestationProcedure
-    .input(z.object({ ids: z.array(z.string()).optional() }))
-    .query(async ({ ctx }) => {
+    .input(FilterSchema)
+    .query(async ({ input, ctx }) => {
       const {
         fetchAttestations: attestationFetcher,
-        round: { id: roundId },
+        round: { id: roundId, admins },
       } = ctx;
+
+      // Fetch approved applications + application count
+      const [approved, applicationsCount] = await Promise.all([
+        attestationFetcher(
+          ["approval"],
+          {
+            where: {
+              attester: { in: admins },
+              AND: [
+                createDataFilter("type", "bytes32", "application"),
+                createDataFilter("round", "bytes32", roundId),
+              ],
+            },
+          },
+          ["id", "refUID", "attester"], // Only fetch the required fields for smaller data payload
+        ),
+        attestationFetcher(
+          ["metadata"],
+          {
+            where: {
+              AND: [
+                createDataFilter("type", "bytes32", "application"),
+                createDataFilter("round", "bytes32", roundId),
+              ],
+            },
+          },
+          ["id"],
+        ),
+      ]);
+      const approvedIds = approved.map((a) => a.refUID);
+
+      const { status, ...filter } = input;
+      let ids;
+      if (status === "approved") ids = approvedIds.length ? approvedIds : [""]; // empty string otherwise will fetch all
+      if (status === "pending")
+        ids = applicationsCount // non-approved applications
+          .filter((a) => !approvedIds.includes(a.id))
+          .map((a) => a.id);
 
       const applications = await fetchApplications({
         attestationFetcher,
         roundId,
+        filter: { ...filter, ids },
       });
 
-      return applications;
+      const approvedById = Object.fromEntries(
+        approved.map((a) => [a.refUID, { attester: a.attester, uid: a.id }]),
+      );
+
+      const data = applications.map((a) => ({
+        ...a,
+        status: approvedById[a.id] ? "approved" : "pending",
+        approvedBy: approvedById[a.id],
+      }));
+
+      return {
+        count: applicationsCount.length,
+        data,
+      };
     }),
 });
