@@ -47,6 +47,7 @@ export const votersRouter = createTRPCRouter({
             .findMany({
               where: {
                 roundId: ctx.round.id,
+                ballot: { publishedAt: { not: null } },
                 voterId: { in: voters.map((v) => v.recipient) },
               },
               select: { voterId: true },

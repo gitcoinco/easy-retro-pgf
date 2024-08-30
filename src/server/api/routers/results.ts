@@ -254,7 +254,12 @@ async function generateImpactPayouts(round: Round, db: PrismaClient) {
 
   // Fetch the allocations for the specified round
   const allocations = await db.allocation.findMany({
-    where: { roundId: round.id },
+    where: {
+      roundId: round.id,
+      ballot: {
+        publishedAt: { not: null },
+      }
+    },
     select: {
       id: true, // impact metric id
       amount: true,
