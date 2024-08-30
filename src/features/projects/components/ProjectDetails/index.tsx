@@ -50,18 +50,6 @@ export default function ProjectDetails({
     mintingWalletAddress,
   } = sunnyAwards ?? {};
 
-  console.log(
-    JSON.stringify({
-      avatarUrl,
-      coverImageUrl,
-      projectType,
-      category,
-      categoryDetails,
-      contracts,
-      mintingWalletAddress,
-    }),
-  );
-
   return (
     <div className="relative mb-24">
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
