@@ -34,11 +34,18 @@ export const applicationsRouter = createTRPCRouter({
     }),
 
   status: roundProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(({ input: { projectId }, ctx: { round } }) =>
-      getApplicationStatus({ round, projectId }).then(({ status }) => ({
-        status,
-      })),
+    .input(
+      z.object({
+        projectId: z.string(),
+        withAttestations: z.boolean().default(false),
+      }),
+    )
+    .query(({ input: { projectId, withAttestations }, ctx: { round } }) =>
+      getApplicationStatus({ round, projectId, withAttestations }).then(
+        ({ status }) => ({
+          status,
+        }),
+      ),
     ),
 
   list: attestationProcedure
