@@ -4,14 +4,14 @@ import { useAccount, useChainId } from "wagmi";
 import { useSwitchChain } from "wagmi";
 
 export function useIsCorrectNetwork() {
-  const { isConnected, chainId: accountChainId } = useAccount();
+  const { isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
 
   const { data: round } = useCurrentRound();
 
   const network = supportedNetworks.find((n) => n.chain === round?.network);
-  const isCorrectNetwork = isConnected && chainId === accountChainId;
+  const isCorrectNetwork = isConnected && chainId === network?.id;
 
   const switchToCorrectChain = () => {
     switchChain({ chainId });
