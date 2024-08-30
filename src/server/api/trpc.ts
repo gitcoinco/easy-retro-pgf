@@ -10,10 +10,11 @@
 import type { Round } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import type { NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { env } from "~/env";
 import type { RoundTypes } from "~/features/rounds/types";
 
 import { getServerAuthSession } from "~/server/auth";
@@ -82,11 +83,26 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
+  if (isSameSiteRequest(req)) {
+    console.log("Same-site request");
+  }
   // Get the current round domain
   const domain = req.headers["round-id"] as string;
 
   return createInnerTRPCContext({ session, res, domain });
 };
+
+/**
+ * Check if calling site is trusted. Otherwise an API key is required.
+ * Note: this is only a soft security check because any client could forge the headers.
+ * It's just a failsafe to prevent random people from using your API.
+ * If we want to harden this, we could use CSRF tokens.
+ */
+const trustedSites = [process.env.VERCEL_URL, process.env.NEXTAUTH_URL];
+function isSameSiteRequest(req: NextApiRequest) {
+  const origin = req.headers.origin ?? req.headers.referer;
+  return origin && trustedSites.some((url) => origin.startsWith(url!));
+}
 
 /**
  * 2. INITIALIZATION
