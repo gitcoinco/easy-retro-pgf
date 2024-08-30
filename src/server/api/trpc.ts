@@ -97,7 +97,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 /**
  * Check if calling site is trusted. Otherwise an API key is required.
  * Note: this is only a soft security check because any client could forge the headers.
- * It's just a failsafe to prevent random people from using your API.
+ * It's just a failsafe to prevent random people from using the API.
  * If we want to harden this, we could use CSRF tokens.
  */
 const trustedSites = [process.env.VERCEL_URL, process.env.NEXTAUTH_URL];
