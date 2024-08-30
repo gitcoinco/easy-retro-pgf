@@ -40,12 +40,15 @@ export const applicationsRouter = createTRPCRouter({
         withAttestations: z.boolean().default(false),
       }),
     )
-    .query(({ input: { projectId, withAttestations }, ctx: { round } }) =>
-      getApplicationStatus({ round, projectId, withAttestations }).then(
-        ({ status }) => ({
-          status,
-        }),
-      ),
+    .query(
+      async ({ input: { projectId, withAttestations }, ctx: { round } }) => {
+        const result = await getApplicationStatus({
+          round,
+          projectId,
+          withAttestations,
+        });
+        return result;
+      },
     ),
 
   list: attestationProcedure
