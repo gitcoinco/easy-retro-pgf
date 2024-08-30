@@ -24,7 +24,7 @@ export async function getApplicationStatus({
   if (lastAttestation) {
     return {
       status: lastAttestation.revoked ? "rejected" : "approved",
-      ...(withAttestations && approvals),
+      attestations: withAttestations ? approvals : undefined,
     };
   }
 
