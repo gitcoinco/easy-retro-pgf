@@ -6,11 +6,6 @@ import { useApplicationReview } from "../../hooks/useApplicationReview";
 import { ApproveButton } from "./ApproveButton";
 import { RevokeButton } from "./RevokeButton";
 
-type Props = {
-  status?: ApplicationStatus;
-  projectId: string;
-};
-
 const renderActionButtons = ({
   status,
   actions: { onApprove, onRevoke } = {},
@@ -53,10 +48,16 @@ const renderActionButtons = ({
   }
 };
 
-export function ApplicationReviewActions({ projectId }: Props) {
+type Props = {
+  projectId: string;
+  isLoading?: boolean;
+};
+
+export function ApplicationReviewActions({ projectId, isLoading }: Props) {
   const {
     status,
     isAdmin,
+    isCorrectNetwork,
     userCanRevoke,
     onApprove,
     onRevoke,
@@ -66,7 +67,8 @@ export function ApplicationReviewActions({ projectId }: Props) {
     projectId,
   });
 
-  if (!isAdmin) return <ApplicationStatusBadge status={status} />;
+  if (!isCorrectNetwork || !isAdmin || isLoading)
+    return <ApplicationStatusBadge status={status} />;
 
   return (
     <div className="flex items-center gap-2">

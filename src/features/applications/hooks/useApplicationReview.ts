@@ -22,15 +22,14 @@ export const useApplicationReview = ({
 
   const { address, isAdmin } = useCurrentUser();
 
-  useIsCorrectNetwork({
-    force: !!isAdmin,
-  });
+  const { isCorrectNetwork, switchToCorrectChain } = useIsCorrectNetwork();
 
   const { data, refetch: refetchAttestations } = useApplicationStatus({
     projectId,
     withAttestations: true,
     opts: { enabled: true, refetchInterval },
   });
+
   const { status, attestations } = data ?? {};
 
   useEffect(() => {
@@ -74,26 +73,35 @@ export const useApplicationReview = ({
 
   const handleRevoke = useCallback(
     (attestations?: string[]) => {
-      if (!attestations)
+      if (!attestations) {
         return toast.error("Error: No attestations ids to revoke");
-      revoke(attestations);
-      setIsRevoking(true);
+      } else if (!isCorrectNetwork) {
+        switchToCorrectChain();
+      } else {
+        revoke(attestations);
+        setIsRevoking(true);
+      }
     },
-    [revoke],
+    [revoke, isCorrectNetwork],
   );
 
   const handleApprove = useCallback(
     (projectIds: string[]) => {
-      approve(projectIds);
-      setIsApproving(true);
+      if (!isCorrectNetwork) {
+        switchToCorrectChain();
+      } else {
+        approve(projectIds);
+        setIsApproving(true);
+      }
     },
-    [approve],
+    [approve, isCorrectNetwork],
   );
 
   return {
     status,
     isAdmin,
     userCanRevoke,
+    isCorrectNetwork,
     onApprove: () => handleApprove([projectId]),
     onRevoke: () => handleRevoke(unrevokedAttestationsIds),
     revokeIsPending: revokeFlags.isPending || isRevoking,
