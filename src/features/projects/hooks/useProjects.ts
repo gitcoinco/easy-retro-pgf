@@ -94,14 +94,6 @@ export function useDownloadProjects() {
   };
 }
 
-// export function useDecryption(iv: string, data: string) {
-//   if (!iv || !data) return undefined;
-//   const { mutateAsync } = api.encryption.decrypt.useMutation();
-//   const result = mutateAsync({ iv, data });
-//   const decryptedData = result.then((res) => res.decrypted);
-//   return decryptedData;
-// }
-
 export function useDecryption(iv: string, data: string) {
   const decrypt = api.encryption.decrypt.useMutation();
   const query = useQuery({
