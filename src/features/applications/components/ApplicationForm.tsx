@@ -42,7 +42,7 @@ const ApplicationCreateSchema = z.object({
 
 export function ApplicationForm() {
   const clearDraft = useLocalStorage("application-draft")[2];
-  const ecrypt = api.encryption.encrypt.useMutation();
+  const encrypt = api.encryption.encrypt.useMutation();
   const create = useCreateApplication({
     onSuccess: () => {
       toast.success("Your application has been submitted successfully!");
@@ -78,7 +78,7 @@ export function ApplicationForm() {
         schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application, applicationVerification }) => {
           try {
-            const encryptedData = await ecrypt.mutateAsync(
+            const encryptedData = await encrypt.mutateAsync(
               applicationVerification,
             );
             application = { ...application, encryptedData };
