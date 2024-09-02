@@ -1,7 +1,11 @@
 import crypto from "crypto";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
+import {
+  protectedProcedure,
+  adminProcedure,
+  createTRPCRouter,
+} from "~/server/api/trpc";
 
 const algorithm = "aes-256-cbc";
 const key = process.env.ENCRYPTION_KEY; // Use a server-side environment variable
@@ -58,7 +62,7 @@ export const encryptionRouter = createTRPCRouter({
       }
     }),
 
-  encrypt: adminProcedure
+  encrypt: protectedProcedure
     .input(z.object({}).passthrough())
     .mutation(({ input }) => {
       try {
