@@ -8,8 +8,7 @@ import { Attestation as CustomAttestation } from "~/utils/fetchAttestations";
 import { shuffleProjects } from "~/utils/shuffleProjects";
 import { convertAndDownload } from "~/utils/csv";
 import { useMemo, useState } from "react";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { c } from "node_modules/nuqs/dist/serializer-C_l8WgvO";
+import { useQuery } from "@tanstack/react-query";
 
 export function useProjectById(id: string) {
   const query = api.projects.get.useQuery(
