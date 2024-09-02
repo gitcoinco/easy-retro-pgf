@@ -84,6 +84,7 @@ export function ApplicationForm() {
             application = { ...application, encryptedData };
             create.mutate({ application, profile });
           } catch (error) {
+            throw new Error("Failed to submit application!");
             console.error(error);
           }
         }}
