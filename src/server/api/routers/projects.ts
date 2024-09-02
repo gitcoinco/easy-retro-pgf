@@ -7,7 +7,7 @@ import {
   createSearchFilter,
 } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
-import { config, eas } from "~/config";
+import { config, eas, filecoinRounds } from "~/config";
 import { type Filter, FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 
@@ -42,9 +42,10 @@ export const projectsRouter = createTRPCRouter({
       });
     }),
   search: publicProcedure.input(FilterSchema).query(async ({ input }) => {
+
     const filters = [
       createDataFilter("type", "bytes32", "application"),
-      createDataFilter("round", "bytes32", config.roundId),
+      createDataFilter("round", "bytes32", input.round),
     ];
 
     if (input.search) {
@@ -53,7 +54,9 @@ export const projectsRouter = createTRPCRouter({
 
     return fetchAttestations([eas.schemas.approval], {
       where: {
-        attester: { in: config.admins },
+        attester: {
+          in: filecoinRounds[input.round as keyof typeof filecoinRounds],
+        },
         ...createDataFilter("type", "bytes32", "application"),
       },
     }).then((attestations = []) => {

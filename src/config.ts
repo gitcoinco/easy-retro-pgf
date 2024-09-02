@@ -1,6 +1,30 @@
 import { getAddress, isAddress } from "viem";
-import { rpc } from "viem/utils";
 import * as wagmiChains from "wagmi/chains";
+
+const admins = {
+  "ez-rpgf-filecoin-1": process.env.NEXT_PUBLIC_ADMIN_ADDRESSES,
+  // For each new round, add a new admin addresses in .env file
+  "ez-rpgf-filecoin-2": process.env.NEXT_PUBLIC_ADMIN_ADDRESSES,
+};
+export const filecoinRounds = {
+  "ez-rpgf-filecoin-1": getAdmins("ez-rpgf-filecoin-1"),
+  "ez-rpgf-filecoin-2": getAdmins("ez-rpgf-filecoin-2"),
+};
+
+export const roundsMap = {
+  "1": "ez-rpgf-filecoin-1",
+  "2": "ez-rpgf-filecoin-2",
+};
+
+function getAdmins(roundId: string) {
+  return (
+    (admins[roundId as keyof typeof admins] ?? "").split(",") as `0x${string}`[]
+  ).map((addr) => {
+    console.log(addr);
+    if (isAddress(addr)) return getAddress(addr);
+    throw new Error("Invalid admin address");
+  });
+}
 
 export const metadata = {
   title: "FIL RetroPGF",
@@ -24,15 +48,7 @@ export const config = {
   ),
   tokenName: process.env.NEXT_PUBLIC_TOKEN_NAME!,
   roundId: process.env.NEXT_PUBLIC_ROUND_ID!,
-  admins: (
-    (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES ?? "").split(
-      ",",
-    ) as `0x${string}`[]
-  ).map((addr) => {
-    console.log(addr);
-    if (isAddress(addr)) return getAddress(addr);
-    throw new Error("Invalid admin address");
-  }),
+  admins: getAdmins(process.env.NEXT_PUBLIC_ROUND_ID!),
 
   network:
     wagmiChains[process.env.NEXT_PUBLIC_CHAIN_NAME as keyof typeof wagmiChains],

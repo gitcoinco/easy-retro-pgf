@@ -51,10 +51,10 @@ function BallotOverview() {
           size="sm"
           variant="secondary"
           onClick={download.downloadMetadata}
-          isLoading={download.isLoading || download.fetched}
-          disabled={download.isLoading}
+          isLoading={download.isLoading}
+          disabled={download.isLoading || download.count === 0}
         >
-          Download
+          {`Download ${download.count} projects`}
         </Button>
       </BallotMessage>
     );
