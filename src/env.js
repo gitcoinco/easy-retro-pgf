@@ -29,6 +29,7 @@ export const env = createEnv({
     POSTGRES_HOST: z.string(),
     POSTGRES_PASSWORD: z.string(),
     POSTGRES_DATABASE: z.string(),
+    ENCRYPTION_KEY: z.string(),
   },
 
   /**
@@ -128,6 +129,7 @@ export const env = createEnv({
     POSTGRES_HOST: process.env.POSTGRES_HOST,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
+    ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
 
     NEXT_PUBLIC_CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME,
     NEXT_PUBLIC_SIGN_STATEMENT: process.env.NEXT_PUBLIC_SIGN_STATEMENT,

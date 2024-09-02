@@ -1,4 +1,3 @@
-import { type ReactNode } from "react";
 import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
@@ -6,9 +5,12 @@ import ProjectContributions from "./ProjectContributions";
 import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
-import { useProjectMetadata } from "../hooks/useProjects";
+import { useDecryption, useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
+import { type ApplicationVerification } from "~/features/applications/types";
+import { useIsAdmin } from "~/hooks/useIsAdmin";
+import { type ReactNode } from "react";
 
 export default function ProjectDetails({
   attestation,
@@ -18,7 +20,14 @@ export default function ProjectDetails({
   attestation?: Attestation;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
-
+  const isAdmin = useIsAdmin();
+  const { decryptedData, isLoading } = useDecryption(
+    metadata.data?.encryptedData?.iv ?? "",
+    metadata.data?.encryptedData?.data ?? "",
+  );
+  const applicationVerificationData = decryptedData as
+    | ApplicationVerification
+    | undefined;
   const { bio, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
 
@@ -89,6 +98,31 @@ export default function ProjectDetails({
             );
           })}
         </div>
+        {isAdmin && !isLoading && applicationVerificationData! ? (
+          <div>
+            <Heading as="h3" size="2xl">
+              Project kyc information
+            </Heading>
+            <div>
+              <div>
+                <text className="mr-2">Project name:</text>{" "}
+                {applicationVerificationData.name}
+              </div>
+              <div>
+                <text className="mr-2">Project email:</text>
+                {applicationVerificationData.projectEmail}
+              </div>
+              <div>
+                <text className="mr-2">Physical address:</text>
+                {applicationVerificationData.projectPhysicalAddress}
+              </div>
+              <div>
+                <text className="mr-2">Sanctioned org:</text>
+                {applicationVerificationData.sanctionedOrg ? "Yes" : "No"}
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

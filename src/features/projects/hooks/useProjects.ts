@@ -8,6 +8,7 @@ import { Attestation as CustomAttestation } from "~/utils/fetchAttestations";
 import { shuffleProjects } from "~/utils/shuffleProjects";
 import { convertAndDownload } from "~/utils/csv";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export function useProjectById(id: string) {
   const query = api.projects.get.useQuery(
@@ -89,5 +90,22 @@ export function useDownloadProjects() {
   return {
     downloadMetadata,
     isLoading: isLoading || attestations.length === 0,
+  };
+}
+
+export function useDecryption(iv: string, data: string) {
+  const decrypt = api.encryption.decrypt.useMutation();
+  const query = useQuery({
+    queryKey: ["decryption", iv, data],
+    queryFn: async () => {
+      const result = await decrypt.mutateAsync({ iv, data });
+      return result.decrypted;
+    },
+    enabled: Boolean(iv && data),
+  });
+  return {
+    decryptedData: query.data,
+    error: query.error,
+    isLoading: query.isLoading,
   };
 }

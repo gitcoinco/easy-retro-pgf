@@ -32,8 +32,7 @@ import { Tag } from "~/components/ui/Tag";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
-import { watch } from "fs";
-import { useEffect } from "react";
+import { api } from "~/utils/api";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -43,7 +42,7 @@ const ApplicationCreateSchema = z.object({
 
 export function ApplicationForm() {
   const clearDraft = useLocalStorage("application-draft")[2];
-
+  const encrypt = api.encryption.encrypt.useMutation();
   const create = useCreateApplication({
     onSuccess: () => {
       toast.success("Your application has been submitted successfully!");
@@ -78,7 +77,16 @@ export function ApplicationForm() {
         persist="application-draft"
         schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application, applicationVerification }) => {
-          create.mutate({ application, applicationVerification, profile });
+          try {
+            const encryptedData = await encrypt.mutateAsync(
+              applicationVerification,
+            );
+            application = { ...application, encryptedData };
+            create.mutate({ application, profile });
+          } catch (error) {
+            throw new Error("Failed to submit application!");
+            console.error(error);
+          }
         }}
       >
         <FormSection
