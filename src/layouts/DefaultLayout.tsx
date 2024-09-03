@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode, PropsWithChildren } from "react";
 import { useAccount } from "wagmi";
 
@@ -25,20 +27,28 @@ export const Layout = ({ children, ...props }: Props) => {
 
   const domain = useCurrentDomain();
   const { data: round, isPending } = useCurrentRound();
+  const roundState = useRoundState();
 
-  const navLinks = [
-    round?.type === RoundTypes.impact
-      ? {
-          href: `/${domain}/metrics`,
-          children: `Metrics`,
-        }
-      : {
-          href: `/${domain}/projects`,
-          children: `Projects`,
-        },
-  ];
+  const navLinks: {
+    href: string;
+    children: string;
+  }[] = [];
 
-  if (useRoundState() === "RESULTS") {
+  if (round && round.type !== RoundTypes.impact) {
+    navLinks.push({
+      href: `/${domain}/projects`,
+      children: `Projects`,
+    });
+  }
+
+  if (round && round.type === RoundTypes.impact && roundState === "VOTING") {
+    navLinks.push({
+      href: `/${domain}/metrics`,
+      children: `Metrics`,
+    });
+  }
+
+  if (roundState === "RESULTS") {
     navLinks.push({
       href: `/${domain}/stats`,
       children: `Stats`,
