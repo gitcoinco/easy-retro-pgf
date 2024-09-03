@@ -10,10 +10,11 @@
 import type { Round } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import type { NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { env } from "~/env";
 import type { RoundTypes } from "~/features/rounds/types";
 
 import { getServerAuthSession } from "~/server/auth";
@@ -80,13 +81,35 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
   // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res });
+  const session =
+    (await getServerAuthSession({ req, res })) || (await getApiKeySession(req));
 
+  // If the request is not from a trusted site, and there is no session, throw an error
+  if (!isSameSiteRequest(req) && !session) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+  }
   // Get the current round domain
   const domain = req.headers["round-id"] as string;
 
   return createInnerTRPCContext({ session, res, domain });
 };
+
+/**
+ * Check if calling site is trusted. Otherwise an API key is required.
+ * Note: this is only a soft security check because any client could forge the headers.
+ * It's just a failsafe to prevent random people from using the API.
+ * If we want to harden this, we could use CSRF tokens.
+ */
+const trustedSites = [
+  ...[process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL].map(
+    (url) => `https://${url}`,
+  ),
+  process.env.NEXTAUTH_URL,
+];
+function isSameSiteRequest(req: NextApiRequest) {
+  const origin = req.headers.origin ?? req.headers.referer;
+  return origin && trustedSites.some((url) => origin.startsWith(url!));
+}
 
 /**
  * 2. INITIALIZATION
@@ -306,16 +329,18 @@ export const adminAttestationProcedure = protectedProcedure
 /**
  * Helper function to validate the API key and retrieve the corresponding session.
  *
- * @param apiKey - The API key to validate.
+ * @param req - Request object containing the API key in header.
  * @returns The session if the API key is valid, otherwise null.
  */
-export async function getApiKeySession(apiKey?: string | null) {
+export async function getApiKeySession(req: NextApiRequest) {
+  const apiKey = req.headers["x-api-key"] as string;
   if (!apiKey) return null;
 
   // Find API key
   const key = await db.apiKey.findFirst({ where: { key: hashApiKey(apiKey) } });
 
-  if (key?.creatorId) return { id: key.creatorId };
+  // Return a session with the admin user who created the API key
+  if (key?.creatorId) return { user: { name: key.creatorId } } as Session;
 
   return null;
 }
