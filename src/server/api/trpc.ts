@@ -100,7 +100,12 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  * It's just a failsafe to prevent random people from using the API.
  * If we want to harden this, we could use CSRF tokens.
  */
-const trustedSites = [process.env.VERCEL_URL, process.env.NEXTAUTH_URL];
+const trustedSites = [
+  ...[process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL].map(
+    (url) => `https://${url}`,
+  ),
+  process.env.NEXTAUTH_URL,
+];
 function isSameSiteRequest(req: NextApiRequest) {
   const origin = req.headers.origin ?? req.headers.referer;
   console.log({ trustedSites, origin });
