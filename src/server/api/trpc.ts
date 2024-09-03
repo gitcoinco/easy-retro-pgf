@@ -339,6 +339,7 @@ export async function getApiKeySession(req: NextApiRequest) {
   // Find API key
   const key = await db.apiKey.findFirst({ where: { key: hashApiKey(apiKey) } });
 
+  // Return a session with the admin user who created the API key
   if (key?.creatorId) return { user: { name: key.creatorId } } as Session;
 
   return null;
