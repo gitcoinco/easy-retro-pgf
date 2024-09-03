@@ -27,13 +27,6 @@ export function ApplicationReviewActions({ projectId }: Props) {
 
   if (!status) return null;
 
-  if (!isAdmin)
-    return (
-      <Badge variant={status && StatusBadgeVariant[status]} size={"lg"}>
-        {status}
-      </Badge>
-    );
-
   const type = status === "approved" ? "revoke" : "approve";
   const isLoading = type === "approve" ? approveIsPending : revokeIsPending;
   const disabled =
@@ -50,6 +43,7 @@ export function ApplicationReviewActions({ projectId }: Props) {
         onClick={onClick}
         disabled={disabled}
         isLoading={isLoading}
+        isAdmin={!!isAdmin}
       />
     </div>
   );

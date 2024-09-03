@@ -8,6 +8,7 @@ type Props = {
   onClick: () => void;
   disabled: boolean;
   isLoading: boolean;
+  isAdmin: boolean;
 };
 
 const BUTTON_CONFIG: Record<
@@ -23,8 +24,11 @@ export function ReviewActionButton({
   onClick,
   disabled,
   isLoading,
+  isAdmin,
 }: Props) {
   const config = BUTTON_CONFIG[type];
+
+  if (!isAdmin) return null;
 
   return (
     <EnsureCorrectNetwork>
