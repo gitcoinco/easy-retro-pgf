@@ -108,7 +108,6 @@ const trustedSites = [
 ];
 function isSameSiteRequest(req: NextApiRequest) {
   const origin = req.headers.origin ?? req.headers.referer;
-  console.log({ trustedSites, origin });
   return origin && trustedSites.some((url) => origin.startsWith(url!));
 }
 
