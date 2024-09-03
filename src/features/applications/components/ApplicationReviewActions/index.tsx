@@ -1,8 +1,14 @@
 "use client";
 
+import { Badge } from "~/components/ui/Badge";
 import { useApplicationReview } from "../../hooks/useApplicationReview";
-import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
 import { ReviewActionButton } from "./ReviewActionButton";
+
+enum StatusBadgeVariant {
+  pending = "info",
+  approved = "success",
+  rejected = "warning",
+}
 
 type Props = {
   projectId: string;
@@ -21,16 +27,24 @@ export function ApplicationReviewActions({ projectId }: Props) {
 
   if (!status) return null;
 
-  if (!isAdmin) return <ApplicationStatusBadge status={status} />;
+  if (!isAdmin)
+    return (
+      <Badge variant={status && StatusBadgeVariant[status]} size={"lg"}>
+        {status}
+      </Badge>
+    );
 
   const type = status === "approved" ? "revoke" : "approve";
   const isLoading = type === "approve" ? approveIsPending : revokeIsPending;
-  const disabled = type === "revoke" ? !userCanRevoke : false;
+  const disabled =
+    type === "revoke" ? !userCanRevoke || revokeIsPending : approveIsPending;
   const onClick = type === "approve" ? onApprove : onRevoke;
 
   return (
     <div className="flex items-center gap-2">
-      <ApplicationStatusBadge status={status} />
+      <Badge variant={status && StatusBadgeVariant[status]} size={"lg"}>
+        {status}
+      </Badge>
       <ReviewActionButton
         type={type}
         onClick={onClick}
