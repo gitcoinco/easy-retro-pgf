@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useCurrentUser } from "~/hooks/useCurrentUser";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
-import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApproveApplication } from "./useApproveApplication";
 import { api } from "~/utils/api";
 
@@ -22,14 +21,12 @@ export const useApplicationReview = ({
 
   const { address, isAdmin } = useCurrentUser();
 
+  const trpcUtils = api.useUtils();
+
   const { data, refetch: refetchAttestations } =
     api.applications.status.useQuery(
       { projectId, withAttestations: true },
-      {
-        staleTime: 0,
-        refetchInterval,
-        enabled: true,
-      },
+      { refetchInterval },
     );
 
   const { status, attestations } = data ?? {};
@@ -45,26 +42,20 @@ export const useApplicationReview = ({
     }
   }, [status]);
 
+  const handleSuccess = useCallback(() => {
+    refetchAttestations()
+      .then(() => void trpcUtils.applications.status.invalidate({ projectId }))
+      .catch(() => toast.error("Attestations refresh failed"));
+  }, [refetchAttestations, trpcUtils.applications.status, projectId]);
+
   const { mutate: approve, ...approveFlags } = useApproveApplication({
-    onSuccess: () => {
-      refetchAttestations().catch(() => {
-        toast.error("Attestations refresh failed");
-      });
-    },
-    onError: () => {
-      setIsApproving(false);
-    },
+    onSuccess: handleSuccess,
+    onError: () => setIsApproving(false),
   });
 
   const { mutate: revoke, ...revokeFlags } = useRevokeAttestations({
-    onSuccess: () => {
-      refetchAttestations().catch(() => {
-        toast.error("Attestations refresh failed");
-      });
-    },
-    onError: () => {
-      setIsRevoking(false);
-    },
+    onSuccess: handleSuccess,
+    onError: () => setIsRevoking(false),
   });
 
   const unrevokedUserAttestationsIds = attestations
@@ -77,32 +68,26 @@ export const useApplicationReview = ({
   const userCanRevoke =
     lastAttestation?.attester === address && !lastAttestation?.revoked;
 
-  const handleRevoke = useCallback(
-    (attestationIds?: string[]) => {
-      if (!attestationIds) {
-        console.error("No attestations ids to revoke");
-        return;
-      }
-      revoke(attestationIds);
-      setIsRevoking(true);
-    },
-    [revoke],
-  );
+  const handleRevoke = useCallback(() => {
+    if (!unrevokedUserAttestationsIds?.length) {
+      console.error("No attestations ids to revoke");
+      return;
+    }
+    revoke(unrevokedUserAttestationsIds);
+    setIsRevoking(true);
+  }, [revoke, unrevokedUserAttestationsIds]);
 
-  const handleApprove = useCallback(
-    (projectIds: string[]) => {
-      approve(projectIds);
-      setIsApproving(true);
-    },
-    [approve],
-  );
+  const handleApprove = useCallback(() => {
+    approve([projectId]);
+    setIsApproving(true);
+  }, [approve, projectId]);
 
   return {
     status,
     isAdmin,
     userCanRevoke,
-    onApprove: () => handleApprove([projectId]),
-    onRevoke: () => handleRevoke(unrevokedUserAttestationsIds),
+    onApprove: handleApprove,
+    onRevoke: handleRevoke,
     revokeIsPending: revokeFlags.isPending || isRevoking,
     approveIsPending: approveFlags.isPending || isApproving,
   };
