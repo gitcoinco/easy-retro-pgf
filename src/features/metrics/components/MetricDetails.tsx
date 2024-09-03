@@ -49,12 +49,14 @@ export default function MetricDetails({ id }: MetricDetailsProps) {
 
       <div className="flex items-center gap-2">
         {isVotingPhase && <AddToBallotButton variant="primary" id={id} />}
-        <Link href={calculationUrl} target="_blank">
-          <Button variant="link">
-            View calculation
-            <ArrowUpRight className="ml-1 size-4" />
-          </Button>
-        </Link>
+        {calculationUrl !== "#" && (
+          <Link href={calculationUrl} target="_blank">
+            <Button variant="link">
+              View calculation
+              <ArrowUpRight className="ml-1 size-4" />
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );
