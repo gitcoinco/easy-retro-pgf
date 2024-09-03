@@ -1,7 +1,6 @@
-import type { BallotV2, Allocation } from "@prisma/client";
+import type { BallotV2, Allocation, Round } from "@prisma/client";
 import { calculateMetricsBallot } from "~/utils/calculateMetrics";
 import type { MetricId, OSOMetric } from "~/types/metrics";
-import { mockedApprovedProjects } from "../mocks";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics/fetchImpactMetricsFromCSV";
 import { fetchApprovedApplications } from "../../applications/utils";
 import type { AttestationFetcher } from "~/utils/fetchAttestations";
@@ -11,15 +10,13 @@ type Ballot = {
 } & BallotV2;
 
 export async function fetchMetricsForBallot({
-  admins,
   attestationFetcher,
   ballot,
-  roundId,
+  round,
 }: {
-  admins: string[];
   attestationFetcher: AttestationFetcher;
   ballot: Ballot;
-  roundId: string;
+  round: Round;
 }): Promise<{
   allocations: Allocation[];
   projects: {
@@ -39,8 +36,7 @@ export async function fetchMetricsForBallot({
 
   const approvedApplications = await fetchApprovedApplications({
     attestationFetcher,
-    admins,
-    roundId,
+    round,
   });
 
   const approvedProjects = approvedApplications.map(
@@ -50,7 +46,7 @@ export async function fetchMetricsForBallot({
   if (approvedProjects.length === 0) {
     return {
       allocations: [],
-      projects: []
+      projects: [],
     };
   }
 

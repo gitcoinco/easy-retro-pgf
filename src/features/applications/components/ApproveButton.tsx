@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 
 import { Button } from "~/components/ui/Button";
-import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 import type { ApplicationsList } from "./ApplicationsList";
 
 export function ApproveButton({ isLoading = false }) {

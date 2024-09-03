@@ -1,11 +1,10 @@
 import { type PropsWithChildren } from "react";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Button } from "./ui/Button";
-import { useSwitchChain } from "wagmi";
 
 export function EnsureCorrectNetwork({ children }: PropsWithChildren) {
-  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
-  const { switchChain } = useSwitchChain();
+  const { isCorrectNetwork, correctNetwork, switchChain } =
+    useIsCorrectNetwork();
   if (!isCorrectNetwork)
     return (
       <Button

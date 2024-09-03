@@ -7,12 +7,11 @@ import type {
   AttestationFetcher,
   AttestationsFilter,
   AttestationWithMetadata,
-  PartialRound,
   SchemaType,
 } from "./types";
 import { parseDecodedMetadata } from "./parseDecodedMetadata";
 import { RoundTypes } from "~/features/rounds/types";
-import { Round } from "@prisma/client";
+import type { Round } from "@prisma/client";
 
 const ONE_WEEK_IN_MS = 60 * 60 * 1000 * 24 * 7;
 const TEN_MINUTES_IN_MS = 1000 * 60 * 10;
@@ -36,7 +35,16 @@ const defaultQueryKeys = [
   "schemaId",
   "time",
 ];
-export function createAttestationFetcher(round: Round): AttestationFetcher {
+
+export function createAttestationFetcher({
+  round,
+  includeRevoked = false,
+  expirationTime,
+}: {
+  round: Round;
+  includeRevoked?: boolean;
+  expirationTime?: number;
+}): AttestationFetcher {
   return (
     schema: SchemaType[],
     filter?: AttestationsFilter,
@@ -67,15 +75,19 @@ query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByW
 }
       `,
         variables: {
+          orderBy: [{ time: "desc" }],
           ...filter,
           where: {
             schemaId: { in: schemas },
-            revoked: { equals: false },
+            ...(includeRevoked ? {} : { revoked: { equals: false } }),
             time: { gte: startsAt },
             ...filter?.where,
           },
+          expirationTime,
         },
       }),
-    }).then((r) => r.data?.attestations.map(parseAttestation));
+    }).then((response) => {
+      return response.data?.attestations.map(parseAttestation);
+    });
   };
 }

@@ -1,20 +1,33 @@
+import type { Round } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import {
+  createAttestationFetcher,
   createDataFilter,
-  type AttestationFetcher,
 } from "~/utils/fetchAttestations";
 
 export async function fetchApprovals({
-  attestationFetcher,
-  admins,
+  round,
   projectIds,
-  roundId,
+  includeRevoked = false,
+  expirationTime,
 }: {
-  attestationFetcher: AttestationFetcher;
-  admins: string[];
+  round: Round;
   projectIds?: string[];
-  roundId: string;
+  includeRevoked?: boolean;
+  expirationTime?: number;
 }) {
-  return attestationFetcher(["approval"], {
+  if (!round)
+    throw new TRPCError({ code: "BAD_REQUEST", message: "No round found" });
+
+  const { id: roundId, admins } = round;
+
+  const attestationFetcher = createAttestationFetcher({
+    round,
+    includeRevoked,
+    expirationTime,
+  });
+
+  const approvals = await attestationFetcher(["approval"], {
     where: {
       attester: { in: admins },
       refUID: projectIds ? { in: projectIds } : undefined,
@@ -24,4 +37,5 @@ export async function fetchApprovals({
       ],
     },
   });
+  return approvals;
 }

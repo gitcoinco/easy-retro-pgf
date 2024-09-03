@@ -1,25 +1,55 @@
-import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
-import { fetchApplications, fetchApprovals } from "./utils";
+import { z } from "zod";
+
+import {
+  attestationProcedure,
+  createTRPCRouter,
+  roundProcedure,
+} from "~/server/api/trpc";
 import { FilterSchema } from "./utils/fetchApplications";
 import { createDataFilter } from "~/utils/fetchAttestations";
+import {
+  fetchApplications,
+  fetchApprovals,
+  getApplicationStatus,
+} from "./utils";
 
 export const applicationsRouter = createTRPCRouter({
-  approvals: attestationProcedure
-    .input(FilterSchema)
+  approvals: roundProcedure
+    .input(
+      FilterSchema.merge(
+        z.object({
+          expirationTime: z.number().optional(),
+        }),
+      ),
+    )
     .query(async ({ input, ctx }) => {
-      const {
-        fetchAttestations: attestationFetcher,
-        round: { id: roundId, admins },
-      } = ctx;
-      const { ids: projectIds } = input;
+      const { round } = ctx;
+      const { ids: projectIds, expirationTime } = input;
 
       return fetchApprovals({
-        attestationFetcher,
-        admins,
+        round,
         projectIds,
-        roundId,
+        expirationTime,
       });
     }),
+
+  status: roundProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        withAttestations: z.boolean().default(false),
+      }),
+    )
+    .query(
+      async ({ input: { projectId, withAttestations }, ctx: { round } }) => {
+        const result = await getApplicationStatus({
+          round,
+          projectId,
+          withAttestations,
+        });
+        return result;
+      },
+    ),
 
   list: attestationProcedure
     .input(FilterSchema)

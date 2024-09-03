@@ -1,18 +1,20 @@
+"use client";
+
 import { type GetServerSideProps } from "next";
 
 import ProjectDetails from "~/features/projects/components/ProjectDetails";
 import { useProjectById } from "~/features/projects/hooks/useProjects";
-import ApproveRejectButton from "~/features/applications/components/ApproveRejectButton";
+import { ApplicationReviewActions } from "~/features/applications/components/ApplicationReviewActions";
 import { Layout } from "~/layouts/DefaultLayout";
 
 export default function ApplicationDetailsPage({ projectId = "" }) {
-  const project = useProjectById(projectId);
+  const { data: project } = useProjectById(projectId);
 
   return (
-    <Layout title={project.data?.name}>
+    <Layout title={project?.name}>
       <ProjectDetails
-        attestation={project.data}
-        action={<ApproveRejectButton projectIds={[projectId]} />}
+        attestation={project}
+        action={<ApplicationReviewActions projectId={projectId} />}
       />
     </Layout>
   );

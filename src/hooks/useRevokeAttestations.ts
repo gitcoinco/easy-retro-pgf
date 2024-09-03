@@ -6,8 +6,8 @@ import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { getContracts } from "~/lib/eas/createEAS";
 
 export function useRevokeAttestations(opts?: {
-  onSuccess?: () => void,
-  onError?: (err: { reason?: string; data?: { message: string } }) => void,
+  onSuccess?: () => void;
+  onError?: () => void;
 }) {
   const revoke = useRevoke();
   const signer = useEthersSigner();
@@ -20,6 +20,7 @@ export function useRevokeAttestations(opts?: {
       opts?.onSuccess?.();
     },
     onError: (err: { reason?: string; data?: { message: string } }) => {
+      opts?.onError?.();
       toast.error("Attestations revoke error", {
         description: err.reason ?? err.data?.message,
       });
