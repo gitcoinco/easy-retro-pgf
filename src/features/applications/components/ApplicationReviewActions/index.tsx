@@ -1,64 +1,14 @@
 "use client";
 
-import type { ApplicationStatus } from "~/server/api/routers/applications/types";
-import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
 import { useApplicationReview } from "../../hooks/useApplicationReview";
-import { ApproveButton } from "./ApproveButton";
-import { RevokeButton } from "./RevokeButton";
-import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
-
-const renderActionButtons = ({
-  status,
-  actions: { onApprove, onRevoke } = {},
-  disabled,
-  loading,
-}: {
-  status?: ApplicationStatus;
-  actions: { onApprove?: () => void; onRevoke?: () => void };
-  disabled?: { approve?: boolean; revoke?: boolean };
-  loading?: { approve?: boolean; revoke?: boolean };
-}) => {
-  const { approve: approveDisabled = false, revoke: revokeDisabled = false } =
-    disabled ?? {};
-
-  const { approve: approveLoading = false, revoke: revokeLoading = false } =
-    loading ?? {};
-
-  switch (status) {
-    case "pending":
-    case "rejected":
-      return (
-        <EnsureCorrectNetwork>
-          <ApproveButton
-            disabled={approveDisabled}
-            isLoading={approveLoading}
-            onClick={onApprove}
-          />
-        </EnsureCorrectNetwork>
-      );
-
-    case "approved":
-      return (
-        <EnsureCorrectNetwork>
-          <RevokeButton
-            disabled={revokeDisabled}
-            isLoading={revokeLoading}
-            onClick={onRevoke}
-          />
-        </EnsureCorrectNetwork>
-      );
-
-    default:
-      return <></>;
-  }
-};
+import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
+import { ReviewActionButton } from "./ReviewActionButton";
 
 type Props = {
   projectId: string;
-  isLoading?: boolean;
 };
 
-export function ApplicationReviewActions({ projectId, isLoading }: Props) {
+export function ApplicationReviewActions({ projectId }: Props) {
   const {
     status,
     isAdmin,
@@ -67,30 +17,26 @@ export function ApplicationReviewActions({ projectId, isLoading }: Props) {
     onRevoke,
     revokeIsPending,
     approveIsPending,
-  } = useApplicationReview({
-    projectId,
-  });
+  } = useApplicationReview({ projectId });
 
-  if (!isAdmin || isLoading) return <ApplicationStatusBadge status={status} />;
+  if (!status) return null;
+
+  if (!isAdmin) return <ApplicationStatusBadge status={status} />;
+
+  const type = status === "approved" ? "revoke" : "approve";
+  const isLoading = type === "approve" ? approveIsPending : revokeIsPending;
+  const disabled = type === "revoke" ? !userCanRevoke : false;
+  const onClick = type === "approve" ? onApprove : onRevoke;
 
   return (
     <div className="flex items-center gap-2">
       <ApplicationStatusBadge status={status} />
-      {renderActionButtons({
-        status,
-        actions: {
-          onApprove,
-          onRevoke,
-        },
-        disabled: {
-          approve: approveIsPending,
-          revoke: !userCanRevoke || revokeIsPending,
-        },
-        loading: {
-          approve: approveIsPending,
-          revoke: revokeIsPending,
-        },
-      })}
+      <ReviewActionButton
+        type={type}
+        onClick={onClick}
+        disabled={disabled}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
