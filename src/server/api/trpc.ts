@@ -102,6 +102,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 const trustedSites = [process.env.VERCEL_URL, process.env.NEXTAUTH_URL];
 function isSameSiteRequest(req: NextApiRequest) {
+  console.log({ trustedSites, origin });
   const origin = req.headers.origin ?? req.headers.referer;
   return origin && trustedSites.some((url) => origin.startsWith(url!));
 }
