@@ -202,7 +202,7 @@ const attestationMiddleware = t.middleware(async ({ ctx, next }) => {
     ctx: {
       ...ctx,
       round: ctx.round,
-      fetchAttestations: createAttestationFetcher(ctx.round),
+      fetchAttestations: createAttestationFetcher({ round: ctx.round }),
     },
   });
 });

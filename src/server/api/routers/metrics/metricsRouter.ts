@@ -34,17 +34,12 @@ export const metricsRouter = createTRPCRouter({
   }),
 
   forBallot: ballotAttestationProcedure.query(async ({ ctx }) => {
-    const {
-      ballot,
-      fetchAttestations: attestationFetcher,
-      round: { admins, id: roundId },
-    } = ctx;
+    const { ballot, fetchAttestations: attestationFetcher, round } = ctx;
     try {
       return fetchMetricsForBallot({
-        admins,
         attestationFetcher,
         ballot,
-        roundId,
+        round,
       });
     } catch (error) {
       throw new TRPCError({
@@ -57,16 +52,12 @@ export const metricsRouter = createTRPCRouter({
   forProjects: attestationProcedure
     .input(z.object({ metricIds: z.array(z.string()) }))
     .query(async ({ input: { metricIds }, ctx }) => {
-      const {
-        fetchAttestations: attestationFetcher,
-        round: { admins, id: roundId },
-      } = ctx;
+      const { fetchAttestations: attestationFetcher, round } = ctx;
       try {
         return fetchMetricsForProjects({
-          admins,
           attestationFetcher,
           metricIds,
-          roundId,
+          round,
         });
       } catch (error) {
         throw new TRPCError({

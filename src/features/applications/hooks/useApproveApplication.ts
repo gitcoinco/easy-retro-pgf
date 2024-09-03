@@ -6,7 +6,10 @@ import { toast } from "sonner";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { getContracts } from "~/lib/eas/createEAS";
 
-export function useApproveApplication(opts?: { onSuccess?: () => void }) {
+export function useApproveApplication(opts?: {
+  onSuccess?: () => void;
+  onError?: () => void;
+}) {
   const attest = useAttest();
   const signer = useEthersSigner();
 
@@ -17,10 +20,12 @@ export function useApproveApplication(opts?: { onSuccess?: () => void }) {
       toast.success("Application approved successfully!");
       opts?.onSuccess?.();
     },
-    onError: (err: { reason?: string; data?: { message: string } }) =>
+    onError: (err: { reason?: string; data?: { message: string } }) => {
+      opts?.onError?.();
       toast.error("Application approve error", {
         description: err.reason ?? err.data?.message,
-      }),
+      });
+    },
     mutationFn: async (applicationIds: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
       if (!round?.network) throw new Error("Round network not configured");

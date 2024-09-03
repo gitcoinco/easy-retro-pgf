@@ -1,23 +1,20 @@
+import type { Round } from "@prisma/client";
 import { type AttestationFetcher } from "~/utils/fetchAttestations";
 import { fetchApplications } from "./fetchApplications";
 import { fetchApprovals } from "./fetchApprovals";
 
 export async function fetchApprovedApplications({
   attestationFetcher,
-  admins,
-  roundId,
+  round,
 }: {
   attestationFetcher: AttestationFetcher;
-  admins: string[];
-  projectIds?: string[];
-  roundId: string;
+  round: Round;
 }) {
-  const approvedApplicationsIds = await fetchApprovals({
-    attestationFetcher,
-    admins,
-    roundId,
-  }).then((approvedApplicationsAttestations) =>
-    approvedApplicationsAttestations.map((attestation) => attestation.refUID),
+  const { id: roundId } = round;
+
+  const approvedApplicationsIds = await fetchApprovals({ round }).then(
+    (approvedApplicationsAttestations) =>
+      approvedApplicationsAttestations.map((attestation) => attestation.refUID),
   );
 
   const applications = await fetchApplications({
