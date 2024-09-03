@@ -1,14 +1,12 @@
 import type { OrderBy, SortOrder } from "~/features/filter/types";
-import SortByRoundDropdown from "./SortByRoundDropdown";
 import SortByDropdown from "./SortByDropdown";
 import { useFilter } from "~/features/filter/hooks/useFilter";
 import { SearchInput } from "./ui/Form";
 import { useDebounce } from "react-use";
 import { useState } from "react";
-import { roundsMap } from "~/config";
 
 export const SortFilter = () => {
-  const { orderBy, sortOrder, setFilter, round, isRandom } = useFilter();
+  const { orderBy, sortOrder, setFilter, isRandom } = useFilter();
 
   const [search, setSearch] = useState("");
 
@@ -36,21 +34,6 @@ export const SortFilter = () => {
 
           await setFilter({ orderBy, sortOrder }).catch();
         }}
-      />
-      <SortByRoundDropdown
-        options={Object.keys(roundsMap).map((option) => {
-          return {
-            value: option,
-            label: `fil-rpgf-round #${option}`,
-          };
-        })}
-        value={round}
-        onChange={async (round) => {
-          await setFilter({
-            round,
-          }).catch();
-        }}
-        placeholder="Round"
       />
     </div>
   );

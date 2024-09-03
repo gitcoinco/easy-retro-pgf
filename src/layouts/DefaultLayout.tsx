@@ -5,7 +5,7 @@ import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";
-import { config } from "~/config";
+import { config, roundsMap } from "~/config";
 import { useSession } from "next-auth/react";
 
 type Props = PropsWithChildren<
@@ -20,6 +20,13 @@ export const Layout = ({ children, ...props }: Props) => {
     {
       href: "/projects",
       children: "Projects",
+      dropdownItems: Object.keys(roundsMap).map((key) => {
+        return {
+          key: key,
+          href: `/projects?search=&round=${key}&orderBy=time&sortOrder=random`,
+          label: `Fil-RPGF Round #${key}`,
+        };
+      }) as any[] | undefined,
     },
   ];
 
@@ -29,6 +36,7 @@ export const Layout = ({ children, ...props }: Props) => {
   //     children: "Stats",
   //   });
   // }
+  const dropdownItems = undefined;
 
   if (config.admins.includes(address!)) {
     navLinks.push(
@@ -36,14 +44,17 @@ export const Layout = ({ children, ...props }: Props) => {
         {
           href: "/applications",
           children: "Applications",
+          dropdownItems,
         },
         {
           href: "/voters",
           children: "Voters",
+          dropdownItems,
         },
         {
           href: "/distribute",
           children: "Distribute",
+          dropdownItems,
         },
       ],
     );
