@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/Button";
 import { api } from "~/utils/api";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { snakeToTitleCase } from "~/utils/formatStrings";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 type MetricDetailsProps = {
   id: string;
@@ -20,6 +21,11 @@ export default function MetricDetails({ id }: MetricDetailsProps) {
     { ids: [id] },
     { enabled: !!id },
   );
+
+  const roundState = useRoundState();
+
+  const isVotingPhase = roundState === "VOTING";
+
   const { name, description } = data[0] ?? {};
   return (
     <div className="space-y-6">
@@ -42,13 +48,15 @@ export default function MetricDetails({ id }: MetricDetailsProps) {
       )}
 
       <div className="flex items-center gap-2">
-        <AddToBallotButton variant="primary" id={id} />
-        <Link href={calculationUrl} target="_blank">
-          <Button variant="link">
-            View calculation
-            <ArrowUpRight className="ml-1 size-4" />
-          </Button>
-        </Link>
+        {isVotingPhase && <AddToBallotButton variant="primary" id={id} />}
+        {calculationUrl !== "#" && (
+          <Link href={calculationUrl} target="_blank">
+            <Button variant="link">
+              View calculation
+              <ArrowUpRight className="ml-1 size-4" />
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );
