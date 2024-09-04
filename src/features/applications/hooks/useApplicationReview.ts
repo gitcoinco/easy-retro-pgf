@@ -64,7 +64,6 @@ export const useApplicationReview = ({
   const userCanRevoke =
     lastAttestation?.attester === address && !lastAttestation?.revoked;
 
-  console.log("DEBUG userCanRevoke", status, lastAttestation, address);
   const handleRevoke = useCallback(() => {
     if (!lastAttestation?.id) {
       console.error("No attestation id to revoke");
