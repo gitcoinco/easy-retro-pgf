@@ -10,10 +10,10 @@ import { api } from "~/utils/api";
 const DEFAULT_REFETCH_INTERVAL = 1000 * 10;
 
 export const useApplicationReview = ({
-  projectId,
+  projectId = "",
   refetchInterval = DEFAULT_REFETCH_INTERVAL,
 }: {
-  projectId: string;
+  projectId?: string;
   refetchInterval?: number;
 }) => {
   const [isRevoking, setIsRevoking] = useState(false);
@@ -26,7 +26,7 @@ export const useApplicationReview = ({
   const { data, refetch: refetchAttestations } =
     api.applications.status.useQuery(
       { projectId, withAttestations: true },
-      { refetchInterval },
+      { refetchInterval, enabled: projectId !== "" },
     );
 
   const { status, attestations } = data ?? {};
