@@ -14,21 +14,21 @@ type Props = PropsWithChildren<
     sidebarComponent?: ReactNode;
   } & LayoutProps
 >;
+
+type NavLinkType = {
+  href: string;
+  children: string;
+  onlyDropdown?: boolean;
+  dropdownItems?: { key: string; label: string; href: string }[];
+};
 export const Layout = ({ children, ...props }: Props) => {
   const { address } = useAccount();
   const navLinks = [
     {
       href: "/projects",
       children: "Projects",
-      dropdownItems: Object.keys(roundsMap).map((key) => {
-        return {
-          key: key,
-          href: `/projects?search=&round=${key}&orderBy=time&sortOrder=random`,
-          label: `Fil-RPGF Round #${key}`,
-        };
-      }) as any[] | undefined,
     },
-  ];
+  ] as NavLinkType[];
 
   // if (getAppState() === "RESULTS") {
   //   navLinks.push({
@@ -36,7 +36,6 @@ export const Layout = ({ children, ...props }: Props) => {
   //     children: "Stats",
   //   });
   // }
-  const dropdownItems = undefined;
 
   if (config.admins.includes(address!)) {
     navLinks.push(
@@ -44,17 +43,43 @@ export const Layout = ({ children, ...props }: Props) => {
         {
           href: "/applications",
           children: "Applications",
-          dropdownItems,
         },
         {
           href: "/voters",
           children: "Voters",
-          dropdownItems,
         },
         {
           href: "/distribute",
           children: "Distribute",
-          dropdownItems,
+        },
+        {
+          href: "/projects",
+          children: "Previous Projects",
+          onlyDropdown:true,
+          dropdownItems: Object.keys(roundsMap).map((key: string) => {
+            return {
+              key: `&round=${key}`,
+              href: `/projects?search=&round=${key}&orderBy=time&sortOrder=random`,
+              label: `Fil-RPGF Round #${key}`,
+            };
+          }),
+        },
+      ],
+    );
+  } else {
+    navLinks.push(
+      ...[
+        {
+          href: "/projects",
+          children: "Previous Projects",
+          onlyDropdown:true,
+          dropdownItems: Object.keys(roundsMap).map((key: string) => {
+            return {
+              key: key,
+              href: `/projects?search=&round=${key}&orderBy=time&sortOrder=random`,
+              label: `Fil-RPGF Round #${key}`,
+            };
+          }),
         },
       ],
     );

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, MutableRefObject, use } from "react";
+import { useEvent } from "react-use";
 
-const useAnchorPosition = (anchorEl: any) => {
+const useAnchorPosition = (anchorEl: MutableRefObject<HTMLElement | null>) => {
   const [position, setPosition] = useState<
     | {
         top: number;
@@ -10,7 +11,7 @@ const useAnchorPosition = (anchorEl: any) => {
   >(undefined);
 
   const updatePosition = () => {
-    if (anchorEl) {
+    if (anchorEl.current) {
       const rect = anchorEl.current.getBoundingClientRect();
       setPosition({
         top: rect.bottom + window.scrollY,
@@ -21,14 +22,12 @@ const useAnchorPosition = (anchorEl: any) => {
 
   useEffect(() => {
     updatePosition();
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition);
+  }, [anchorEl.current]);
 
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition);
-    };
-  }, [anchorEl]);
+  useEvent("resize", updatePosition);
+  useEvent("scroll", updatePosition);
+  useEvent("mousemove", updatePosition);
+  
 
   return position;
 };

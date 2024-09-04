@@ -1,28 +1,20 @@
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
+import { useWindowSize } from "react-use";
 
 const useIsMobile = (
   // Defaults at md: 768px
   breakpoint = 768,
   onChange?: (isMobile: boolean) => void,
 ) => {
-  const [isMobile, setIsMobile] = useState(false);
+  const { width } = useWindowSize();
 
-  useEffect(() => {
-    const handleResize = () => {
-      const isCurrentlyMobile = window.innerWidth < breakpoint;
-      setIsMobile(isCurrentlyMobile);
-      if (onChange) {
-        onChange(isCurrentlyMobile);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [breakpoint, onChange]);
+  const isMobile = useMemo(() => {
+    const isCurrentlyMobile = width < breakpoint;
+    if (onChange) {
+      onChange(isCurrentlyMobile);
+    }
+    return isCurrentlyMobile;
+  }, [width]);
 
   return isMobile;
 };
