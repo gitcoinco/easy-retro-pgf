@@ -54,6 +54,17 @@ export const MetricsLayout = ({
         },
       ],
     );
+
+    if (["VOTING" || "TALLYING"].includes(roundState!)) {
+      navLinks.push(
+        ...[
+          {
+            href: `/${domain}/admin/distribute`,
+            children: `Distribute`,
+          },
+        ],
+      );
+    }
   }
 
   return (
