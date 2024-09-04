@@ -25,7 +25,7 @@ export const Alert = ({
   return (
     <AlertComponent {...props}>
       <div className="flex items-center gap-2">
-        {icon ? createElement(icon, { className: "w-4 h-4" }) : null}
+        {icon ? createElement(icon, { className: "w-4 h-4 mb-2" }) : null}
         {title && <div className="mb-2 text-lg font-semibold">{title}</div>}
       </div>
       {children}

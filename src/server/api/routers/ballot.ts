@@ -175,16 +175,22 @@ export const ballotRouter = createTRPCRouter({
               })),
           );
         } else if (ctx.round?.type === "impact") {
-          return ballots.flatMap(
-            ({ voterId, signature, publishedAt, allocations }) =>
-              allocations.map(({ amount, id }) => ({
-                voterId,
-                signature,
-                publishedAt,
-                amount,
-                id,
-              })),
-          );
+          const allocations = await ctx.db.allocation.findMany({
+            where: {
+              roundId: ctx.round.id,
+              ballot: { publishedAt: { not: null } },
+            },
+            include: {
+              ballot: true,
+            },
+          });
+          return allocations.map(({ voterId, ballot: { signature, publishedAt }, amount, id }) => ({
+            voterId,
+            signature,
+            publishedAt,
+            amount,
+            id,
+          }));
         }
       });
   }),

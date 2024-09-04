@@ -8,7 +8,6 @@ import { IconButton } from "./ui/Button";
 import { metadata } from "~/config";
 import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
-import { check } from "prettier";
 
 const Logo = () => (
   <div className="">
