@@ -6,17 +6,18 @@ import type { Attestation } from "~/utils/fetchAttestations";
 export async function getApplicationStatus({
   round,
   projectId,
-  withAttestations = false,
+  withAttestation = false,
 }: {
   round: Round;
   projectId: string;
-  withAttestations?: boolean;
-}): Promise<{ status: ApplicationStatus; attestations?: Attestation[] }> {
+  withAttestation?: boolean;
+}): Promise<{ status: ApplicationStatus; attestation?: Attestation }> {
   const approvals = await fetchApprovals({
     round,
     projectIds: [projectId],
     includeRevoked: true,
     expirationTime: Date.now(),
+    onlyLastAttestation: true,
   });
 
   const lastAttestation = approvals[0];
@@ -27,6 +28,6 @@ export async function getApplicationStatus({
 
   return {
     status,
-    attestations: withAttestations ? approvals : undefined,
+    attestation: withAttestation ? lastAttestation : undefined,
   };
 }

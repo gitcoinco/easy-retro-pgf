@@ -10,11 +10,13 @@ export async function fetchApprovals({
   projectIds,
   includeRevoked = false,
   expirationTime,
+  onlyLastAttestation = false,
 }: {
   round: Round;
   projectIds?: string[];
   includeRevoked?: boolean;
   expirationTime?: number;
+  onlyLastAttestation?: boolean;
 }) {
   if (!round)
     throw new TRPCError({ code: "BAD_REQUEST", message: "No round found" });
@@ -27,15 +29,21 @@ export async function fetchApprovals({
     expirationTime,
   });
 
-  const approvals = await attestationFetcher(["approval"], {
-    where: {
-      attester: { in: admins },
-      refUID: projectIds ? { in: projectIds } : undefined,
-      AND: [
-        createDataFilter("type", "bytes32", "application"),
-        createDataFilter("round", "bytes32", roundId),
-      ],
+  const approvals = await attestationFetcher(
+    ["approval"],
+    {
+      where: {
+        attester: { in: admins },
+        refUID: projectIds ? { in: projectIds } : undefined,
+        AND: [
+          createDataFilter("type", "bytes32", "application"),
+          createDataFilter("round", "bytes32", roundId),
+        ],
+      },
+      orderBy: [{ time: "desc" }], // Added it just in case we change the default one
+      take: onlyLastAttestation ? 1 : undefined,
     },
-  });
+    ["id", "refUID", "attester", "revoked"],
+  );
   return approvals;
 }

@@ -23,6 +23,7 @@ export const button = tv({
       outline: "border border-gray-300 hover:bg-white/5 hover:border-gray-400",
     },
     size: {
+      custom: "p-0",
       xs: "px-2 h-8 text-xs",
       sm: "px-3 py-2 h-10 min-w-[40px]",
       md: "px-6 py-2 h-12",

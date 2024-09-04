@@ -10,10 +10,10 @@ import { api } from "~/utils/api";
 const DEFAULT_REFETCH_INTERVAL = 1000 * 10;
 
 export const useApplicationReview = ({
-  projectId,
+  projectId = "",
   refetchInterval = DEFAULT_REFETCH_INTERVAL,
 }: {
-  projectId: string;
+  projectId?: string;
   refetchInterval?: number;
 }) => {
   const [isRevoking, setIsRevoking] = useState(false);
@@ -23,13 +23,16 @@ export const useApplicationReview = ({
 
   const trpcUtils = api.useUtils();
 
-  const { data, refetch: refetchAttestations } =
-    api.applications.status.useQuery(
-      { projectId, withAttestations: true },
-      { refetchInterval },
-    );
+  const {
+    data,
+    isPending: statusIsPending,
+    refetch: refetchAttestations,
+  } = api.applications.status.useQuery(
+    { projectId, withAttestation: true },
+    { refetchInterval, enabled: projectId !== "" },
+  );
 
-  const { status, attestations } = data ?? {};
+  const { status, attestation: lastAttestation } = data ?? {};
 
   useEffect(() => {
     switch (status) {
@@ -58,24 +61,17 @@ export const useApplicationReview = ({
     onError: () => setIsRevoking(false),
   });
 
-  const unrevokedUserAttestationsIds = attestations
-    ?.filter(
-      (attestation) => !attestation.revoked && attestation.attester === address,
-    )
-    .map((attestation) => attestation.id);
-
-  const lastAttestation = attestations?.[0];
   const userCanRevoke =
     lastAttestation?.attester === address && !lastAttestation?.revoked;
 
   const handleRevoke = useCallback(() => {
-    if (!unrevokedUserAttestationsIds?.length) {
-      console.error("No attestations ids to revoke");
+    if (!lastAttestation?.id) {
+      console.error("No attestation id to revoke");
       return;
     }
-    revoke(unrevokedUserAttestationsIds);
+    revoke([lastAttestation.id]);
     setIsRevoking(true);
-  }, [revoke, unrevokedUserAttestationsIds]);
+  }, [revoke, lastAttestation]);
 
   const handleApprove = useCallback(() => {
     approve([projectId]);
@@ -88,6 +84,7 @@ export const useApplicationReview = ({
     userCanRevoke,
     onApprove: handleApprove,
     onRevoke: handleRevoke,
+    statusIsPending,
     revokeIsPending: revokeFlags.isPending || isRevoking,
     approveIsPending: approveFlags.isPending || isApproving,
   };
