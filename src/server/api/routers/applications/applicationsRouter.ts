@@ -89,11 +89,12 @@ export const applicationsRouter = createTRPCRouter({
       ]);
       const approvedIds = approved.map((a) => a.refUID);
 
-      const { status, ...filter } = input;
+      const { ...filter } = input;
       let ids;
-      if (status === "approved") ids = approvedIds.length ? approvedIds : [""]; // empty string otherwise will fetch all
-      if (status === "pending")
-        ids = applicationsCount // non-approved applications
+      if (filter.status === "approved")
+        ids = approvedIds.length ? approvedIds : [""];
+      if (filter.status === "pending")
+        ids = applicationsCount
           .filter((a) => !approvedIds.includes(a.id))
           .map((a) => a.id);
 
