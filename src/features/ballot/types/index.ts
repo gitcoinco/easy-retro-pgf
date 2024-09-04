@@ -28,6 +28,11 @@ export const AllocationSchema = z.object({
   amount: z.number().min(0),
   locked: z.boolean().default(true),
 });
+export const BallotV2Schema1 = z.object({
+  voterId: z.string(),
+  roundId: z.string(),
+  type: z.string(),
+});
 export const BallotV2Schema = z.object({
   allocations: z.array(AllocationSchema),
 });
