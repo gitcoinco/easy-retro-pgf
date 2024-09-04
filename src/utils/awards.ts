@@ -60,7 +60,7 @@ export const roundAwards: RoundAwards = {
       ],
     },
     {
-      id: "award2",
+      id: "award3",
       amount: 2e14, // 0.0002
       metrics: [
         "gas_fees_sum",
