@@ -35,4 +35,41 @@ export const roundAwards: RoundAwards = {
       ],
     },
   ],
+  "cm0ngdr6q0000w7ggc0cuelnn": [
+    {
+      id: "award1",
+      amount: 3e14, // 0.0003
+      metrics: ["address_count_90_days", "address_count"],
+      eligibleProjects: [
+        "89ad5868-1fa5-48b4-84d1-b5037aadf938",
+        "c5f48bc4-fa1e-4ad5-b34e-3cc557f4a654",
+        "dd369d44-005a-4cb5-986f-c4c4bf66cab1",
+      ],
+    },
+    {
+      id: "award2",
+      amount: 5e14, // 0.0005
+      metrics: [
+        "gas_fees_sum",
+        "days_since_first_transaction",
+        "active_contract_count_90_days",
+      ],
+      eligibleProjects: [
+        "89ad5868-1fa5-48b4-84d1-b5037aadf938",
+        "c5f48bc4-fa1e-4ad5-b34e-3cc557f4a654",
+      ],
+    },
+    {
+      id: "award2",
+      amount: 2e14, // 0.0002
+      metrics: [
+        "gas_fees_sum",
+        "address_count_90_days",
+      ],
+      eligibleProjects: [
+        "89ad5868-1fa5-48b4-84d1-b5037aadf938",
+        "dd369d44-005a-4cb5-986f-c4c4bf66cab1",
+      ],
+    },
+  ],
 };
