@@ -64,6 +64,17 @@ export const Layout = ({ children, ...props }: Props) => {
         },
       ],
     );
+
+    if (["TALLYING" || "RESULTS"].includes(roundState!)) {
+      navLinks.push(
+        ...[
+          {
+            href: `/${domain}/admin/distribute`,
+            children: `Distribute`,
+          },
+        ],
+      );
+    }
   }
 
   if (!isPending && !round) {
