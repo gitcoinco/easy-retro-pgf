@@ -37,15 +37,15 @@ export const applicationsRouter = createTRPCRouter({
     .input(
       z.object({
         projectId: z.string(),
-        withAttestations: z.boolean().default(false),
+        withAttestation: z.boolean().default(false),
       }),
     )
     .query(
-      async ({ input: { projectId, withAttestations }, ctx: { round } }) => {
+      async ({ input: { projectId, withAttestation }, ctx: { round } }) => {
         const result = await getApplicationStatus({
           round,
           projectId,
-          withAttestations,
+          withAttestation,
         });
         return result;
       },
