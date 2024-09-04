@@ -29,11 +29,6 @@ export async function fetchApplications({
   ];
   if (filter?.ids?.length) AND.push({ id: { in: filter.ids } });
   if (filter?.search) AND.push(createSearchFilter(filter.search));
-  if (filter?.status === "pending") {
-    AND.push(createDataFilter("status", "bytes32", "pending"));
-  } else if (filter?.status === "approved") {
-    AND.push(createDataFilter("status", "bytes32", "approved"));
-  }
 
   return attestationFetcher(["metadata"], {
     where: { AND },

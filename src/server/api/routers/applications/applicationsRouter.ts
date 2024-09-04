@@ -59,8 +59,8 @@ export const applicationsRouter = createTRPCRouter({
         round: { id: roundId, admins },
       } = ctx;
 
-      // Fetch approved applications + application count
-      const [approved, applicationsCount] = await Promise.all([
+      // Fetch eas approvals + applicationIds. Note approval attestations include both approved & rejected attestations
+      const [approvals, applicationIds] = await Promise.all([
         attestationFetcher(
           ["approval"],
           {
@@ -87,17 +87,32 @@ export const applicationsRouter = createTRPCRouter({
           ["id"],
         ),
       ]);
-      const approvedIds = approved.map((a) => a.refUID);
 
+      const applicationdsWithStatus = await Promise.all(
+        applicationIds.map(async (a) => ({
+          id: a.id,
+          status: await getApplicationStatus({
+            round: ctx.round,
+            projectId: a.id,
+          }),
+        })),
+      );
       const { ...filter } = input;
-      let ids;
-      if (filter.status === "approved")
-        ids = approvedIds.length ? approvedIds : [""];
-      if (filter.status === "pending")
-        ids = applicationsCount
-          .filter((a) => !approvedIds.includes(a.id))
-          .map((a) => a.id);
 
+      let ids: string[] = [];
+      if (filter.status === "approved") {
+        ids = applicationdsWithStatus
+          .filter((a) => a.status.status === "approved")
+          .map((a) => a.id);
+      } else if (filter.status === "pending") {
+        ids = applicationdsWithStatus
+          .filter((a) => a.status.status === "pending")
+          .map((a) => a.id);
+      } else if (filter.status === "all") {
+        ids = applicationIds.map((a) => a.id);
+      }
+
+      // Note that this fetches all applications when ids is empty
       const applications = await fetchApplications({
         attestationFetcher,
         roundId,
@@ -105,17 +120,21 @@ export const applicationsRouter = createTRPCRouter({
       });
 
       const approvedById = Object.fromEntries(
-        approved.map((a) => [a.refUID, { attester: a.attester, uid: a.id }]),
+        approvals.map((a) => [a.refUID, { attester: a.attester, uid: a.id }]),
       );
 
-      const data = applications.map((a) => ({
-        ...a,
-        status: approvedById[a.id] ? "approved" : "pending",
-        approvedBy: approvedById[a.id],
-      }));
+      const data =
+        ids.length > 0
+          ? applications.map((a) => ({
+              ...a,
+              status: applicationdsWithStatus.find((s) => s.id === a.id)?.status
+                .status,
+              approvedBy: approvedById[a.id],
+            }))
+          : [];
 
       return {
-        count: applicationsCount.length,
+        count: applicationIds.length,
         data,
       };
     }),
