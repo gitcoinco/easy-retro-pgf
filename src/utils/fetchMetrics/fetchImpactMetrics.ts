@@ -51,7 +51,8 @@ export function fetchImpactMetrics(
       variables,
     }),
   }).then((r) => {
-    if (r.errors) throw new Error(r.errors[0]?.message);
+    if (r.errors)
+      throw new Error(`OpenSourceObserver: ${r.errors[0]?.message}`);
 
     return r.data?.onchain_metrics_by_project_v1;
   });
