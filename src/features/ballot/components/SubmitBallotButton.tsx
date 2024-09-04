@@ -47,7 +47,7 @@ export const SubmitBallotButton = ({ disabled = false }) => {
         className="w-full"
         variant="primary"
         as={Link}
-        href={`/${domain}${isImpactRound ? "/metrics" : ""}/ballot`}
+        href={`/${domain}/ballot${isImpactRound && "/metrics"}`}
       >
         View ballot
       </Button>
