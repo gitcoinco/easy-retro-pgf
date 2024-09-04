@@ -9,6 +9,7 @@ import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { Spinner } from "~/components/ui/Spinner";
 import { useAccount } from "wagmi";
 import { HandIcon, PauseIcon, WalletIcon } from "lucide-react";
+import { Alert } from "~/components/ui/Alert";
 
 type Props = PropsWithChildren<
   {
@@ -58,7 +59,7 @@ export const MetricsLayout = ({
       ],
     );
 
-    if (["VOTING" || "TALLYING"].includes(roundState!)) {
+    if (["TALLYING" || "RESULTS"].includes(roundState!)) {
       navLinks.push(
         ...[
           {
@@ -84,28 +85,22 @@ export const MetricsLayout = ({
         </div>
       ) : !address ? (
         <div className="flex flex-col items-center gap-4 py-12">
-          <div className="text-center">
-            <WalletIcon className="w-24 h-24 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
-            <p>Please connect your wallet to verify if you are an eligible voter.</p>
-          </div>
+          <Alert title="Connect Your Wallet" icon={WalletIcon}>
+            Please connect your wallet to verify if you are an eligible voter
+          </Alert>
         </div>
       ) : !isVoter ? (
         <div className="flex flex-col items-center gap-4 py-12">
-          <div className="text-center">
-            <HandIcon className="w-24 h-24 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Access Restricted</h2>
-            <p>Only eligible voters can access this page. Please check your eligibility.</p>
-          </div>
+          <Alert title="Access Restricted" icon={HandIcon}>
+            Only eligible voters can access this page. Please check your eligibility.
+          </Alert>
         </div>
       ) : !isVotingPhase ? (
         <div className="flex justify-center">
           <div className="flex flex-col items-center gap-4 py-12">
-            <div className="text-center">
-              <PauseIcon className="w-24 h-24 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Voting Phase Not Active</h2>
-              <p>The voting phase is currently inactive. Please check back later for updates.</p>
-            </div>
+            <Alert title="Voting Phase Not Active" icon={PauseIcon}>
+            The voting phase is currently inactive. Please check back later for updates.
+            </Alert>
           </div>
         </div>
       ) : (
