@@ -4,11 +4,11 @@ import { Button } from "~/components/ui/Button";
 type ReviewActionType = "approve" | "revoke";
 
 type Props = {
-  type: ReviewActionType;
-  onClick: () => void;
-  disabled: boolean;
-  isLoading: boolean;
-  isAdmin: boolean;
+  type?: ReviewActionType;
+  onClick?: () => void;
+  disabled?: boolean;
+  isLoading?: boolean;
+  isAdmin?: boolean;
 };
 
 const BUTTON_CONFIG: Record<
@@ -26,17 +26,18 @@ export function ReviewActionButton({
   isLoading,
   isAdmin,
 }: Props) {
-  const config = BUTTON_CONFIG[type];
+  const config = !!type ? BUTTON_CONFIG[type] : { text: "", variant: "" };
 
-  if (!isAdmin) return null;
+  if (!!type && !isAdmin) return null;
 
   return (
     <EnsureCorrectNetwork>
       <Button
         size="sm"
+        className="min-w-[100px]"
         variant={config.variant}
         disabled={disabled}
-        isLoading={isLoading}
+        isLoading={!type || isLoading}
         onClick={onClick}
       >
         {config.text}
