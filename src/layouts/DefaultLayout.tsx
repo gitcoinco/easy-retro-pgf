@@ -44,7 +44,7 @@ export const Layout = ({ children, ...props }: Props) => {
   if (round && round.type === RoundTypes.impact && roundState === "VOTING") {
     navLinks.push({
       href: `/${domain}/metrics`,
-      children: `Metrics`,
+      children: `Voting`,
     });
   }
 

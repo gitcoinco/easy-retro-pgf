@@ -37,7 +37,7 @@ export const MetricsLayout = ({
     navLinks.push({
       // Adding conditional metrics as well because we don't have yet anything to show in the metric (description, calculation, etc)
       href: `/${domain}/metrics`,
-      children: `Metrics`,
+      children: `Voting`,
     });
     navLinks.push({
       href: `/${domain}/ballot/metrics`,
