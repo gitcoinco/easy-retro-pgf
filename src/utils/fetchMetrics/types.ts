@@ -1,10 +1,10 @@
-type OrderBy = "asc" | "desc";
+type OrderBy = "Asc" | "Desc";
 export type ImpactMetricsQuery = {
   where: {
     project_name: { _in: string[] };
     event_source: { _eq: "BASE" };
   };
-  orderBy: { active_contract_count_90_days: OrderBy }[];
+  orderBy: { activeContractCount90Days: OrderBy }[];
   limit: number;
   offset: number;
 };

@@ -1,35 +1,35 @@
 export enum AvailableMetrics {
-  active_contract_count_90_days = "Active Contract Count (90 Days)",
-  address_count = "Address Count",
-  address_count_90_days = "Address Count (90 Days)",
-  days_since_first_transaction = "Days Since First Transaction",
-  gas_fees_sum = "Gas Fees Sum",
-  gas_fees_sum_6_months = "Gas Fees Sum (6 Months)",
-  high_activity_address_count_90_days = "High Activity Address Count (90 Days)",
-  low_activity_address_count_90_days = "Low Activity Address Count (90 Days)",
-  medium_activity_address_count_90_days = "Medium Activity Address Count (90 Days)",
-  multi_project_address_count_90_days = "Multi Project Address Count (90 Days)",
-  new_address_count_90_days = "New Address Count (90 Days)",
-  returning_address_count_90_days = "Returning Address Count (90 Days)",
-  transaction_count = "Transaction Count",
-  transaction_count_6_months = "Transaction Count (6 Months)",
+  activeContractCount90Days = "Active Contract Count (90 Days)",
+  addressCount = "Address Count",
+  addressCount90Days = "Address Count (90 Days)",
+  daysSinceFirstTransaction = "Days Since First Transaction",
+  gasFeesSum = "Gas Fees Sum",
+  gasFeesSum6Months = "Gas Fees Sum (6 Months)",
+  highActivityAddressCount90Days = "High Activity Address Count (90 Days)",
+  lowActivityAddressCount90Days = "Low Activity Address Count (90 Days)",
+  mediumActivityAddressCount90Days = "Medium Activity Address Count (90 Days)",
+  multiProjectAddressCount90Days = "Multi Project Address Count (90 Days)",
+  newAddressCount90Days = "New Address Count (90 Days)",
+  returningAddressCount90Days = "Returning Address Count (90 Days)",
+  transactionCount = "Transaction Count",
+  transactionCount6Months = "Transaction Count (6 Months)",
 }
 
 export type OSOMetric = {
-  active_contract_count_90_days: number;
-  address_count: number;
-  address_count_90_days: number;
-  days_since_first_transaction: number;
-  gas_fees_sum: number;
-  gas_fees_sum_6_months: number;
-  high_activity_address_count_90_days: number;
-  low_activity_address_count_90_days: number;
-  medium_activity_address_count_90_days: number;
-  multi_project_address_count_90_days: number;
-  new_address_count_90_days: number;
-  returning_address_count_90_days: number;
-  transaction_count: number;
-  transaction_count_6_months: number;
+  activeContractCount90Days: number;
+  addressCount: number;
+  addressCount90Days: number;
+  daysSinceFirstTransaction: number;
+  gasFeesSum: number;
+  gasFeesSum6Months: number;
+  highActivityAddressCount90Days: number;
+  lowActivityAddressCount90Days: number;
+  mediumActivityAddressCount90Days: number;
+  multiProjectAddressCount90Days: number;
+  newAddressCount90Days: number;
+  returningAddressCount90Days: number;
+  transactionCount: number;
+  transactionCount6Months: number;
 };
 
 export type MetricId = keyof OSOMetric;
@@ -41,19 +41,19 @@ export type Metric = {
 };
 
 type OSOMetricProjectMeta = {
-  event_source: string;
-  display_name: string;
-  project_id: string;
-  project_name: string;
-  project_namespace: string;
-  project_source: string;
+  eventSource: string;
+  displayName: string;
+  projectId: string;
+  projectName: string;
+  projectNamespace: string;
+  projectSource: string;
 };
 
 export type OSOMetrics = (OSOMetric & OSOMetricProjectMeta)[];
 
 export type OSOMetricCSVProjectMeta = {
-  project_name: string;
-  project_id: string;
+  projectName: string;
+  projectId: string;
 };
 
 export type OSOMetricsCSV = OSOMetricCSVProjectMeta & OSOMetric;
