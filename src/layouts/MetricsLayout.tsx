@@ -7,6 +7,8 @@ import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { useCurrentUser } from "~/hooks/useCurrentUser";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { Spinner } from "~/components/ui/Spinner";
+import { useAccount } from "wagmi";
+import { HandIcon, PauseIcon, WalletIcon } from "lucide-react";
 
 type Props = PropsWithChildren<
   {
@@ -23,6 +25,7 @@ export const MetricsLayout = ({
   const domain = useCurrentDomain();
   const { isAdmin, isVoter, isPending } = useCurrentUser();
   const roundState = useRoundState();
+  const { address } = useAccount();
 
   const isVotingPhase = roundState === "VOTING";
 
@@ -79,13 +82,31 @@ export const MetricsLayout = ({
           <div>Loading...</div>
           <Spinner className="size-6" />
         </div>
+      ) : !address ? (
+        <div className="flex flex-col items-center gap-4 py-12">
+          <div className="text-center">
+            <WalletIcon className="w-24 h-24 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
+            <p>Please connect your wallet to verify if you are an eligible voter.</p>
+          </div>
+        </div>
       ) : !isVoter ? (
-        <div className="flex justify-center">
-          <div>Only voters can access this page</div>
+        <div className="flex flex-col items-center gap-4 py-12">
+          <div className="text-center">
+            <HandIcon className="w-24 h-24 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Access Restricted</h2>
+            <p>Only eligible voters can access this page. Please check your eligibility.</p>
+          </div>
         </div>
       ) : !isVotingPhase ? (
         <div className="flex justify-center">
-          <div>Not in voting phase</div>
+          <div className="flex flex-col items-center gap-4 py-12">
+            <div className="text-center">
+              <PauseIcon className="w-24 h-24 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold mb-2">Voting Phase Not Active</h2>
+              <p>The voting phase is currently inactive. Please check back later for updates.</p>
+            </div>
+          </div>
         </div>
       ) : (
         children
