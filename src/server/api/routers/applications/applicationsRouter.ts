@@ -56,24 +56,16 @@ export const applicationsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const {
         fetchAttestations: attestationFetcher,
-        round: { id: roundId, admins },
+        round: { id: roundId },
       } = ctx;
 
       // Fetch eas approvals + applicationIds. Note approval attestations include both approved & rejected attestations
       const [approvals, applicationIds] = await Promise.all([
-        attestationFetcher(
-          ["approval"],
-          {
-            where: {
-              attester: { in: admins },
-              AND: [
-                createDataFilter("type", "bytes32", "application"),
-                createDataFilter("round", "bytes32", roundId),
-              ],
-            },
-          },
-          ["id", "refUID", "attester"], // Only fetch the required fields for smaller data payload
-        ),
+        fetchApprovals({
+          round: ctx.round,
+          includeRevoked: true,
+          expirationTime: Date.now(),
+        }),
         attestationFetcher(
           ["metadata"],
           {
@@ -88,50 +80,62 @@ export const applicationsRouter = createTRPCRouter({
         ),
       ]);
 
-      const applicationdsWithStatus = await Promise.all(
-        applicationIds.map(async (a) => ({
-          id: a.id,
-          status: await getApplicationStatus({
-            round: ctx.round,
-            projectId: a.id,
-          }),
-        })),
-      );
+      // filter approvals by applicationIds & if there are multile approvals for the same application, only keep the last one
+      const filteredApprovals = approvals.filter((a, i) => {
+        const isLast = approvals.findIndex((b) => b.refUID === a.refUID) === i;
+        return isLast;
+      });
+
+      const applicationIdsWithStatus = applicationIds.map((a) => ({
+        id: a.id,
+        status: filteredApprovals.find((approval) => approval.refUID === a.id)
+          ? filteredApprovals.find(
+              (approval) => approval.refUID === a.id && !approval.revoked,
+            )
+            ? "approved"
+            : "rejected"
+          : "pending",
+      }));
+
       const { ...filter } = input;
 
-      let ids: string[] = [];
+      let filteredIds: string[] = [];
       if (filter.status === "approved") {
-        ids = applicationdsWithStatus
-          .filter((a) => a.status.status === "approved")
+        filteredIds = applicationIdsWithStatus
+          .filter((a) => a.status === "approved")
           .map((a) => a.id);
       } else if (filter.status === "pending") {
-        ids = applicationdsWithStatus
-          .filter((a) => a.status.status === "pending")
+        filteredIds = applicationIdsWithStatus
+          .filter((a) => a.status === "pending")
           .map((a) => a.id);
-      } else if (filter.status === "all") {
-        ids = applicationIds.map((a) => a.id);
       }
 
       // Note that this fetches all applications when ids is empty
       const applications = await fetchApplications({
         attestationFetcher,
         roundId,
-        filter: { ...filter, ids },
+        filter: { ...filter, ids: filteredIds },
       });
 
-      const approvedById = Object.fromEntries(
-        approvals.map((a) => [a.refUID, { attester: a.attester, uid: a.id }]),
+      const approvalsById = Object.fromEntries(
+        filteredApprovals.map((a) => [
+          a.refUID,
+          { attester: a.attester, uid: a.id },
+        ]),
       );
 
+      const applicationsWithStatus = applications.map((a) => ({
+        ...a,
+        status: applicationIdsWithStatus.find((s) => s.id === a.id)?.status,
+        approvedBy: approvalsById[a.id],
+      }));
+
       const data =
-        ids.length > 0
-          ? applications.map((a) => ({
-              ...a,
-              status: applicationdsWithStatus.find((s) => s.id === a.id)?.status
-                .status,
-              approvedBy: approvedById[a.id],
-            }))
-          : [];
+        filter.status === "all"
+          ? applicationsWithStatus
+          : filteredIds.length === 0
+            ? []
+            : applicationsWithStatus;
 
       return {
         count: applicationIds.length,
