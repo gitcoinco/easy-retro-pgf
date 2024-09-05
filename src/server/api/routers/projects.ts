@@ -11,6 +11,8 @@ import { eas } from "~/config";
 import { type Filter, FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchProfiles } from "./profile/utils";
+import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
+import { OSOMetricsCSV } from "~/types";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -211,9 +213,27 @@ export const projectsRouter = createTRPCRouter({
                     : "approved",
               };
             });
-            return projectsWithMetadata.filter(
+            const filteredProjects = projectsWithMetadata.filter(
               (project) => project.status === "approved",
             );
+            const projectIds = filteredProjects.map((project) => project.id);
+            const metrics = await fetchImpactMetricsFromCSV({
+              projectIds,
+            });
+            const metricsByProjectId: Record<string, OSOMetricsCSV> =
+              Object.fromEntries(
+                metrics.map((metric: OSOMetricsCSV) => [
+                  metric.project_id,
+                  metric,
+                ]),
+              );
+            const projectsWithMetrics = filteredProjects.map((project) => {
+              return {
+                ...project,
+                metrics: metricsByProjectId[project.id] as unknown,
+              };
+            });
+            return projectsWithMetrics;
           });
       } catch (error) {
         throw new TRPCError({
