@@ -29,6 +29,7 @@ import {
 
 import * as appConfig from "~/config";
 import { Toaster } from "~/components/Toaster";
+import { EnsureCorrectSession } from "~/components/EnsureCorrectSession";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: process.env.NEXT_PUBLIC_SIGN_STATEMENT ?? "Sign in to OpenPGF",
@@ -45,16 +46,18 @@ export function Providers({
     <ThemeProvider attribute="class" forcedTheme={appConfig.theme.colorMode}>
       <SessionProvider refetchInterval={0} session={session}>
         <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <RainbowKitSiweNextAuthProvider
-              getSiweMessageOptions={getSiweMessageOptions}
-            >
-              <RainbowKitProvider>
-                {children}
-                <Toaster />
-              </RainbowKitProvider>
-            </RainbowKitSiweNextAuthProvider>
-          </QueryClientProvider>
+          <EnsureCorrectSession>
+            <QueryClientProvider client={queryClient}>
+              <RainbowKitSiweNextAuthProvider
+                getSiweMessageOptions={getSiweMessageOptions}
+              >
+                <RainbowKitProvider>
+                  {children}
+                  <Toaster />
+                </RainbowKitProvider>
+              </RainbowKitSiweNextAuthProvider>
+            </QueryClientProvider>
+          </EnsureCorrectSession>
         </WagmiProvider>
       </SessionProvider>
     </ThemeProvider>
