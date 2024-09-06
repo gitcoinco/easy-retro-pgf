@@ -20,6 +20,7 @@ import type { OSOMetricsCSV } from "~/types";
 import type { ApplicationStatus } from "./applications/types";
 import { getMetricsByProjectId } from "~/utils/fetchMetrics";
 import { fetchMetadataFromAttestations } from "~/utils/metadata";
+import { createOrderBy } from "~/utils/fetchAttestations/filters";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -367,18 +368,6 @@ export const projectsRouter = createTRPCRouter({
         );
     }),
 });
-
-function createOrderBy(
-  orderBy: Filter["orderBy"],
-  sortOrder: Filter["sortOrder"],
-) {
-  const key = {
-    time: "time",
-    name: "decodedDataJson",
-  }[orderBy];
-
-  return { [key]: sortOrder };
-}
 
 async function fetchMetadataForProjects(
   projects: Attestation[],
