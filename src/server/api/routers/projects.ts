@@ -19,6 +19,7 @@ import { getApplicationStatus } from "./applications/utils";
 import type { OSOMetricsCSV } from "~/types";
 import type { ApplicationStatus } from "./applications/types";
 import { getMetricsByProjectId } from "~/utils/fetchMetrics";
+import { fetchMetadataFromAttestations } from "~/utils/metadata";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -282,7 +283,8 @@ export const projectsRouter = createTRPCRouter({
             }),
           );
 
-          const metadataByProjectId = await fetchMetadataForSunnys(projects);
+          const metadataByProjectId =
+            await fetchMetadataFromAttestations(projects);
 
           const metricsByProjectId: Record<
             string,
@@ -412,18 +414,4 @@ async function fetchMetadataForProjects(
       profiles: Record<string, unknown>;
     },
   );
-}
-
-async function fetchMetadataForSunnys(projects: Attestation[]) {
-  const metadataByProjectId: Record<string, unknown> = {};
-
-  await Promise.all(
-    projects.map(async ({ metadataPtr, id }) => {
-      if (!metadataPtr) return;
-      const metadata = await fetchMetadata(metadataPtr);
-      metadataByProjectId[id] = metadata;
-    }),
-  );
-
-  return metadataByProjectId;
 }

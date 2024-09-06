@@ -1,0 +1,1 @@
+export { fetchMetadataFromAttestations } from "./fetchMetadataFromAttestations";
