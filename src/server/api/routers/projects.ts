@@ -17,8 +17,9 @@ import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchProfiles } from "./profile/utils";
 import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { getApplicationStatus } from "./applications/utils";
-import type { OSOMetric, OSOMetricsCSV } from "~/types";
+import type { OSOMetricsCSV } from "~/types";
 import type { ApplicationStatus } from "./applications/types";
+import { indexMetricsByProjectId } from "~/utils/fetchMetrics";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -306,12 +307,7 @@ export const projectsRouter = createTRPCRouter({
           const metricsByProjectId: Record<
             string,
             Partial<OSOMetricsCSV>
-          > = Object.fromEntries(
-            metricsArray.map((metricsItem: OSOMetricsCSV) => {
-              const { project_id, project_name, ...metrics } = metricsItem;
-              return [project_id, metrics];
-            }),
-          );
+          > = indexMetricsByProjectId(metricsArray);
 
           const projectsResult: Array<
             Attestation & {
