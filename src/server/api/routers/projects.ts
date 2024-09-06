@@ -219,27 +219,9 @@ export const projectsRouter = createTRPCRouter({
                     : "approved",
               };
             });
-            const filteredProjects = projectsWithMetadata.filter(
+            return projectsWithMetadata.filter(
               (project) => project.status === "approved",
             );
-            const projectIds = filteredProjects.map((project) => project.id);
-            const metrics = await fetchImpactMetricsFromCSV({
-              projectIds,
-            });
-            const metricsByProjectId: Record<string, OSOMetricsCSV> =
-              Object.fromEntries(
-                metrics.map((metric: OSOMetricsCSV) => [
-                  metric.project_id,
-                  metric,
-                ]),
-              );
-            const projectsWithMetrics = filteredProjects.map((project) => {
-              return {
-                ...project,
-                metrics: metricsByProjectId[project.id] as unknown,
-              };
-            });
-            return projectsWithMetrics;
           });
       } catch (error) {
         throw new TRPCError({
