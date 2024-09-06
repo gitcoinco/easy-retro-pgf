@@ -1,3 +1,4 @@
+import type { Filter } from "~/features/filter/types";
 import { formatBytes } from "./bytesUtils";
 
 const typeMaps = {
@@ -28,4 +29,16 @@ export function createDataFilter(
       )}`,
     },
   };
+}
+
+export function createOrderBy(
+  orderBy: Filter["orderBy"],
+  sortOrder: Filter["sortOrder"],
+) {
+  const key = {
+    time: "time",
+    name: "decodedDataJson",
+  }[orderBy];
+
+  return { [key]: sortOrder };
 }

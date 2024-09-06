@@ -1,0 +1,1 @@
+export { fetchApplicationAttestations } from "./fetchApplicationAttestations";

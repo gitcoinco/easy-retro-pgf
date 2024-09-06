@@ -23,7 +23,7 @@ export async function fetchMetricsForProjects({
   });
 
   const approvedProjects = approvedApplications.map(
-    (application) => application.name,
+    (application) => application.uuid,
   );
 
   if (approvedProjects.length === 0) {
@@ -31,8 +31,8 @@ export async function fetchMetricsForProjects({
   }
 
   const metricsByProject = await fetchImpactMetricsFromCSV({
-    projects: approvedProjects,
-    metrics: metricIds as MetricId[],
+    projectIds: approvedProjects,
+    metricIds: metricIds as MetricId[],
   });
 
   const mappedMetrics = mapMetrics(metricsByProject, metricIds as MetricId[]);

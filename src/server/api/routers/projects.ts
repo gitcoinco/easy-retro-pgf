@@ -1,16 +1,29 @@
 import { z } from "zod";
 
-import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
 import {
-  Attestation,
+  attestationProcedure,
+  createTRPCRouter,
+  roundProcedure,
+} from "~/server/api/trpc";
+import {
+  type Attestation,
   createDataFilter,
   createSearchFilter,
 } from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
-import { eas } from "~/config";
-import { type Filter, FilterSchema } from "~/features/filter/types";
+import { FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchProfiles } from "./profile/utils";
+import {
+  getApplicationsStatusMapById,
+  getApplicationStatus,
+} from "./applications/utils";
+import type { OSOMetricsCSV } from "~/types";
+import type { ApplicationStatus } from "./applications/types";
+import { getMetricsByProjectId } from "~/utils/fetchMetrics";
+import { fetchMetadataFromAttestations } from "~/utils/metadata";
+import { createOrderBy } from "~/utils/fetchAttestations/filters";
+import { fetchApplicationAttestations } from "~/utils/projects";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -223,6 +236,88 @@ export const projectsRouter = createTRPCRouter({
       }
     }),
 
+  listSunnyProjects: roundProcedure
+    .input(FilterSchema)
+    .query(
+      async ({
+        input: { cursor, limit, orderBy, sortOrder },
+        ctx: { round },
+      }) => {
+        if (!round)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Round not found",
+          });
+        try {
+          // Fetch Project applications
+          const projectAttestations: Attestation[] =
+            await fetchApplicationAttestations({
+              round,
+              take: limit,
+              skip: cursor * limit,
+              orderBy: [createOrderBy(orderBy, sortOrder)],
+            });
+
+          const statusByProjectId: Record<string, ApplicationStatus> =
+            await getApplicationsStatusMapById({
+              round,
+              projectAttestations,
+            });
+
+          const metadataByProjectId =
+            await fetchMetadataFromAttestations(projectAttestations);
+
+          const metricsByProjectId: Record<
+            string,
+            Partial<OSOMetricsCSV>
+          > = await getMetricsByProjectId({
+            projectIds: [
+              ...Object.keys(projectAttestations),
+              ...[
+                "id0",
+                "id1",
+                "id2",
+                "id3",
+                "id4",
+                "id5",
+                "id6",
+                "id7",
+                "id8",
+                "id9",
+              ],
+            ],
+          });
+
+          const projectsResult: Array<
+            Attestation & {
+              status: ApplicationStatus;
+              metrics?: Partial<OSOMetricsCSV>;
+              metadata: unknown;
+            }
+          > = projectAttestations.map((project, index) => {
+            const { id: projectId } = project;
+            const status = statusByProjectId[projectId]!;
+            const metrics =
+              metricsByProjectId[projectId] ?? metricsByProjectId[`id${index}`];
+            const metadata = metadataByProjectId[projectId];
+
+            return {
+              ...project,
+              metadata,
+              metrics,
+              status,
+            };
+          });
+          return projectsResult;
+        } catch (error) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: (error as Error).message,
+          });
+        }
+      },
+    ),
+
   // Used for distribution to get the projects' payoutAddress
   // To get this data we need to fetch all projects and their metadata
   payoutAddresses: attestationProcedure
@@ -253,18 +348,6 @@ export const projectsRouter = createTRPCRouter({
         );
     }),
 });
-
-function createOrderBy(
-  orderBy: Filter["orderBy"],
-  sortOrder: Filter["sortOrder"],
-) {
-  const key = {
-    time: "time",
-    name: "decodedDataJson",
-  }[orderBy];
-
-  return { [key]: sortOrder };
-}
 
 async function fetchMetadataForProjects(
   projects: Attestation[],
