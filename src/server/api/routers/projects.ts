@@ -15,11 +15,10 @@ import { TRPCError } from "@trpc/server";
 import { type Filter, FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchProfiles } from "./profile/utils";
-import { fetchImpactMetricsFromCSV } from "~/utils/fetchMetrics";
 import { getApplicationStatus } from "./applications/utils";
 import type { OSOMetricsCSV } from "~/types";
 import type { ApplicationStatus } from "./applications/types";
-import { indexMetricsByProjectId } from "~/utils/fetchMetrics";
+import { getMetricsByProjectId } from "~/utils/fetchMetrics";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -285,8 +284,10 @@ export const projectsRouter = createTRPCRouter({
 
           const metadataByProjectId = await fetchMetadataForSunnys(projects);
 
-          // Include mock of 10 metrics
-          const metricsArray = await fetchImpactMetricsFromCSV({
+          const metricsByProjectId: Record<
+            string,
+            Partial<OSOMetricsCSV>
+          > = await getMetricsByProjectId({
             projectIds: [
               ...Object.keys(projects),
               ...[
@@ -303,11 +304,6 @@ export const projectsRouter = createTRPCRouter({
               ],
             ],
           });
-
-          const metricsByProjectId: Record<
-            string,
-            Partial<OSOMetricsCSV>
-          > = indexMetricsByProjectId(metricsArray);
 
           const projectsResult: Array<
             Attestation & {

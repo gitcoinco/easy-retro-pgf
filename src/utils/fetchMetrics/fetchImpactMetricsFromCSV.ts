@@ -3,7 +3,7 @@ import path from "path";
 import Papa from "papaparse";
 import type { MetricId, OSOMetricsCSV } from "~/types/metrics";
 
-type FetchImpactMetricsParams = {
+export type FetchImpactMetricsParams = {
   projectIds?: string[];
   metricIds?: MetricId[];
 };
