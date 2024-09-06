@@ -14,7 +14,10 @@ import { TRPCError } from "@trpc/server";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchProfiles } from "./profile/utils";
-import { getApplicationStatus } from "./applications/utils";
+import {
+  getApplicationsStatusMapById,
+  getApplicationStatus,
+} from "./applications/utils";
 import type { OSOMetricsCSV } from "~/types";
 import type { ApplicationStatus } from "./applications/types";
 import { getMetricsByProjectId } from "~/utils/fetchMetrics";
@@ -247,36 +250,29 @@ export const projectsRouter = createTRPCRouter({
           });
         try {
           // Fetch Project applications
-          const projects: Attestation[] = await fetchApplicationAttestations({
-            round,
-            take: limit,
-            skip: cursor * limit,
-            orderBy: [createOrderBy(orderBy, sortOrder)],
-          });
+          const projectAttestations: Attestation[] =
+            await fetchApplicationAttestations({
+              round,
+              take: limit,
+              skip: cursor * limit,
+              orderBy: [createOrderBy(orderBy, sortOrder)],
+            });
 
-          const statusByProjectId: Record<string, ApplicationStatus> = {};
-
-          // Fetch all status in parallel
-          await Promise.all(
-            projects.map(async ({ id: projectId }) => {
-              const { status } = await getApplicationStatus({
-                round,
-                projectId,
-              });
-
-              statusByProjectId[projectId] = status;
-            }),
-          );
+          const statusByProjectId: Record<string, ApplicationStatus> =
+            await getApplicationsStatusMapById({
+              round,
+              projectAttestations,
+            });
 
           const metadataByProjectId =
-            await fetchMetadataFromAttestations(projects);
+            await fetchMetadataFromAttestations(projectAttestations);
 
           const metricsByProjectId: Record<
             string,
             Partial<OSOMetricsCSV>
           > = await getMetricsByProjectId({
             projectIds: [
-              ...Object.keys(projects),
+              ...Object.keys(projectAttestations),
               ...[
                 "id0",
                 "id1",
@@ -298,7 +294,7 @@ export const projectsRouter = createTRPCRouter({
               metrics?: Partial<OSOMetricsCSV>;
               metadata: unknown;
             }
-          > = projects.map((project, index) => {
+          > = projectAttestations.map((project, index) => {
             const { id: projectId } = project;
             const status = statusByProjectId[projectId]!;
             const metrics =
