@@ -6,9 +6,10 @@ import { useDebounce } from "react-use";
 import { useState } from "react";
 
 export const SortFilter = () => {
-  const { orderBy, sortOrder, setFilter } = useFilter();
+  const { orderBy, sortOrder, setFilter, isRandom } = useFilter();
 
   const [search, setSearch] = useState("");
+
   useDebounce(() => setFilter({ search }), 500, [search]);
 
   return (
@@ -27,7 +28,7 @@ export const SortFilter = () => {
           "time_asc",
           "time_desc",
         ]}
-        value={`${orderBy}_${sortOrder}`}
+        value={isRandom ? "time_random" : `${orderBy}_${sortOrder}`}
         onChange={async (sort) => {
           const [orderBy, sortOrder] = sort.split("_") as [OrderBy, SortOrder];
 

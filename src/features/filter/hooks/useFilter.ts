@@ -20,6 +20,8 @@ export function useFilter() {
       sortOrder: parseAsStringEnum<SortOrder | "random">(
         Object.values(SortOrder),
       ).withDefault(SortOrder.random),
+      // Always default to the current running round
+      round: parseAsString.withDefault("1"),
     },
     { history: "replace" },
   );

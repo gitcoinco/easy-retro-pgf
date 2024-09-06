@@ -1,5 +1,5 @@
 import z from "zod";
-import { config } from "~/config";
+import { config, filecoinRounds } from "~/config";
 
 export enum OrderBy {
   name = "name",
@@ -18,6 +18,8 @@ export const FilterSchema = z.object({
   orderBy: z.nativeEnum(OrderBy).default(OrderBy.name),
   sortOrder: z.nativeEnum(SortOrder).default(SortOrder.asc),
   search: z.string().default(""),
+  // Always default to the current running round
+  round: z.string().default("1"),
 });
 
 export type Filter = z.infer<typeof FilterSchema>;
