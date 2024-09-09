@@ -1,9 +1,9 @@
-import { useAccount } from "wagmi";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
+import { useSessionAddress } from "./useSessionAddress";
 
 export function useCurrentUser() {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const { data: round, isPending: roundIsPending } = useCurrentRound();
   const { data: approvedVoterData, isPending: approvedVoterIsPending } =
     useApprovedVoter(address);
