@@ -1,13 +1,14 @@
-import { useAccount, usePublicClient, useSendTransaction } from "wagmi";
+import { usePublicClient, useSendTransaction } from "wagmi";
 import { abi as RegistryABI } from "@allo-team/allo-v2-sdk/dist/Registry/registry.config";
 import { type Address, zeroAddress } from "viem";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { solidityPackedKeccak256 } from "ethers";
 import { useAlloRegistry, waitForLogs } from "./useAllo";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 export function useAlloProfile() {
   const registry = useAlloRegistry();
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
 
   return useQuery({
     queryKey: ["allo/profile"],
@@ -24,7 +25,7 @@ export function useAlloProfile() {
 const NONCE = 3n;
 export function useCreateAlloProfile() {
   const registry = useAlloRegistry();
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const client = usePublicClient();
   const { sendTransactionAsync } = useSendTransaction();
   const queryClient = useQueryClient();

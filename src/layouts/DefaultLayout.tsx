@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode, PropsWithChildren } from "react";
-import { useAccount } from "wagmi";
 
 import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
@@ -11,10 +10,10 @@ import {
   useCurrentRound,
 } from "~/features/rounds/hooks/useRound";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
-import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/Button";
 import Link from "next/link";
 import { RoundTypes } from "~/features/rounds/types";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 type Props = PropsWithChildren<
   {
@@ -23,7 +22,7 @@ type Props = PropsWithChildren<
   } & LayoutProps
 >;
 export const Layout = ({ children, ...props }: Props) => {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
 
   const domain = useCurrentDomain();
   const { data: round, isPending } = useCurrentRound();
@@ -98,12 +97,11 @@ export const Layout = ({ children, ...props }: Props) => {
 };
 
 export function LayoutWithBallot(props: Props) {
-  const { address } = useAccount();
-  const { data: session } = useSession();
+  const { address } = useSessionAddress();
   return (
     <Layout
       sidebar="left"
-      sidebarComponent={address && session && <BallotOverview />}
+      sidebarComponent={address && <BallotOverview />}
       {...props}
     />
   );

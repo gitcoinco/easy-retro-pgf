@@ -14,10 +14,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { createElement, type ReactNode } from "react";
-import { useAccount } from "wagmi";
 import { Spinner } from "~/components/ui/Spinner";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { type RoundSchema } from "~/features/rounds/types";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 import { Layout } from "~/layouts/DefaultLayout";
 import { cn } from "~/utils/classNames";
 
@@ -33,7 +33,7 @@ export function RoundAdminLayout({
     params: UseTRPCQueryResult<RoundSchema | null, unknown>,
   ) => ReactNode;
 }) {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const round = useCurrentRound();
 
   return (

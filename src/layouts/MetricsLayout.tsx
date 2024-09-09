@@ -7,7 +7,6 @@ import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { useCurrentUser } from "~/hooks/useCurrentUser";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { Spinner } from "~/components/ui/Spinner";
-import { useAccount } from "wagmi";
 import { HandIcon, PauseIcon, WalletIcon } from "lucide-react";
 import { Alert } from "~/components/ui/Alert";
 
@@ -24,9 +23,8 @@ export const MetricsLayout = ({
   ...props
 }: Props) => {
   const domain = useCurrentDomain();
-  const { isAdmin, isVoter, isPending } = useCurrentUser();
+  const { address, isAdmin, isVoter, isPending } = useCurrentUser();
   const roundState = useRoundState();
-  const { address } = useAccount();
 
   const isVotingPhase = roundState === "VOTING";
 

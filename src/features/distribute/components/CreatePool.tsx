@@ -2,8 +2,6 @@ import { type PropsWithChildren } from "react";
 import { z } from "zod";
 import dynamic from "next/dynamic";
 import { formatUnits, parseUnits } from "viem";
-import { useAccount } from "wagmi";
-import { useSession } from "next-auth/react";
 import { useFormContext } from "react-hook-form";
 
 import { Button, IconButton } from "~/components/ui/Button";
@@ -20,7 +18,6 @@ import {
   usePoolToken,
   useRoundToken,
 } from "../hooks/useAlloPool";
-import { allo } from "~/config";
 import {
   ErrorMessage,
   Form,
@@ -29,6 +26,7 @@ import {
   Label,
 } from "~/components/ui/Form";
 import { NumberInput } from "~/components/NumberInput";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 function CheckAlloProfile(props: PropsWithChildren) {
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
@@ -186,7 +184,6 @@ function PoolDetails({ poolId = 0 }) {
         </div>
       </div>
 
-
       <h3 className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
         Fund Pool Amount
       </h3>
@@ -257,8 +254,7 @@ function FundPoolButton({
   isLoading?: boolean;
   token: TokenProps;
 }) {
-  const { address } = useAccount();
-  const session = useSession();
+  const { address } = useSessionAddress();
   const { formState, watch } = useFormContext<{ amount: number }>();
   const amount = watch("amount") || 0;
 
@@ -269,7 +265,7 @@ function FundPoolButton({
 
   const disabled = isLoading || Boolean(formState.errors.amount);
 
-  if (!address || !session) {
+  if (!address) {
     return (
       <Button className="w-full" disabled>
         Connect wallet

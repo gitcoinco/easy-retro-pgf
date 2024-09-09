@@ -1,18 +1,17 @@
 import Link from "next/link";
-import { useAccount, useDisconnect } from "wagmi";
-import { useSession } from "next-auth/react";
+import { useDisconnect } from "wagmi";
 
 import { metadata } from "~/config";
 import { Dialog } from "./ui/Dialog";
 import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 export const EligibilityDialog = () => {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const { disconnect } = useDisconnect();
-  const { data: session } = useSession();
-  const { data, isPending, error } = useApprovedVoter(address!);
+  const { data, isPending, error } = useApprovedVoter(address);
 
-  if (isPending || !address || !session || error) return null;
+  if (isPending || !address || error) return null;
 
   // TODO: Find a smoother UX for this
   if (true) return null;
