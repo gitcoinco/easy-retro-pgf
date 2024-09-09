@@ -19,12 +19,12 @@ import { NumberInput } from "~/components/NumberInput";
 import { useUpdateRound } from "~/features/rounds/hooks/useRound";
 import { Alert } from "~/components/ui/Alert";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
-import { useAccount } from "wagmi";
 import { VotersList } from "~/features/admin/components/VotersList";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 export default function AdminAccountsPage() {
   const [isOpen, setOpen] = useState(false);
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const update = useUpdateRound();
   const { data: voterList } = useVoters();
   const approve = useApproveVoters({

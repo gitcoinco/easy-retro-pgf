@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { metadata } from "~/config";
 import { useTheme } from "next-themes";
 import { Footer } from "~/components/Footer";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 const Context = createContext({ eligibilityCheck: false, showBallot: false });
 export const useLayoutOptions = () => useContext(Context);
@@ -41,12 +42,12 @@ export const BaseLayout = ({
 >) => {
   const { theme } = useTheme();
   const router = useRouter();
-  const { address, isConnecting } = useAccount();
+  const { address } = useSessionAddress();
+  const { isConnecting } = useAccount();
 
   useEffect(() => {
     if (requireAuth && !address && !isConnecting) {
       void router.push("/");
-      return null;
     }
   }, [requireAuth, address, isConnecting]);
 

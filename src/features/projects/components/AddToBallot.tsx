@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
 import clsx from "clsx";
-import { useAccount } from "wagmi";
 import { useFormContext } from "react-hook-form";
 import { Check } from "lucide-react";
 
@@ -18,11 +17,12 @@ import {
   useRemoveAllocation,
   useSaveAllocation,
 } from "~/features/ballot/hooks/useBallot";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 type Props = { id: string; name?: string };
 
 export const ProjectAddToBallot = ({ id, name }: Props) => {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const [isOpen, setOpen] = useState(false);
 
   const ballot = useBallot();

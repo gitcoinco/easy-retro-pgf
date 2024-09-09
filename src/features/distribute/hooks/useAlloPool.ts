@@ -1,5 +1,4 @@
 import {
-  useAccount,
   useBalance,
   usePublicClient,
   useReadContract,
@@ -21,6 +20,7 @@ import {
   useUpdateRound,
 } from "~/features/rounds/hooks/useRound";
 import { toast } from "sonner";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 export function usePoolId() {
   const round = useCurrentRound();
@@ -90,7 +90,7 @@ export function useCreatePool() {
       // This will properly cast the type into address (and also validate)
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       const token = getAddress(round.tokenAddress || nativeToken);
-      const managers = round.admins.map(admin => getAddress(admin));
+      const managers = round.admins.map((admin) => getAddress(admin));
 
       const tx = alloSDK.createPool({
         profileId: params.profileId as Address,
@@ -162,7 +162,7 @@ export function useFundPool() {
 }
 
 function useToken(tokenAddress?: Address) {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const { data: round } = useCurrentRound();
   const isNativeToken = !tokenAddress || tokenAddress === nativeToken;
   const tokenContract = {
@@ -195,7 +195,7 @@ function useToken(tokenAddress?: Address) {
     data: {
       address: tokenAddress,
       isNativeToken,
-      symbol: isNativeToken ? network?.nativeCurrency.name : symbol ?? "",
+      symbol: isNativeToken ? network?.nativeCurrency.name : (symbol ?? ""),
       balance: balance?.value ?? 0n,
       decimals,
       allowance,
@@ -218,7 +218,7 @@ export function usePoolToken() {
 }
 
 export function useTokenAllowance() {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const { data } = useRoundToken();
 
   const query = useReadContract({

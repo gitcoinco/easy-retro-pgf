@@ -3,13 +3,13 @@
 import { Layout } from "~/layouts/DefaultLayout";
 
 import { ApplicationForm } from "~/features/applications/components/ApplicationForm";
-import { useAccount } from "wagmi";
 import { Alert } from "~/components/ui/Alert";
 import { FormSection } from "~/components/ui/Form";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 export default function NewProjectPage() {
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
 
   const roundState = useRoundState();
   const isNotApplicationPeriod = roundState !== "APPLICATION";

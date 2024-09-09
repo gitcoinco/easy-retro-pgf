@@ -5,8 +5,7 @@ import { type Address } from "viem";
 import { toast } from "sonner";
 import { useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
-import { useSession } from "next-auth/react";
-import { useAccount, useBalance } from "wagmi";
+import { useBalance } from "wagmi";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
@@ -34,6 +33,7 @@ import { Alert } from "~/components/ui/Alert";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -337,10 +337,9 @@ function CreateApplicationButton({
   buttonText: string;
 }) {
   const roundState = useRoundState();
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const balance = useBalance({ address });
 
-  const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
   const hasBalance = (balance.data?.value ?? 0n) > 0;
@@ -348,7 +347,7 @@ function CreateApplicationButton({
   return (
     <div className="flex items-center justify-between">
       <div>
-        {!session && (
+        {!address && (
           <div>You must connect wallet to create an application</div>
         )}
         {!isCorrectNetwork && (
@@ -365,7 +364,7 @@ function CreateApplicationButton({
       <EnsureCorrectNetwork>
         {hasBalance ? (
           <Button
-            disabled={roundState !== "APPLICATION" || isLoading || !session}
+            disabled={roundState !== "APPLICATION" || isLoading || !address}
             variant="primary"
             type="submit"
             isLoading={isLoading}

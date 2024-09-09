@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { useAccount } from "wagmi";
 import { Button } from "~/components/ui/Button";
 import { Form, FormControl, FormSection, Input } from "~/components/ui/Form";
 import { ConnectButton } from "~/components/ConnectButton";
@@ -7,6 +6,7 @@ import { BaseLayout } from "~/layouts/BaseLayout";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { RoundNameSchema } from "~/features/rounds/types";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 export default function CreateRoundPage() {
   return (
@@ -20,7 +20,7 @@ export default function CreateRoundPage() {
 
 function CreateRound() {
   const router = useRouter();
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
 
   const create = api.rounds.create.useMutation();
 

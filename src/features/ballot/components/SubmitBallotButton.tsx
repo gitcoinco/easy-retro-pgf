@@ -10,16 +10,16 @@ import {
   useCurrentRound,
 } from "~/features/rounds/hooks/useRound";
 import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
-import { useAccount } from "wagmi";
 import {
   useBallot,
   useIsSavingBallot,
 } from "~/features/ballot/hooks/useBallot";
 import Link from "next/link";
+import { useSessionAddress } from "~/hooks/useSessionAddress";
 
 export const SubmitBallotButton = ({ disabled = false }) => {
   const router = useRouter();
-  const { address } = useAccount();
+  const { address } = useSessionAddress();
   const { data: ballot } = useBallot();
   const isSaving = useIsSavingBallot();
 

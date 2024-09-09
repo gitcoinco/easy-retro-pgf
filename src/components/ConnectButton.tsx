@@ -102,11 +102,12 @@ const ConnectedDetails = ({
   openAccountModal: () => void;
   isMobile: boolean;
 }) => {
-  const { data: ballot } = useBallot();
+  const { eligibilityCheck, showBallot } = useLayoutOptions();
+
+  const { data: ballot } = useBallot({ enabled: showBallot });
   const ballotSize = (ballot?.allocations ?? []).length;
   const domain = useCurrentDomain();
 
-  const { eligibilityCheck, showBallot } = useLayoutOptions();
   return (
     <div>
       <div className="flex gap-2">

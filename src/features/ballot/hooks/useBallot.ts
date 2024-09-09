@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation } from "@tanstack/react-query";
 import { useBeforeUnload } from "react-use";
 import { useChainId, useSignTypedData } from "wagmi";
@@ -11,8 +13,9 @@ import { getQueryKey } from "@trpc/react-query";
 import { useBallotContext } from "~/features/ballot/components/BallotProvider";
 import { api } from "~/utils/api";
 
-export function useBallot() {
-  return api.ballot.get.useQuery();
+export function useBallot(opts?: { enabled?: boolean }) {
+  const enabled = opts?.enabled ?? true;
+  return api.ballot.get.useQuery(undefined, { enabled });
 }
 
 export function useSaveAllocation() {
