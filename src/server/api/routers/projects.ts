@@ -7,6 +7,7 @@ import {
 } from "~/server/api/trpc";
 import {
   type Attestation,
+  createAttestationFetcher,
   createDataFilter,
   createSearchFilter,
 } from "~/utils/fetchAttestations";
@@ -14,16 +15,10 @@ import { TRPCError } from "@trpc/server";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchProfiles } from "./profile/utils";
-import {
-  getApplicationsStatusMapById,
-  getApplicationStatus,
-} from "./applications/utils";
 import type { OSOMetricsCSV } from "~/types";
-import type { ApplicationStatus } from "./applications/types";
 import { getMetricsByProjectId } from "~/utils/fetchMetrics";
 import { fetchMetadataFromAttestations } from "~/utils/metadata";
 import { createOrderBy } from "~/utils/fetchAttestations/filters";
-import { fetchApplicationAttestations } from "~/utils/projects";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -249,30 +244,44 @@ export const projectsRouter = createTRPCRouter({
             message: "Round not found",
           });
         try {
-          // Fetch Project applications
-          const projectAttestations: Attestation[] =
-            await fetchApplicationAttestations({
-              round,
-              take: limit,
-              skip: cursor * limit,
-              orderBy: [createOrderBy(orderBy, sortOrder)],
-            });
+          const attestationFetcher = createAttestationFetcher({ round });
 
-          const statusByProjectId: Record<string, ApplicationStatus> =
-            await getApplicationsStatusMapById({
-              round,
-              projectAttestations,
-            });
+          // Fetch application approvals for round by admins
+          const approvals = await attestationFetcher(["approval"], {
+            where: {
+              AND: [
+                createDataFilter("type", "bytes32", "application"),
+                createDataFilter("round", "bytes32", round.id),
+                { attester: { in: round.admins } },
+              ],
+            },
+          });
+
+          const approvedProjectIds = approvals.map((a) => a.refUID);
+
+          const approvedApplications = await attestationFetcher(
+            ["metadata"],
+            {
+              where: {
+                AND: [
+                  createDataFilter("type", "bytes32", "application"),
+                  createDataFilter("round", "bytes32", round.id),
+                  { id: { in: approvedProjectIds } },
+                ],
+              },
+            },
+            ["id", "decodedDataJson", "recipient"],
+          );
 
           const metadataByProjectId =
-            await fetchMetadataFromAttestations(projectAttestations);
+            await fetchMetadataFromAttestations(approvedApplications);
 
           const metricsByProjectId: Record<
             string,
             Partial<OSOMetricsCSV>
           > = await getMetricsByProjectId({
             projectIds: [
-              ...Object.keys(projectAttestations),
+              ...Object.keys(approvedApplications),
               ...[
                 "id0",
                 "id1",
@@ -290,13 +299,11 @@ export const projectsRouter = createTRPCRouter({
 
           const projectsResult: Array<
             Attestation & {
-              status: ApplicationStatus;
               metrics?: Partial<OSOMetricsCSV>;
               metadata: unknown;
             }
-          > = projectAttestations.map((project, index) => {
+          > = approvedApplications.map((project, index) => {
             const { id: projectId } = project;
-            const status = statusByProjectId[projectId]!;
             const metrics =
               metricsByProjectId[projectId] ?? metricsByProjectId[`id${index}`];
             const metadata = metadataByProjectId[projectId];
@@ -305,8 +312,7 @@ export const projectsRouter = createTRPCRouter({
               ...project,
               metadata,
               metrics,
-              status,
-              nextPage: cursor + 1
+              nextPage: cursor + 1,
             };
           });
           return projectsResult;
