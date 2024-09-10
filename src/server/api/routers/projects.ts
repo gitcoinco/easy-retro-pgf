@@ -306,6 +306,7 @@ export const projectsRouter = createTRPCRouter({
               metadata,
               metrics,
               status,
+              nextPage: cursor + 1
             };
           });
           return projectsResult;
