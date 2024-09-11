@@ -67,6 +67,8 @@ export function ImportCSV({
           reader.readAsText(file);
           reader.onload = () => importCSV(String(reader.result));
           reader.onerror = () => console.log(reader.error);
+          // Set value to empty string to clear the file input, otherwise it won't trigger onChange again with the same file
+          e.target.value = "";
         }}
       />
       <Dialog
