@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { EmptyState } from "~/components/EmptyState";
 import { Button } from "~/components/ui/Button";
 import { Spinner } from "~/components/ui/Spinner";
@@ -17,6 +17,8 @@ import { ImportCSV } from "./ImportCSV";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import React from "react";
 import { useDistributeInfo } from "../hooks/useDistributeInfo";
+import type { Round } from "@prisma/client";
+import { roundAwards } from "~/utils/awards";
 
 export function Distributions() {
   const [importedDistribution, setImportedDistribution] = useState<
@@ -31,21 +33,37 @@ export function Distributions() {
 
   const payoutEventsByTransaction = data?.payoutEventsByTransaction;
   const distributionResult = data?.distributionResult.data;
-  const poolAmount = data?.poolAmount;
+  const poolAmount = data?.poolAmount?.data;
   const token = data?.token.data;
   const explorerUrl = data?.explorerLink;
 
   const projectIds = distributionResult?.projectIds || [];
   const totalVotes = distributionResult?.totalVotes || 0;
-  const totalTokens = poolAmount?.toString() ?? "0";
-  const distributions = importedDistribution.length
-    ? importedDistribution.map((d) => ({
-        ...d,
-        amount:
-          (((d.amountPercentage || 0) / 100) * Number(totalTokens)) /
-          10 ** (token?.decimals ?? 1e18),
-      }))
-    : distributionResult?.distributions || [];
+  const round = data?.round as Round;
+
+  // Calculate total tokens to distribute
+  // if awards are present for impact round use sum of awards
+  // Otherwise, use pool amount
+  const totalTokens = useMemo(() => {
+    if (!poolAmount) return;
+    const awardsAmount =
+      round.type == "impact"
+        ? getTotalAmountForImpactRound(round?.id ?? "")
+        : 0;
+    const awardsAmountBigInt =
+      awardsAmount > 0 ? BigInt(awardsAmount) : undefined;
+    return awardsAmountBigInt ?? BigInt(poolAmount ?? 0);
+  }, [poolAmount, round]);
+
+  const distributions =
+    importedDistribution.length && totalTokens
+      ? importedDistribution.map((d) => ({
+          ...d,
+          amount:
+            (((d.amountPercentage || 0) / 100) * Number(totalTokens)) /
+            10 ** (token?.decimals ?? 1e18),
+        }))
+      : distributionResult?.distributions || [];
 
   if (!isFetched) {
     return (
@@ -96,6 +114,11 @@ export function Distributions() {
       />
     </div>
   );
+}
+
+function getTotalAmountForImpactRound(roundId: string) {
+  const awards = roundAwards[roundId];
+  return awards?.reduce((sum, award) => sum + award.amount, 0) || 0;
 }
 
 function DistributionTable({

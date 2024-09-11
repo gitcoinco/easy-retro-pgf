@@ -11,6 +11,7 @@ import { type Payout } from "~/features/distribute/types";
 import { explorerLinks } from "~/config";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { useQuery } from "@tanstack/react-query";
+import { formatUnits } from "viem";
 
 export function useDistributeInfo() {
   const round = useCurrentRound();
@@ -48,7 +49,7 @@ export function useDistributeInfo() {
         payoutEventsByTransaction[transactionHash].push({
           projectId: args.recipientId,
           sender: args.sender,
-          amount: Number(args.amount) / 1e18,
+          amount: Number(formatUnits(args.amount, token.data.decimals ?? 1e18)),
         } as Payout);
       });
 
@@ -59,6 +60,7 @@ export function useDistributeInfo() {
         payoutEventsByTransaction,
         explorerLink:
           explorerLinks[round.data?.network as keyof typeof explorerLinks],
+        round: round.data,
       };
     },
   });

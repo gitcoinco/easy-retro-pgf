@@ -191,7 +191,7 @@ function PoolDetails({ poolId = 0 }) {
       <Form
         schema={z.object({ amount: z.number() })}
         onSubmit={async (values, form) => {
-          const amount = parseUnits(values.amount.toString(), decimals);
+          const amount = BigInt(values.amount * 10 ** decimals);
           const hasAllowance = calcHasAllowance(
             { amount: values.amount, allowance },
             token.data,
