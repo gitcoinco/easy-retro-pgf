@@ -1,7 +1,7 @@
 import { FileDown, FileUp } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "~/components/ui/Button";
+import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import type { Allocation } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
@@ -19,11 +19,16 @@ export function ImportCSV({
 }) {
   const [rows, setRows] = useState<Allocation[]>([]);
   const csvInputRef = useRef<HTMLInputElement>(null);
+  console.info("DEBUG: Import CSV rows", rows);
+  console.info("DEBUG: Import CSV csvInputRef", csvInputRef);
 
   const save = useSaveAllocation();
   const importCSV = useCallback((csvString: string) => {
     // Parse CSV and build the ballot data (remove name column)
+    // type CSVRow = Omit<Allocation, "locked"> & { name?: string };
+    console.log("DEBUG: Import CSV csvString", csvString);
     const { data } = parse<Allocation>(csvString);
+    console.log("DEBUG: Import CSV data", data);
     let totalAmount = 0;
     const rows = data.map(({ id, amount }) => {
       totalAmount += amount;
@@ -33,10 +38,10 @@ export function ImportCSV({
         locked: true,
       };
     });
+    console.log("DEBUG: Import CSV totalAmount", totalAmount);
     if (roundType === RoundTypes.impact && totalAmount !== 100) {
       toast.error("Error importing CSV", {
         description: "Vote amounts must sum 100%",
-        duration: 5000,
       });
     } else {
       setRows(rows);
@@ -46,9 +51,12 @@ export function ImportCSV({
   return (
     <>
       <Button
-        // size="sm"
-        icon={FileDown}
-        onClick={() => csvInputRef.current?.click()}
+        size="sm"
+        icon={FileUp}
+        onClick={() => {
+          console.info("DEBUG: Import CSV button clicked");
+          csvInputRef.current?.click();
+        }}
       >
         Import CSV
       </Button>
@@ -60,14 +68,17 @@ export function ImportCSV({
         className="hidden"
         onChange={(e) => {
           const [file] = e.target.files ?? [];
+          console.log("DEBUG: Import CSV hidden input file", file);
           if (!file) return;
           // CSV parser doesn't seem to work with File
           // Read the CSV contents as string
           const reader = new FileReader();
           reader.readAsText(file);
-          reader.onload = () => importCSV(String(reader.result));
+          reader.onload = () => {
+            console.log("DEBUG: Import CSV reading:", reader.result);
+            return importCSV(String(reader.result));
+          };
           reader.onerror = () => console.log(reader.error);
-          // Set value to empty string to clear the file input, otherwise it won't trigger onChange again with the same file
           e.target.value = "";
         }}
       />
@@ -125,9 +136,17 @@ export function ExportMetricsCSV({
 }: {
   allocations?: Allocation[];
 }) {
+  console.log("DEBUG: ExportMetricsCSV allocations", allocations);
   const metrics = api.metrics.get.useQuery({
     ids: allocations.map((v) => v.id),
   });
+  console.log(
+    "DEBUG: ExportMetricsCSV allocations",
+    allocations,
+    "metrics",
+    metrics.data,
+  );
+
   return <ExportCSV allocations={allocations} items={metrics.data} />;
 }
 
@@ -153,8 +172,8 @@ export function ExportCSV({
   }, [items, allocations]);
 
   return (
-    <Button icon={FileUp} onClick={exportCSV}>
+    <IconButton size="sm" icon={FileDown} onClick={exportCSV}>
       Export CSV
-    </Button>
+    </IconButton>
   );
 }
