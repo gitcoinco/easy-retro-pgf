@@ -45,13 +45,13 @@ export function ImportCSV({
 
   return (
     <>
-      <IconButton
+      <Button
         size="sm"
         icon={FileUp}
         onClick={() => csvInputRef.current?.click()}
       >
         Import CSV
-      </IconButton>
+      </Button>
 
       <input
         ref={csvInputRef}
