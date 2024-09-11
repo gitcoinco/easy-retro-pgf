@@ -11,8 +11,8 @@ export async function fetchVoterLimits(
 
   return (
     voter ?? {
-      maxVotesTotal: round.maxVotesTotal,
-      maxVotesProject: round.maxVotesProject,
+      maxVotesTotal: round.maxVotesTotal ?? 0,
+      maxVotesProject: round.maxVotesProject ?? 0,
     }
   );
 }
