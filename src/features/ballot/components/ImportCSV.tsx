@@ -1,17 +1,21 @@
 import { FileDown, FileUp } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
-import { Allocation } from "~/features/ballot/types";
+import type { Allocation } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { parse, format } from "~/utils/csv";
 import { useSaveAllocation } from "../hooks/useBallot";
 import { api } from "~/utils/api";
+import { RoundTypes } from "~/features/rounds/types";
 
 export function ImportCSV({
   onImport,
+  roundType,
 }: {
   onImport: (allocations: Allocation[]) => void;
+  roundType: RoundTypes;
 }) {
   const [rows, setRows] = useState<Allocation[]>([]);
   const csvInputRef = useRef<HTMLInputElement>(null);
@@ -20,12 +24,23 @@ export function ImportCSV({
   const importCSV = useCallback((csvString: string) => {
     // Parse CSV and build the ballot data (remove name column)
     const { data } = parse<Allocation>(csvString);
-    const rows = data.map(({ id, amount }) => ({
-      id,
-      amount: Number(amount),
-      locked: true,
-    }));
-    setRows(rows);
+    let totalAmount = 0;
+    const rows = data.map(({ id, amount }) => {
+      totalAmount += amount;
+      return {
+        id,
+        amount,
+        locked: true,
+      };
+    });
+    if (roundType === RoundTypes.impact && totalAmount !== 100) {
+      toast.error("Error importing CSV", {
+        description: "Vote amounts must sum 100%",
+        duration: 5000,
+      });
+    } else {
+      setRows(rows);
+    }
   }, []);
 
   return (
@@ -72,10 +87,16 @@ export function ImportCSV({
                 rows.map(({ id, amount, locked }) =>
                   save.mutateAsync({ id, amount, locked }),
                 ),
-              ).then(() => {
-                onImport(rows);
-                setRows([]);
-              });
+              )
+                .then(() => {
+                  onImport(rows);
+                  setRows([]);
+                })
+                .catch((error: Error) => {
+                  toast.error("Error importing CSV", {
+                    description: error.message,
+                  });
+                });
             }}
           >
             Yes I'm sure
