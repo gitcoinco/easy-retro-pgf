@@ -6,6 +6,12 @@ import {
   fetchApprovedVoter,
 } from "~/utils/fetchAttestations";
 
+const VoterInputSchema = z.object({
+  address: z.string(),
+  maxVotesTotal: z.number().positive(),
+  maxVotesProject: z.number().positive(),
+});
+
 export const votersRouter = createTRPCRouter({
   approved: attestationProcedure
     .input(z.object({ address: z.string() }))
@@ -43,4 +49,32 @@ export const votersRouter = createTRPCRouter({
         }));
       });
   }),
+  createVoters: attestationProcedure
+    .input(z.array(VoterInputSchema))
+    .mutation(async ({ input, ctx }) => {
+      const upsertedVoters = await Promise.all(
+        input.map(async (voter) => {
+          return ctx.db.voterConfig.upsert({
+            where: {
+              voterId_roundId: {
+                voterId: voter.address,
+                roundId: ctx.round!.id,
+              },
+            },
+            update: {
+              maxVotesTotal: voter.maxVotesTotal,
+              maxVotesProject: voter.maxVotesProject,
+            },
+            create: {
+              voterId: voter.address,
+              roundId: ctx.round!.id,
+              maxVotesTotal: voter.maxVotesTotal,
+              maxVotesProject: voter.maxVotesProject,
+            },
+          });
+        }),
+      );
+
+      return upsertedVoters;
+    }),
 });

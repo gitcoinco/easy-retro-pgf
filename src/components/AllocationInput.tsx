@@ -1,5 +1,7 @@
 import { forwardRef, type ComponentPropsWithRef } from "react";
 import { useFormContext, useController } from "react-hook-form";
+import { useVotesCount } from "~/features/voters/hooks/useVotesCount";
+import { useAccount } from "wagmi";
 
 import { InputAddon } from "~/components/ui/Form";
 import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
@@ -16,15 +18,17 @@ export const AllocationInput = forwardRef(function AllocationInput(
     disabled?: boolean;
     tokenAddon?: boolean;
     error?: boolean;
-  } & ComponentPropsWithRef<"input">,
+  } & ComponentPropsWithRef,
   ref,
 ) {
+  const { address } = useAccount();
+  const { data: voterLimits } = useVotesCount(address!);
   const token = useRoundToken();
   const { data: round } = useCurrentRound();
   const { control } = useFormContext();
   const { field } = useController({ name: name!, control });
 
-  const maxVotesProject = round?.maxVotesProject ?? 0;
+  const maxVotesProject = voterLimits?.maxVotesProject ?? 0;
 
   return (
     <NumberInput

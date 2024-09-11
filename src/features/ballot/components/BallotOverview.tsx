@@ -29,9 +29,12 @@ import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
 import { useAccount } from "wagmi";
+import { useVotesCount } from "~/features/voters/hooks/useVotesCount";
 
 function BallotOverview() {
   const router = useRouter();
+  const { address } = useAccount();
+  const { data: voterLimits } = useVotesCount(address!);
 
   const { data: ballot } = useBallot();
   const isSaving = useIsMutating(getQueryKey(api.ballot.save));
@@ -44,7 +47,7 @@ function BallotOverview() {
 
   const { data: projectCount } = useProjectCount();
 
-  const maxVotesTotal = round.data?.maxVotesTotal ?? 0;
+  const maxVotesTotal = voterLimits?.maxVotesTotal ?? 0;
 
   const roundState = useRoundState();
 
