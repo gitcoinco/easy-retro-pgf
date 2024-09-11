@@ -71,10 +71,9 @@ export function useImportVoters() {
           };
         },
       );
-      console.log({ validatedData });
+      console.log("Creating voterConfigs", validatedData);
       const upsertedVoters = await createVoters.mutateAsync(validatedData);
 
-      console.log({ upsertedVoters });
       const existingVoterAddresses = new Set(
         existingVoters?.map((v) => v.recipient.toLowerCase()),
       );
@@ -82,6 +81,7 @@ export function useImportVoters() {
         (v) => !existingVoterAddresses.has(v.voterId.toLowerCase()),
       );
 
+      console.log("Creating attestations for:", newVoters);
       if (newVoters.length > 0) {
         await Promise.all(
           newVoters.map((voter) => approveVoters.mutateAsync([voter.voterId])),

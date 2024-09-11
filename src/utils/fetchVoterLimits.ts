@@ -1,8 +1,11 @@
 import { type Round } from "@prisma/client";
-import { prisma } from "~/server/db";
+import { db } from "~/server/db";
 
-export async function fetchVoterLimits(round: Round, voterId: string) {
-  const voter = await prisma.voter.findUnique({
+export async function fetchVoterLimits(
+  round: Pick<Round, "id" | "maxVotesProject" | "maxVotesTotal">,
+  voterId: string,
+) {
+  const voter = await db.voterConfig.findUnique({
     where: { voterId_roundId: { voterId, roundId: round.id } },
   });
 

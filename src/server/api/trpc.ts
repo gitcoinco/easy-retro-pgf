@@ -41,6 +41,8 @@ interface CreateContextOptions {
     votingAt: Date | null;
     resultAt: Date | null;
     payoutAt: Date | null;
+    maxVotesTotal: number;
+    maxVotesProject: number;
   } | null;
   res: NextApiResponse;
   fetchAttestations?: AttestationFetcher;
@@ -162,6 +164,8 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
           votingAt: true,
           resultAt: true,
           payoutAt: true,
+          maxVotesTotal: true,
+          maxVotesProject: true,
         },
       })
     : null;

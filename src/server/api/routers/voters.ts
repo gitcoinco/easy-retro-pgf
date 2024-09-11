@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { attestationProcedure, createTRPCRouter } from "~/server/api/trpc";
@@ -5,6 +6,7 @@ import {
   createDataFilter,
   fetchApprovedVoter,
 } from "~/utils/fetchAttestations";
+import { fetchVoterLimits } from "~/utils/fetchVoterLimits";
 
 const VoterInputSchema = z.object({
   address: z.string(),
@@ -76,5 +78,18 @@ export const votersRouter = createTRPCRouter({
       );
 
       return upsertedVoters;
+    }),
+  voteCounts: attestationProcedure.query(async ({ ctx }) => {
+    if (!ctx.round?.id)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Round ID not found",
+      });
+    return ctx.db.voterConfig.findMany({ where: { roundId: ctx.round?.id } });
+  }),
+  voteCountPerAddress: attestationProcedure
+    .input(z.object({ address: z.string() }))
+    .query(async ({ input, ctx }) => {
+      return fetchVoterLimits(ctx.round!, input.address);
     }),
 });
