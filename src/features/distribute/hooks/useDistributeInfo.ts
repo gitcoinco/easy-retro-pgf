@@ -77,6 +77,7 @@ export function useDistributeInfo(
         explorerLink:
           explorerLinks[round.data?.network as keyof typeof explorerLinks],
         round: round.data,
+        round: round.data,
       };
     },
   });
