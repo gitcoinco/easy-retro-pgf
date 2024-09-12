@@ -20,7 +20,7 @@ import { useSessionAddress } from "~/hooks/useSessionAddress";
 export const SubmitBallotButton = ({ disabled = false }) => {
   const router = useRouter();
   const { address } = useSessionAddress();
-  const { data: ballot } = useBallot();
+  const { data: ballot, refetch } = useBallot();
   const isSaving = useIsSavingBallot();
 
   const { data: isApprovedVoter, isPending } = useApprovedVoter(address);
@@ -128,7 +128,13 @@ export const SubmitBallotButton = ({ disabled = false }) => {
             <Button
               className="flex-1"
               variant="primary"
-              onClick={() => submit.mutate()}
+              onClick={() =>
+                submit.mutate(undefined, {
+                  onSuccess: () => {
+                    void refetch();
+                  },
+                })
+              }
             >
               Submit ballot
             </Button>
