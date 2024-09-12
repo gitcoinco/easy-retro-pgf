@@ -61,6 +61,7 @@ export function BallotEditor({
           onImport={(allocations) =>
             allocations.map((alloc) => set(alloc.id, alloc.amount))
           }
+          roundType={type}
         />
         {type === RoundTypes.impact ? (
           <ExportMetricsCSV allocations={ballot?.allocations} />
