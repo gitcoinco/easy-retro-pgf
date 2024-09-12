@@ -93,10 +93,10 @@ export function Distributions() {
   if (distributions.length === 0) {
     return <EmptyState title="No distribution found" />;
   }
-  const final_distributions = data?.distributions ?? [];
+  const finalDistributions = data?.distributions ?? [];
   const morePayoutsRemaining = payoutsCompleted
     ? false
-    : final_distributions.length > 0;
+    : finalDistributions.length > 0;
 
   return (
     <div>
@@ -109,13 +109,13 @@ export function Distributions() {
         <Button
           disabled={!morePayoutsRemaining}
           variant="primary"
-          onClick={() => setConfirmDistribution(final_distributions)}
+          onClick={() => setConfirmDistribution(finalDistributions)}
         >
           {morePayoutsRemaining ? "Distribute tokens" : "Payouts done"}
         </Button>
       </div>
       {morePayoutsRemaining && (
-        <div className="mb-4 text-lg font-semibold">{`Remaining projects to receive funds ${final_distributions?.length}`}</div>
+        <div className="mb-4 text-lg font-semibold">{`Remaining projects to receive funds ${finalDistributions?.length}`}</div>
       )}
       <div className="min-h-[360px] overflow-auto">
         <DistributionTable distributions={distributions} />
