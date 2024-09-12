@@ -17,8 +17,10 @@ import { ImportCSV } from "./ImportCSV";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import React from "react";
 import { useDistributeInfo } from "../hooks/useDistributeInfo";
+import { usePoolId } from "../hooks/useAlloPool";
 import type { Round } from "@prisma/client";
 import { roundAwards } from "~/utils/awards";
+import { formatEther } from "viem";
 
 export function Distributions() {
   const [importedDistribution, setImportedDistribution] = useState<
@@ -27,19 +29,23 @@ export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
+  const [payoutsCompleted, setPayoutsCompleted] = useState(false);
+  const { data: poolId, isLoading } = usePoolId();
 
-  const info = useDistributeInfo();
+  const info = useDistributeInfo(poolId, importedDistribution);
   const { data, isFetched } = info;
 
   const payoutEventsByTransaction = data?.payoutEventsByTransaction;
   const distributionResult = data?.distributionResult.data;
   const poolAmount = data?.poolAmount?.data;
-  const token = data?.token.data;
   const explorerUrl = data?.explorerLink;
 
   const projectIds = distributionResult?.projectIds || [];
   const totalVotes = distributionResult?.totalVotes || 0;
   const round = data?.round as Round;
+  const network = round?.network;
+
+  const togglePayoutsCompleted = () => setPayoutsCompleted(!payoutsCompleted);
 
   // Calculate total tokens to distribute
   // if awards are present for impact round use sum of awards
@@ -57,13 +63,20 @@ export function Distributions() {
 
   const distributions =
     importedDistribution.length && totalTokens
-      ? importedDistribution.map((d) => ({
-          ...d,
-          amount:
-            (((d.amountPercentage || 0) / 100) * Number(totalTokens)) /
-            10 ** (token?.decimals ?? 1e18),
-        }))
+      ? importedDistribution
       : distributionResult?.distributions || [];
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner className="size-6" />
+      </div>
+    );
+  }
+
+  if (!poolId) {
+    return <EmptyState title="No pool found" />;
+  }
 
   if (!isFetched) {
     return (
@@ -80,6 +93,10 @@ export function Distributions() {
   if (distributions.length === 0) {
     return <EmptyState title="No distribution found" />;
   }
+  const final_distributions = data?.distributions ?? [];
+  const morePayoutsRemaining = payoutsCompleted
+    ? false
+    : final_distributions.length > 0;
 
   return (
     <div>
@@ -90,12 +107,16 @@ export function Distributions() {
           <ExportCSV votes={distributions} />
         </div>
         <Button
+          disabled={!morePayoutsRemaining}
           variant="primary"
-          onClick={() => setConfirmDistribution(distributions)}
+          onClick={() => setConfirmDistribution(final_distributions)}
         >
-          Distribute tokens
+          {morePayoutsRemaining ? "Distribute tokens" : "Payouts done"}
         </Button>
       </div>
+      {morePayoutsRemaining && (
+        <div className="mb-4 text-lg font-semibold">{`Remaining projects to receive funds ${final_distributions?.length}`}</div>
+      )}
       <div className="min-h-[360px] overflow-auto">
         <DistributionTable distributions={distributions} />
       </div>
@@ -110,7 +131,9 @@ export function Distributions() {
       )}
       <ConfirmDistributionDialog
         distribution={confirmDistribution}
+        network={network ?? ""}
         onOpenChange={() => setConfirmDistribution([])}
+        togglePayoutsCompleted={togglePayoutsCompleted}
       />
     </div>
   );
@@ -193,6 +216,15 @@ function PayoutsTable({
       setExpandedRows([...expandedRows, transactionHash]);
     }
   };
+
+  if (
+    payoutEventsByTransaction &&
+    Object.keys(payoutEventsByTransaction).length === 0
+  ) {
+    return (
+      <div className="mb-4 text-lg font-semibold">No Completed Payouts</div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -283,6 +315,12 @@ function InnerTable({ distributions }: PayoutsTableProps) {
               scope="col"
               className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
             >
+              Name
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+            >
               Payout Address
             </th>
             <th
@@ -297,10 +335,13 @@ function InnerTable({ distributions }: PayoutsTableProps) {
           {distributions?.map((distribution) => (
             <tr key={distribution.projectId}>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                {distribution.projectId}
+                {distribution.name}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                {distribution.amount}
+                {distribution.payoutAddress}
+              </td>
+              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                {formatEther(BigInt(distribution.amount))}
               </td>
             </tr>
           ))}

@@ -31,8 +31,11 @@ export const allo = {
   alloAddress: getAddress(process.env.NEXT_PUBLIC_ALLO2_ADDRESS!),
   strategyAddress: {
     // [networks.mainnet]: "",
-    [networks.optimism]: "0xff22f4ca9332f6e737a5e1522c034a3afc1b29fb",
-    [networks.optimismSepolia]: "0xd652d4274a155ad0e1d5a1fd7f6ee844d8ec3388",
+    [networks.optimism]: "0x7a327685a800051520423B6cd9f8F3104845a114",
+    // [networks.optimism]: "0xff22f4ca9332f6e737a5e1522c034a3afc1b29fb",
+    [networks.optimismSepolia]: "0x94746ff7c549c2c141da4efa78182fdbfa1fc8ea",
+    // [networks.optimismSepolia]: "0xd652d4274a155ad0e1d5a1fd7f6ee844d8ec3388",
+
     // [networks.arbitrum]: "",
     // [networks.linea]: "",
     // [networks.sepolia]: "",
@@ -150,4 +153,17 @@ export const impactCategories = {
   OP_STACK: { label: "OP Stack" },
   DEVELOPER_ECOSYSTEM: { label: "Developer Ecosystem" },
   END_USER_EXPERIENCE_AND_ADOPTION: { label: "End user UX" },
+} as const;
+
+export const batchDistributePerNetwork = {
+  // [networks.mainnet]: 10,
+  [networks.optimism]: 500,
+  [networks.optimismSepolia]: 750,
+  // [networks.arbitrum]: 10,
+  // [networks.linea]: 10,
+  // [networks.sepolia]: 10,
+  // [networks.base]: 10,
+  // [networks.baseGoerli]: 10,
+  [networks.celo]: 10,
+  [networks.avalanche]: 10,
 } as const;
