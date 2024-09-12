@@ -10,6 +10,7 @@ import {
   SelectAllButton,
 } from "~/features/admin/components/AddAddresses";
 import { RoundAdminLayout } from "~/features/admin/layouts/AdminLayout";
+import { ImportVotersCSV } from "~/features/admin/components/ImportVotersCSV";
 
 import {
   useApproveVoters,
@@ -136,6 +137,12 @@ export default function AdminAccountsPage() {
               />
               <AddressList addresses={voters} disabled={attestedByOthers} />
             </Form>
+          </FormSection>
+          <FormSection
+            title="Import Voters"
+            description="Import voters from a CSV file."
+          >
+            <ImportVotersCSV />
           </FormSection>
         </>
       )}

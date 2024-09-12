@@ -73,6 +73,11 @@ model Ballot {
     @@unique([voterId, roundId])
 }
 
+enum RoundType {
+    impact
+    project
+}
+
 model Round {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
@@ -83,6 +88,7 @@ model Round {
     description    String?
     bannerImageUrl String?
     domain         String  @unique
+    type           RoundType @default(project)
 
     network String?
     admins  String[]
@@ -105,6 +111,7 @@ model Round {
     poolId Int?
 
     comments Comment[]
+    voters VoterConfig[]
 }
 
 model Comment {
@@ -117,4 +124,18 @@ model Comment {
 
     roundId String
     round   Round  @relation(fields: [roundId], references: [id])
+}
+
+model VoterConfig {
+    id              String   @id @default(cuid())
+    voterId         String
+    roundId         String
+    maxVotesTotal   Int
+    maxVotesProject Int
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    round Round @relation(fields: [roundId], references: [id])
+
+    @@unique([voterId, roundId])
 }

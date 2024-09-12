@@ -20,6 +20,7 @@ import {
   createAttestationFetcher,
   fetchApprovedVoter,
 } from "~/utils/fetchAttestations";
+import { fetchVoterLimits } from "~/utils/fetchVoterLimits";
 
 const defaultBallotSelect = {
   votes: true,
@@ -162,10 +163,12 @@ export const ballotRouter = createTRPCRouter({
           message: "Ballot already published",
         });
       }
-      if (!verifyBallotCount(ballot.votes as Vote[], round)) {
+      const voterLimits = await fetchVoterLimits(ctx.round, voterId);
+
+      if (!verifyBallotCount(ballot.votes as Vote[], voterLimits)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: `Ballot must have a maximum of ${round.maxVotesTotal} votes and ${round.maxVotesProject} per project.`,
+          message: `Ballot must have a maximum of ${voterLimits.maxVotesTotal} votes and ${voterLimits.maxVotesProject} per project.`,
         });
       }
 
@@ -204,13 +207,13 @@ export const ballotRouter = createTRPCRouter({
 
 function verifyBallotCount(
   votes: Vote[],
-  round: { maxVotesProject: number | null; maxVotesTotal: number | null },
+  voterLimits: { maxVotesProject: number; maxVotesTotal: number },
 ) {
   const sum = sumBallot(votes);
   const validVotes = votes.every(
-    (vote) => vote.amount <= (round.maxVotesProject ?? 0),
+    (vote) => vote.amount <= voterLimits.maxVotesProject,
   );
-  return sum <= (round.maxVotesTotal ?? 0) && validVotes;
+  return sum <= voterLimits.maxVotesTotal && validVotes;
 }
 
 async function verifyBallotHash(hashed_votes: string, votes: Vote[]) {
