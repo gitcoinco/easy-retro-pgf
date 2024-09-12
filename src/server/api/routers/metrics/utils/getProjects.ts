@@ -27,7 +27,7 @@ export async function getProjects({
       project_name: { _in: Object.keys(tempProjectMap) },
       event_source: { _eq: "BASE" },
     },
-    orderBy: [{ active_contract_count_90_days: "desc" }],
+    orderBy: [{ activeContractCount90Days: "desc" }],
     limit: 300,
     offset: 0,
   };
@@ -37,7 +37,7 @@ export async function getProjects({
   const projectMetricsMap: ProjectIdToMetricsMap = Object.fromEntries(
     projects.map((project) => {
       // Replace with correct projectId
-      const projectId = tempProjectMap[project.project_name] ?? "";
+      const projectId = tempProjectMap[project.projectName] ?? "";
       const metrics = metricIds.reduce<ProjectMetrics>(
         (acc, metricId) => ({
           ...acc,

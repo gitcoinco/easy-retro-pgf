@@ -9,23 +9,23 @@ const fetch = createCachedFetch({ ttl: 1000 * 60 * 10 });
 
 function createMetricsQuery(metrics: string[]) {
   return `
-query Metrics(
-  $where: onchain_metrics_by_project_v1_bool_exp,
-  $orderBy: [onchain_metrics_by_project_v1_order_by!],
+query Oso_onchainMetricsByProjectV1(
+  $where: Oso_OnchainMetricsByProjectV1BoolExp,
+  $orderBy: [Oso_OnchainMetricsByProjectV1OrderBy!],
   $limit: Int,
   $offset: Int) {
-  onchain_metrics_by_project_v1(
+  oso_onchainMetricsByProjectV1(
       where: $where
       order_by: $orderBy
       limit: $limit
       offset: $offset
     ) {
-      event_source
-      display_name
-      project_id
-      project_name
-      project_namespace
-      project_source
+      eventSource
+      displayName
+      projectId
+      projectName
+      projectNamespace
+      projectSource
 
       ${metrics.join("\n")}
     }
