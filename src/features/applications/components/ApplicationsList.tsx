@@ -1,5 +1,6 @@
+"use client";
+
 import { z } from "zod";
-import { useState } from "react";
 import Link from "next/link";
 
 import { Button } from "~/components/ui/Button";
@@ -10,7 +11,6 @@ import {
   useApplicationsFilter,
 } from "~/features/applications/hooks/useApplications";
 import { useApproveApplication } from "../hooks/useApproveApplication";
-import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
 import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
@@ -18,6 +18,7 @@ import { ApplicationItem } from "./ApplicationItem";
 import { SelectAllButton } from "./SelectAllButton";
 import { ApproveButton } from "./ApproveButton";
 import { Tab, Tabs } from "~/components/ui/Tabs";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 const ApplicationsListSchema = z.object({
   selected: z.array(z.string()),
@@ -27,12 +28,29 @@ export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
   const domain = useCurrentDomain();
+  const roundState = useRoundState();
   const [filter] = useApplicationsFilter();
 
   const applications = useApplications(filter);
   const approve = useApproveApplication({});
 
   const applicationsList = applications.data?.data ?? [];
+
+  const applicationCounts = {
+    all: applications.data?.count ?? 0,
+    pending: applications.data?.countPending ?? 0,
+    approved: applications.data?.countApproved ?? 0,
+    rejected: applications.data?.countRejected ?? 0,
+  };
+
+  const applicationsCountMessage = {
+    all: `${applications.data?.count ?? 0} applications found`,
+    pending: `${applications.data?.countPending ?? 0} pending of ${applications.data?.count ?? 0} applications`,
+    approved: `${applications.data?.countApproved ?? 0} approved of ${applications.data?.count ?? 0} applications`,
+    rejected: `${applications.data?.countRejected ?? 0} rejected of ${applications.data?.count ?? 0} applications`,
+  }[filter.status];
+
+  const applicationCount = applicationCounts[filter.status];
 
   const applicationsToApprove = applicationsList.filter((a) => !a.approvedBy);
   return (
@@ -51,16 +69,14 @@ export function ApplicationsList() {
           </Alert>
           <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2 dark:bg-gray-900">
             <div className="text-gray-300">
-              {applicationsList.length
-                ? `${applications.data?.count} applications found`
-                : ""}
+              {applicationsList.length ? applicationsCountMessage : ""}
             </div>
             <div className="flex gap-2">
               <SelectAllButton applications={applicationsToApprove} />
               <ApproveButton isLoading={approve.isPending} />
             </div>
           </div>
-          <ApplicationsFilter applicationCount={applications.data?.count} />
+          <ApplicationsFilter applicationCount={applicationCount} />
 
           {applications.isPending ? (
             Array.from({ length: 10 }).map((_, i) => (
@@ -70,7 +86,7 @@ export function ApplicationsList() {
                 isLoading={applications.isPending}
               />
             ))
-          ) : !applicationsList.length ? (
+          ) : !applicationsList.length && roundState === "APPLICATION" ? (
             <EmptyState title="No applications">
               <Button
                 variant="primary"
@@ -110,6 +126,10 @@ function ApplicationsFilter({ applicationCount = 0 }) {
       label: "Approved",
       status: "approved",
     },
+    {
+      label: "Rejected",
+      status: "rejected",
+    },
   ] as const;
 
   const currentPage = filter.skip / filter.take + 1;
@@ -121,7 +141,11 @@ function ApplicationsFilter({ applicationCount = 0 }) {
         {tabs.map((tab) => (
           <Tab
             key={tab.status}
-            onClick={() => setFilter({ status: tab.status })}
+            onClick={() => {
+              if (filter.status !== tab.status) {
+                void setFilter({ status: tab.status, skip: 0 });
+              }
+            }}
             isActive={filter.status === tab.status}
           >
             {tab.label}
