@@ -13,6 +13,7 @@ import {
   getApplicationStatus,
 } from "./utils";
 import type { ApplicationStatus } from "./types";
+import { possibleSpamIds } from "public/possibleSpamIds";
 
 export const applicationsRouter = createTRPCRouter({
   approvals: roundProcedure
@@ -90,11 +91,20 @@ export const applicationsRouter = createTRPCRouter({
       const approvedApplicationIds: string[] = [];
       const pendingApplicationIds: string[] = [];
       const rejectedApplicationIds: string[] = [];
+      const possibleSpamApplicationIds: string[] = [];
 
       const applicationIdsWithStatus = applicationIds.map(({ id }) => {
         const applicationApproval = filteredApprovals.find(
           (approval) => approval.refUID === id,
         );
+
+        if (possibleSpamIds.includes(id.toLocaleLowerCase())) {
+          possibleSpamApplicationIds.push(id);
+          return {
+            id,
+            status: "spam",
+          };
+        }
 
         let status: ApplicationStatus;
         switch (true) {
@@ -127,6 +137,8 @@ export const applicationsRouter = createTRPCRouter({
             return pendingApplicationIds;
           case "rejected":
             return rejectedApplicationIds;
+          case "spam":
+            return possibleSpamApplicationIds;
           default:
             return [];
         }
@@ -164,6 +176,7 @@ export const applicationsRouter = createTRPCRouter({
         countApproved: approvedApplicationIds.length,
         countPending: pendingApplicationIds.length,
         countRejected: rejectedApplicationIds.length,
+        countSpam: possibleSpamApplicationIds.length,
         data,
       };
     }),

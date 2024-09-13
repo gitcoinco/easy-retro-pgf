@@ -9,7 +9,7 @@ import { type MatchWhere } from "~/utils/fetchAttestations/types";
 export const FilterSchema = z.object({
   ids: z.array(z.string()).optional(),
   search: z.string().optional(),
-  status: z.enum(["pending", "approved", "rejected", "all"]).optional(),
+  status: z.enum(["pending", "approved", "rejected", "spam", "all"]).optional(),
   take: z.number().default(10),
   skip: z.number().default(0),
 });

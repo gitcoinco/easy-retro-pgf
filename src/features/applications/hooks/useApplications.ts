@@ -18,6 +18,7 @@ export function useApplicationsFilter() {
         "approved",
         "pending",
         "rejected",
+        "spam",
       ]).withDefault("pending"),
       take: parseAsInteger.withDefault(PAGE_SIZE),
       skip: parseAsInteger.withDefault(0),

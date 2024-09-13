@@ -1,0 +1,6 @@
+export const possibleSpamIds: string[] = [
+  "0xf67c0e5d63a2fd52aa4403cd4636eb2ea08de90965d6c01f048947ab75e42662",
+  "0xf6ef03e239b944270b39ec463c8e4b6b10bfeec24b26eb84fb044702499dbf9e",
+  "0x28f1f096687a56d21e3f94772814e08656c3e341eedc95a8a54b1b410f7286b5",
+  "0xcf38187a6cf25b69b23937f4ca107d8c5df144324d08e5c2c2ef2a2d463294a9",
+].map((id) => id.toLowerCase());
