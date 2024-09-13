@@ -18,6 +18,7 @@ import { ApplicationItem } from "./ApplicationItem";
 import { SelectAllButton } from "./SelectAllButton";
 import { ApproveButton } from "./ApproveButton";
 import { Tab, Tabs } from "~/components/ui/Tabs";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 const ApplicationsListSchema = z.object({
   selected: z.array(z.string()),
@@ -27,6 +28,7 @@ export type ApplicationsList = z.infer<typeof ApplicationsListSchema>;
 
 export function ApplicationsList() {
   const domain = useCurrentDomain();
+  const roundState = useRoundState();
   const [filter] = useApplicationsFilter();
 
   const applications = useApplications(filter);
@@ -36,14 +38,14 @@ export function ApplicationsList() {
 
   const applicationCounts = {
     all: applications.data?.count ?? 0,
-    pending: applications.data?.countApproved ?? 0,
+    pending: applications.data?.countPending ?? 0,
     approved: applications.data?.countApproved ?? 0,
     rejected: applications.data?.countRejected ?? 0,
   };
 
   const applicationsCountMessage = {
     all: `${applications.data?.count ?? 0} applications found`,
-    pending: `${applications.data?.countApproved ?? 0} pending of ${applications.data?.count ?? 0} applications`,
+    pending: `${applications.data?.countPending ?? 0} pending of ${applications.data?.count ?? 0} applications`,
     approved: `${applications.data?.countApproved ?? 0} approved of ${applications.data?.count ?? 0} applications`,
     rejected: `${applications.data?.countRejected ?? 0} rejected of ${applications.data?.count ?? 0} applications`,
   }[filter.status];
@@ -84,7 +86,7 @@ export function ApplicationsList() {
                 isLoading={applications.isPending}
               />
             ))
-          ) : !applicationsList.length ? (
+          ) : !applicationsList.length && roundState === "APPLICATION" ? (
             <EmptyState title="No applications">
               <Button
                 variant="primary"
