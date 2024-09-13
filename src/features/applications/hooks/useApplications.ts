@@ -13,9 +13,12 @@ export function useApplicationsFilter() {
   return useQueryStates(
     {
       search: parseAsString.withDefault(""),
-      status: parseAsStringEnum(["all", "approved", "pending"]).withDefault(
+      status: parseAsStringEnum([
+        "all",
+        "approved",
         "pending",
-      ),
+        "rejected",
+      ]).withDefault("pending"),
       take: parseAsInteger.withDefault(PAGE_SIZE),
       skip: parseAsInteger.withDefault(0),
     },
