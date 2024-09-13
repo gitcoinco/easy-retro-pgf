@@ -41,13 +41,15 @@ export function ApplicationsList() {
     pending: applications.data?.countPending ?? 0,
     approved: applications.data?.countApproved ?? 0,
     rejected: applications.data?.countRejected ?? 0,
+    spam: applications.data?.countSpam ?? 0,
   };
 
   const applicationsCountMessage = {
-    all: `${applications.data?.count ?? 0} applications found`,
-    pending: `${applications.data?.countPending ?? 0} pending of ${applications.data?.count ?? 0} applications`,
-    approved: `${applications.data?.countApproved ?? 0} approved of ${applications.data?.count ?? 0} applications`,
-    rejected: `${applications.data?.countRejected ?? 0} rejected of ${applications.data?.count ?? 0} applications`,
+    all: `${applicationCounts.all} applications found`,
+    pending: `${applicationCounts.pending} pending of ${applicationCounts.all} applications`,
+    approved: `${applicationCounts.approved} approved of ${applicationCounts.all} applications`,
+    rejected: `${applicationCounts.rejected} rejected of ${applicationCounts.all} applications`,
+    spam: `${applicationCounts.spam} possible spam of ${applicationCounts.all} applications`,
   }[filter.status];
 
   const applicationCount = applicationCounts[filter.status];
@@ -129,6 +131,10 @@ function ApplicationsFilter({ applicationCount = 0 }) {
     {
       label: "Rejected",
       status: "rejected",
+    },
+    {
+      label: "Spam?",
+      status: "spam",
     },
   ] as const;
 
