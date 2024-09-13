@@ -12,6 +12,7 @@ import {
   fetchApprovals,
   getApplicationStatus,
 } from "./utils";
+import type { ApplicationStatus } from "./types";
 
 export const applicationsRouter = createTRPCRouter({
   approvals: roundProcedure
@@ -86,29 +87,50 @@ export const applicationsRouter = createTRPCRouter({
         return isLast;
       });
 
-      const applicationIdsWithStatus = applicationIds.map((a) => ({
-        id: a.id,
-        status: filteredApprovals.find((approval) => approval.refUID === a.id)
-          ? filteredApprovals.find(
-              (approval) => approval.refUID === a.id && !approval.revoked,
-            )
-            ? "approved"
-            : "rejected"
-          : "pending",
-      }));
+      const approvedApplicationIds: string[] = [];
+      const pendingApplicationIds: string[] = [];
+      const rejectedApplicationIds: string[] = [];
+
+      const applicationIdsWithStatus = applicationIds.map(({ id }) => {
+        const applicationApproval = filteredApprovals.find(
+          (approval) => approval.refUID === id,
+        );
+
+        let status: ApplicationStatus;
+        switch (true) {
+          case !applicationApproval:
+            status = "pending";
+            pendingApplicationIds.push(id);
+            break;
+          case applicationApproval?.revoked:
+            status = "rejected";
+            rejectedApplicationIds.push(id);
+            break;
+          default:
+            status = "approved";
+            approvedApplicationIds.push(id);
+        }
+
+        return {
+          id,
+          status,
+        };
+      });
 
       const { ...filter } = input;
 
-      let filteredIds: string[] = [];
-      if (filter.status === "approved") {
-        filteredIds = applicationIdsWithStatus
-          .filter((a) => a.status === "approved")
-          .map((a) => a.id);
-      } else if (filter.status === "pending") {
-        filteredIds = applicationIdsWithStatus
-          .filter((a) => a.status === "pending")
-          .map((a) => a.id);
-      }
+      const filteredIds: string[] = (() => {
+        switch (filter.status) {
+          case "approved":
+            return approvedApplicationIds;
+          case "pending":
+            return pendingApplicationIds;
+          case "rejected":
+            return rejectedApplicationIds;
+          default:
+            return [];
+        }
+      })();
 
       // Note that this fetches all applications when ids is empty
       const applications = await fetchApplications({
@@ -139,6 +161,9 @@ export const applicationsRouter = createTRPCRouter({
 
       return {
         count: applicationIds.length,
+        countApproved: approvedApplicationIds.length,
+        countPending: pendingApplicationIds.length,
+        countRejected: rejectedApplicationIds.length,
         data,
       };
     }),
