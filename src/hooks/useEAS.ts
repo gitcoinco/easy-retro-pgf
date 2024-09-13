@@ -64,7 +64,6 @@ export function useAttest() {
           functionName: "multiAttest",
           account: getAddress(signer.address),
           args: [args],
-          gasPrice: await publicClient.getGasPrice(),
         });
         const hash = await walletClient.writeContract(request);
         await publicClient.waitForTransactionReceipt({
