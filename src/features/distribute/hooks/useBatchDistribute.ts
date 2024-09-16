@@ -6,7 +6,7 @@ import {
   useFundPool,
   usePoolId,
 } from "../hooks/useAlloPool";
-import { Address, parseUnits } from "viem";
+import { Address, formatUnits, parseUnits } from "viem";
 import { batchDistributePerNetwork } from "~/config";
 import { Distribution } from "~/features/distribute/types";
 
@@ -25,8 +25,6 @@ export function useBatchDistribute({
   const { data: balance } = usePoolAmount();
   const [isFullyFunded, setIsFullyFunded] = useState(false);
   const [currentBatch, setCurrentBatch] = useState<number>(0);
-
-  const { isPending, mutateAsync } = useDistribute();
   const { data: poolId } = usePoolId();
   const { isPending: isFunding, mutateAsync: fundPool } = useFundPool();
 
@@ -35,13 +33,6 @@ export function useBatchDistribute({
     batchDistributePerNetwork[
       network as keyof typeof batchDistributePerNetwork
     ] || 1;
-  // Calculate the total amount needed for all batches
-  const totalAmounts = distribution.reduce(
-    (sum, x) =>
-      sum +
-      parseUnits(handleAmount(x.amount, token?.decimals), token?.decimals),
-    BigInt(0),
-  );
 
   // Split distributions into batches based on the batch limit
   const batches = useMemo(() => {
@@ -50,10 +41,19 @@ export function useBatchDistribute({
     for (let i = 0; i < totalBatches; i++) {
       result.push(distribution.slice(i * batchLimit, (i + 1) * batchLimit));
     }
+    setCurrentBatch(0);
     return result;
   }, [distribution, batchLimit]);
 
   const currentDistribution = batches[currentBatch] || [];
+
+  const remainingProjectsAfterBatch = batches
+    .filter((_, i) => i > currentBatch)
+    .reduce((sum, x) => sum + x.length, 0);
+
+  const { isPending, mutateAsync } = useDistribute(
+    `${currentDistribution.length} distributions processed in this batch`,
+  );
 
   const { projectIds, recipients, amounts } = useMemo(() => {
     return currentDistribution.reduce(
@@ -72,13 +72,50 @@ export function useBatchDistribute({
     );
   }, [currentDistribution, token]);
 
-  const balanceBigInt = BigInt(balance ?? 0);
-  const batchTotalAmount = amounts.reduce((sum, x) => sum + x, BigInt(0));
+  const { batchTotalAmount, isPoolUnderfunded, amountDiff } = useMemo(() => {
+    // Calculate the total amount of tokens to be distributed excluding the already processed batches
+    const totalAmounts =
+      distribution.reduce(
+        (sum, x) =>
+          sum +
+          parseUnits(handleAmount(x.amount, token?.decimals), token?.decimals),
+        BigInt(0),
+      ) -
+      batches
+        .slice(0, currentBatch)
+        .flat()
+        .reduce(
+          (sum, x) =>
+            sum +
+            parseUnits(
+              handleAmount(x.amount, token?.decimals),
+              token?.decimals,
+            ),
+          BigInt(0),
+        );
 
-  const isPoolUnderfunded = !isFullyFunded && totalAmounts > balanceBigInt;
-  const amountDiff = isPoolUnderfunded
-    ? totalAmounts - balanceBigInt
-    : balanceBigInt - totalAmounts;
+    const balanceBigInt = BigInt(balance ?? 0);
+    const batchTotalAmount = formatUnits(
+      amounts.reduce((sum, x) => sum + x, BigInt(0)),
+      token?.decimals || 18,
+    );
+    const isPoolUnderfunded = !isFullyFunded && totalAmounts > balanceBigInt;
+    const amountDiff = isPoolUnderfunded
+      ? totalAmounts - balanceBigInt
+      : balanceBigInt - totalAmounts;
+
+    return { batchTotalAmount, isPoolUnderfunded, amountDiff };
+  }, [
+    distribution,
+    batches,
+    currentBatch,
+    balance,
+    amounts,
+    isFullyFunded,
+    token,
+  ]);
+
+  const amountToFund = formatUnits(amountDiff, token?.decimals || 18);
 
   const fundThePool = async () => {
     if (poolId) {
@@ -107,7 +144,7 @@ export function useBatchDistribute({
       setCurrentBatch(currentBatch + 1);
     } else {
       // All batches processed
-      onPayoutsCompleted(); // Refetch or handle after all payouts
+      onPayoutsCompleted();
       onCloseDialog(); // Close the modal/dialog
     }
   };
@@ -115,17 +152,13 @@ export function useBatchDistribute({
   return {
     isPending,
     isFunding,
-    currentBatch,
-    batches,
     currentDistribution,
     batchTotalAmount,
-    balanceBigInt,
     isPoolUnderfunded,
     fundThePool,
     confirmDistribution,
-    isFullyFunded,
-    amountDiff,
-    token,
+    amountToFund,
+    remainingProjectsAfterBatch,
   };
 }
 

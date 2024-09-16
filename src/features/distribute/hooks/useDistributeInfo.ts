@@ -1,5 +1,5 @@
 import { api } from "~/utils/api";
-import { usePoolAmount, usePool, usePoolToken } from "../hooks/useAlloPool";
+import { usePoolAmount, usePool } from "../hooks/useAlloPool";
 import { usePublicClient } from "wagmi";
 import { abi } from "~/lib/rpgf/abi";
 import { type Payout } from "~/features/distribute/types";
@@ -15,7 +15,6 @@ export function useDistributeInfo(
   const round = useCurrentRound();
   const publicClient = usePublicClient();
   const poolAmount = usePoolAmount();
-  const token = usePoolToken();
   const { data: pool } = usePool(poolId!);
   const totalTokens = poolAmount.data?.toString() ?? "0";
   const distributionResult = api.results.distribution.useQuery({ totalTokens });
@@ -69,15 +68,13 @@ export function useDistributeInfo(
       );
 
       return {
-        token,
-        poolAmount,
         distributionResult,
         distributions,
         payoutEventsByTransaction,
+        alreadyDistributedProjects,
         explorerLink:
           explorerLinks[round.data?.network as keyof typeof explorerLinks],
-        round: round.data,
-        round: round.data,
+        roundNetwork: round.data?.network,
       };
     },
   });
