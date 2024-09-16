@@ -1,16 +1,26 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAllo } from "./useAllo";
+import { useAllo, waitForLogs } from "./useAllo";
 import { usePoolId } from "./useAlloPool";
+import { abi as AlloABI } from "@allo-team/allo-v2-sdk/dist/Allo/allo.config";
 import { type Address, encodeAbiParameters, parseAbiParameters } from "viem";
-import { useSendTransaction } from "wagmi";
+import { usePublicClient, useSendTransaction } from "wagmi";
 import { uuidToBytes32 } from "~/utils/uuid";
+import { toast } from "sonner";
 
-export function useDistribute() {
+export function useDistribute(message?: string) {
   const allo = useAllo();
   const { data: poolId } = usePoolId();
+  const client = usePublicClient();
 
   const { sendTransactionAsync } = useSendTransaction();
   return useMutation({
+    onSuccess: () => {
+      toast.success("Distributed successfully!", { description: message });
+    },
+    onError: (err: { reason?: string; data?: { message: string } }) =>
+      toast.error("Distribution error", {
+        description: err.reason ?? err.data?.message,
+      }),
     mutationFn: async ({
       projectIds,
       recipients,
@@ -30,7 +40,17 @@ export function useDistribute() {
         encodeData(amounts, projectIds),
       );
 
-      return sendTransactionAsync({ to, data });
+      try {
+        const hash = await sendTransactionAsync({
+          to,
+          data,
+          value: 0n,
+        });
+
+        return waitForLogs(hash, AlloABI, client);
+      } catch (error) {
+        throw { reason: "Failed to Distribute" };
+      }
     },
   });
 }
