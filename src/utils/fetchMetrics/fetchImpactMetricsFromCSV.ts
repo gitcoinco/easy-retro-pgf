@@ -35,13 +35,17 @@ export async function fetchImpactMetricsFromCSV(
       step: (results) => {
         // filtering out rows based on the projectIds array and project_id column
         const row = results.data;
-        if (!isFilterByProjectId || projectIds.includes(row.project_id)) {
+        if (!isFilterByProjectId || projectIds.includes(row.id)) {
           if (!isFilterByMetricId) projectsMetricsArray.push(row);
           else {
             // filtering out the metrics columns that are not in the metricIds array
             const filteredRow: Partial<OSOMetricsCSV> = {
-              project_id: row.project_id,
-              project_name: row.project_name,
+              id: row.id,
+              // name: row.project_name,
+              category: row.category,
+              chain: row.chain,
+              address: row.address,
+
             };
             metricIds.forEach((metric) => {
               filteredRow[metric] = row[metric];

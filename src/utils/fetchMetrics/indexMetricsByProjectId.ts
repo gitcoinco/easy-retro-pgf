@@ -12,8 +12,8 @@ export const indexMetricsByProjectId = (
 
   return Object.fromEntries(
     metricsArray.map((metricsItem: OSOMetricsCSV) => {
-      const { project_id, project_name, ...metrics } = metricsItem;
-      return [project_id, metrics];
+      const { id, name, ...metrics } = metricsItem;
+      return [id, metrics];
     }),
   );
 };
