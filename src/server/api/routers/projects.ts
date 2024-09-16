@@ -273,6 +273,8 @@ export const projectsRouter = createTRPCRouter({
             ["id", "decodedDataJson", "recipient"],
           );
 
+          const approvedIds = approvedApplications.map((a) => a.id);
+
           const metadataByProjectId =
             await fetchMetadataFromAttestations(approvedApplications);
 
@@ -281,7 +283,7 @@ export const projectsRouter = createTRPCRouter({
             Partial<OSOMetricsCSV>
           > = await getMetricsByProjectId({
             projectIds: [
-              ...Object.keys(approvedApplications),
+              ...approvedIds,
               ...[
                 "id0",
                 "id1",
