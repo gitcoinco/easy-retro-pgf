@@ -19,6 +19,7 @@ import { ExportCSV } from "./ExportCSV";
 import { calculatePayout } from "../utils/calculatePayout";
 import { formatNumber } from "~/utils/formatNumber";
 import { format } from "~/utils/csv";
+import { ImportCSV } from "./ImportCSV";
 
 export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
@@ -93,7 +94,8 @@ export function Distributions() {
         <div className="mb-2 flex items-center justify-between gap-2">
           <h1 className="text-3xl font-bold">Distribute</h1>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <ImportCSV />
             <ExportCSV votes={distributions} />
             <Button variant="primary" type="submit">
               Distribute tokens

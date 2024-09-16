@@ -3,6 +3,7 @@ import { type Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
 import theme from "tailwindcss/defaultTheme";
 
+
 const customColors = {
   primary: {
     400: "#2FE4AB",
@@ -34,6 +35,7 @@ const customColors = {
   },
 };
 
+
 export default {
   content: ["./src/**/*.tsx"],
   darkMode: "class",
@@ -41,11 +43,12 @@ export default {
     extend: {
       colors: {
         ...colors,
-        ...customColors,
+        primary: colors.green,
         gray: colors.stone,
       },
       fontFamily: {
         sans: ["var(--font-inter)", ...theme.fontFamily.sans],
+        heading: ["var(--font-heading)", ...theme.fontFamily.sans],
       },
     },
   },

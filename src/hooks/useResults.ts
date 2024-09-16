@@ -1,28 +1,35 @@
 import { config } from "~/config";
+import { useIsShowActualVotes } from "~/features/rounds/hooks/useIsShowActualVotes";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { api } from "~/utils/api";
-import { getAppState } from "~/utils/state";
 
 export function useResults() {
-  return api.results.votes.useQuery();
+  return api.results.results.useQuery();
 }
 
 const seed = 0;
 export function useProjectsResults() {
   return api.results.projects.useInfiniteQuery(
     { limit: config.pageSize, seed },
-    {
-      getNextPageParam: (_, pages) => pages.length,
-    },
+    { getNextPageParam: (_, pages) => pages.length },
   );
-}
-
-export function useProjectCount() {
-  return api.projects.count.useQuery();
 }
 
 export function useProjectResults(id: string) {
-  return api.results.project.useQuery(
-    { id },
-    { enabled: getAppState() === "RESULTS" },
-  );
+  const isShowActualVotes = useIsShowActualVotes();
+  const query = api.results.results.useQuery(undefined, {
+    enabled: useRoundState() === "RESULTS",
+  });
+  const project = query.data?.projects?.[id];
+
+  const votes = isShowActualVotes ? project?.actualVotes : project?.votes;
+
+  return {
+    ...query,
+    data: votes ?? 0,
+  };
+}
+
+export function useAllProjectsResults() {
+  return api.results.allProjects.useQuery();
 }

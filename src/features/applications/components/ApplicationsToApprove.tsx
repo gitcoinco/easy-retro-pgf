@@ -5,8 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { type Address } from "viem";
 
 import { Button } from "~/components/ui/Button";
-import { Checkbox, Form } from "~/components/ui/Form";
-import { Markdown } from "~/components/ui/Markdown";
+import { Checkbox, Form, FormSection } from "~/components/ui/Form";
 import { useMetadata } from "~/hooks/useMetadata";
 import { useApplications } from "~/features/applications/hooks/useApplications";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
@@ -20,9 +19,10 @@ import { Spinner } from "~/components/ui/Spinner";
 import { EmptyState } from "~/components/EmptyState";
 import { formatDate } from "~/utils/time";
 import { ClockIcon } from "lucide-react";
-import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
+import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
+import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
 import { useAccount } from "wagmi";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
 
@@ -40,6 +40,7 @@ export function ApplicationItem({
 }) {
   const { address } = useAccount();
   const metadata = useMetadata<Application>(metadataPtr);
+  const domain = useCurrentDomain();
   const form = useFormContext();
   const revoke = useRevokeAttestations({});
 
@@ -103,7 +104,7 @@ export function ApplicationItem({
             disabled={isLoading}
             as={Link}
             target="_blank"
-            href={`/applications/${id}`}
+            href={`/${domain}/applications/${id}`}
             className="transition-transform group-data-[state=closed]:rotate-180"
             type="button"
             variant=""
@@ -124,9 +125,9 @@ type ApplicationsToApprove = z.infer<typeof ApplicationsToApproveSchema>;
 
 export function ApplicationsToApprove() {
   const applications = useApplications();
+  const domain = useCurrentDomain();
   const approved = useApprovedApplications();
   const approve = useApproveApplication({});
-
   const approvedById = useMemo(
     () =>
       approved.data?.reduce(
@@ -149,44 +150,49 @@ export function ApplicationsToApprove() {
         schema={ApplicationsToApproveSchema}
         onSubmit={(values) => approve.mutate(values.selected)}
       >
-        <Markdown>{`### Review applications
-Select the applications you want to approve. You must be a configured admin to approve applications.
+        <FormSection
+          title="Review applications"
+          description="Select the applications you want to approve. You must be a configured admin to approve applications."
+        >
+          <Alert variant="info">
+            Newly submitted applications can take 10 minutes to show up.
+          </Alert>
+          <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2 dark:bg-gray-900">
+            <div className="text-gray-300">
+              {applications.data?.length
+                ? `${applications.data?.length} applications found`
+                : ""}
+            </div>
+            <div className="flex gap-2">
+              <SelectAllButton applications={applicationsToApprove} />
+              <ApproveButton isLoading={approve.isPending} />
+            </div>
+          </div>
 
-`}</Markdown>
-        <Alert variant="info">
-          Newly submitted applications can take 10 minutes to show up.
-        </Alert>
-        <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2 dark:bg-gray-900">
-          <div className="text-gray-300">
-            {applications.data?.length
-              ? `${applications.data?.length} applications found`
-              : ""}
-          </div>
-          <div className="flex gap-2">
-            <SelectAllButton applications={applicationsToApprove} />
-            <ApproveButton isLoading={approve.isPending} />
-          </div>
-        </div>
-
-        {applications.isPending ? (
-          <div className="flex items-center justify-center py-16">
-            <Spinner />
-          </div>
-        ) : !applications.data?.length ? (
-          <EmptyState title="No applications">
-            <Button variant="primary" as={Link} href={`/applications/new`}>
-              Go to create application
-            </Button>
-          </EmptyState>
-        ) : null}
-        {applications.data?.map((item) => (
-          <ApplicationItem
-            key={item.id}
-            {...item}
-            isLoading={applications.isPending}
-            approvedBy={approvedById?.get(item.id)}
-          />
-        ))}
+          {applications.isPending ? (
+            <div className="flex items-center justify-center py-16">
+              <Spinner />
+            </div>
+          ) : !applications.data?.length ? (
+            <EmptyState title="No applications">
+              <Button
+                variant="primary"
+                as={Link}
+                href={`/${domain}/applications/new`}
+              >
+                Go to create application
+              </Button>
+            </EmptyState>
+          ) : null}
+          {applications.data?.map((item) => (
+            <ApplicationItem
+              key={item.id}
+              {...item}
+              isLoading={applications.isPending}
+              approvedBy={approvedById?.get(item.id)}
+            />
+          ))}
+        </FormSection>
       </Form>
     </div>
   );
@@ -216,24 +222,21 @@ function SelectAllButton({
 }
 
 function ApproveButton({ isLoading = false }) {
-  const isAdmin = useIsAdmin();
-  const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
   const form = useFormContext<ApplicationsToApprove>();
   const selectedCount = Object.values(form.watch("selected") ?? {}).filter(
     Boolean,
   ).length;
   return (
-    <Button
-      suppressHydrationWarning
-      disabled={!selectedCount || !isAdmin || isLoading || !isCorrectNetwork}
-      variant="primary"
-      type="submit"
-    >
-      {!isCorrectNetwork
-        ? `Connect to ${correctNetwork.name}`
-        : isAdmin
-          ? `Approve ${selectedCount} applications`
-          : "You must be an admin"}
-    </Button>
+    <EnsureCorrectNetwork>
+      <Button
+        suppressHydrationWarning
+        isLoading={isLoading}
+        disabled={!selectedCount || isLoading}
+        variant="primary"
+        type="submit"
+      >
+        Approve {selectedCount} applications
+      </Button>
+    </EnsureCorrectNetwork>
   );
 }

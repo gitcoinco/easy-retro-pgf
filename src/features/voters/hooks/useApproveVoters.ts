@@ -1,11 +1,18 @@
-import { config, eas } from "~/config";
+import { eas } from "~/config";
 import { useAttest } from "~/hooks/useEAS";
 import { useEthersSigner } from "~/hooks/useEthersSigner";
 import { useMutation } from "@tanstack/react-query";
 import { createAttestation } from "~/lib/eas/createAttestation";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
+import { api } from "~/utils/api";
+import { getContracts } from "~/lib/eas/createEAS";
 
 // TODO: Move this to a shared folders
 export type TransactionError = { reason?: string; data?: { message: string } };
+
+export function useVoters() {
+  return api.voters.list.useQuery(undefined, { refetchInterval: 5000 });
+}
 
 export function useApproveVoters({
   onSuccess,
@@ -16,21 +23,25 @@ export function useApproveVoters({
 }) {
   const attest = useAttest();
   const signer = useEthersSigner();
+  const { data: round } = useCurrentRound();
 
   return useMutation({
     mutationFn: async (voters: string[]) => {
       if (!signer) throw new Error("Connect wallet first");
-      if (!config.roundId) throw new Error("Round ID must be defined");
+      if (!round) throw new Error("Round must be defined");
+      if (!round?.network) throw new Error("Round network must be configured");
 
+      const contracts = getContracts(round.network);
       const attestations = await Promise.all(
         voters.map((recipient) =>
           createAttestation(
             {
-              values: { type: "voter", round: config.roundId },
-              schemaUID: eas.schemas.approval,
+              values: { type: "voter", round: round.id },
+              schemaUID: contracts.schemas.approval,
               recipient,
             },
             signer,
+            contracts,
           ),
         ),
       );

@@ -3,9 +3,9 @@ import { describe, expect, test, vi } from "vitest";
 import type { Chain, WalletClient } from "wagmi";
 import { MockConnector } from "wagmi/connectors/mock";
 
-import ProjectsPage from "~/pages/projects";
+import ProjectsPage from "~/pages/[domain]/projects";
 import { fireEvent, render, screen } from "~/test-utils";
-import ProjectDetailsPage from "~/pages/projects/[projectId]";
+import ProjectDetailsPage from "~/pages/[domain]/projects/[projectId]";
 
 vi.mock("wagmi", async () => {
   const actual = await vi.importActual("wagmi");

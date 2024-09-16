@@ -15,56 +15,76 @@ import { formatNumber } from "~/utils/formatNumber";
 import { Dialog } from "~/components/ui/Dialog";
 import { VotingEndsIn } from "./VotingEndsIn";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
-import { config } from "~/config";
 import { useIsMutating } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { api } from "~/utils/api";
-import { getAppState } from "~/utils/state";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import dynamic from "next/dynamic";
+import {
+  useCurrentDomain,
+  useCurrentRound,
+} from "~/features/rounds/hooks/useRound";
+import { Spinner } from "~/components/ui/Spinner";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { useApprovedVoter } from "~/features/voters/hooks/useApprovedVoter";
 import { useAccount } from "wagmi";
+import { useVotesCount } from "~/features/voters/hooks/useVotesCount";
 
 function BallotOverview() {
   const router = useRouter();
+  const { address } = useAccount();
+  const { data: voterLimits } = useVotesCount(address!);
 
   const { data: ballot } = useBallot();
   const isSaving = useIsMutating(getQueryKey(api.ballot.save));
 
+  const round = useCurrentRound();
   const sum = sumBallot(ballot?.votes);
 
   const allocations = ballot?.votes ?? [];
-  const canSubmit = router.route === "/ballot" && allocations.length;
+  const canSubmit = router.route.includes("ballot") && allocations.length;
 
   const { data: projectCount } = useProjectCount();
 
-  const appState = getAppState();
-  if (appState === "RESULTS")
+  const maxVotesTotal = voterLimits?.maxVotesTotal ?? 0;
+
+  const roundState = useRoundState();
+
+  if (round.isPending || !round.data) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
+  const domain = round.data?.domain;
+
+  if (roundState === "RESULTS")
     return (
       <BallotMessage>
         <BallotHeader>Results are live!</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
-        <Button as={Link} href={"/projects/results"}>
+        <Button as={Link} href={`/${domain}/projects/results`}>
           Go to results
         </Button>
       </BallotMessage>
     );
-  if (appState === "TALLYING")
+  if (roundState === "TALLYING")
     return (
       <BallotMessage>
         <BallotHeader>Voting has ended</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
       </BallotMessage>
     );
-  if (appState !== "VOTING")
+  if (roundState !== "VOTING")
     return (
       <BallotMessage>
         <BallotHeader>Voting hasn't started yet</BallotHeader>
-        {appState === "REVIEWING" ? (
+        {roundState === "REVIEWING" ? (
           <BallotSection title="Applications are being reviewed" />
         ) : (
-          <Button as={Link} href={"/applications/new"}>
+          <Button as={Link} href={`/${domain}/applications/new`}>
             Create application
           </Button>
         )}
@@ -75,7 +95,7 @@ function BallotOverview() {
     <div className="mb-2 space-y-6">
       <BallotHeader>Your ballot</BallotHeader>
       <BallotSection title="Voting ends in:">
-        <VotingEndsIn />
+        <VotingEndsIn resultAt={round.data.resultAt!} />
       </BallotSection>
       <BallotSection title="Projects added:">
         <div>
@@ -91,7 +111,7 @@ function BallotOverview() {
             Votes allocated:
             <div
               className={clsx("text-gray-900 dark:text-gray-300", {
-                ["text-primary-500"]: sum > config.votingMaxTotal,
+                ["text-red-500"]: sum > maxVotesTotal,
               })}
             >
               {formatNumber(sum)} votes
@@ -99,28 +119,37 @@ function BallotOverview() {
           </div>
         }
       >
-        <Progress value={sum} max={config.votingMaxTotal} />
+        <Progress value={sum} max={maxVotesTotal} />
         <div className="flex justify-between text-xs">
           <div>Total</div>
-          <div>{formatNumber(config.votingMaxTotal ?? 0)} votes</div>
+          <div>{formatNumber(maxVotesTotal ?? 0)} votes</div>
         </div>
       </BallotSection>
       {ballot?.publishedAt ? (
-        <Button className="w-full" as={Link} href={`/ballot/confirmation`}>
+        <Button
+          className="w-full"
+          as={Link}
+          href={`/${domain}/ballot/confirmation`}
+        >
           View submitted ballot
         </Button>
       ) : isSaving ? (
-        <Button disabled className="w-full" variant="primary">
-          Adding to ballot...
+        <Button isLoading className="w-full" variant="primary">
+          Updating
         </Button>
       ) : canSubmit ? (
-        <SubmitBallotButton disabled={sum > config.votingMaxTotal} />
+        <SubmitBallotButton disabled={sum > maxVotesTotal} />
       ) : allocations.length ? (
-        <Button className="w-full" variant="primary" as={Link} href={"/ballot"}>
+        <Button
+          className="w-full"
+          variant="primary"
+          as={Link}
+          href={`/${domain}/ballot`}
+        >
           View ballot
         </Button>
       ) : (
-        <Button className={"w-full"} variant="primary" disabled>
+        <Button className={"w-full"} disabled>
           No projects added yet
         </Button>
       )}
@@ -134,9 +163,9 @@ const SubmitBallotButton = ({ disabled = false }) => {
   const { address } = useAccount();
   const { data: isApprovedVoter } = useApprovedVoter(address!);
   const [isOpen, setOpen] = useState(false);
-
+  const domain = useCurrentDomain();
   const submit = useSubmitBallot({
-    onSuccess: async () => void router.push("/ballot/confirmation"),
+    onSuccess: async () => void router.push(`/${domain}/ballot/confirmation`),
   });
 
   if (!isApprovedVoter) {

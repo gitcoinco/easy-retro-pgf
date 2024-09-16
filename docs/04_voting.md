@@ -18,4 +18,8 @@ your voters can now vote for projects
 - Click Submit ballot and sign the message
 ![](./images/Voted.png)
 
+
 You can also export your ballot as a CSV to import into Excel where you can make changes and later export as a CSV. This CSV file can then be imported and replace your ballot.
+
+[<img width="100%" src="https://cdn.loom.com/sessions/thumbnails/ee5eff07fa3c47258bbdf42777087990-with-play.gif" width="50%">](https://www.loom.com/embed/ee5eff07fa3c47258bbdf42777087990?sid=34151556-5fd9-433f-bea3-aa4f81b2e597)
+

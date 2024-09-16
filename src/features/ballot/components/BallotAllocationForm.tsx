@@ -12,16 +12,9 @@ import { type Vote } from "~/features/ballot/types";
 import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
-import { getAppState } from "~/utils/state";
-import { useAccount } from "wagmi";
-import { useRouter } from "next/router";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
-export function BallotAllocationForm() {
-  const { address, isConnecting } = useAccount();
-  const router = useRouter();
-  if (!address && !isConnecting) {
-    router.push("/").catch(console.log);
-  }
+export function BallotAllocationForm({ isPublished = false }) {
   const form = useFormContext<{ votes: Vote[] }>();
 
   const save = useSaveBallot();
@@ -31,6 +24,7 @@ export function BallotAllocationForm() {
     save.mutate({ votes });
   }
 
+  const roundState = useRoundState();
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
@@ -57,7 +51,7 @@ export function BallotAllocationForm() {
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
               <AllocationForm
-                disabled={getAppState() === "RESULTS"}
+                disabled={isPublished || roundState !== "VOTING"}
                 onSave={handleSaveBallot}
               />
             ) : (
@@ -77,6 +71,7 @@ export function BallotAllocationForm() {
     </div>
   );
 }
+
 function ImportCSV() {
   const form = useFormContext();
   const [votes, setVotes] = useState<Vote[]>([]);
@@ -148,6 +143,7 @@ function ImportCSV() {
     </>
   );
 }
+
 function ExportCSV({ votes }: { votes: Vote[] }) {
   // Fetch projects for votes to get the name
   const projects = useProjectsById(votes.map((v) => v.projectId));
@@ -172,11 +168,15 @@ function ExportCSV({ votes }: { votes: Vote[] }) {
     </IconButton>
   );
 }
+
 function ClearBallot() {
   const form = useFormContext();
   const [isOpen, setOpen] = useState(false);
   const { mutateAsync, isPending } = useSaveBallot();
-  if (["TALLYING", "RESULTS"].includes(getAppState())) return null;
+
+  const roundState = useRoundState();
+  if (["TALLYING", "RESULTS"].includes(roundState!)) return null;
+
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>
@@ -211,6 +211,7 @@ function ClearBallot() {
     </>
   );
 }
+
 const EmptyBallot = () => (
   <div className="flex flex-1 items-center justify-center">
     <div className=" max-w-[360px] space-y-4">
@@ -227,6 +228,7 @@ const EmptyBallot = () => (
     </div>
   </div>
 );
+
 const TotalAllocation = () => {
   const form = useFormContext<{ votes: Vote[] }>();
   const votes = form.watch("votes") ?? [];

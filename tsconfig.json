@@ -35,8 +35,7 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
-    "**/*.js",
-    ".next/types/**/*.ts"
-, "src/pages/api/indexer/webhook._ts"  ],
-  "exclude": ["node_modules"]
+    "**/*.js"
+  ],
+  "exclude": ["node_modules", ".next"]
 }

@@ -61,7 +61,22 @@ describe("Calculate results", () => {
     },
   ];
   test("custom payout", () => {
-    const actual = calculateVotes(ballots, { style: "custom" });
+    const { projects } = calculateVotes(ballots, { style: "custom" });
+
+    const actual: Record<
+      string,
+      {
+        voters: number;
+        votes: number;
+      }
+    > = {};
+
+    for (const key in projects) {
+      if (projects.hasOwnProperty(key)) {
+        const { voters, votes } = projects[key]!;
+        actual[key] = { voters, votes };
+      }
+    }
     console.log(actual);
 
     expect(actual).toMatchInlineSnapshot(`
@@ -82,7 +97,26 @@ describe("Calculate results", () => {
     `);
   });
   test("OP-style payout", () => {
-    const actual = calculateVotes(ballots, { style: "op", threshold: 3 });
+    const { projects } = calculateVotes(ballots, {
+      style: "op",
+      threshold: 3,
+    });
+
+    const actual: Record<
+      string,
+      {
+        voters: number;
+        votes: number;
+      }
+    > = {};
+
+    for (const key in projects) {
+      if (projects.hasOwnProperty(key)) {
+        const { voters, votes } = projects[key]!;
+        actual[key] = { voters, votes };
+      }
+    }
+
     console.log(actual);
     expect(actual).toMatchInlineSnapshot(`
       {

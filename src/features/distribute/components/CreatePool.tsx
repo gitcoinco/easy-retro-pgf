@@ -18,6 +18,7 @@ import {
   usePoolAmount,
   usePoolId,
   usePoolToken,
+  useRoundToken,
 } from "../hooks/useAlloPool";
 import { allo } from "~/config";
 import {
@@ -81,8 +82,7 @@ function CreatePool() {
   const profile = useAlloProfile();
   const approve = useApprove();
   const poolId = usePoolId();
-
-  const token = usePoolToken();
+  const token = useRoundToken();
 
   const { decimals, allowance } = token.data ?? {};
 
@@ -112,15 +112,9 @@ function CreatePool() {
 
       <Form
         schema={z.object({
-          strategyAddress: z.string(),
-          tokenName: z.string(),
           amount: z.number().default(0),
         })}
-        defaultValues={{
-          amount: 0,
-          strategyAddress: allo.strategyAddress,
-          tokenName: "ETH",
-        }}
+        defaultValues={{ amount: 0 }}
         onSubmit={(values) => {
           const amount = parseUnits(values.amount.toString(), decimals);
 
@@ -159,6 +153,11 @@ function CreatePool() {
 }
 
 function ConfigurePool() {
+  const poolId = usePoolId();
+  if (poolId.data) {
+    return <PoolDetails poolId={poolId.data} />;
+  }
+
   return (
     <CheckAlloProfile>
       <CreatePool />
