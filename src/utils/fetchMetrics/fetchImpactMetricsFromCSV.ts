@@ -41,7 +41,6 @@ export async function fetchImpactMetricsFromCSV(
             // filtering out the metrics columns that are not in the metricIds array
             const filteredRow: Partial<OSOMetricsCSV> = {
               id: row.id,
-              // name: row.project_name,
               category: row.category,
               chain: row.chain,
               address: row.address,

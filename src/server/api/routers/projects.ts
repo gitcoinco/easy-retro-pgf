@@ -299,8 +299,6 @@ export const projectsRouter = createTRPCRouter({
             ],
           });
 
-          console.log(JSON.stringify(metricsByProjectId, null, 2));
-
           const projectsResult: Array<
             Attestation & {
               metrics?: Partial<OSOMetricsCSV>;
