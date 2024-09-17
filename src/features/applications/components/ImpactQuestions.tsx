@@ -254,10 +254,9 @@ export function ImpactQuestions({
 }: {
   selectedCategories: string[];
 }) {
-  console.log("IMPACTQUESTIONS", selectedCategories);
   return (
     <div className="mt-2 space-y-2">
-      {selectedCategories.map((categoryKey) => (
+      {(selectedCategories as ImpactCategoryKeys).map((categoryKey) => (
         <CategoryQuestions key={categoryKey} categoryKey={categoryKey} />
       ))}
     </div>
@@ -280,9 +279,9 @@ function CategoryQuestions({
         <>
           <div
             onClick={() => setHide(!hide)}
-            className="flex cursor-pointer flex-wrap items-center justify-between gap-3 rounded hover:bg-gray-100"
+            className="flex cursor-pointer flex-wrap items-center justify-between gap-3 rounded py-1 hover:bg-gray-100"
           >
-            <div className="px-2">{`Category Specific Questions for ${label}`}</div>
+            <div className="px-3">{`${label} - Questions`}</div>
             <div className="flex cursor-pointer items-center rounded">
               {hide ? (
                 <Button variant="ghost" icon={ChevronDown} />
@@ -294,7 +293,7 @@ function CategoryQuestions({
         </>
 
         {!hide && (
-          <div className="p-2">
+          <div className="p-3">
             {Object.entries(questions).map(
               ([name, { label, hint, component }]) => {
                 const fieldName = `application.categoryQuestions.${categoryKey}.${name}`;
