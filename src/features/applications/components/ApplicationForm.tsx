@@ -507,12 +507,7 @@ function ImpactTags() {
   });
 
   const selected = watch("application.impactCategory") ?? [];
-  const selectedCategories = Object.entries(impactCategories)
-    .map(([value, { label }]) => {
-      const isSelected = selected.includes(value);
-      return isSelected ? label : "";
-    })
-    .filter(Boolean);
+
   const error = formState.errors.application?.impactCategory;
 
   return (
@@ -547,104 +542,13 @@ function ImpactTags() {
           );
         })}
       </div>
-      <div className="mt-2 space-y-2">
-        {selectedCategories.map((categoryKey) => (
-          <CategoryQuestions key={categoryKey} categoryKey={categoryKey} />
-        ))}
-      </div>
+      <ImpactQuestions selectedCategories={selected} />
+
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
   );
 }
-import { useState } from "react"; // Import useState
-
-function CategoryQuestions({ categoryKey }: { categoryKey: string }) {
-  const { control } = useFormContext();
-  const [hide, setHide] = useState(true);
-  const categoryData =
-    impactCategoryQuestions[
-      categoryKey as keyof typeof impactCategoryQuestions
-    ];
-  if (!categoryData) return null;
-
-  const { questions } = categoryData;
-
-  return (
-    <div className="border-1 rounded border border-gray-400">
-      <div>
-        <>
-          <div
-            onClick={() => setHide(!hide)}
-            className="flex cursor-pointer flex-wrap items-center justify-between gap-3 rounded hover:bg-gray-100"
-          >
-            <div className="px-2">{`Category Specific Questions for ${categoryKey}`}</div>
-            <div className="flex cursor-pointer items-center rounded">
-              {hide ? (
-                <Button variant="ghost" icon={ChevronDown} />
-              ) : (
-                <Button variant="ghost" icon={ChevronUp} />
-              )}
-            </div>
-          </div>
-        </>
-
-        {!hide && (
-          <div className="p-2">
-            {questions.map((question, index) => {
-              const fieldName = `application.categoryQuestions.${categoryKey}.${index}`;
-              const includes = question.includes(
-                "if you don’t have one please follow this process [link] to get it.",
-              );
-              let questionText, link;
-              if (includes) {
-                [questionText, link] = question.split(",");
-              }
-              link = link?.split("[link]");
-              if (includes) {
-                return (
-                  <FormControl
-                    key={fieldName}
-                    name={fieldName}
-                    label={questionText}
-                  >
-                    <>
-                      <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                        {link[0]}{" "}
-                        <strong
-                          className="cursor-pointer"
-                          onClick={() => {
-                            window.open(
-                              "https://docs.opensource.observer/docs/contribute/project-data/",
-                              "_blank",
-                            );
-                          }}
-                        >
-                          link
-                        </strong>{" "}
-                        {link[1]}
-                      </div>
-                      <Textarea rows={4} />
-                    </>
-                  </FormControl>
-                );
-              } else {
-                return (
-                  <FormControl
-                    key={fieldName}
-                    name={fieldName}
-                    label={question}
-                  >
-                    <Textarea rows={4} />
-                  </FormControl>
-                );
-              }
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+import { ImpactQuestions } from "./ImpactQuestions";
 
 // function SanctionedOrgField() {
 //   const { control } = useFormContext();
