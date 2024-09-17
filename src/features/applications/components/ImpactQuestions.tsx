@@ -269,13 +269,11 @@ function CategoryQuestions({
 }: {
   categoryKey: ImpactCategoryKeys;
 }) {
-  const { control, watch } = useFormContext();
   const [hide, setHide] = useState(true);
   const { questions } = impactCategoryQuestions[categoryKey] ?? {};
   if (!questions) return null;
 
   const { label } = impactCategories[categoryKey];
-  console.log(JSON.stringify(watch(`application.categoryQuestions`), null, 2));
   return (
     <div className="border-1 rounded border border-gray-400">
       <div>
@@ -300,8 +298,6 @@ function CategoryQuestions({
             {Object.entries(questions).map(
               ([name, { label, hint, component }]) => {
                 const fieldName = `application.categoryQuestions.${categoryKey}.${name}`;
-
-                console.log(fieldName);
                 return (
                   <FormControl
                     key={fieldName}
