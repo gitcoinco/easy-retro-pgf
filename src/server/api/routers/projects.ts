@@ -236,7 +236,7 @@ export const projectsRouter = createTRPCRouter({
     .input(FilterSchema)
     .query(
       async ({
-        input: { cursor, limit, orderBy, sortOrder },
+        input: { cursor, limit, orderBy, sortOrder, search},
         ctx: { round },
       }) => {
         if (!round)
@@ -260,6 +260,12 @@ export const projectsRouter = createTRPCRouter({
 
           const approvedProjectIds = approvals
             .filter((a) => !possibleSpamIds.includes(a.refUID))
+            .filter((a) => {
+              if (search){
+                return a.refUID === search;
+              }
+                return true;
+            })
             .map((a) => a.refUID);
 
           const approvedApplications = await attestationFetcher(
