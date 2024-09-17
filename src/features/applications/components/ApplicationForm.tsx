@@ -1,20 +1,13 @@
 import { z } from "zod";
 import { toast } from "sonner";
-import { Controller, useController, useFormContext } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
-import { useAccount, useBalance } from "wagmi";
-import {
-  ChevronDown,
-  ChevronDownCircleIcon,
-  ChevronUp,
-  ChevronUpCircleIcon,
-} from "lucide-react";
+import { useAccount } from "wagmi";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
 import {
-  Checkbox,
   ErrorMessage,
   FieldArray,
   FieldsRow,
@@ -26,13 +19,12 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { impactCategories, impactCategoryQuestions } from "~/config";
+import { impactCategories } from "~/config";
 import {
   ApplicationVerificationSchema,
   ApplicationSchema,
   ProfileSchema,
   contributionTypes,
-  fundingSourceTypes,
   booleanOptions,
   fundingAmountTypes,
 } from "../types";
@@ -42,6 +34,7 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 import { api } from "~/utils/api";
+import { ImpactQuestions } from "./ImpactQuestions";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -548,7 +541,6 @@ function ImpactTags() {
     </div>
   );
 }
-import { ImpactQuestions } from "./ImpactQuestions";
 
 // function SanctionedOrgField() {
 //   const { control } = useFormContext();
