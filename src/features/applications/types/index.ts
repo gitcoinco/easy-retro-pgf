@@ -81,6 +81,7 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
+  categoryQuestions: z.record(z.string(), z.record(z.string(), z.string())),
   encryptedData: z.object({ iv: z.string(), data: z.string() }).optional(),
 });
 

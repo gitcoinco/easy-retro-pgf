@@ -9,6 +9,7 @@ import {
   forwardRef,
   cloneElement,
   useEffect,
+  ComponentProps,
 } from "react";
 import {
   FormProvider,
@@ -275,7 +276,10 @@ export function FormSection({
   title,
   description,
   children,
-}: { title: string; description: string } & ComponentProps<"section">) {
+}: {
+  title: string | ReactNode;
+  description: string;
+} & ComponentProps<"section">) {
   return (
     <section className="mb-8">
       <h3 className="mb-1 text-xl font-semibold">{title}</h3>

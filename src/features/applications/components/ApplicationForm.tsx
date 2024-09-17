@@ -1,20 +1,13 @@
 import { z } from "zod";
 import { toast } from "sonner";
-import { Controller, useController, useFormContext } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
-import { useAccount, useBalance } from "wagmi";
-import {
-  ChevronDown,
-  ChevronDownCircleIcon,
-  ChevronUp,
-  ChevronUpCircleIcon,
-} from "lucide-react";
+import { useAccount } from "wagmi";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
 import {
-  Checkbox,
   ErrorMessage,
   FieldArray,
   FieldsRow,
@@ -26,13 +19,12 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { impactCategories, impactCategoryQuestions } from "~/config";
+import { impactCategories } from "~/config";
 import {
   ApplicationVerificationSchema,
   ApplicationSchema,
   ProfileSchema,
   contributionTypes,
-  fundingSourceTypes,
   booleanOptions,
   fundingAmountTypes,
 } from "../types";
@@ -42,6 +34,7 @@ import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
 import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 import { api } from "~/utils/api";
+import { ImpactQuestions } from "./ImpactQuestions";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -126,21 +119,23 @@ export function ApplicationForm() {
               <ImageUpload className="h-48 " />
             </FormControl>
           </div>
-          <FormControl
-            name="application.bio"
-            label="Description of your project"
-            required
+          <FormSection
+            title="Application Details"
+            description={
+              "Brief project description up to 100 words. This will be visible on the website and will be one of the first things reviewers look at. Make it descriptive and engaging."
+            }
           >
-            <>
-              <div className="w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                <strong>Brief project description up to 100 words.</strong> This
-                will be visible on the website and will be one of the first
-                things reviewers look at.{" "}
-                <strong>Make it descriptive and engaging</strong>.
-              </div>
-              <Textarea rows={4} placeholder="Project description" />
-            </>
-          </FormControl>
+            <FormControl
+              name="application.bio"
+              label="Description of your project"
+              required
+            >
+              <>
+                <div className="w-2/4 text-left text-xs text-gray-500 dark:text-gray-400"></div>
+                <Textarea rows={4} placeholder="Project description" />
+              </>
+            </FormControl>
+          </FormSection>
           <div className="gap-4 md:flex">
             <FormControl
               className="flex-1"
@@ -157,53 +152,27 @@ export function ApplicationForm() {
               label="Payout address"
               required
             >
-              <Input
-                className="w-2/5"
-                placeholder="Enter your Filecoin address..."
-              />
+              <Input placeholder="Enter your Filecoin address..." />
             </FormControl>
           </div>
-          <FormControl
-            className="flex-1"
-            name="application.payoutAddress"
-            label="Github address for disbursement"
-            required
+          <FormSection
+            title="Payout Details"
+            description="FIL awards will be streamed to a project's public GitHub repository via Drips. If you require guidance in creating a new repository, please look at the Application Guidelines."
           >
-            <>
-              <div className="mb-2 w-1/2 text-left text-xs text-gray-500 dark:text-gray-400">
-                <strong>
-                  FIL awards will be streamed to a project’s public GitHub
-                  repository via Drips.
-                </strong>{" "}
-                If you require guidance in creating a new repository, please
-                look at the{" "}
-                <strong className="cursor-pointer" onClick={() => {}}>
-                  Application Guidelines
-                </strong>
-                .
-              </div>
-              <Input placeholder="Enter your Drips accountID" />
-            </>
-          </FormControl>
+            <FormControl
+              className="flex-1"
+              name="application.payoutAddress"
+              label="Github address"
+              required
+            >
+              <Input placeholder="Enter your account..." />
+            </FormControl>
+          </FormSection>
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Contribution & Impact <span className="text-red-300">*</span>
-              <p className=" text-sm leading-loose text-gray-600 dark:text-gray-400">
-                Describe the contribution and impact of your project.
-              </p>
-              <div className="w-3/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                Use the following questions as <strong>inspiration</strong> to
-                help you describe your project’s impact.{" "}
-                <strong>You don’t have to answer all questions</strong>, and you
-                can illustrate impact as you best feel fits.{" "}
-                <strong>Important: be as succinct and clear as possible</strong>
-                .
-              </div>
-            </>
-          }
+          title={"Contribution & Impact"}
+          description="Describe the contribution and impact of your project. Use the following questions as inspiration to help you describe your project's impact. You don't have to answer all questions, and you can illustrate impact as you best feel fits. Be as succinct and clear as possible."
         >
           <FormControl
             name="application.contributionDescription"
@@ -230,11 +199,7 @@ export function ApplicationForm() {
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Contribution links <span className="text-red-300">*</span>
-            </>
-          }
+          title={"Contribution links"}
           description="Where can we find your contributions?"
         >
           <FieldArray
@@ -272,39 +237,24 @@ export function ApplicationForm() {
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Team Composition <span className="text-red-300">*</span>
-            </>
-          }
+          title={"Team Composition"}
           description="Briefly describe your team size and subgroups."
         >
           <FormControl name="applicationVerification.team" required>
-            <Input />
+            <Textarea rows={4} />
           </FormControl>
         </FormSection>
-        <FormSection
-          title={
-            <>
-              Social Media <span className="text-red-300">*</span>
-              <div className="w-3/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                Please share a link to the Twitter/X post you created as part of
-                the showcase phase.(If you have not created one, please feel
-                free to make one at the earliest tagging the FIL-RetroPGF team).
-              </div>
-            </>
-          }
+
+        <FormControl
+          label="Social Media"
+          name="applicationVerification.team"
+          hint={`Please share a link to the Twitter/X post you created as part of the showcase phase. (If you have not created one, please feel free to make one at the earliest tagging the FIL-RetroPGF team).`}
+          required
         >
-          <FormControl name="applicationVerification.team" required>
-            <Input className="w-1/3" placeholder="https://" />
-          </FormControl>
-        </FormSection>
+          <Input placeholder="https://" />
+        </FormControl>
         <FormSection
-          title={
-            <>
-              Project KYC Details <span className="text-red-300">*</span>
-            </>
-          }
+          title={"Project KYC Details"}
           description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
         >
           <FormControl
@@ -352,12 +302,10 @@ export function ApplicationForm() {
             name="applicationVerification.projectEmail"
             label="Project email"
             required
+            hint="The address through which round operators may contact the applicant"
           >
             <>
-              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                The address through which round operators may contact the
-                applicant
-              </div>
+              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400"></div>
               <Input placeholder="Your project email" />
             </>
           </FormControl>
@@ -365,23 +313,14 @@ export function ApplicationForm() {
           <FormControl
             name="applicationVerification.additionalPOC"
             label="Filecoin Slack-Telegram-Discord handle (Optional)"
+            hint="Optional, in case email is non-responsive and the round operators need to get in touch"
           >
-            <>
-              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                Optional, in case email is non-responsive and the round
-                operators need to get in touch
-              </div>
-              <Input placeholder="TG or Filecoin or Discord handle (optional)" />
-            </>
+            <Input placeholder="TG or Filecoin or Discord handle (optional)" />
           </FormControl>
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Funding sources <span className="text-red-300">*</span>
-            </>
-          }
+          title={"Funding sources"}
           description="From what sources have you received funding?"
         >
           <FieldArray
@@ -507,141 +446,40 @@ function ImpactTags() {
   });
 
   const selected = watch("application.impactCategory") ?? [];
-  const selectedCategories = Object.entries(impactCategories)
-    .map(([value, { label }]) => {
-      const isSelected = selected.includes(value);
-      return isSelected ? label : "";
-    })
-    .filter(Boolean);
+
   const error = formState.errors.application?.impactCategory;
 
   return (
     <div className="mb-4">
-      <Label className="mb-1 text-black">
-        Select the impact category that best describes your
-        project/contributions. <span className="text-red-300">*</span>
-      </Label>
-      <span className="mb-4 text-sm ">
-        After selecting, answer the relevant questions below to provide insights
-        into the impact your project made during the impact window [April
-        2024-September 2024]. Be as specific and succinct as possible.
-      </span>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {Object.entries(impactCategories).map(([value, { label }]) => {
-          const isSelected = selected.includes(value);
-          return (
-            <Tag
-              size="lg"
-              selected={isSelected}
-              className={isSelected ? "border-2" : ""}
-              key={value}
-              onClick={() => {
-                const currentlySelected = isSelected
-                  ? selected.filter((s) => s !== value)
-                  : selected.concat(value);
-                field.onChange(currentlySelected);
-              }}
-            >
-              {label}
-            </Tag>
-          );
-        })}
-      </div>
-      <div className="mt-2 space-y-2">
-        {selectedCategories.map((categoryKey) => (
-          <CategoryQuestions key={categoryKey} categoryKey={categoryKey} />
-        ))}
-      </div>
+      <FormSection
+        title="Impact Categories"
+        description="Select the impact category that best describes your project/contributions. After selecting, answer the relevant questions below to provide insights into the impact your project made during the impact window [April 2024-September 2024]. Be as specific and succinct as possible."
+      >
+        <div className="mt-4 flex flex-wrap gap-2">
+          {Object.entries(impactCategories).map(([value, { label }]) => {
+            const isSelected = selected.includes(value);
+            return (
+              <Tag
+                size="lg"
+                selected={isSelected}
+                className={isSelected ? "border-2" : ""}
+                key={value}
+                onClick={() => {
+                  const currentlySelected = isSelected
+                    ? selected.filter((s) => s !== value)
+                    : selected.concat(value);
+                  field.onChange(currentlySelected);
+                }}
+              >
+                {label}
+              </Tag>
+            );
+          })}
+        </div>
+      </FormSection>
+      <ImpactQuestions selectedCategories={selected} />
+
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
-    </div>
-  );
-}
-import { useState } from "react"; // Import useState
-
-function CategoryQuestions({ categoryKey }: { categoryKey: string }) {
-  const { control } = useFormContext();
-  const [hide, setHide] = useState(true);
-  const categoryData =
-    impactCategoryQuestions[
-      categoryKey as keyof typeof impactCategoryQuestions
-    ];
-  if (!categoryData) return null;
-
-  const { questions } = categoryData;
-
-  return (
-    <div className="border-1 rounded border border-gray-400">
-      <div>
-        <>
-          <div
-            onClick={() => setHide(!hide)}
-            className="flex cursor-pointer flex-wrap items-center justify-between gap-3 rounded hover:bg-gray-100"
-          >
-            <div className="px-2">{`Category Specific Questions for ${categoryKey}`}</div>
-            <div className="flex cursor-pointer items-center rounded">
-              {hide ? (
-                <Button variant="ghost" icon={ChevronDown} />
-              ) : (
-                <Button variant="ghost" icon={ChevronUp} />
-              )}
-            </div>
-          </div>
-        </>
-
-        {!hide && (
-          <div className="p-2">
-            {questions.map((question, index) => {
-              const fieldName = `application.categoryQuestions.${categoryKey}.${index}`;
-              const includes = question.includes(
-                "if you don’t have one please follow this process [link] to get it.",
-              );
-              let questionText, link;
-              if (includes) {
-                [questionText, link] = question.split(",");
-              }
-              link = link?.split("[link]");
-              if (includes) {
-                return (
-                  <FormControl
-                    key={fieldName}
-                    name={fieldName}
-                    label={questionText}
-                  >
-                    <>
-                      <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                        {link[0]}{" "}
-                        <strong
-                          className="cursor-pointer"
-                          onClick={() => {
-                            window.open(
-                              "https://docs.opensource.observer/docs/contribute/project-data/",
-                              "_blank",
-                            );
-                          }}
-                        >
-                          link
-                        </strong>{" "}
-                        {link[1]}
-                      </div>
-                      <Textarea rows={4} />
-                    </>
-                  </FormControl>
-                );
-              } else {
-                return (
-                  <FormControl
-                    key={fieldName}
-                    name={fieldName}
-                    label={question}
-                  >
-                    <Textarea rows={4} />
-                  </FormControl>
-                );
-              }
-            })}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
