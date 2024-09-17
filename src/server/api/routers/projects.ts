@@ -19,6 +19,7 @@ import type { OSOMetricsCSV } from "~/types";
 import { getMetricsByProjectId } from "~/utils/fetchMetrics";
 import { fetchMetadataFromAttestations } from "~/utils/metadata";
 import { createOrderBy } from "~/utils/fetchAttestations/filters";
+import { possibleSpamIds } from "public/possibleSpamIds";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -257,7 +258,9 @@ export const projectsRouter = createTRPCRouter({
             },
           });
 
-          const approvedProjectIds = approvals.map((a) => a.refUID);
+          const approvedProjectIds = approvals
+            .filter((a) => !possibleSpamIds.includes(a.refUID))
+            .map((a) => a.refUID);
 
           const approvedApplications = await attestationFetcher(
             ["metadata"],
@@ -282,21 +285,7 @@ export const projectsRouter = createTRPCRouter({
             string,
             Partial<OSOMetricsCSV>
           > = await getMetricsByProjectId({
-            projectIds: [
-              ...approvedIds,
-              ...[
-                "id0",
-                "id1",
-                "id2",
-                "id3",
-                "id4",
-                "id5",
-                "id6",
-                "id7",
-                "id8",
-                "id9",
-              ],
-            ],
+            projectIds: approvedIds,
           });
 
           const projectsResult: Array<
@@ -304,10 +293,9 @@ export const projectsRouter = createTRPCRouter({
               metrics?: Partial<OSOMetricsCSV>;
               metadata: unknown;
             }
-          > = approvedApplications.map((project, index) => {
+          > = approvedApplications.map((project) => {
             const { id: projectId } = project;
-            const metrics =
-              metricsByProjectId[projectId] ?? metricsByProjectId[`id${index}`];
+            const metrics = metricsByProjectId[projectId];
             const metadata = metadataByProjectId[projectId];
 
             return {
