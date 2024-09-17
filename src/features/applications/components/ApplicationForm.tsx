@@ -4,6 +4,7 @@ import { Controller, useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
 import { useAccount, useBalance } from "wagmi";
+import { ChevronDownCircleIcon, ChevronUpCircleIcon } from "lucide-react";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
@@ -11,6 +12,7 @@ import {
   Checkbox,
   ErrorMessage,
   FieldArray,
+  FieldsRow,
   Form,
   FormControl,
   FormSection,
@@ -19,13 +21,15 @@ import {
   Select,
   Textarea,
 } from "~/components/ui/Form";
-import { impactCategories } from "~/config";
+import { impactCategories, impactCategoryQuestions } from "~/config";
 import {
   ApplicationVerificationSchema,
   ApplicationSchema,
   ProfileSchema,
   contributionTypes,
   fundingSourceTypes,
+  booleanOptions,
+  fundingAmountTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
 import { Tag } from "~/components/ui/Tag";
@@ -53,6 +57,7 @@ export function ApplicationForm() {
         description: err.reason ?? err.data?.message,
       }),
   });
+
   if (create.isSuccess) {
     return (
       <Alert variant="success" title="Application Submitted!">
@@ -82,19 +87,22 @@ export function ApplicationForm() {
               applicationVerification,
             );
             application = { ...application, encryptedData };
+            console.log({ application, profile });
             create.mutate({ application, profile });
           } catch (error) {
+            console.error(error);
+
             throw new Error("Failed to submit application!");
             console.error(error);
           }
         }}
       >
         <FormSection
-          title="Profile"
-          description="Configure your profile name and choose your avatar and background for your project."
+          title="Application"
+          description="Configure your application and the payout address to where tokens will be transferred."
         >
-          <FormControl name="profile.name" label="Profile name" required>
-            <Input placeholder="Your name" />
+          <FormControl name="application.name" label="Project name" required>
+            <Input placeholder="Project name" />
           </FormControl>
           <div className="mb-4 gap-4 md:flex">
             <FormControl
@@ -113,17 +121,20 @@ export function ApplicationForm() {
               <ImageUpload className="h-48 " />
             </FormControl>
           </div>
-        </FormSection>
-        <FormSection
-          title="Application"
-          description="Configure your application and the payout address to where tokens will be transferred."
-        >
-          <FormControl name="application.name" label="Name" required>
-            <Input placeholder="Project name" />
-          </FormControl>
-
-          <FormControl name="application.bio" label="Description" required>
-            <Textarea rows={4} placeholder="Project description" />
+          <FormControl
+            name="application.bio"
+            label="Description of your project"
+            required
+          >
+            <>
+              <div className="w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                <strong>Brief project description up to 100 words.</strong> This
+                will be visible on the website and will be one of the first
+                things reviewers look at.{" "}
+                <strong>Make it descriptive and engaging</strong>.
+              </div>
+              <Textarea rows={4} placeholder="Project description" />
+            </>
           </FormControl>
           <div className="gap-4 md:flex">
             <FormControl
@@ -137,22 +148,61 @@ export function ApplicationForm() {
 
             <FormControl
               className="flex-1"
-              name="application.payoutAddress"
+              name="application.githubDrips"
               label="Payout address"
               required
             >
-              <Input placeholder="Enter your Filecoin address..." />
+              <Input
+                className="w-2/5"
+                placeholder="Enter your Filecoin address..."
+              />
             </FormControl>
           </div>
+          <FormControl
+            className="flex-1"
+            name="application.payoutAddress"
+            label="Github address for disbursement"
+            required
+          >
+            <>
+              <div className="mb-2 w-1/2 text-left text-xs text-gray-500 dark:text-gray-400">
+                <strong>
+                  FIL awards will be streamed to a project’s public GitHub
+                  repository via Drips.
+                </strong>{" "}
+                If you require guidance in creating a new repository, please
+                look at the{" "}
+                <strong className="cursor-pointer" onClick={() => {}}>
+                  Application Guidelines
+                </strong>
+                .
+              </div>
+              <Input placeholder="Enter your Drips accountID" />
+            </>
+          </FormControl>
         </FormSection>
 
         <FormSection
-          title={"Contribution & Impact"}
-          description="Describe the contribution and impact of your project."
+          title={
+            <>
+              Contribution & Impact <span className="text-red-300">*</span>
+              <p className=" text-sm leading-loose text-gray-600 dark:text-gray-400">
+                Describe the contribution and impact of your project.
+              </p>
+              <div className="w-3/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                Use the following questions as <strong>inspiration</strong> to
+                help you describe your project’s impact.{" "}
+                <strong>You don’t have to answer all questions</strong>, and you
+                can illustrate impact as you best feel fits.{" "}
+                <strong>Important: be as succinct and clear as possible</strong>
+                .
+              </div>
+            </>
+          }
         >
           <FormControl
             name="application.contributionDescription"
-            label="Contribution description"
+            label="Who is the end user that benefits from the project?"
             required
           >
             <Textarea
@@ -163,7 +213,7 @@ export function ApplicationForm() {
 
           <FormControl
             name="application.impactDescription"
-            label="Impact description"
+            label="What are the number of positive reviews/testimonials that your project has received from developers in the Filecoin Ecosystem? Please share a link to these testimonials, if applicable "
             required
           >
             <Textarea
@@ -219,43 +269,106 @@ export function ApplicationForm() {
         <FormSection
           title={
             <>
-              Impact metrics <span className="text-red-300">*</span>
+              Team Composition <span className="text-red-300">*</span>
             </>
           }
-          description="What kind of impact have your project made?"
+          description="Briefly describe your team size and subgroups."
         >
-          <FieldArray
-            name="application.impactMetrics"
-            renderField={(field, i) => (
-              <>
-                <FormControl
-                  className="min-w-96 flex-1"
-                  name={`application.impactMetrics.${i}.description`}
-                  required
-                >
-                  <Input placeholder="Description" />
-                </FormControl>
-                <FormControl
-                  name={`application.impactMetrics.${i}.url`}
-                  required
-                >
-                  <Input placeholder="https://" />
-                </FormControl>
-                <FormControl
-                  name={`application.impactMetrics.${i}.number`}
-                  required
-                  valueAsNumber
-                >
-                  <Input
-                    type="number"
-                    placeholder="Number"
-                    min={0}
-                    step={0.01}
-                  />
-                </FormControl>
-              </>
-            )}
-          />
+          <FormControl name="applicationVerification.team" required>
+            <Input />
+          </FormControl>
+        </FormSection>
+        <FormSection
+          title={
+            <>
+              Social Media <span className="text-red-300">*</span>
+              <div className="w-3/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                Please share a link to the Twitter/X post you created as part of
+                the showcase phase.(If you have not created one, please feel
+                free to make one at the earliest tagging the FIL-RetroPGF team).
+              </div>
+            </>
+          }
+        >
+          <FormControl name="applicationVerification.team" required>
+            <Input className="w-1/3" placeholder="https://" />
+          </FormControl>
+        </FormSection>
+        <FormSection
+          title={
+            <>
+              Project KYC Details <span className="text-red-300">*</span>
+            </>
+          }
+          description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
+        >
+          <FormControl
+            name="applicationVerification.name"
+            label="Legal Company/Individual Name"
+            required
+          >
+            <>
+              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                The name of the company or individual expected to receive the
+                funds.
+              </div>
+              <Input placeholder="Your name" />
+            </>
+          </FormControl>
+          {/* Tochange form metadata */}
+
+          <FormControl
+            name="applicationVerification.name"
+            label="Point of Contact (POC) Name"
+            required
+          >
+            <>
+              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                The individual we can contact regarding the application
+              </div>
+              <Input />
+            </>
+          </FormControl>
+          {/* Tochange form metadata */}
+          <FormControl
+            name="applicationVerification.projectPhysicalAddress"
+            label="Project physical address (including city, state, country)"
+            required
+          >
+            <>
+              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                The postal address of the individual or entity expected to
+                receive funds
+              </div>
+              <Input />
+            </>
+          </FormControl>
+          <FormControl
+            name="applicationVerification.projectEmail"
+            label="Project email"
+            required
+          >
+            <>
+              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                The address through which round operators may contact the
+                applicant
+              </div>
+              <Input placeholder="Your project email" />
+            </>
+          </FormControl>
+          {/* Tochange form metadata */}
+          <FormControl
+            name="applicationVerification.additionalPOC"
+            label="Filecoin Slack-Telegram-Discord handle (Optional)"
+          >
+            <>
+              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                Optional, in case email is non-responsive and the round
+                operators need to get in touch
+              </div>
+              <Input placeholder="TG or Filecoin or Discord handle (optional)" />
+            </>
+          </FormControl>
         </FormSection>
 
         <FormSection
@@ -278,29 +391,11 @@ export function ApplicationForm() {
                   <Input placeholder="Description" />
                 </FormControl>
                 <FormControl
-                  name={`application.fundingSources.${i}.amount`}
-                  required
-                  valueAsNumber
-                >
-                  <Input
-                    type="number"
-                    placeholder="Amount"
-                    min={0}
-                    step={0.01}
-                  />
-                </FormControl>
-                <FormControl
-                  name={`application.fundingSources.${i}.currency`}
-                  required
-                >
-                  <Input placeholder="USD" />
-                </FormControl>
-                <FormControl
-                  name={`application.fundingSources.${i}.type`}
+                  name={`application.fundingRange.${i}.type`}
                   required
                 >
                   <Select>
-                    {Object.entries(fundingSourceTypes).map(
+                    {Object.entries(fundingAmountTypes).map(
                       ([value, label]) => (
                         <option key={value} value={value}>
                           {label}
@@ -312,39 +407,30 @@ export function ApplicationForm() {
               </>
             )}
           />
+          {/* Tochange form metadata */}
+          <FieldsRow
+            label="Have you previously applied to FIL-RetroPGF rounds?"
+            hint="If yes, please provide the link to your previous application."
+            name="application.contributionLink"
+            renderField={(field, i) => (
+              <>
+                <FormControl name={`application.previousApplication.applied`}>
+                  <Select>
+                    {Object.entries(booleanOptions).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl name={`application.previousApplication.link`}>
+                  <Input placeholder="https://" />
+                </FormControl>
+              </>
+            )}
+          />
         </FormSection>
-
-        <FormSection
-          title={
-            <>
-              Project KYC Details <span className="text-red-300">*</span>
-            </>
-          }
-          description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
-        >
-          <FormControl
-            name="applicationVerification.name"
-            label="Legal name of entity or person receiving reward, if not entity"
-            required
-          >
-            <Input placeholder="Your name" />
-          </FormControl>
-          <FormControl
-            name="applicationVerification.projectEmail"
-            label="Project email"
-            required
-          >
-            <Input placeholder="Your project email" />
-          </FormControl>
-          <FormControl
-            name="applicationVerification.projectPhysicalAddress"
-            label="Project physical address (including city, state, country)"
-            required
-          >
-            <Input placeholder="Your Address" />
-          </FormControl>
-          <SanctionedOrgField />
-        </FormSection>
+        {/* <SanctionedOrgField /> */}
 
         {error ? (
           <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
@@ -377,12 +463,10 @@ function CreateApplicationButton({
   buttonText: string;
 }) {
   const { address } = useAccount();
-  const balance = useBalance({ address });
 
   const { data: session } = useSession();
   const { isCorrectNetwork, correctNetwork } = useIsCorrectNetwork();
 
-  const hasBalance = (balance.data?.value ?? 0n) > 0;
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -396,20 +480,14 @@ function CreateApplicationButton({
         )}
       </div>
       <EnsureCorrectNetwork>
-        {hasBalance ? (
-          <Button
-            disabled={isLoading || !session}
-            variant="primary"
-            type="submit"
-            isLoading={isLoading}
-          >
-            {buttonText}
-          </Button>
-        ) : (
-          <Button disabled isLoading={balance.isPending}>
-            Not enough funds
-          </Button>
-        )}
+        <Button
+          disabled={isLoading || !session}
+          variant="primary"
+          type="submit"
+          isLoading={isLoading}
+        >
+          {buttonText}
+        </Button>
       </EnsureCorrectNetwork>
     </div>
   );
@@ -424,26 +502,38 @@ function ImpactTags() {
   });
 
   const selected = watch("application.impactCategory") ?? [];
-
+  const selectedCategories = Object.entries(impactCategories)
+    .map(([value, { label }]) => {
+      const isSelected = selected.includes(value);
+      return isSelected ? label : "";
+    })
+    .filter(Boolean);
   const error = formState.errors.application?.impactCategory;
+
   return (
     <div className="mb-4">
-      <Label>
-        Impact categories<span className="text-red-300">*</span>
+      <Label className="mb-1 text-black">
+        Select the impact category that best describes your
+        project/contributions. <span className="text-red-300">*</span>
       </Label>
-      <div className="flex flex-wrap gap-2">
+      <span className="mb-4 text-sm ">
+        After selecting, answer the relevant questions below to provide insights
+        into the impact your project made during the impact window [April
+        2024-September 2024]. Be as specific and succinct as possible.
+      </span>
+      <div className="mt-4 flex flex-wrap gap-2">
         {Object.entries(impactCategories).map(([value, { label }]) => {
           const isSelected = selected.includes(value);
           return (
             <Tag
               size="lg"
               selected={isSelected}
+              className={isSelected ? "border-2" : ""}
               key={value}
               onClick={() => {
                 const currentlySelected = isSelected
                   ? selected.filter((s) => s !== value)
                   : selected.concat(value);
-
                 field.onChange(currentlySelected);
               }}
             >
@@ -452,49 +542,143 @@ function ImpactTags() {
           );
         })}
       </div>
+
+      {selectedCategories.map((categoryKey) => (
+        <CategoryQuestions key={categoryKey} categoryKey={categoryKey} />
+      ))}
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
   );
 }
+import { useState } from "react"; // Import useState
 
-function SanctionedOrgField() {
+function CategoryQuestions({ categoryKey }: { categoryKey: string }) {
   const { control } = useFormContext();
+  const [hide, setHide] = useState(true);
+  const categoryData =
+    impactCategoryQuestions[
+      categoryKey as keyof typeof impactCategoryQuestions
+    ];
+  if (!categoryData) return null;
+
+  const { questions } = categoryData;
 
   return (
-    <FormControl
-      name="applicationVerification.sanctionedOrg"
-      label="Is the project or any of its key team members associated with any sanctioned or restricted organizations?"
-      required
-    >
-      <Controller
-        name="applicationVerification.sanctionedOrg"
-        control={control}
-        rules={{ required: "This field is required" }}
-        render={({ field }) => (
-          <>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  {...field}
-                  type="radio"
-                  checked={field.value === true}
-                  onChange={() => field.onChange(true)}
-                />
-                <Label>Yes</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  {...field}
-                  type="radio"
-                  checked={field.value === false}
-                  onChange={() => field.onChange(false)}
-                />
-                <Label>No</Label>
-              </div>
+    <div className="border-1 my-3 mb-0 rounded border border-gray-400 p-3 pb-3">
+      <div>
+        <>
+          <div
+            onClick={() => setHide(!hide)}
+            className="flex cursor-pointer flex-wrap items-center justify-between gap-3"
+          >
+            <div>{`Category Specific Questions for ${categoryKey}`}</div>
+            <div className="flex cursor-pointer items-center rounded border border-2 border-gray-400 bg-gray-400 ">
+              {hide ? (
+                <ChevronDownCircleIcon color={"white"} />
+              ) : (
+                <ChevronUpCircleIcon color={"white"} />
+              )}
             </div>
+          </div>
+        </>
+
+        {!hide && (
+          <>
+            <hr className="my-2" />
+            {questions.map((question, index) => {
+              const fieldName = `application.categoryQuestions.${categoryKey}.${index}`;
+              const includes = question.includes(
+                "if you don’t have one please follow this process [link] to get it.",
+              );
+              let questionText, link;
+              if (includes) {
+                [questionText, link] = question.split(",");
+              }
+              link = link?.split("[link]");
+              if (includes) {
+                return (
+                  <FormControl
+                    key={fieldName}
+                    name={fieldName}
+                    label={questionText}
+                  >
+                    <>
+                      <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
+                        {link[0]}{" "}
+                        <strong
+                          className="cursor-pointer"
+                          onClick={() => {
+                            window.open(
+                              "https://docs.opensource.observer/docs/contribute/project-data/",
+                              "_blank",
+                            );
+                          }}
+                        >
+                          link
+                        </strong>{" "}
+                        {link[1]}
+                      </div>
+                      <Textarea rows={4} />
+                    </>
+                  </FormControl>
+                );
+              } else {
+                return (
+                  <FormControl
+                    key={fieldName}
+                    name={fieldName}
+                    label={question}
+                  >
+                    <Textarea rows={4} />
+                  </FormControl>
+                );
+              }
+            })}
           </>
         )}
-      />
-    </FormControl>
+      </div>
+    </div>
   );
 }
+
+// function SanctionedOrgField() {
+//   const { control } = useFormContext();
+
+//   return (
+//     <FormControl
+//       name="applicationVerification.sanctionedOrg"
+//       label="Is the project or any of its key team members associated with any sanctioned or restricted organizations?"
+//       required
+//     >
+//       <Controller
+//         name="applicationVerification.sanctionedOrg"
+//         control={control}
+//         rules={{ required: "This field is required" }}
+//         render={({ field }) => (
+//           <>
+//             <div className="flex flex-col gap-2">
+//               <div className="flex items-center gap-2">
+//                 <Checkbox
+//                   {...field}
+//                   type="radio"
+//                   checked={field.value === true}
+//                   onChange={() => field.onChange(true)}
+//                 />
+//                 <Label>Yes</Label>
+//               </div>
+//               <div className="flex items-center gap-2">
+//                 <Checkbox
+//                   {...field}
+//                   type="radio"
+//                   checked={field.value === false}
+//                   onChange={() => field.onChange(false)}
+//                 />
+//                 <Label>No</Label>
+//               </div>
+//             </div>
+//           </>
+//         )}
+//       />
+//     </FormControl>
+//   );
+// }

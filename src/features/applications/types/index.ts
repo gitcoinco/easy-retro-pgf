@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { impactCategories } from "~/config";
 import { EthAddressSchema } from "~/features/distribute/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
@@ -16,6 +17,11 @@ export const ProfileSchema = z.object({
 
 export type Profile = z.infer<typeof ProfileSchema>;
 
+export const booleanOptions = {
+  YES: "Yes",
+  NO: "No",
+} as const;
+
 export const contributionTypes = {
   CONTRACT_ADDRESS: "Contract address",
   GITHUB_REPO: "Github repo",
@@ -27,6 +33,16 @@ export const fundingSourceTypes = {
   PARTNER_FUND: "Partner fund",
   REVENUE: "Revenue",
   OTHER: "Other",
+} as const;
+
+export const fundingAmountTypes = {
+  HUGE: "Greater than $1M USD",
+  ALOT: "1M - 500K USD",
+  LOT: "500K - 250K USD",
+  MLOT: "250K - 100K USD",
+  LITTLE: "100K - 10K USD",
+  SMALL: "10K-1K USD",
+  TINY: "Less than 1K USD",
 } as const;
 
 export const ApplicationSchema = z.object({
@@ -70,6 +86,7 @@ export const ApplicationSchema = z.object({
 
 export const ApplicationVerificationSchema = z.object({
   name: z.string().min(3),
+  // impactCategory: z.array(z.string()).min(1),
   projectEmail: z.string().email(),
   projectPhysicalAddress: z.string().min(3),
   sanctionedOrg: z.boolean(),
