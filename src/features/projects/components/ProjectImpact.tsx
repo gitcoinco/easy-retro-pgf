@@ -1,38 +1,69 @@
 import { Markdown } from "~/components/ui/Markdown";
 import { Heading } from "~/components/ui/Heading";
-import { LinkBox } from "./LinkBox";
-import { suffixNumber } from "~/utils/suffixNumber";
 import { type Application } from "~/features/applications/types";
+import { Accordion } from "~/components/ui/Accordion";
+import { impactCategoryQuestions } from "~/features/applications/components/ImpactQuestions";
 
 type Props = { isLoading: boolean; project?: Application };
 
 export default function ProjectImpact({ isLoading, project }: Props) {
+  const categoryQuestions = project?.categoryQuestions;
+
   return (
-    <>
-      <Heading as="h3" size="2xl">
-        Impact
-      </Heading>
-      <div className="mb-4 flex flex-col gap-4 md:flex-row">
-        <div className="md:w-2/3">
-          <Markdown isLoading={isLoading}>
-            {project?.impactDescription}
-          </Markdown>
-        </div>
-        <div className="md:w-1/3">
-          <LinkBox
-            label="Impact Metrics"
-            links={project?.impactMetrics}
-            renderItem={(link) => (
-              <>
-                <div className="flex-1 truncate" title={link.description}>
-                  {link.description}
-                </div>
-                <div className="font-medium">{suffixNumber(link.number)}</div>
-              </>
-            )}
-          />
-        </div>
+    <div className="mt-8">
+      <div className="rounded-md bg-white shadow-sm">
+        {/* Impact Heading */}
+        <Heading as="h3" size="xl" className="mb-6">
+          Impact
+        </Heading>
+
+        {/* Impact Description */}
+        {project?.impactDescription && (
+          <div className="mb-8">
+            <div className="prose max-w-none">
+              <Markdown isLoading={isLoading}>
+                {project.impactDescription}
+              </Markdown>
+            </div>
+          </div>
+        )}
+
+        {/* Impact Metrics Questions */}
+        {project?.impactCategory && Object.entries(categoryQuestions ?? {}).length > 0 && (
+          <div>
+            <Heading as="h4" size="lg" className="mb-4">
+              Impact Category Questions
+            </Heading>
+            <div className="space-y-6">
+              {project.impactCategory.map((categoryKey, i) => (
+                <Accordion key={i} title={categoryKey}>
+                  {categoryQuestions &&
+                    Object.entries(categoryQuestions[categoryKey] ?? {}).map(
+                      ([questionKey, answer], j) => (
+                        <div key={j} className="mb-6">
+                          <Heading
+                            as="h6"
+                            size="md"
+                            className="mb-2 text-gray-700"
+                          >
+                            {
+                              impactCategoryQuestions[categoryKey]?.questions[
+                                questionKey
+                              ]?.label
+                            }
+                          </Heading>
+                          <div className="prose max-w-none">
+                            <Markdown>{answer}</Markdown>
+                          </div>
+                        </div>
+                      ),
+                    )}
+                </Accordion>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

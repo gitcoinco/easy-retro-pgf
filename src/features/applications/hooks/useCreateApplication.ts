@@ -31,7 +31,7 @@ export function useCreateApplication({
           return attestation.mutateAsync({
             schemaUID: eas.schemas.metadata,
             values: {
-              name: values.application.name,
+              name: values.profile.name,
               metadataType: 0, // "http"
               metadataPtr,
               type: "application",

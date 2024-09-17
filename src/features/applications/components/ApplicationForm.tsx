@@ -35,6 +35,8 @@ import { Alert } from "~/components/ui/Alert";
 import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 import { api } from "~/utils/api";
 import { ImpactQuestions } from "./ImpactQuestions";
+import { getIsFilecoinActorError } from "~/utils/errorHandler";
+import { useState } from "react";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
@@ -43,6 +45,7 @@ const ApplicationCreateSchema = z.object({
 });
 
 export function ApplicationForm() {
+  const [errorFlag, setErrorFlag] = useState<boolean>(false);
   const clearDraft = useLocalStorage("application-draft")[2];
   const encrypt = api.encryption.encrypt.useMutation();
   const create = useCreateApplication({
@@ -50,10 +53,11 @@ export function ApplicationForm() {
       toast.success("Your application has been submitted successfully!");
       clearDraft();
     },
-    onError: (err: { reason?: string; data?: { message: string } }) =>
-      toast.error("Application create error", {
-        description: err.reason ?? err.data?.message,
-      }),
+    onError: (err: { reason?: string; data?: { message: string } }) => {
+      // toast.error("Application create error", {
+      //   description: err.reason ?? err.data?.message,
+      // });
+    },
   });
 
   if (create.isSuccess) {
@@ -65,33 +69,48 @@ export function ApplicationForm() {
     );
   }
 
-  console.log(create.error);
-  const error = create.error;
+  const { error } = create;
+  if (error && !errorFlag) {
+    if (getIsFilecoinActorError(error as string)) {
+      setErrorFlag(true);
+      toast.error("Application create error", {
+        description: "Insufficient Funds",
+      });
+    }
+  }
+
+  console.log("Error", error);
   return (
     <div>
       <Form
         defaultValues={{
           application: {
             contributionLinks: [{}],
-            impactMetrics: [{}],
+            impactCategory: [],
+            categoryQuestions: {},
+          },
+          applicationVerification: {
             fundingSources: [{}],
           },
         }}
         persist="application-draft"
         schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application, applicationVerification }) => {
+          console.log("Form submitted", {
+            profile,
+            application,
+            applicationVerification,
+          }); // Log form data
           try {
             const encryptedData = await encrypt.mutateAsync(
               applicationVerification,
             );
             application = { ...application, encryptedData };
-            console.log({ application, profile });
+            console.log("Encrypted data", encryptedData); // Log encrypted data
             create.mutate({ application, profile });
           } catch (error) {
-            console.error(error);
-
+            console.error("Submission error", error); // Log any errors
             throw new Error("Failed to submit application!");
-            console.error(error);
           }
         }}
       >
@@ -99,7 +118,7 @@ export function ApplicationForm() {
           title="Application"
           description="Configure your application and the payout address to where tokens will be transferred."
         >
-          <FormControl name="application.name" label="Project name" required>
+          <FormControl name="profile.name" label="Project name" required>
             <Input placeholder="Project name" />
           </FormControl>
           <div className="mb-4 gap-4 md:flex">
@@ -128,12 +147,10 @@ export function ApplicationForm() {
             <FormControl
               name="application.bio"
               label="Description of your project"
+              hint="Markdown is supported"
               required
             >
-              <>
-                <div className="w-2/4 text-left text-xs text-gray-500 dark:text-gray-400"></div>
-                <Textarea rows={4} placeholder="Project description" />
-              </>
+              <Textarea rows={4} placeholder="Project description" />
             </FormControl>
           </FormSection>
           <div className="gap-4 md:flex">
@@ -147,8 +164,8 @@ export function ApplicationForm() {
             </FormControl>
 
             <FormControl
-              className="flex-1"
-              name="application.githubDrips"
+              className="hidden flex-1"
+              name="application.payoutAddress"
               label="Payout address"
               required
             >
@@ -157,12 +174,25 @@ export function ApplicationForm() {
           </div>
           <FormSection
             title="Payout Details"
-            description="FIL awards will be streamed to a project's public GitHub repository via Drips. If you require guidance in creating a new repository, please look at the Application Guidelines."
+            description="FIL awards will be streamed to a project's public GitHub repository via Drips."
           >
             <FormControl
               className="flex-1"
-              name="application.payoutAddress"
+              name="application.githubProjectLink"
               label="Github address"
+              hint={
+                <span>
+                  If you require guidance in creating a new repository, please
+                  look at the{" "}
+                  <a
+                    href="https://fil-retropgf.notion.site/Round-2-Application-Guidelines-394969fa60cf4b45a8d8ef5cbbfd3d7e"
+                    target="_blank"
+                    className="font-bold underline"
+                  >
+                    Application Guidelines
+                  </a>
+                </span>
+              }
               required
             >
               <Input placeholder="Enter your account..." />
@@ -177,6 +207,7 @@ export function ApplicationForm() {
           <FormControl
             name="application.contributionDescription"
             label="Who is the end user that benefits from the project?"
+            hint="Markdown is supported"
             required
           >
             <Textarea
@@ -188,6 +219,7 @@ export function ApplicationForm() {
           <FormControl
             name="application.impactDescription"
             label="What are the number of positive reviews/testimonials that your project has received from developers in the Filecoin Ecosystem? Please share a link to these testimonials, if applicable "
+            hint="Markdown is supported"
             required
           >
             <Textarea
@@ -209,6 +241,7 @@ export function ApplicationForm() {
                 <FormControl
                   className="min-w-96 flex-1"
                   name={`application.contributionLinks.${i}.description`}
+                  hint="Markdown is supported"
                   required
                 >
                   <Input placeholder="Description" />
@@ -240,14 +273,18 @@ export function ApplicationForm() {
           title={"Team Composition"}
           description="Briefly describe your team size and subgroups."
         >
-          <FormControl name="applicationVerification.team" required>
+          <FormControl
+            name="application.teamDescription"
+            required
+            hint="Markdown is supported"
+          >
             <Textarea rows={4} />
           </FormControl>
         </FormSection>
 
         <FormControl
           label="Social Media"
-          name="applicationVerification.team"
+          name="application.twitterPost"
           hint={`Please share a link to the Twitter/X post you created as part of the showcase phase. (If you have not created one, please feel free to make one at the earliest tagging the FIL-RetroPGF team).`}
           required
         >
@@ -260,43 +297,29 @@ export function ApplicationForm() {
           <FormControl
             name="applicationVerification.name"
             label="Legal Company/Individual Name"
+            hint="The name of the company or individual expected to receive the funds."
             required
           >
-            <>
-              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                The name of the company or individual expected to receive the
-                funds.
-              </div>
-              <Input placeholder="Your name" />
-            </>
+            <Input placeholder="Your name" />
           </FormControl>
           {/* Tochange form metadata */}
 
           <FormControl
-            name="applicationVerification.name"
+            name="applicationVerification.POCName"
             label="Point of Contact (POC) Name"
+            hint="The individual we can contact regarding the application"
             required
           >
-            <>
-              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                The individual we can contact regarding the application
-              </div>
-              <Input />
-            </>
+            <Input />
           </FormControl>
           {/* Tochange form metadata */}
           <FormControl
             name="applicationVerification.projectPhysicalAddress"
             label="Project physical address (including city, state, country)"
+            hint="The postal address of the individual or entity expected to receive funds"
             required
           >
-            <>
-              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400">
-                The postal address of the individual or entity expected to
-                receive funds
-              </div>
-              <Input />
-            </>
+            <Input />
           </FormControl>
           <FormControl
             name="applicationVerification.projectEmail"
@@ -304,10 +327,7 @@ export function ApplicationForm() {
             required
             hint="The address through which round operators may contact the applicant"
           >
-            <>
-              <div className="mb-2 w-2/4 text-left text-xs text-gray-500 dark:text-gray-400"></div>
-              <Input placeholder="Your project email" />
-            </>
+            <Input placeholder="Your project email" />
           </FormControl>
           {/* Tochange form metadata */}
           <FormControl
@@ -315,7 +335,7 @@ export function ApplicationForm() {
             label="Filecoin Slack-Telegram-Discord handle (Optional)"
             hint="Optional, in case email is non-responsive and the round operators need to get in touch"
           >
-            <Input placeholder="TG or Filecoin or Discord handle (optional)" />
+            <Input placeholder="e.g Slack : @handle" />
           </FormControl>
         </FormSection>
 
@@ -324,18 +344,18 @@ export function ApplicationForm() {
           description="From what sources have you received funding?"
         >
           <FieldArray
-            name="application.fundingSources"
+            name="applicationVerification.fundingSources"
             renderField={(field, i) => (
               <>
                 <FormControl
                   className="min-w-96 flex-1"
-                  name={`application.fundingSources.${i}.description`}
+                  name={`applicationVerification.fundingSources.${i}.description`}
                   required
                 >
                   <Input placeholder="Description" />
                 </FormControl>
                 <FormControl
-                  name={`application.fundingRange.${i}.type`}
+                  name={`applicationVerification.fundingSources.${i}.range`}
                   required
                 >
                   <Select>
@@ -355,10 +375,12 @@ export function ApplicationForm() {
           <FieldsRow
             label="Have you previously applied to FIL-RetroPGF rounds?"
             hint="If yes, please provide the link to your previous application."
-            name="application.contributionLink"
+            name="application.previousApplication"
             renderField={(field, i) => (
               <>
-                <FormControl name={`application.previousApplication.applied`}>
+                <FormControl
+                  name={`applicationVerification.previousApplication.applied`}
+                >
                   <Select>
                     {Object.entries(booleanOptions).map(([value, label]) => (
                       <option key={value} value={value}>
@@ -367,7 +389,9 @@ export function ApplicationForm() {
                     ))}
                   </Select>
                 </FormControl>
-                <FormControl name={`application.previousApplication.link`}>
+                <FormControl
+                  name={`applicationVerification.previousApplication.link`}
+                >
                   <Input placeholder="https://" />
                 </FormControl>
               </>
@@ -375,14 +399,6 @@ export function ApplicationForm() {
           />
         </FormSection>
         {/* <SanctionedOrgField /> */}
-
-        {error ? (
-          <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
-            Make sure you have funds in your wallet and that you&apos;re not
-            connected to a VPN since this can cause problems with the RPC and
-            your wallet.
-          </div>
-        ) : null}
 
         <CreateApplicationButton
           isLoading={create.isPending}

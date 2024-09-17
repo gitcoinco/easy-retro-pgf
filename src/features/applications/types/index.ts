@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { impactCategories } from "~/config";
 import { EthAddressSchema } from "~/features/distribute/types";
 import { reverseKeys } from "~/utils/reverseKeys";
 
@@ -46,13 +45,17 @@ export const fundingAmountTypes = {
 } as const;
 
 export const ApplicationSchema = z.object({
-  name: z.string().min(3),
+  // name: z.string().min(3),
   bio: z.string().min(3),
   websiteUrl: z.string().url().min(1),
-  payoutAddress: EthAddressSchema,
+  payoutAddress: z.string().optional(),
+  githubProjectLink: z.string().url().includes("https://github.com/").min(20),
+
   contributionDescription: z.string().min(3),
   impactDescription: z.string().min(3),
   impactCategory: z.array(z.string()).min(1),
+  teamDescription: z.string().min(3),
+  twitterPost: z.string().url().includes("https://x.com/").min(15).optional(),
   contributionLinks: z
     .array(
       z.object({
@@ -62,35 +65,50 @@ export const ApplicationSchema = z.object({
       }),
     )
     .min(1),
-  impactMetrics: z
-    .array(
-      z.object({
-        description: z.string().min(3),
-        url: z.string().url(),
-        number: z.number(),
-      }),
-    )
-    .min(1),
-  fundingSources: z
-    .array(
-      z.object({
-        description: z.string().min(3),
-        amount: z.number(),
-        currency: z.string().min(3).max(4),
-        type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
-      }),
-    )
-    .min(1),
   categoryQuestions: z.record(z.string(), z.record(z.string(), z.string())),
   encryptedData: z.object({ iv: z.string(), data: z.string() }).optional(),
+  // TODO try to make this optional to be backwards compatible
+  // impactMetrics: z
+  //   .array(
+  //     z.object({
+  //       description: z.string().min(3),
+  //       url: z.string().url(),
+  //       number: z.number(),
+  //     }),
+  //   )
+  //   .optional(),
+  // fundingSources: z
+  //   .array(
+  //     z.object({
+  //       description: z.string().min(3),
+  //       amount: z.number(),
+  //       currency: z.string().min(3).max(4),
+  //       type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
+  //     }),
+  //   )
+  //   .optional(),
 });
 
 export const ApplicationVerificationSchema = z.object({
   name: z.string().min(3),
-  // impactCategory: z.array(z.string()).min(1),
+  POCName: z.string().min(3), // Added Point of Contact Name
   projectEmail: z.string().email(),
   projectPhysicalAddress: z.string().min(3),
-  sanctionedOrg: z.boolean(),
+  additionalPOC: z.string().optional(), // Added optional additional POC
+  fundingSources: z
+    .array(
+      z.object({
+        description: z.string().min(1),
+        range: z.string().min(1),
+      }),
+    )
+    .optional(),
+  previousApplication: z
+    .object({
+      applied: z.string(),
+      link: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;

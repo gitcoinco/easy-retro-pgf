@@ -32,7 +32,11 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         hint: (
           <span>
             You can find instructions on obtaining an oso_name{" "}
-            <a href="#" target="_blank" className="font-bold underline">
+            <a
+              href="https://docs.opensource.observer/docs/contribute/project-data/"
+              target="_blank"
+              className="font-bold underline"
+            >
               here
             </a>
             .
@@ -69,9 +73,20 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
   TOOLING: {
     questions: {
       osoName: {
-        label:
-          "Please include your oso_name, if you don’t have one please follow this process [link] to get it.",
-        hint: "You can find instructions on obtaining an oso_name in the documentation.",
+        label: "Please include your oso_name.",
+        hint: (
+          <span>
+            You can find instructions on obtaining an oso_name{" "}
+            <a
+              href="https://docs.opensource.observer/docs/contribute/project-data/"
+              target="_blank"
+              className="font-bold underline"
+            >
+              here
+            </a>
+            .
+          </span>
+        ),
         component: Input,
       },
       dependentProjects: {
@@ -263,55 +278,34 @@ export function ImpactQuestions({
   );
 }
 
-function CategoryQuestions({
-  categoryKey,
-}: {
+import { Accordion } from "~/components/ui/Accordion"; // Adjust the import path as needed
+interface CategoryQuestionsProps {
   categoryKey: ImpactCategoryKeys;
-}) {
-  const [hide, setHide] = useState(true);
+}
+
+export function CategoryQuestions({ categoryKey }: CategoryQuestionsProps) {
   const { questions } = impactCategoryQuestions[categoryKey] ?? {};
   if (!questions) return null;
 
   const { label } = impactCategories[categoryKey];
-  return (
-    <div className="border-1 rounded border border-gray-400">
-      <div>
-        <>
-          <div
-            onClick={() => setHide(!hide)}
-            className="flex cursor-pointer flex-wrap items-center justify-between gap-3 rounded py-1 hover:bg-gray-100"
-          >
-            <div className="px-3">{`${label} - Questions`}</div>
-            <div className="flex cursor-pointer items-center rounded">
-              {hide ? (
-                <Button variant="ghost" icon={ChevronDown} />
-              ) : (
-                <Button variant="ghost" icon={ChevronUp} />
-              )}
-            </div>
-          </div>
-        </>
 
-        {!hide && (
-          <div className="p-3">
-            {Object.entries(questions).map(
-              ([name, { label, hint, component }]) => {
-                const fieldName = `application.categoryQuestions.${categoryKey}.${name}`;
-                return (
-                  <FormControl
-                    key={fieldName}
-                    name={fieldName}
-                    label={label}
-                    hint={hint}
-                  >
-                    {createElement(component)}
-                  </FormControl>
-                );
-              },
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+  return (
+    <Accordion title={`${label} - Questions`} defaultOpen={true}>
+      {Object.entries(questions).map(
+        ([name, { label: questionLabel, hint, component }]) => {
+          const fieldName = `application.categoryQuestions.${categoryKey}.${name}`;
+          return (
+            <FormControl
+              key={fieldName}
+              name={fieldName}
+              label={questionLabel}
+              hint={hint}
+            >
+              {createElement(component)}
+            </FormControl>
+          );
+        },
+      )}
+    </Accordion>
   );
 }
