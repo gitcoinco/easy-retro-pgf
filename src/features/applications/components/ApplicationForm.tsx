@@ -4,7 +4,12 @@ import { Controller, useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
 import { useAccount, useBalance } from "wagmi";
-import { ChevronDownCircleIcon, ChevronUpCircleIcon } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronDownCircleIcon,
+  ChevronUp,
+  ChevronUpCircleIcon,
+} from "lucide-react";
 
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
@@ -542,10 +547,11 @@ function ImpactTags() {
           );
         })}
       </div>
-
-      {selectedCategories.map((categoryKey) => (
-        <CategoryQuestions key={categoryKey} categoryKey={categoryKey} />
-      ))}
+      <div className="mt-2 space-y-2">
+        {selectedCategories.map((categoryKey) => (
+          <CategoryQuestions key={categoryKey} categoryKey={categoryKey} />
+        ))}
+      </div>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
   );
@@ -564,27 +570,26 @@ function CategoryQuestions({ categoryKey }: { categoryKey: string }) {
   const { questions } = categoryData;
 
   return (
-    <div className="border-1 my-3 mb-0 rounded border border-gray-400 p-3 pb-3">
+    <div className="border-1 rounded border border-gray-400">
       <div>
         <>
           <div
             onClick={() => setHide(!hide)}
-            className="flex cursor-pointer flex-wrap items-center justify-between gap-3"
+            className="flex cursor-pointer flex-wrap items-center justify-between gap-3 rounded hover:bg-gray-100"
           >
-            <div>{`Category Specific Questions for ${categoryKey}`}</div>
-            <div className="flex cursor-pointer items-center rounded border border-2 border-gray-400 bg-gray-400 ">
+            <div className="px-2">{`Category Specific Questions for ${categoryKey}`}</div>
+            <div className="flex cursor-pointer items-center rounded">
               {hide ? (
-                <ChevronDownCircleIcon color={"white"} />
+                <Button variant="ghost" icon={ChevronDown} />
               ) : (
-                <ChevronUpCircleIcon color={"white"} />
+                <Button variant="ghost" icon={ChevronUp} />
               )}
             </div>
           </div>
         </>
 
         {!hide && (
-          <>
-            <hr className="my-2" />
+          <div className="p-2">
             {questions.map((question, index) => {
               const fieldName = `application.categoryQuestions.${categoryKey}.${index}`;
               const includes = question.includes(
@@ -634,7 +639,7 @@ function CategoryQuestions({ categoryKey }: { categoryKey: string }) {
                 );
               }
             })}
-          </>
+          </div>
         )}
       </div>
     </div>

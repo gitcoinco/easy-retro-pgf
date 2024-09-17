@@ -131,7 +131,7 @@ export const FormControl = ({
   label?: string;
   required?: boolean;
   valueAsNumber?: boolean;
-  hint?: string;
+  hint?: string | ReactNode;
 } & ComponentPropsWithoutRef<"fieldset">) => {
   const {
     register,
