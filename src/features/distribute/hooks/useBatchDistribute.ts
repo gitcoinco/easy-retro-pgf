@@ -9,6 +9,7 @@ import {
 import { Address, formatUnits, parseUnits } from "viem";
 import { batchDistributePerNetwork } from "~/config";
 import { Distribution } from "~/features/distribute/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function useBatchDistribute({
   distribution,
@@ -27,6 +28,7 @@ export function useBatchDistribute({
   const [currentBatch, setCurrentBatch] = useState<number>(0);
   const { data: poolId } = usePoolId();
   const { isPending: isFunding, mutateAsync: fundPool } = useFundPool();
+  const queryClient = useQueryClient();
 
   //   Get the batch limit for the current network
   const batchLimit =
@@ -142,9 +144,11 @@ export function useBatchDistribute({
   const handleNextBatch = () => {
     if (currentBatch < batches.length - 1) {
       setCurrentBatch(currentBatch + 1);
+      queryClient.invalidateQueries({ queryKey: ["distribute-info", poolId] });
     } else {
       // All batches processed
       onPayoutsCompleted();
+      queryClient.invalidateQueries({ queryKey: ["distribute-info", poolId] });
       onCloseDialog(); // Close the modal/dialog
     }
   };
