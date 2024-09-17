@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 export enum AvailableMetrics {
   active_contract_count_90_days = "Active Contract Count (90 Days)",
   address_count = "Address Count",
@@ -16,20 +18,14 @@ export enum AvailableMetrics {
 }
 
 export type OSOMetric = {
-  active_contract_count_90_days: number;
-  address_count: number;
-  address_count_90_days: number;
-  days_since_first_transaction: number;
-  gas_fees_sum: number;
-  gas_fees_sum_6_months: number;
-  high_activity_address_count_90_days: number;
-  low_activity_address_count_90_days: number;
-  medium_activity_address_count_90_days: number;
-  multi_project_address_count_90_days: number;
-  new_address_count_90_days: number;
-  returning_address_count_90_days: number;
-  transaction_count: number;
-  transaction_count_6_months: number;
+  active_addresses_180D: number;
+  active_addresses_90D: number;
+  daily_active_addresses_180D: number;
+  daily_active_addresses_90D: number;
+  farcaster_users_180D: number;
+  farcaster_users_90D: number;
+  transactions_180D: number;
+  transactions_90D: number;
 };
 
 export type MetricId = keyof OSOMetric;
@@ -52,8 +48,11 @@ type OSOMetricProjectMeta = {
 export type OSOMetrics = (OSOMetric & OSOMetricProjectMeta)[];
 
 export type OSOMetricCSVProjectMeta = {
-  project_name: string;
-  project_id: string;
+  name: string;
+  id: string;
+  category: string;
+  chain: string;
+  address: Address;
 };
 
 export type OSOMetricsCSV = OSOMetricCSVProjectMeta & OSOMetric;
