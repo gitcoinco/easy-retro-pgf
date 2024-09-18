@@ -4,8 +4,7 @@ import { useAccount, useChainId } from "wagmi";
 import { useSwitchChain } from "wagmi";
 
 export function useIsCorrectNetwork() {
-  const { isConnected } = useAccount();
-  const chainId = useChainId();
+  const { isConnected, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
 
   const { data: round } = useCurrentRound();

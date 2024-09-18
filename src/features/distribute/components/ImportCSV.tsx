@@ -21,12 +21,15 @@ export function ImportCSV({
       const { data } = parse<Distribution>(csvString);
       const distribution = data
         .filter((d) => d.projectId !== "" && d.payoutAddress !== "")
-        .map(({ projectId, name, amountPercentage, payoutAddress }) => ({
-          projectId,
-          name,
-          payoutAddress: getAddress(payoutAddress),
-          amountPercentage: Number(amountPercentage),
-        }));
+        .map(
+          ({ projectId, name, amountPercentage, payoutAddress, amount }) => ({
+            projectId,
+            name,
+            payoutAddress: getAddress(payoutAddress),
+            amount: Number(amount),
+            amountPercentage: Number(amountPercentage),
+          }),
+        );
       const totalPercentage = distribution.reduce(
         (acc, d) => acc + d.amountPercentage,
         0,
@@ -62,6 +65,7 @@ export function ImportCSV({
           reader.readAsText(file);
           reader.onload = () => importCSV(String(reader.result));
           reader.onerror = () => console.log(reader.error);
+          e.target.value = "";
         }}
       />
       <Dialog

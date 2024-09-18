@@ -150,13 +150,17 @@ export function useFundPool() {
       if (!allo) throw new Error("Allo not initialized");
 
       const { to, data } = allo.fundPool(BigInt(poolId), amount);
-      const hash = await sendTransactionAsync({
-        to,
-        data,
-        value: token.isNativeToken ? BigInt(amount) : 0n,
-      });
+      try {
+        const hash = await sendTransactionAsync({
+          to,
+          data,
+          value: token.isNativeToken ? BigInt(amount) : 0n,
+        });
 
-      return waitForLogs(hash, AlloABI, client);
+        return waitForLogs(hash, AlloABI, client);
+      } catch (error) {
+        throw { reason: "Failed to fund pool"};
+      }
     },
   });
 }
