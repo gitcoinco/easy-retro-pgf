@@ -11,6 +11,7 @@ import { Markdown } from "~/components/ui/Markdown";
 import { type ApplicationVerification } from "~/features/applications/types";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { type ReactNode } from "react";
+import { Table, Td, Th, Tr } from "~/components/ui/Table";
 
 export default function ProjectDetails({
   attestation,
@@ -31,6 +32,7 @@ export default function ProjectDetails({
   const { bio, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
 
+  console.log(decryptedData);
   return (
     <div className="relative mb-24">
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
@@ -98,29 +100,31 @@ export default function ProjectDetails({
             );
           })}
         </div>
-        {isAdmin && !isLoading && applicationVerificationData! ? (
+        {isAdmin && applicationVerificationData! ? (
           <div>
             <Heading as="h3" size="2xl">
               Project kyc information
             </Heading>
-            <div>
-              <div>
-                <text className="mr-2">Project name:</text>{" "}
-                {applicationVerificationData.name}
-              </div>
-              <div>
-                <text className="mr-2">Project email:</text>
-                {applicationVerificationData.projectEmail}
-              </div>
-              <div>
-                <text className="mr-2">Physical address:</text>
-                {applicationVerificationData.projectPhysicalAddress}
-              </div>
-              <div>
-                <text className="mr-2">Sanctioned org:</text>
-                {applicationVerificationData.sanctionedOrg ? "Yes" : "No"}
-              </div>
-            </div>
+            <Table>
+              <Tr>
+                <Td className={"w-48"}>Project name</Td>
+                <Td>{applicationVerificationData.name}</Td>
+              </Tr>
+              <Tr>
+                <Td className={"w-48"}>Project email</Td>
+                <Td>{applicationVerificationData.projectEmail}</Td>
+              </Tr>
+              <Tr>
+                <Td className={"w-48"}>Physical address</Td>
+                <Td>{applicationVerificationData.projectPhysicalAddress}</Td>
+              </Tr>
+              <Tr>
+                <Td className={"w-48"}>Sanctioned org</Td>
+                <Td>
+                  {applicationVerificationData.sanctionedOrg ? "Yes" : "No"}
+                </Td>
+              </Tr>
+            </Table>
           </div>
         ) : null}
       </div>
