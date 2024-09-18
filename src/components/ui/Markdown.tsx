@@ -5,7 +5,12 @@ import { Link } from "./Link";
 import rehypeRaw from "rehype-raw";
 
 const components = {
-  a: (p: ComponentProps<typeof Link>) => <Link target="_blank" {...p} />,
+  a: (props: ComponentProps<typeof Link>) => (
+    <Link target="_blank" {...props} />
+  ),
+  p: (props: ComponentProps<typeof Link>) => (
+    <p className="break-words" {...props} />
+  ),
 };
 export function Markdown({
   isLoading,
