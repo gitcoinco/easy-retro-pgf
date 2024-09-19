@@ -12,14 +12,14 @@ export default function NewProjectPage() {
 
   return (
     <Layout>
-      <Markdown className={"mb-8"}>
-        {`
-### New Application
-Fill out this form to create an application for your project. It will then be reviewed by our admins.
-
-Your progress is saved locally so you can return to this page to resume your application.
-`}
-      </Markdown>
+      <h3 className="mb-1 text-2xl font-semibold">New Application</h3>
+      <hr />
+      <p className="leading-loose text-gray-600 dark:text-gray-400">
+        Fill out this form to create an application for your project. It will
+        then be reviewed by our admins. Your progress is saved locally so you
+        can return to this page to resume your application.
+      </p>
+      <hr className="mb-8" />
       {state !== "APPLICATION" ? (
         <Alert variant="info" title="Application period has ended"></Alert>
       ) : address ? (

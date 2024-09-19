@@ -93,5 +93,4 @@ export const impactCategories = {
   RESEARCH_AND_DEVELOPMENT: { label: "Protocol Research & Development" },
   GOVERNANCE: { label: "Collective Governance" },
   END_USER_EXPERIENCE: { label: "Products & End User UX" },
-  Other: { label: "Other" },
 } as const;

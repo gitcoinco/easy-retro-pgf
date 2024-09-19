@@ -43,7 +43,11 @@ export function handleTransactionError(error: BaseError) {
 }
 
 export function getIsFilecoinActorError(error: string) {
-  return JSON.stringify(error).includes(
-    "call raw get actor: resolution lookup failed",
-  );
+  try {
+    return JSON.stringify(error).includes(
+      "call raw get actor: resolution lookup failed",
+    );
+  } catch {
+    return false;
+  }
 }

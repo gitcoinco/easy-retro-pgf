@@ -23,7 +23,7 @@ export function useCreateAttestation() {
       values: Record<string, unknown>;
       schemaUID: string;
     }) => {
-      if (!signer) throw new Error("Connect wallet first");
+      if (!signer) throw { reason: "Connect wallet first" };
       return createAttestation(data, signer);
     },
   });
@@ -37,9 +37,9 @@ export function useAttest() {
 
     return useMutation({
       mutationFn: async (attestations: MultiAttestationRequest[]) => {
-        if (!signer) throw new Error("Connect wallet first");
-        if (!walletClient) throw new Error("Wallet client not configured");
-        if (!publicClient) throw new Error("Public client not configured");
+        if (!signer) throw { reason: "Connect wallet first" };
+        if (!walletClient) throw { reason: "Wallet client not configured" };
+        if (!publicClient) throw { reason: "Public client not configured" };
         const abi = EAS__factory.abi;
 
         const args = attestations.map((r) => {
@@ -96,9 +96,9 @@ export function useRevoke() {
 
   return useMutation({
     mutationFn: async (revocations: MultiRevocationRequest[]) => {
-      if (!signer) throw new Error("Connect wallet first");
-      if (!walletClient) throw new Error("Wallet client not configured");
-      if (!publicClient) throw new Error("Public client not configured");
+      if (!signer) throw { reason: "Connect wallet first" };
+      if (!walletClient) throw { reason: "Wallet client not configured" };
+      if (!publicClient) throw { reason: "Public client not configured" };
       const abi = EAS__factory.abi;
       const args = revocations.map((r) => {
         return {

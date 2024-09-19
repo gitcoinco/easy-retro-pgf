@@ -10,3 +10,8 @@
     -ms-overflow-style: none;
     scrollbar-width: 0;
 }
+
+.prose {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
