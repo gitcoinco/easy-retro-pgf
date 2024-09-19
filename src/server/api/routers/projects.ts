@@ -236,7 +236,7 @@ export const projectsRouter = createTRPCRouter({
     .input(FilterSchema)
     .query(
       async ({
-        input: { cursor, limit, orderBy, sortOrder, search},
+        input: { cursor, limit, orderBy, sortOrder, search },
         ctx: { round },
       }) => {
         if (!round)
@@ -247,27 +247,6 @@ export const projectsRouter = createTRPCRouter({
         try {
           const attestationFetcher = createAttestationFetcher({ round });
 
-          // Fetch application approvals for round by admins
-          const approvals = await attestationFetcher(["approval"], {
-            where: {
-              AND: [
-                createDataFilter("type", "bytes32", "application"),
-                createDataFilter("round", "bytes32", round.id),
-                { attester: { in: round.admins } },
-              ],
-            },
-          });
-
-          const approvedProjectIds = approvals
-            .filter((a) => !possibleSpamIds.includes(a.refUID))
-            .filter((a) => {
-              if (search){
-                return a.refUID === search;
-              }
-                return true;
-            })
-            .map((a) => a.refUID);
-
           const approvedApplications = await attestationFetcher(
             ["metadata"],
             {
@@ -275,7 +254,7 @@ export const projectsRouter = createTRPCRouter({
                 AND: [
                   createDataFilter("type", "bytes32", "application"),
                   createDataFilter("round", "bytes32", round.id),
-                  { id: { in: approvedProjectIds } },
+                  { id: { not: { in: possibleSpamIds } } },
                 ],
               },
             },
