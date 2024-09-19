@@ -9,6 +9,7 @@ import {
   forwardRef,
   cloneElement,
   useEffect,
+  ComponentProps,
 } from "react";
 import {
   FormProvider,
@@ -122,6 +123,7 @@ export const FormControl = ({
   name,
   label,
   hint,
+  description,
   required,
   children,
   valueAsNumber,
@@ -131,7 +133,8 @@ export const FormControl = ({
   label?: string;
   required?: boolean;
   valueAsNumber?: boolean;
-  hint?: string;
+  hint?: string | ReactNode;
+  description?: string | ReactNode;
 } & ComponentPropsWithoutRef<"fieldset">) => {
   const {
     register,
@@ -152,6 +155,11 @@ export const FormControl = ({
           {label}
           {required && <span className="text-red-300">*</span>}
         </Label>
+      )}
+      {description && (
+        <div className="pt-1 text-xs text-gray-500 dark:text-gray-400">
+          {description}
+        </div>
       )}
       {cloneElement(children as ReactElement, {
         id: name,
@@ -224,11 +232,61 @@ export function FieldArray<S extends z.Schema>({
   );
 }
 
+export function FieldsRow<S extends z.Schema>({
+  label,
+  required,
+  hint,
+  name,
+  renderField,
+}: {
+  label?: string;
+  required?: boolean;
+  hint?: string;
+  name: string;
+
+  renderField: (field: z.infer<S>, index: number) => ReactNode;
+}) {
+  const form = useFormContext();
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name,
+  });
+
+  const error = form.formState.errors[name]?.message ?? "";
+
+  return (
+    <section className="mb-8">
+      {label && (
+        <Label className="mb-1" htmlFor={name}>
+          {label}
+          {required && <span className="text-red-300">*</span>}
+        </Label>
+      )}
+      {hint && (
+        <div className="pb-2 text-xs text-gray-500 dark:text-gray-400">
+          {hint}
+        </div>
+      )}
+      {error && (
+        <div className="border border-red-900 p-2 dark:text-red-500">
+          {String(error)}
+        </div>
+      )}
+      <div key={fields[0]?.id} className="gap-4 md:flex">
+        {renderField(fields[0], 1)}
+      </div>
+    </section>
+  );
+}
+
 export function FormSection({
   title,
   description,
   children,
-}: { title: string; description: string } & ComponentProps<"section">) {
+}: {
+  title: string | ReactNode;
+  description: string;
+} & ComponentProps<"section">) {
   return (
     <section className="mb-8">
       <h3 className="mb-1 text-xl font-semibold">{title}</h3>
