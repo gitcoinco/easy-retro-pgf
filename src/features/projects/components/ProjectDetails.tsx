@@ -40,7 +40,6 @@ export default function ProjectDetails({
     twitterPost,
   } = metadata.data ?? {};
 
-  console.log(decryptedData);
   return (
     <div className="relative mb-24">
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
