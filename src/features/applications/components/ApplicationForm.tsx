@@ -265,7 +265,7 @@ export function ApplicationForm() {
           hint={`Briefly describe your team size and subgroups.`}
           required
         >
-          <Input placeholder="https://" />
+          <Textarea rows={3} />
         </FormControl>
         <FormControl
           label="Social Media"
@@ -350,31 +350,33 @@ export function ApplicationForm() {
               </>
             )}
           />
-          <FieldsRow
-            label="Have you previously applied to FIL-RetroPGF rounds?"
-            hint="If yes, please provide the link to your previous application."
-            name="application.previousApplication"
-            renderField={(field, i) => (
-              <>
-                <FormControl
-                  name={`applicationVerification.previousApplication.applied`}
-                >
-                  <Select>
-                    {Object.entries(booleanOptions).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl
-                  name={`applicationVerification.previousApplication.link`}
-                >
-                  <Input placeholder="https://" />
-                </FormControl>
-              </>
-            )}
-          />
+          <div className="flex justify-end">
+            <FieldsRow
+              label="Have you previously applied to FIL-RetroPGF rounds?"
+              hint="If yes, please provide the link to your previous application."
+              name="application.previousApplication"
+              renderField={(field, i) => (
+                <>
+                  <FormControl
+                    name={`applicationVerification.previousApplication.applied`}
+                  >
+                    <Select>
+                      {Object.entries(booleanOptions).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl
+                    name={`applicationVerification.previousApplication.link`}
+                  >
+                    <Input placeholder="https://" />
+                  </FormControl>
+                </>
+              )}
+            />
+          </div>
         </FormSection>
         <CreateApplicationButton
           isLoading={create.isPending}
