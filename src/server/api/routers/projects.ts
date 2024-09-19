@@ -278,7 +278,14 @@ export const projectsRouter = createTRPCRouter({
               metrics?: Partial<OSOMetricsCSV>;
               metadata: unknown;
             }
-          > = approvedApplications.map((project) => {
+          > = approvedApplications
+          .filter((a) => {
+            if (search){
+              return a.id === search;
+            }
+              return true;
+          })
+          .map((project) => {
             const { id: projectId } = project;
             const metrics = metricsByProjectId[projectId];
             const metadata = metadataByProjectId[projectId];
