@@ -13,6 +13,7 @@ import {
 } from "~/features/applications/types";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { type ReactNode } from "react";
+import { Table, Tbody, Td, Th, Thead, Tr } from "~/components/ui/Table";
 
 export default function ProjectDetails({
   attestation,
@@ -150,32 +151,41 @@ export default function ProjectDetails({
             <Heading as="h3" size="xl" className="mb-4">
               Project KYC Information
             </Heading>
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th className="w-64"></Th>
+                  <Th></Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  <Td className={"text-sm font-semibold"}>
+                    Legal Company/Individual Name
+                  </Td>
+                  <Td>{applicationVerificationData.name}</Td>
+                </Tr>
+                <Tr>
+                  <Td className={"text-sm font-semibold"}>
+                    Point of Contact (POC) Name
+                  </Td>
+                  <Td>{applicationVerificationData.POCName}</Td>
+                </Tr>
+                <Tr>
+                  <Td className={"text-sm font-semibold"}>Additional POC</Td>
+                  <Td>{applicationVerificationData.additionalPOC}</Td>
+                </Tr>
+                <Tr>
+                  <Td className={"text-sm font-semibold"}>Physical address</Td>
+                  <Td>{applicationVerificationData.projectPhysicalAddress}</Td>
+                </Tr>
+                <Tr>
+                  <Td className={"text-sm font-semibold"}>Project email</Td>
+                  <Td>{applicationVerificationData.projectEmail}</Td>
+                </Tr>
+              </Tbody>
+            </Table>
             <div className="space-y-4">
-              <div>
-                <span className="mr-2 font-semibold">
-                  Legal Company/Individual Name:
-                </span>
-                {applicationVerificationData.name}
-              </div>
-              <div>
-                <span className="mr-2 font-semibold">
-                  Point of Contact (POC) Name:
-                </span>
-                {applicationVerificationData.POCName}
-              </div>
-              <div>
-                <span className="mr-2 font-semibold">Additional POC:</span>
-                {applicationVerificationData.additionalPOC}
-              </div>
-              <div>
-                <span className="mr-2 font-semibold">Physical Address:</span>
-                {applicationVerificationData.projectPhysicalAddress}
-              </div>
-              <div>
-                <span className="mr-2 font-semibold">Project Email:</span>
-                {applicationVerificationData.projectEmail}
-              </div>
-
               {/* Past Grants and Funding */}
               {(applicationVerificationData.previousApplication?.applied ===
                 "YES" ||
