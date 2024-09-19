@@ -157,7 +157,7 @@ export const FormControl = ({
         </Label>
       )}
       {description && (
-        <div className="pt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="mb-2 text-xs text-gray-500 dark:text-gray-400">
           {description}
         </div>
       )}
@@ -184,9 +184,15 @@ export const ErrorMessage = createComponent(
 export function FieldArray<S extends z.Schema>({
   name,
   renderField,
+  requiredRows,
+  ErrorMessage,
+  hint,
 }: {
   name: string;
   renderField: (field: z.infer<S>, index: number) => ReactNode;
+  requiredRows?: number;
+  ErrorMessage?: string;
+  hint?: string;
 }) {
   const form = useFormContext();
   const { fields, append, remove } = useFieldArray({
@@ -195,6 +201,7 @@ export function FieldArray<S extends z.Schema>({
   });
 
   const error = form.formState.errors[name]?.message ?? "";
+  const isError = requiredRows && fields.length < requiredRows;
 
   return (
     <div className="mb-8">
@@ -203,6 +210,12 @@ export function FieldArray<S extends z.Schema>({
           {String(error)}
         </div>
       )}
+      {hint && (
+        <div className="pb-2 text-xs text-gray-500 dark:text-gray-400">
+          {hint}
+        </div>
+      )}
+      {isError && <div className="text-red-500">{String(ErrorMessage)}</div>}
       {fields.map((field, i) => (
         <div key={field.id} className="gap-4 md:flex">
           {renderField(field, i)}

@@ -44,7 +44,7 @@ export function useUploadMetadata() {
         headers: { "Content-Type": "application/json" },
         body: data,
       }).then(async (r) => {
-        if (!r.ok) throw new Error("Network error");
+        if (!r.ok) throw { reason: "Network error" };
         return (await r.json()) as { url: string };
       });
     },

@@ -67,34 +67,14 @@ export const ApplicationSchema = z.object({
     .min(1),
   categoryQuestions: z.record(z.string(), z.record(z.string(), z.string())),
   encryptedData: z.object({ iv: z.string(), data: z.string() }).optional(),
-  // TODO try to make this optional to be backwards compatible
-  // impactMetrics: z
-  //   .array(
-  //     z.object({
-  //       description: z.string().min(3),
-  //       url: z.string().url(),
-  //       number: z.number(),
-  //     }),
-  //   )
-  //   .optional(),
-  // fundingSources: z
-  //   .array(
-  //     z.object({
-  //       description: z.string().min(3),
-  //       amount: z.number(),
-  //       currency: z.string().min(3).max(4),
-  //       type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
-  //     }),
-  //   )
-  //   .optional(),
 });
 
 export const ApplicationVerificationSchema = z.object({
   name: z.string().min(3),
-  POCName: z.string().min(3), // Added Point of Contact Name
+  POCName: z.string().min(3),
   projectEmail: z.string().email(),
   projectPhysicalAddress: z.string().min(3),
-  additionalPOC: z.string().optional(), // Added optional additional POC
+  additionalPOC: z.string().optional(), 
   fundingSources: z
     .array(
       z.object({
