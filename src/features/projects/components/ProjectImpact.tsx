@@ -6,6 +6,8 @@ import { impactCategoryQuestions } from "~/features/applications/components/Impa
 import { useProjectsMetrics } from "~/features/applications/hooks/useMetrics";
 import type { ImpactMetrics } from "~/utils/fetchMetrics";
 import { MetricsBox } from "./MetricsBox";
+import { suffixNumber } from "~/utils/suffixNumber";
+import { LinkBox } from "./LinkBox";
 type Props = { isLoading: boolean; project?: Application };
 
 export default function ProjectImpact({ isLoading, project }: Props) {
@@ -27,7 +29,9 @@ export default function ProjectImpact({ isLoading, project }: Props) {
 
   const metrics = useProjectsMetrics(oso_name ?? "");
 
-  const data = metrics.data ? mapMetricsToData(metrics.data) : [];
+  const data = metrics.data ? mapMetricsToData(metrics.data) : ([] as any);
+
+  const roundOneMetrics = (project?.impactMetrics ?? []) as any;
 
   return (
     <div className="mt-8">
@@ -39,7 +43,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
         <hr className="mb-8 mt-2" />
 
         {/* Impact Description */}
-        {project?.impactDescription && data.length == 0 ? (
+        {project?.impactDescription && !roundOneMetrics ? (
           <div className="mb-8">
             <div className="prose max-w-none">
               <Markdown isLoading={isLoading}>
@@ -56,7 +60,29 @@ export default function ProjectImpact({ isLoading, project }: Props) {
                 </Markdown>
               </div>
               <div className="md:w-1/3">
-                <MetricsBox label="Impact Metrics" data={data} />
+                {data.length > 0 ? (
+                  <MetricsBox label="Impact Metrics" data={data} />
+                ) : (
+                  roundOneMetrics && (
+                    <LinkBox
+                      label="Impact Metrics"
+                      links={roundOneMetrics as any[]}
+                      renderItem={(link) => (
+                        <>
+                          <div
+                            className="flex-1 truncate"
+                            title={link.description}
+                          >
+                            {link.description}
+                          </div>
+                          <div className="font-medium">
+                            {suffixNumber(link.number)}
+                          </div>
+                        </>
+                      )}
+                    />
+                  )
+                )}
               </div>
             </div>
           )
