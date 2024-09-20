@@ -16,6 +16,7 @@ import { createElement, type ReactNode } from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "~/components/ui/Table";
 import { LinkBox } from "./LinkBox";
 import { GlobeIcon, LucideIcon } from "lucide-react";
+import { suffixNumber } from "~/utils/suffixNumber";
 
 export default function ProjectDetails({
   attestation,
@@ -40,6 +41,7 @@ export default function ProjectDetails({
     githubProjectLink,
     teamDescription,
     twitterPost,
+    fundingSources,
   } = metadata.data ?? {};
 
   const hasPreviousApplication =
@@ -124,53 +126,101 @@ export default function ProjectDetails({
         </div>
       </div>
 
-      <div className="mt-8 ">
-        <div className="rounded-md bg-white p-6 shadow-md">
-          <Heading as="h3" size="2xl" className="mb-4">
-            Project Team Composition
-          </Heading>
-          <hr className="mb-8 mt-2" />
-
-          <div className="mb-4 flex flex-col gap-4 md:flex-row">
-            <div className="w-2/3">
-              {/* teamDescription */}
-              {teamDescription && (
-                <div className="prose max-w-none">
-                  <Markdown>{teamDescription}</Markdown>
-                </div>
-              )}
-            </div>
-            <div className="w-1/3 ">
-              <LinkBox
-                label="Application Tweet"
-                links={[
-                  {
-                    url: twitterPost ?? "",
+      {fundingSources && (
+        <div className="mt-8 ">
+          <div className="rounded-md bg-white p-6 shadow-md">
+            <Heading as="h3" size="2xl">
+              Past grants and funding
+            </Heading>
+            <hr className="mb-8 mt-2" />
+            <div className="">
+              {fundingSources?.map(
+                (
+                  source: {
+                    type: string;
+                    description: string;
+                    amount: number;
+                    currency: string;
                   },
-                ]}
-                renderItem={(link) => {
-                  const icon: LucideIcon | undefined = {
-                    OTHER: GlobeIcon, 
-                  }["OTHER" as keyof typeof icon]; 
+                  i: number,
+                ) => {
+                  const type: string =
+                    {
+                      OTHER: "Other",
+                      RETROPGF_2: "RetroPGF2",
+                      GOVERNANCE_FUND: "Governance Fund",
+                      PARTNER_FUND: "Partner Fund",
+                      REVENUE: "Revenue",
+                    }[source.type] ?? source.type;
                   return (
-                    <>
-                      {createElement(icon ?? "div", {
-                        className: "w-4 h-4 mt-1",
-                      })}
-                      <div
-                        className="flex-1 truncate"
-                        title={"Application Tweet"}
-                      >
-                        {link.url}
+                    <div key={i} className="flex items-center gap-4">
+                      <div className="flex-1 truncate text-xl">
+                        {source.description}
                       </div>
-                    </>
+                      <div className="text-sm tracking-widest text-gray-700 dark:text-gray-400">
+                        {type}
+                      </div>
+                      <div className="w-32 text-xl font-medium">
+                        {suffixNumber(source.amount)} {source.currency}
+                      </div>
+                    </div>
                   );
-                }}
-              />
+                },
+              )}
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {(teamDescription || twitterPost) && (
+        <div className="mt-8 ">
+          <div className="rounded-md bg-white p-6 shadow-md">
+            <Heading as="h3" size="2xl" className="mb-4">
+              Project Team Composition
+            </Heading>
+            <hr className="mb-8 mt-2" />
+
+            <div className="mb-4 flex flex-col gap-4 md:flex-row">
+              <div className="w-2/3">
+                {/* teamDescription */}
+                {teamDescription && (
+                  <div className="prose max-w-none">
+                    <Markdown>{teamDescription}</Markdown>
+                  </div>
+                )}
+              </div>
+              <div className="w-1/3 ">
+                <LinkBox
+                  label="Application Tweet"
+                  links={[
+                    {
+                      url: twitterPost ?? "",
+                    },
+                  ]}
+                  renderItem={(link) => {
+                    const icon: LucideIcon | undefined = {
+                      OTHER: GlobeIcon,
+                    }["OTHER" as keyof typeof icon];
+                    return (
+                      <>
+                        {createElement(icon ?? "div", {
+                          className: "w-4 h-4 mt-1",
+                        })}
+                        <div
+                          className="flex-1 truncate"
+                          title={"Application Tweet"}
+                        >
+                          {link.url}
+                        </div>
+                      </>
+                    );
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Admin Section */}
       {isAdmin && !isLoading && applicationVerificationData ? (
@@ -280,8 +330,8 @@ export default function ProjectDetails({
                     ]}
                     renderItem={(link) => {
                       const icon: LucideIcon | undefined = {
-                        OTHER: GlobeIcon, 
-                      }["OTHER" as keyof typeof icon]; 
+                        OTHER: GlobeIcon,
+                      }["OTHER" as keyof typeof icon];
                       return (
                         <>
                           {createElement(icon ?? "div", {
