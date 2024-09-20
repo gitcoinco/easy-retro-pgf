@@ -10,9 +10,10 @@ type Props = { isLoading: boolean; project?: Application };
 export default function ProjectContributions({ isLoading, project }: Props) {
   return (
     <>
-      <Heading as="h3" size="2xl">
-        Contributions
+      <Heading as="h3" size="xl" className="mb-4">
+        Project Contributions
       </Heading>
+      <hr className="mb-8 mt-2" />
       <div className="mb-4 flex flex-col gap-4 md:flex-row">
         <div className="md:w-2/3">
           <Markdown isLoading={isLoading}>

@@ -5,12 +5,16 @@ export function createCachedFetch({ ttl = 1000 * 60 }) {
 
   return function fetch<T>(
     url: string,
-    opts?: { method: "POST" | "GET"; body?: string },
+    opts?: {
+      method: "POST" | "GET";
+      body?: string;
+      headers?: Record<string, string>;
+    },
   ) {
     return _fetch(url, {
       method: opts?.method ?? "GET",
       body: opts?.body,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...opts?.headers },
     }).then(async (r) => {
       if (!r.ok) {
         await r.ejectFromCache();

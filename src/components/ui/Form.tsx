@@ -295,13 +295,15 @@ export function FieldsRow<S extends z.Schema>({
 export function FormSection({
   title,
   description,
+  className,
   children,
 }: {
   title: string | ReactNode;
+  className?: string;
   description: string;
 } & ComponentProps<"section">) {
   return (
-    <section className="mb-8">
+    <section className={`mb-8 ${className}`}>
       <h3 className="mb-1 text-xl font-semibold">{title}</h3>
       <p className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
         {description}

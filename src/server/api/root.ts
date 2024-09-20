@@ -5,6 +5,7 @@ import { commentsRouter } from "~/server/api/routers/comments";
 import { projectsRouter } from "~/server/api/routers/projects";
 import { metadataRouter } from "~/server/api/routers/metadata";
 import { applicationsRouter } from "~/server/api/routers/applications";
+import { metricsRouter } from "~/server/api/routers/metrics";
 import { profileRouter } from "~/server/api/routers/profile";
 import { votersRouter } from "~/server/api/routers/voters";
 import { createTRPCRouter } from "~/server/api/trpc";
@@ -26,6 +27,7 @@ export const appRouter = createTRPCRouter({
   metadata: metadataRouter,
   projects: projectsRouter,
   encryption: encryptionRouter,
+  metrics: metricsRouter,
 });
 
 // export type definition of API

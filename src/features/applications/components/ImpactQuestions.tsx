@@ -54,7 +54,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         label:
           "What is the percentage of Filecoin users (or percentage of the network) that run on your implementation?",
         hint: "Provide an estimated percentage if exact figures are not available (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       economicContribution: {
         label:
@@ -99,7 +99,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         label:
           "How many times has an SDK or package developed by your project been downloaded?",
         hint: "Use package statistics from npm, PyPI, etc (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       economicContribution: {
         label:
@@ -121,7 +121,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         label:
           "What is the increase in the number of first-time Filecoin addresses as a result of your educational content?",
         hint: "Provide an estimated percentage if exact numbers are unavailable (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       impressions: {
         label:
@@ -133,13 +133,13 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         label:
           "What is the number of people graduating from your program / What is the number of people who attended your event?",
         hint: "Include data on participation and completion rates (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       developerGrowth: {
         label:
           "What is the increase in the number of active developer users as a result of your educational content?",
         hint: "This could include new developer sign-ups or engagements (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       economicContribution: {
         label:
@@ -173,7 +173,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         label:
           "What is the increase in efficiency for storage data as a result of your work? For example, a reduction in sealing costs.",
         hint: "Provide numerical data if possible (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       systemPerformance: {
         label:
@@ -216,19 +216,19 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         label:
           "What is the increase in Filecoin wallet interactions during the impact window as a result of your project?",
         hint: "Provide specific metrics if available (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       userRetention: {
         label:
           "What is the average number of users retained upon interacting with your application for the first time?",
         hint: "Include user retention statistics (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       transactingAddresses: {
         label:
           "What is the number of returning unique transacting addresses per project?",
         hint: "List unique addresses and their frequency (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       interactionIncrease: {
         label:
@@ -240,13 +240,13 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         label:
           "What is the growth in the number of monthly active addresses interacting with your project?",
         hint: "Provide numerical growth data (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       newFundedAddresses: {
         label:
           "What is the number of new addresses that have been funded as a result of a contribution?",
         hint: "List and quantify new funded addresses (Markdown is supported).",
-        component: Input,
+        component: Textarea,
       },
       economicContribution: {
         label:

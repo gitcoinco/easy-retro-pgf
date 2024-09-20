@@ -14,7 +14,6 @@ import {
   FormControl,
   FormSection,
   Input,
-  Label,
   Select,
   Textarea,
 } from "~/components/ui/Form";
@@ -70,7 +69,7 @@ export function ApplicationForm() {
             categoryQuestions: {},
           },
           applicationVerification: {
-            fundingSources: [{}],
+            fundingSources: [],
           },
         }}
         persist="application-draft"
@@ -108,6 +107,7 @@ export function ApplicationForm() {
         <FormSection
           title="Application Details"
           description="Provide the necessary information for your application."
+          className="rounded border border-gray-300 p-4"
         >
           <FormControl name="profile.name" label="Project name" required>
             <Input placeholder="Project name" />
@@ -181,11 +181,29 @@ export function ApplicationForm() {
           >
             <Input placeholder="Enter your account..." />
           </FormControl>
+
+          <FormControl
+            label="Team Composition"
+            name="application.teamDescription"
+            hint={`Briefly describe your team size and subgroups.`}
+            required
+          >
+            <Textarea rows={3} />
+          </FormControl>
+          <FormControl
+            label="Social Media"
+            name="application.twitterPost"
+            hint={`Please share a link to the Twitter/X post you created as part of the showcase phase. (If you have not created one, please feel free to make one at the earliest tagging the FIL-RetroPGF team).`}
+            required
+          >
+            <Input placeholder="https://" />
+          </FormControl>
         </FormSection>
 
         <FormSection
           title={"Contribution & Impact"}
           description="Describe the contribution and impact of your project. Use the following questions as inspiration to help you describe your project's impact. You don't have to answer all questions, and you can illustrate impact as you best feel fits. Be as succinct and clear as possible."
+          className="rounded border border-gray-300 p-4"
         >
           <FormControl
             name="application.contributionDescription"
@@ -220,6 +238,7 @@ export function ApplicationForm() {
             </>
           }
           description="Where can we find your contributions? Provide 1-5 that best demonstrate the impact of your contributions to the Filecoin Ecosystem."
+          className="rounded border border-gray-300 p-4"
         >
           <FieldArray
             name="application.contributionLinks"
@@ -259,25 +278,10 @@ export function ApplicationForm() {
           />
         </FormSection>
 
-        <FormControl
-          label="Team Composition"
-          name="application.teamDescription"
-          hint={`Briefly describe your team size and subgroups.`}
-          required
-        >
-          <Textarea rows={3} />
-        </FormControl>
-        <FormControl
-          label="Social Media"
-          name="application.twitterPost"
-          hint={`Please share a link to the Twitter/X post you created as part of the showcase phase. (If you have not created one, please feel free to make one at the earliest tagging the FIL-RetroPGF team).`}
-          required
-        >
-          <Input placeholder="https://" />
-        </FormControl>
         <FormSection
           title={"Project KYC Details"}
           description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
+          className="rounded border border-gray-300 p-4"
         >
           <FormControl
             name="applicationVerification.name"
@@ -318,66 +322,69 @@ export function ApplicationForm() {
           >
             <Input placeholder="e.g. Slack/Telegram/Discord: @your_handle" />
           </FormControl>
-        </FormSection>
-
-        <FormSection
-          title={"Funding sources (Optional)"}
-          description="From what sources have you received funding?"
-        >
-          <FieldArray
-            name="applicationVerification.fundingSources"
-            renderField={(field, i) => (
-              <>
-                <FormControl
-                  className="min-w-96 flex-1"
-                  name={`applicationVerification.fundingSources.${i}.description`}
-                >
-                  <Input placeholder="Description" />
-                </FormControl>
-                <FormControl
-                  name={`applicationVerification.fundingSources.${i}.range`}
-                >
-                  <Select>
-                    {Object.entries(fundingAmountTypes).map(
-                      ([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ),
-                    )}
-                  </Select>
-                </FormControl>
-              </>
-            )}
-          />
-          <div className="flex justify-end">
-            <FieldsRow
-              label="Have you previously applied to FIL-RetroPGF rounds?"
-              hint="If yes, please provide the link to your previous application."
-              name="application.previousApplication"
+          <FormSection
+            title={"Funding sources (Optional)"}
+            description="From what sources have you received funding?"
+            className="rounded border border-gray-300 p-4"
+          >
+            <FieldArray
+              name="applicationVerification.fundingSources"
               renderField={(field, i) => (
                 <>
                   <FormControl
-                    name={`applicationVerification.previousApplication.applied`}
+                    className="min-w-96 flex-1"
+                    name={`applicationVerification.fundingSources.${i}.description`}
                   >
-                    <Select>
-                      {Object.entries(booleanOptions).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
-                    </Select>
+                    <Textarea placeholder="Description" />
                   </FormControl>
                   <FormControl
-                    name={`applicationVerification.previousApplication.link`}
+                    name={`applicationVerification.fundingSources.${i}.range`}
                   >
-                    <Input placeholder="https://" />
+                    <Select>
+                      {Object.entries(fundingAmountTypes).map(
+                        ([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ),
+                      )}
+                    </Select>
                   </FormControl>
                 </>
               )}
             />
-          </div>
+            <div className="flex justify-start">
+              <FieldsRow
+                label="Have you previously applied to FIL-RetroPGF rounds?"
+                hint="If yes, please provide the link to your previous application."
+                name="application.previousApplication"
+                renderField={(field, i) => (
+                  <>
+                    <FormControl
+                      name={`applicationVerification.previousApplication.applied`}
+                    >
+                      <Select>
+                        {Object.entries(booleanOptions).map(
+                          ([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ),
+                        )}
+                      </Select>
+                    </FormControl>
+                    <FormControl
+                      name={`applicationVerification.previousApplication.link`}
+                    >
+                      <Input placeholder="https://" />
+                    </FormControl>
+                  </>
+                )}
+              />
+            </div>
+          </FormSection>
         </FormSection>
+
         <CreateApplicationButton
           isLoading={create.isPending}
           buttonText={
@@ -446,6 +453,7 @@ function ImpactTags() {
       <FormSection
         title="Impact Categories"
         description="Select the impact category that best describes your project/contributions. After selecting, answer the relevant questions below to provide insights into the impact your project made during the impact window [April 2024-September 2024]. Be as specific and succinct as possible."
+        className="rounded border border-gray-300 p-4"
       >
         <div className="mt-4 flex flex-wrap gap-2">
           {Object.entries(impactCategories).map(([value, { label }]) => {
