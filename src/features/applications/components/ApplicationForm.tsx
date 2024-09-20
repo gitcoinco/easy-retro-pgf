@@ -350,7 +350,7 @@ export function ApplicationForm() {
               </>
             )}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-start">
             <FieldsRow
               label="Have you previously applied to FIL-RetroPGF rounds?"
               hint="If yes, please provide the link to your previous application."
