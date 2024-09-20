@@ -1,9 +1,9 @@
 // MetricsBox.tsx
-import type { ReactNode } from "react";
+import { format } from "date-fns";
 
 interface MetricItem {
   label: string;
-  value: ReactNode;
+  value: string;
 }
 
 export function MetricsBox({
@@ -21,13 +21,14 @@ export function MetricsBox({
       <div className="space-y-2">
         {data?.map((item, i) => (
           <div key={i} className="flex justify-between">
-            <div className="flex-1 truncate" title={item.label}>
+            <div className="word-break flex-1 text-sm" title={item.label}>
               {item.label}
             </div>
             <div className="font-medium">
+
               {typeof item.value === "number"
-                ? item.value.toLocaleString()
-                : item.value}
+                ? item.value
+                : item.label === "First Commit Date" ? format(item.value, "yyyy-MM-dd") :item.value}
             </div>
           </div>
         ))}

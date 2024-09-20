@@ -5,7 +5,6 @@ import { Accordion } from "~/components/ui/Accordion";
 import { impactCategoryQuestions } from "~/features/applications/components/ImpactQuestions";
 import { useProjectsMetrics } from "~/features/applications/hooks/useMetrics";
 import type { ImpactMetrics } from "~/utils/fetchMetrics";
-import { ReactNode } from "react";
 import { MetricsBox } from "./MetricsBox";
 type Props = { isLoading: boolean; project?: Application };
 
@@ -108,7 +107,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
 
 function mapMetricsToData(
   metrics: ImpactMetrics,
-): { label: string; value: ReactNode }[] {
+): { label: string; value: string | number }[] {
   return [
     { label: "Star Count", value: metrics.starCount },
     { label: "Fork Count", value: metrics.forkCount },
