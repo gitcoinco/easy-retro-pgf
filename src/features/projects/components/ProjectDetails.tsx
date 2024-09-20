@@ -12,8 +12,10 @@ import {
   type ApplicationVerification,
 } from "~/features/applications/types";
 import { useIsAdmin } from "~/hooks/useIsAdmin";
-import { type ReactNode } from "react";
+import { createElement, type ReactNode } from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "~/components/ui/Table";
+import { LinkBox } from "./LinkBox";
+import { GlobeIcon, LucideIcon } from "lucide-react";
 
 export default function ProjectDetails({
   attestation,
@@ -39,6 +41,11 @@ export default function ProjectDetails({
     teamDescription,
     twitterPost,
   } = metadata.data ?? {};
+
+  const hasPreviousApplication =
+    applicationVerificationData?.previousApplication?.applied === "YES";
+
+  const hasFundingSources = applicationVerificationData?.fundingSources;
 
   return (
     <div className="relative mb-24">
@@ -83,11 +90,13 @@ export default function ProjectDetails({
 
       {/* Bio */}
       {bio && (
-        <div className="mt-8">
-          <div className="rounded-md bg-white p-6 shadow-sm">
-            <Heading as="h3" size="xl" className="mb-4">
+        <div className="mt-8 ">
+          <div className="rounded-md bg-white p-6 shadow-md">
+            <Heading as="h3" size="2xl" className="mb-4">
               About the Project
             </Heading>
+            <hr className="mb-8 mt-2" />
+
             <div className="prose max-w-none">
               <Markdown>{bio}</Markdown>
             </div>
@@ -96,11 +105,12 @@ export default function ProjectDetails({
       )}
 
       {/* Impact Statements */}
-      <div className="mt-8">
-        <div className="rounded-md bg-white p-6 shadow-sm">
-          <Heading as="h3" size="xl" className="mb-4">
-            Impact Statements
+      <div className="mt-8 ">
+        <div className="rounded-md bg-white p-6 shadow-md">
+          <Heading as="h3" size="2xl" className="mb-4">
+            Contributions and Impact
           </Heading>
+          <hr className="mb-8 mt-2" />
 
           <ProjectContributions
             isLoading={metadata.isPending}
@@ -114,43 +124,63 @@ export default function ProjectDetails({
         </div>
       </div>
 
-      {/* teamDescription */}
-      {teamDescription && (
-        <div className="mt-8">
-          <div className="rounded-md bg-white p-6 shadow-sm">
-            <Heading as="h3" size="xl" className="mb-4">
-              Team Composition
-            </Heading>
-            <div className="prose max-w-none">
-              <Markdown>{teamDescription}</Markdown>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="mt-8 ">
+        <div className="rounded-md bg-white p-6 shadow-md">
+          <Heading as="h3" size="2xl" className="mb-4">
+            Project Team Composition
+          </Heading>
+          <hr className="mb-8 mt-2" />
 
-      {/* twitterPost */}
-      {twitterPost && (
-        <div className="mt-8">
-          <div className="rounded-md bg-white p-6 shadow-sm">
-            <Heading as="h3" size="xl" className="mb-4">
-              Application Tweet
-            </Heading>
-            <div>
-              <a href={twitterPost} target="_blank" className="hover:underline">
-                Tweet: {twitterPost}
-              </a>
+          <div className="mb-4 flex flex-col gap-4 md:flex-row">
+            <div className="w-2/3">
+              {/* teamDescription */}
+              {teamDescription && (
+                <div className="prose max-w-none">
+                  <Markdown>{teamDescription}</Markdown>
+                </div>
+              )}
+            </div>
+            <div className="w-1/3 ">
+              <LinkBox
+                label="Application Tweet"
+                links={[
+                  {
+                    url: twitterPost ?? "",
+                  },
+                ]}
+                renderItem={(link) => {
+                  const icon: LucideIcon | undefined = {
+                    OTHER: GlobeIcon, 
+                  }["OTHER" as keyof typeof icon]; 
+                  return (
+                    <>
+                      {createElement(icon ?? "div", {
+                        className: "w-4 h-4 mt-1",
+                      })}
+                      <div
+                        className="flex-1 truncate"
+                        title={"Application Tweet"}
+                      >
+                        {link.url}
+                      </div>
+                    </>
+                  );
+                }}
+              />
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Admin Section */}
       {isAdmin && !isLoading && applicationVerificationData ? (
-        <div className="mt-8">
-          <div className="rounded-md bg-white p-6 shadow-sm">
-            <Heading as="h3" size="xl" className="mb-4">
+        <div className="mt-8 ">
+          <div className="rounded-md bg-white p-6 shadow-md">
+            <Heading as="h3" size="2xl" className="mb-4">
               Project KYC Information
             </Heading>
+            <hr className="mb-8 mt-2" />
+
             <Table>
               <Thead>
                 <Tr>
@@ -185,70 +215,90 @@ export default function ProjectDetails({
                 </Tr>
               </Tbody>
             </Table>
-            <div className="space-y-4">
+            <div
+              className={`${hasPreviousApplication || hasFundingSources ? "" : "hidden"} space-y-4`}
+            >
               {/* Past Grants and Funding */}
-              {(applicationVerificationData.previousApplication?.applied ===
-                "YES" ||
-                applicationVerificationData.fundingSources) && (
-                <>
-                  <Heading as="h4" size="lg" className="mb-4 mt-6">
-                    Past Grants and Funding
-                  </Heading>
-                  {applicationVerificationData.previousApplication?.applied ===
-                    "YES" && (
-                    <div>
-                      <span className="mr-2 font-semibold">
-                        Previous Filecoin RPGF Application:
-                      </span>
-                      <a
-                        href={
-                          applicationVerificationData.previousApplication?.link
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        {applicationVerificationData.previousApplication?.link}
-                      </a>
-                    </div>
-                  )}
+              <Heading as="h3" size="2xl" className="mb-4">
+                Past Grants and Funding
+              </Heading>
+              <hr className="mb-8 mt-2" />
 
-                  {/* Funding Sources */}
-                  {applicationVerificationData?.fundingSources && (
-                    <div className="mt-4">
-                      <div className="rounded-md bg-white shadow-sm">
-                        {/* Table Header */}
-                        <div className="flex items-center justify-between rounded-t-md bg-gray-100 p-4">
-                          <div className="flex-1 font-semibold">
-                            Description
+              <div className="mb-4 flex flex-col gap-4 md:flex-row">
+                <div
+                  className={`${hasFundingSources && hasPreviousApplication ? "w-2/3" : hasFundingSources && !hasPreviousApplication ? "w-1/1" : "hidden"}`}
+                >
+                  <Table className="w-full table-fixed overflow-hidden rounded-md">
+                    <Thead>
+                      <Tr className="bg-gray-100">
+                        <Th className="w-2/3 border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                          Description
+                        </Th>
+                        <Th className="w-1/3 border border-gray-300 px-4 py-2 text-right text-sm font-semibold text-gray-600">
+                          Funding Amount Range
+                        </Th>
+                      </Tr>
+                    </Thead>
+
+                    <Tbody>
+                      {applicationVerificationData?.fundingSources?.map(
+                        (source, i) => (
+                          <Tr key={i}>
+                            {/* Description Column */}
+                            <Td className="w-2/3 overflow-hidden break-words border border-gray-300 px-4 py-4 text-gray-800">
+                              <Markdown className="prose max-w-none break-words">
+                                {source.description}
+                              </Markdown>
+                            </Td>
+
+                            {/* Funding Amount Range Column */}
+                            <Td className="text-md w-1/3 border border-gray-300 px-4 py-4 text-right font-medium text-gray-800">
+                              {
+                                fundingAmountTypes[
+                                  source.range as keyof typeof fundingAmountTypes
+                                ]
+                              }
+                            </Td>
+                          </Tr>
+                        ),
+                      )}
+                    </Tbody>
+                  </Table>
+                </div>
+
+                <div
+                  className={`${hasFundingSources && hasPreviousApplication ? "w-1/3" : !hasFundingSources && hasPreviousApplication ? "w-1/1" : "hidden"}`}
+                >
+                  <LinkBox
+                    label="Previous Filecoin RPGF Application"
+                    links={[
+                      {
+                        url:
+                          applicationVerificationData.previousApplication
+                            ?.link ?? "",
+                      },
+                    ]}
+                    renderItem={(link) => {
+                      const icon: LucideIcon | undefined = {
+                        OTHER: GlobeIcon, 
+                      }["OTHER" as keyof typeof icon]; 
+                      return (
+                        <>
+                          {createElement(icon ?? "div", {
+                            className: "w-4 h-4 mt-1",
+                          })}
+                          <div
+                            className="flex-1 truncate"
+                            title={"Previous FIL-RPGF Application"}
+                          >
+                            {link.url}
                           </div>
-                          <div className="w-48 text-right font-semibold">
-                            Funding Amount Range
-                          </div>
-                        </div>
-                        {/* Table Rows */}
-                        {applicationVerificationData.fundingSources.map(
-                          (source, i) => (
-                            <div
-                              key={i}
-                              className={`flex items-center justify-between p-4 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
-                            >
-                              <div className="flex-1">{source.description}</div>
-                              <div className="w-48 text-right text-lg font-medium">
-                                {
-                                  fundingAmountTypes[
-                                    source.range as keyof typeof fundingAmountTypes
-                                  ]
-                                }
-                              </div>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
+                        </>
+                      );
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

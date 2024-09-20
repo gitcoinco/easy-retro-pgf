@@ -4,7 +4,9 @@ import { type Application } from "~/features/applications/types";
 import { Accordion } from "~/components/ui/Accordion";
 import { impactCategoryQuestions } from "~/features/applications/components/ImpactQuestions";
 import { useProjectsMetrics } from "~/features/applications/hooks/useMetrics";
-
+import type { ImpactMetrics } from "~/utils/fetchMetrics";
+import { ReactNode } from "react";
+import { MetricsBox } from "./MetricsBox";
 type Props = { isLoading: boolean; project?: Application };
 
 export default function ProjectImpact({ isLoading, project }: Props) {
@@ -24,9 +26,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
     }
   }
 
-  console.log("OSO Name:", oso_name);
-  // ipfs should be replaced with the oso_name variable
-  const metrics = useProjectsMetrics("ipfs");
+  const metrics = useProjectsMetrics(oso_name ?? "");
 
   const data = metrics.data ? mapMetricsToData(metrics.data) : [];
 
@@ -34,9 +34,10 @@ export default function ProjectImpact({ isLoading, project }: Props) {
     <div className="mt-8">
       <div className="rounded-md bg-white shadow-sm">
         {/* Impact Heading */}
-        <Heading as="h3" size="xl" className="mb-6">
-          Impact
+        <Heading as="h3" size="xl" className="mb-4">
+          Project Impact
         </Heading>
+        <hr className="mb-8 mt-2" />
 
         {/* Impact Description */}
         {project?.impactDescription && data.length == 0 ? (
@@ -65,10 +66,12 @@ export default function ProjectImpact({ isLoading, project }: Props) {
         {/* Impact Metrics Questions */}
         {project?.impactCategory &&
           Object.entries(categoryQuestions ?? {}).length > 0 && (
-            <div>
-              <Heading as="h4" size="lg" className="mb-4">
-                Impact Category Questions
+            <div className="mt-8">
+              <Heading as="h3" size="xl" className="mb-4">
+                Impact Category
               </Heading>
+              <hr className="mb-8 mt-2" />
+
               <div className="space-y-6">
                 {project.impactCategory.map((categoryKey, i) => (
                   <Accordion key={i} title={categoryKey}>
@@ -79,7 +82,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
                             <Heading
                               as="h6"
                               size="md"
-                              className="mb-2 text-gray-700"
+                              className="mb-2 text-gray-900"
                             >
                               {
                                 impactCategoryQuestions[categoryKey]?.questions[
@@ -103,12 +106,6 @@ export default function ProjectImpact({ isLoading, project }: Props) {
   );
 }
 
-// Assuming you have the following import for your ImpactMetrics type
-import type { ImpactMetrics } from "~/utils/fetchMetrics";
-import { ReactNode } from "react";
-import { MetricsBox } from "./MetricsBox";
-
-// Helper function to map metrics data to an array of label-value pairs
 function mapMetricsToData(
   metrics: ImpactMetrics,
 ): { label: string; value: ReactNode }[] {
