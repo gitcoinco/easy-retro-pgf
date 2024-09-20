@@ -69,7 +69,7 @@ export function ApplicationForm() {
             categoryQuestions: {},
           },
           applicationVerification: {
-            fundingSources: [{}],
+            fundingSources: [],
           },
         }}
         persist="application-draft"
