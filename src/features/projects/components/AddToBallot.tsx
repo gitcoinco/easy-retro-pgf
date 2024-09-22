@@ -80,7 +80,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
               .default(0),
           })}
           onSubmit={({ amount }) => {
-            add.mutate([{ projectId: id!, amount }]);
+            add.mutate([{ projectId: id!, amount:amount**2 }]);
             setOpen(false);
           }}
         >
@@ -116,7 +116,7 @@ const ProjectAllocation = ({
   const form = useFormContext();
   const formAmount = form.watch("amount") as string;
   const amount = formAmount
-    ? parseFloat(String(formAmount).replace(/,/g, ""))
+    ? parseFloat(String(formAmount).replace(/,/g, ""))**2
     : 0;
   const total = amount + current;
 

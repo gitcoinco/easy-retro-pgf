@@ -21,7 +21,8 @@ export function BallotAllocationForm({ isPublished = false }) {
 
   const votes = form.watch("votes");
   function handleSaveBallot({ votes }: { votes: Vote[] }) {
-    save.mutate({ votes });
+    const quadraticAmounts = votes.map((vote) => { return { ...vote, amount: vote.amount ** 2 } });
+    save.mutate({ votes: quadraticAmounts });
   }
 
   const roundState = useRoundState();
@@ -129,8 +130,9 @@ function ImportCSV() {
             variant="primary"
             disabled={save.isPending}
             onClick={() => {
+              const quadraticAmounts = votes.map((vote) => { return { ...vote, amount: vote.amount ** 2 } });
               save
-                .mutateAsync({ votes })
+                .mutateAsync({ votes: quadraticAmounts })
                 .then(() => form.reset({ votes }))
                 .catch(console.log);
               setVotes([]);
