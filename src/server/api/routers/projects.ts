@@ -273,6 +273,48 @@ export const projectsRouter = createTRPCRouter({
             projectIds: approvedIds,
           });
 
+          const combinedMetrics: Record<string, Partial<OSOMetricsCSV>> = {};
+          approvedApplications.map((a) => {
+
+            const dupes = approvedApplications.filter((b) => b.recipient === a.recipient);
+            dupes.map((dupe) => {
+              if (metricsByProjectId[dupe.id]) {
+                //project has metrics
+
+                const metrics = metricsByProjectId[dupe.id]!;
+                let k: keyof OSOMetricsCSV;
+                for (k in metrics) {
+                  // for each metric, if it exists in combined then add to it else just put it there.
+                  // also, only if it's a number.  if it's a string
+                  if (typeof metrics[k] === "number") {
+                    if (!combinedMetrics[dupe.id]) {
+                      // first add
+                      combinedMetrics[dupe.id] = metrics;
+                    } else {
+                      // nth add
+                      if (combinedMetrics[dupe.id]![k]) {
+                        let existing = combinedMetrics[dupe.id]![k] as number;
+                        let toAdd = metrics[k] as number;
+                        let combined = combinedMetrics[dupe.id];
+                        if (combined![k]) {
+                          combined![k] = existing + toAdd;
+                        }
+
+                      }
+                    }
+
+                  }
+                }
+              }
+
+            });
+
+
+
+
+            
+
+
           const projectsResult: Array<
             Attestation & {
               metrics?: Partial<OSOMetricsCSV>;
@@ -289,14 +331,21 @@ export const projectsRouter = createTRPCRouter({
             const { id: projectId } = project;
             const metrics = metricsByProjectId[projectId];
             const metadata = metadataByProjectId[projectId];
+            const combined = combinedMetrics[projectId];
 
             return {
               ...project,
               metadata,
               metrics,
+              combinedMetrics: combined,
               nextPage: cursor + 1,
             };
           });
+
+          
+
+    
+
           return projectsResult;
         } catch (error) {
           throw new TRPCError({
