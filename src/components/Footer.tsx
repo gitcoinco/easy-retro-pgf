@@ -8,7 +8,16 @@ export function Footer() {
         target="_blank"
         className="group py-4 text-sm font-medium hover:text-black"
       >
-        <div className="flex tracking-wide">Powered by EasyRetroPGF.xyz</div>
+
+        <div className="flex">
+          Built with{"  "}
+          <span className="relative -mt-1 w-6 px-1 text-xl text-red-600">
+            <span className="absolute">❤️</span>
+            <span className="absolute group-hover:animate-ping">❤️</span>
+          </span>
+          &nbsp;on EasyRetroPGF.
+        </div>
+
       </a>
     </footer>
   );

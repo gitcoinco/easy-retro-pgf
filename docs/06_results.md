@@ -4,12 +4,14 @@ Once the voting has ended you can view the results. There's a config determining
 
 > ! Before the results can be displayed the vote calculation must be configured. See the [Distribute](./07_distribute.md) documentation.
 
-- https://easy-retro-pgf.vercel.app/projects/results
+> ! Before the results can be displayed the vote calculation must be configured. See the [Distribute](./07_distribute.md) documentation.
+
+- https://easy-retro-pgf-ochre.vercel.app/projects/results
 
 ![](./images/voting_ended_sidebar.png)
 
 You can also see statistics of the round:
 
-- https://easy-retro-pgf.vercel.app/stats
+https://easy-retro-pgf-ochre.vercel.app/stats
 
 ![](./images/stats.png)
