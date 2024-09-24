@@ -24,15 +24,22 @@ export const applicationsRouter = createTRPCRouter({
         },
       });
     }),
-  list: publicProcedure.input(FilterSchema).query(async ({}) => {
-    return fetchAttestations([eas.schemas.metadata], {
-      orderBy: [{ time: "desc" }],
-      where: {
-        AND: [
-          createDataFilter("type", "bytes32", "application"),
-          createDataFilter("round", "bytes32", config.roundId),
-        ],
-      },
-    });
-  }),
+  list: publicProcedure
+    .input(
+      z.object({
+        attester: z.string().optional(),
+      }),
+    )
+    .query(async ({ input: { attester } }) => {
+      return fetchAttestations([eas.schemas.metadata], {
+        orderBy: [{ time: "desc" }],
+        where: {
+          AND: [
+            attester ? { attester: { equals: attester } } : {},
+            createDataFilter("type", "bytes32", "application"),
+            createDataFilter("round", "bytes32", config.roundId),
+          ],
+        },
+      });
+    }),
 });
