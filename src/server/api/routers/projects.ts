@@ -299,14 +299,12 @@ export const projectsRouter = createTRPCRouter({
                         if (combined![k]) {
                           combined![k] = existing + toAdd;
                         }
-
                       }
                     }
 
                   }
                 }
               }
-
             });
 
 
