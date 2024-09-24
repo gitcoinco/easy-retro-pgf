@@ -23,12 +23,13 @@ export const applicationsRouter = createTRPCRouter({
       });
     }),
   list: attestationProcedure
-    .input(z.object({ ids: z.array(z.string()).optional() }))
-    .query(async ({ ctx }) => {
+    .input(z.object({ attester: z.string().optional() }))
+    .query(async ({ input: { attester }, ctx }) => {
       return ctx.fetchAttestations(["metadata"], {
         orderBy: [{ time: "desc" }],
         where: {
           AND: [
+            attester ? { attester: { equals: attester } } : {},
             createDataFilter("type", "bytes32", "application"),
             createDataFilter("round", "bytes32", String(ctx.round?.id)),
           ],
