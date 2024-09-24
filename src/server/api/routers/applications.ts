@@ -25,11 +25,7 @@ export const applicationsRouter = createTRPCRouter({
       });
     }),
   list: publicProcedure
-    .input(
-      z.object({
-        attester: z.string().optional(),
-      }),
-    )
+    .input(z.object({ attester: z.string().optional() }))
     .query(async ({ input: { attester } }) => {
       return fetchAttestations([eas.schemas.metadata], {
         orderBy: [{ time: "desc" }],
