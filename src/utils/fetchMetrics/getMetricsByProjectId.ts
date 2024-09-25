@@ -4,7 +4,7 @@ import {
   type FetchImpactMetricsParams,
 } from "./fetchImpactMetricsFromCSV";
 import { indexMetricsByProjectId, indexMetricsByRecipientId } from "./indexMetricsByProjectId";
-import { BatchedOSOMetricsCSV } from "~/types/metrics";
+import type { BatchedOSOMetricsCSV } from "~/types/metrics";
 import { fetchBatchedImpactMetricsFromCSV } from "./fetchBatchedImpactMetricsFromCSV copy";
 
 /**

@@ -34,72 +34,36 @@ export async function fetchBatchedImpactMetricsFromCSV(
       step: (results) => {
         // filtering out rows based on the projectIds array and project_id column
         const row = results.data;
-        const idIncluded = projectIds?.some( id => row.application_id_list.includes(id) );
+        const idIncluded = projectIds?.some(id => row.application_id_list.includes(id));
         if (!isFilterByProjectId || idIncluded) {
-          // if (!isFilterByMetricId) 
 
-          const appIDArray = new String(row.application_id_list).substring(1, row.application_id_list.length-1).split(",");
+          // our parser parses them character by character into an array lol
+          const appIDArray = new String(row.application_id_list).substring(1, row.application_id_list.length - 1).split(",");
           const cleanAppid = appIDArray.map((appID) => {
             return appID.trim().split("\"").join('').split("\'").join('');
           });
 
-          const uuidArray = new String(row.uuid_list).substring(1, row.uuid_list.length-1).split(",");
+          // our parser parses them character by character into an array lol
+          const uuidArray = new String(row.uuid_list).substring(1, row.uuid_list.length - 1).split(",");
           const cleanUuid = uuidArray.map((uuid) => {
             return uuid.trim().split("\"").join('').split("\'").join('');
           });
 
-            const builtRow = {
-              recipient : row.recipient,
-              name : row.name,
-              transactions_90D : row.transactions_90D,
-              transactions_180D : row.transactions_180D,
-              active_addresses_90D : row.active_addresses_90D,
-              active_addresses_180D : row.active_addresses_180D,
-              farcaster_users_90D : row.farcaster_users_90D,
-              farcaster_users_180D : row.farcaster_users_180D,
-              daily_active_addresses_90D : row.daily_active_addresses_90D,
-              daily_active_addresses_180D : row.daily_active_addresses_180D,
-              uuid_list : cleanUuid,
-              application_id_list : cleanAppid,
-
-              
-            }
-
-              // console.log("wat1: " , row.application_id_list);/
-              // console.log("wat2: " , row.application_id_list.length);
-              // console.log("wat3: " , new String(row.application_id_list))
-              // console.log("wat4: " , new String(row.application_id_list).substring(1, row.application_id_list.length-1))
-              // console.log("wat4: " , new String(row.application_id_list).substring(1, row.application_id_list.length-1).split(","))
-              
-              // console.log("wat5: " , cleanAppid)
-              // console.log("wat6: " , cleanAppid.length)
-              // console.log("wat6: " , cleanAppid.length)
-              // cleanAppid.map((appID) => {
-                // console.log("wat7: " , appID)
-
-                // console.log("wat7: " , cleanAppid[0])
-                // if (cleanAppid.length > 1) {
-                
-                // console.log("wat7: " , cleanAppid[1])
-              // }
-            // });
-
-            projectsMetricsArray.push(builtRow);
-          // console.log("Wtf: ", projectsMetricsArray[projectsMetricsArray.length - 1]?.application_id_list.length);
-          // else {
-          //   // filtering out the metrics columns that are not in the metricIds array
-          //   const filteredRow: Partial<BatchedOSOMetricsCSV> = {
-          //     id: row.id,
-          //     category: row.category,
-          //     chain: row.chain,
-          //     address: row.address,
-
-          //   };
-          //   metricIds.forEach((metric) => {
-          //     filteredRow[metric] = row[metric];
-          //   });
-          //   projectsMetricsArray.push(filteredRow as BatchedOSOMetricsCSV);
-          // }
+          const builtRow = {
+            recipient: row.recipient,
+            name: row.name,
+            transactions_90D: row.transactions_90D,
+            transactions_180D: row.transactions_180D,
+            active_addresses_90D: row.active_addresses_90D,
+            active_addresses_180D: row.active_addresses_180D,
+            farcaster_users_90D: row.farcaster_users_90D,
+            farcaster_users_180D: row.farcaster_users_180D,
+            daily_active_addresses_90D: row.daily_active_addresses_90D,
+            daily_active_addresses_180D: row.daily_active_addresses_180D,
+            uuid_list: cleanUuid,
+            application_id_list: cleanAppid,
+          }
+          projectsMetricsArray.push(builtRow);
         }
       },
       complete: (results) => {
