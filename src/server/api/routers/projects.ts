@@ -23,6 +23,7 @@ import { possibleSpamIds } from "public/possibleSpamIds";
 import { Part } from "formidable";
 import { BatchedOSOMetricsCSV } from "~/types/metrics";
 import { getBatchedMetricsByProjectId, getMetricsByRecipientId } from "~/utils/fetchMetrics/getMetricsByProjectId";
+import { cssObjectFromTheme } from "@rainbow-me/rainbowkit";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -281,35 +282,87 @@ export const projectsRouter = createTRPCRouter({
             projectIds: approvedIds,
           });
 
-          const projectsResult: Array<
-            Attestation & {
-              metrics?: Partial<OSOMetricsCSV>;
-              metadata: unknown;
-            }
-          > = approvedApplications
-            .filter((a) => {
-              if (search) {
-                return a.id === search;
-              }
-              return true;
-          })
-          .map((project) => {
-            const { id: projectId } = project;
-            const metrics = metricsByProjectId[projectId];
-            const metadata = metadataByProjectId[projectId];
-            const batched = metricsByRecipientId[project.recipient];
-            const recipient = project.recipient;
+          console.log("metricsByRecipientId", Object.keys(metricsByRecipientId).length);
 
-            return {
-              ...project,
+          const recipientReults: Array<
+          Attestation & {
+            metrics?: Partial<OSOMetricsCSV>;
+            metadata: unknown;
+          }
+          > = Object.keys(metricsByRecipientId)
+          .filter((recipient) => {
+            if (search) {
+              return (
+                metricsByRecipientId[recipient]!.application_id_list!.includes(search)
+              ||
+              recipient === search
+              )
+            }
+            return true;
+        })
+        .map((recipient) => {
+          const asStringArrayTSWTF = metricsByRecipientId[recipient]!.application_id_list!;
+
+          console.log("asStringArrayTSWTF", asStringArrayTSWTF.length)
+
+          const firstProjectId  = metricsByRecipientId[recipient]!.application_id_list![0];
+
+          console.log("first project ", firstProjectId)
+          
+          let metadata;
+          if (firstProjectId) {
+            metadata = metadataByProjectId[firstProjectId];
+          }
+          const metrics = metricsByRecipientId[recipient];
+            const name = metrics?.name;
+
+             return {
+              // ...project,
+                  
               metadata,
+              name,
               metrics,
-              batched,
               recipient,
               nextPage: cursor + 1,
             };
-          });
-          return projectsResult;
+
+
+        });
+
+        return recipientReults
+      
+          
+          
+
+          // const projectsResult: Array<
+          //   Attestation & {
+          //     metrics?: Partial<OSOMetricsCSV>;
+          //     metadata: unknown;
+          //   }
+          // > = approvedApplications
+          //   .filter((a) => {
+          //     if (search) {
+          //       return a.id === search;
+          //     }
+          //     return true;
+          // })
+          // .map((project) => {
+          //   const { id: projectId } = project;
+          //   const metrics = metricsByProjectId[projectId];
+          //   const metadata = metadataByProjectId[projectId];
+          //   const batched = metricsByRecipientId[project.recipient];
+          //   const recipient = project.recipient;
+
+          //   return {
+          //     ...project,
+          //     metadata,
+          //     metrics,
+          //     batched,
+          //     recipient,
+          //     nextPage: cursor + 1,
+          //   };
+          // });
+          // return projectsResult;
         } catch (error) {
           throw new TRPCError({
             code: "BAD_REQUEST",
