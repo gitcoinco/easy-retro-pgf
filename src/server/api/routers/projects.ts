@@ -298,12 +298,14 @@ export const projectsRouter = createTRPCRouter({
             const metrics = metricsByProjectId[projectId];
             const metadata = metadataByProjectId[projectId];
             const batched = metricsByRecipientId[project.recipient];
+            const recipient = project.recipient;
 
             return {
               ...project,
               metadata,
               metrics,
               batched,
+              recipient,
               nextPage: cursor + 1,
             };
           });
