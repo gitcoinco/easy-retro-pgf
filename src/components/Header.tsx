@@ -16,6 +16,7 @@ import ReactDOM from "react-dom";
 import useIsMobile from "./hooks/useIsMobile";
 import useAnchorPosition from "./hooks/useAnchorPosition";
 import { useActiveNavLink } from "./hooks/useActiveNavLink";
+import { useClickAway } from "react-use"; // Import the useClickAway hook
 
 const Logo = () => (
   <div className="h-10">
@@ -61,7 +62,7 @@ const Dropdown = ({
             <Link
               key={item.key}
               href={item.href}
-              className="block flex items-center justify-center px-4 py-2 text-sm text-sm text-gray-700 hover:bg-gray-100"
+              className="block items-center justify-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               onClick={() => {
                 onClose?.();
                 handleToggleMenu?.();
@@ -79,7 +80,7 @@ const Dropdown = ({
   ) : (
     ReactDOM.createPortal(
       <ul
-        className="absolute z-50 flex flex-col items-center rounded-md border border-gray-300 bg-white shadow-lg shadow-md"
+        className="absolute z-50 flex flex-col items-center rounded-md border border-gray-300 bg-white shadow-lg"
         style={{
           top: `${position?.top}px`,
           left: `${position?.left}px`,
@@ -229,6 +230,7 @@ const NavLinks = ({
 export const Header = ({ navLinks }: { navLinks: NavLinkType[] }) => {
   const [isOpen, setOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   const handleToggleMenu = () => {
     setOpen(!open);
@@ -244,8 +246,10 @@ export const Header = ({ navLinks }: { navLinks: NavLinkType[] }) => {
     }
   });
 
+  useClickAway(drawerRef, () => setOpen(false));
+
   return (
-    <header className="relative z-10">
+    <header className="relative z-50">
       <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center px-2">
         <div
           className={clsx("mr-4 flex items-center", {
@@ -284,6 +288,7 @@ export const Header = ({ navLinks }: { navLinks: NavLinkType[] }) => {
             navLinks={navLinks}
             handleToggleDropdown={handleToggleDropdown}
             isDropdownOpen={isDropdownOpen}
+            drawerRef={drawerRef}
           />
         )}
       </div>
@@ -297,15 +302,18 @@ const MobileMenu = ({
   handleToggleDropdown,
   isDropdownOpen,
   handleToggleMenu,
+  drawerRef,
 }: {
   isOpen?: boolean;
   navLinks: NavLinkType[];
   handleToggleDropdown: (href: string) => void;
   isDropdownOpen: string | null;
   handleToggleMenu: () => void;
+  drawerRef: React.RefObject<HTMLDivElement>;
 }) => {
   return (
     <div
+      ref={drawerRef}
       className={clsx(
         "fixed left-0 top-16 z-10 h-full border bg-white transition-transform duration-150 dark:bg-gray-900",
         { ["translate-x-auto w-[40%]"]: isOpen, ["hidden"]: !isOpen },

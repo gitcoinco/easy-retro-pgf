@@ -5,7 +5,7 @@ import Header from "~/components/Header";
 import BallotOverview from "~/features/ballot/components/BallotOverview";
 import { BaseLayout, type LayoutProps } from "./BaseLayout";
 import { getAppState } from "~/utils/state";
-import { config, roundsMap } from "~/config";
+import { config, previousRoundsMap } from "~/config";
 import { useSession } from "next-auth/react";
 
 type Props = PropsWithChildren<
@@ -56,7 +56,7 @@ export const Layout = ({ children, ...props }: Props) => {
           href: "/projects",
           children: "Previous Projects",
           onlyDropdown:true,
-          dropdownItems: Object.keys(roundsMap).map((key: string) => {
+          dropdownItems: Object.keys(previousRoundsMap).map((key: string) => {
             return {
               key: `&round=${key}`,
               href: `/projects?search=&round=${key}&orderBy=time&sortOrder=random`,
@@ -73,9 +73,9 @@ export const Layout = ({ children, ...props }: Props) => {
           href: "/projects",
           children: "Previous Projects",
           onlyDropdown:true,
-          dropdownItems: Object.keys(roundsMap).map((key: string) => {
+          dropdownItems: Object.keys(previousRoundsMap).map((key: string) => {
             return {
-              key: key,
+              key: `&round=${key}`,
               href: `/projects?search=&round=${key}&orderBy=time&sortOrder=random`,
               label: `Fil-RPGF Round #${key}`,
             };

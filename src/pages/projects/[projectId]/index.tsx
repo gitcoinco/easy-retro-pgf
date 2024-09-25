@@ -9,7 +9,7 @@ import { ProjectAwarded } from "~/features/projects/components/ProjectAwarded";
 import { ProjectComments } from "~/features/comments/components/ProjectComments";
 
 export default function ProjectDetailsPage({ projectId = "" }) {
-  const project = useProjectById(projectId);
+  const project = useProjectById(projectId, 0);
   const { name } = project.data ?? {};
 
   const action =

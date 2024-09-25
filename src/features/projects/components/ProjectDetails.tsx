@@ -70,11 +70,17 @@ export default function ProjectDetails({
         <div className="flex flex-col items-center">
           <div className="">
             {payoutAddress && <NameENS address={payoutAddress} />}
-            <div>
-              <a href={websiteUrl} target="_blank" className="hover:underline">
-                website: {websiteUrl}
-              </a>
-            </div>
+            {websiteUrl && (
+              <div>
+                <a
+                  href={websiteUrl}
+                  target="_blank"
+                  className="hover:underline"
+                >
+                  website: {websiteUrl}
+                </a>
+              </div>
+            )}
             <div>
               {githubProjectLink && (
                 <a
@@ -107,24 +113,26 @@ export default function ProjectDetails({
       )}
 
       {/* Impact Statements */}
-      <div className="mt-8 ">
-        <div className="rounded-md bg-white p-6 shadow-md">
-          <Heading as="h3" size="2xl" className="mb-4">
-            Contributions and Impact
-          </Heading>
-          <hr className="mb-8 mt-2" />
+      {metadata.data && (
+        <div className="mt-8 ">
+          <div className="rounded-md bg-white p-6 shadow-md">
+            <Heading as="h3" size="2xl" className="mb-4">
+              Contributions and Impact
+            </Heading>
+            <hr className="mb-8 mt-2" />
 
-          <ProjectContributions
-            isLoading={metadata.isPending}
-            project={metadata.data}
-          />
+            <ProjectContributions
+              isLoading={metadata.isPending}
+              project={metadata.data}
+            />
 
-          <ProjectImpact
-            isLoading={metadata.isPending}
-            project={metadata.data}
-          />
+            <ProjectImpact
+              isLoading={metadata.isPending}
+              project={metadata.data}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {fundingSources && (
         <div className="mt-8 ">

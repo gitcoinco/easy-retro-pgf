@@ -10,9 +10,9 @@ import { convertAndDownload } from "~/utils/csv";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { roundsMap } from "~/config";
-export function useProjectById(id: string) {
+export function useProjectById(id: string, startsAt?: number) {
   const query = api.projects.get.useQuery(
-    { ids: [id] },
+    { ids: [id], startsAt },
     { enabled: Boolean(id) },
   );
 

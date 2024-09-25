@@ -8,7 +8,7 @@ export function ProjectBanner({
   profileId,
   ...props
 }: { profileId?: Address } & ComponentProps<typeof Banner>) {
-  const profile = useProfileWithMetadata(profileId);
+  const profile = useProfileWithMetadata(profileId, 0);
   const { profileImageUrl, bannerImageUrl } = profile.data ?? {};
 
   return (

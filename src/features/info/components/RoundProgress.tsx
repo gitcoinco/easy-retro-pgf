@@ -40,12 +40,12 @@ export function RoundProgress() {
       >
         <ProgressBar style={{ width: `${progress * 100}%` }} />
       </ProgressWrapper>
-      <div className="rounded-xl border border-yellow-400 md:flex">
+      <div className="relative z-10 rounded-xl border border-yellow-400 md:flex">
         {steps.map((step, i) => (
           <div
             key={i}
             className={cn(
-              "z-10 flex-1  rounded-xl border-l border-yellow-400 p-4 transition-opacity",
+              "z-20 flex-1  rounded-xl border-l border-yellow-400 p-4 ",
               {
                 ["opacity-50"]: currentStepIndex <= i,
               },

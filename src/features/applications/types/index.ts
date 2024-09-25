@@ -53,9 +53,9 @@ export const ApplicationSchema = z.object({
 
   contributionDescription: z.string().min(3),
   impactDescription: z.string().min(3),
-  impactCategory: z.array(z.string()).min(1),
+  impactCategory: z.array(z.string()).min(1).max(1),
   teamDescription: z.string().min(3),
-  twitterPost: z.string().url().includes("https://x.com/").min(15).optional(),
+  twitterPost: z.string().optional(),
   contributionLinks: z
     .array(
       z.object({
@@ -74,7 +74,7 @@ export const ApplicationVerificationSchema = z.object({
   POCName: z.string().min(3),
   projectEmail: z.string().email(),
   projectPhysicalAddress: z.string().min(3),
-  additionalPOC: z.string().optional(), 
+  additionalPOC: z.string().optional(),
   fundingSources: z
     .array(
       z.object({

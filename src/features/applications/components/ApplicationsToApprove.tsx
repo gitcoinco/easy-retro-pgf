@@ -10,7 +10,10 @@ import { Markdown } from "~/components/ui/Markdown";
 import { useMetadata } from "~/hooks/useMetadata";
 import { useApplications } from "~/features/applications/hooks/useApplications";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
-import { type Application } from "~/features/applications/types";
+import {
+  ApplicationVerification,
+  type Application,
+} from "~/features/applications/types";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Badge } from "~/components/ui/Badge";
 import { useApproveApplication } from "../hooks/useApproveApplication";
@@ -25,6 +28,7 @@ import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useAccount } from "wagmi";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
+import { useDecryption } from "~/features/projects/hooks/useProjects";
 
 export function ApplicationItem({
   id,
@@ -43,8 +47,29 @@ export function ApplicationItem({
   const form = useFormContext();
   const revoke = useRevokeAttestations({});
 
-  const { fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
+  const {
+    fundingSources = [],
+    impactMetrics = [],
+    impactCategory = [],
+  } = metadata.data ?? {};
   const isApproved = Boolean(approvedBy);
+
+  const { decryptedData } = useDecryption(
+    metadata.data?.encryptedData?.iv ?? "",
+    metadata.data?.encryptedData?.data ?? "",
+  );
+  const applicationVerificationData = decryptedData as
+    | ApplicationVerification
+    | undefined;
+
+  const metricsCount =
+    impactMetrics.length > 0 ? impactMetrics.length : impactCategory.length;
+  const fundingCount =
+    fundingSources.length > 0
+      ? fundingSources.length
+      : applicationVerificationData?.fundingSources
+        ? applicationVerificationData?.fundingSources.length
+        : 0;
 
   return (
     <div className="flex items-center gap-2 rounded border-b hover:bg-gray-100 dark:border-gray-800 hover:dark:bg-gray-800">
@@ -64,8 +89,8 @@ export function ApplicationItem({
             </Skeleton>
           </div>
           <div className="flex gap-4 text-xs dark:text-gray-400">
-            <div>{fundingSources.length} funding sources</div>
-            <div>{impactMetrics.length} impact metrics</div>
+            <div>{fundingCount} funding sources</div>
+            <div>{metricsCount} impact metrics</div>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">

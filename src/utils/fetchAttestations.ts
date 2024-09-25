@@ -60,9 +60,8 @@ const AttestationsQuery = `
 export async function fetchAttestations(
   schema: string[],
   filter?: AttestationsFilter,
+  startsAt = Math.floor(+config.startsAt / 1000),
 ) {
-  const startsAt = Math.floor(+config.startsAt / 1000);
-
   return fetch<{ attestations: AttestationWithMetadata[] }>(eas.url, {
     method: "POST",
     body: JSON.stringify({

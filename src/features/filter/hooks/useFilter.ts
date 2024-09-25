@@ -21,7 +21,7 @@ export function useFilter() {
         Object.values(SortOrder),
       ).withDefault(SortOrder.random),
       // Always default to the current running round
-      round: parseAsString.withDefault("1"),
+      round: parseAsString.withDefault("2"),
     },
     { history: "replace" },
   );

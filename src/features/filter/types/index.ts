@@ -19,7 +19,7 @@ export const FilterSchema = z.object({
   sortOrder: z.nativeEnum(SortOrder).default(SortOrder.asc),
   search: z.string().default(""),
   // Always default to the current running round
-  round: z.string().default("1"),
+  round: z.string().default("2"),
 });
 
 export type Filter = z.infer<typeof FilterSchema>;

@@ -3,7 +3,6 @@ import { toast } from "sonner";
 import { useController, useFormContext } from "react-hook-form";
 import { useLocalStorage } from "react-use";
 import { useSession } from "next-auth/react";
-
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/Button";
 import {
@@ -117,6 +116,13 @@ export function ApplicationForm() {
               required
               label="Project avatar"
               name="profile.profileImageUrl"
+              className="w-48"
+              hint={
+                <span className="text-xs">
+                  Upload an image with<strong> 1:1 aspect ratio</strong>. Less
+                  than 1MB.
+                </span>
+              }
             >
               <ImageUpload className="h-48 w-48 " />
             </FormControl>
@@ -124,7 +130,13 @@ export function ApplicationForm() {
               required
               label="Project background image"
               name="profile.bannerImageUrl"
-              className="flex-1"
+              className="flex-1 "
+              hint={
+                <span className="text-xs">
+                  Upload an image with<strong> 4:1 aspect ratio</strong>. Less
+                  than 1MB.
+                </span>
+              }
             >
               <ImageUpload className="h-48 " />
             </FormControl>
@@ -133,7 +145,7 @@ export function ApplicationForm() {
           <FormControl
             name="application.bio"
             label="Description of your project"
-            hint="Brief project description up to 100 words. This will be visible on the website and will be one of the first things reviewers look at. Make it descriptive and engaging (Markdown is supported)."
+            description="Brief project description up to 100 words. This will be visible on the website and will be one of the first things reviewers look at. Make it descriptive and engaging (Markdown is supported)."
             required
           >
             <Textarea rows={4} placeholder="Project description" />
@@ -142,6 +154,7 @@ export function ApplicationForm() {
             <FormControl
               className="flex-1"
               name="application.websiteUrl"
+              description="Website for your project."
               label="Website"
               required
             >
@@ -161,12 +174,12 @@ export function ApplicationForm() {
           <FormControl
             className="flex-1"
             name="application.githubProjectLink"
-            label="Project GitHub Repository"
-            description="FIL awards will be streamed to your project's public GitHub repository. Ensure your GitHub link is correct, as it will determine the payout address for funds. Adding a repository you don't own may result in loss of funds."
+            label="Project GitHub repository"
+            description="FIL awards will be streamed to your project's public GitHub repository using Drips. If your project doesn’t have a GitHub repository, please create one. "
             hint={
               <span>
-                For guidance on how to configure your GitHub repository, please
-                refer to the{" "}
+                For guidance on how to configure your GitHub repository for
+                Drips, please refer to the{" "}
                 <a
                   href="https://fil-retropgf.notion.site/Round-2-Application-Guidelines-394969fa60cf4b45a8d8ef5cbbfd3d7e"
                   target="_blank"
@@ -183,9 +196,9 @@ export function ApplicationForm() {
           </FormControl>
 
           <FormControl
-            label="Team Composition"
+            label="Team composition"
             name="application.teamDescription"
-            hint={`Briefly describe your team size and subgroups.`}
+            description={`Briefly describe your team size and any subgroups.`}
             required
           >
             <Textarea rows={3} />
@@ -193,8 +206,7 @@ export function ApplicationForm() {
           <FormControl
             label="Social Media"
             name="application.twitterPost"
-            hint={`Please share a link to the Twitter/X post you created as part of the showcase phase. (If you have not created one, please feel free to make one at the earliest tagging the FIL-RetroPGF team).`}
-            required
+            description={`Please share a link to the Social Media post you created as part of the showcase phase.`}
           >
             <Input placeholder="https://" />
           </FormControl>
@@ -202,7 +214,7 @@ export function ApplicationForm() {
 
         <FormSection
           title={"Contribution & Impact"}
-          description="Describe the contribution and impact of your project. Use the following questions as inspiration to help you describe your project's impact. You don't have to answer all questions, and you can illustrate impact as you best feel fits. Be as succinct and clear as possible."
+          description="Describe the contribution and impact of your project. Be as succinct and clear as possible."
           className="rounded border border-gray-300 p-4"
         >
           <FormControl
@@ -216,6 +228,55 @@ export function ApplicationForm() {
               placeholder="What have your project contributed to?"
             />
           </FormControl>
+
+          <FormSection
+            title={
+              <>
+                Contribution links <span className="text-red-300">*</span>
+              </>
+            }
+            description="Where can we find your contributions? Provide 1-5 that best demonstrate the impact of your contributions to the Filecoin Ecosystem."
+            className="rounded border border-gray-300 p-4"
+          >
+            <FieldArray
+              name="application.contributionLinks"
+              requiredRows={1}
+              ErrorMessage="provide at least one contribution link"
+              hint="Please provide a description, URL, and type of contribution."
+              renderField={(field, i) => (
+                <>
+                  <FormControl
+                    className="min-w-96 flex-1"
+                    name={`application.contributionLinks.${i}.description`}
+                    hint="Markdown is supported"
+                    required
+                  >
+                    <Input placeholder="Description" />
+                  </FormControl>
+                  <FormControl
+                    name={`application.contributionLinks.${i}.url`}
+                    required
+                  >
+                    <Input placeholder="https://" />
+                  </FormControl>
+                  <FormControl
+                    name={`application.contributionLinks.${i}.type`}
+                    required
+                  >
+                    <Select>
+                      {Object.entries(contributionTypes).map(
+                        ([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ),
+                      )}
+                    </Select>
+                  </FormControl>
+                </>
+              )}
+            />
+          </FormSection>
 
           <FormControl
             name="application.impactDescription"
@@ -232,55 +293,8 @@ export function ApplicationForm() {
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Contribution links <span className="text-red-300">*</span>
-            </>
-          }
-          description="Where can we find your contributions? Provide 1-5 that best demonstrate the impact of your contributions to the Filecoin Ecosystem."
-          className="rounded border border-gray-300 p-4"
-        >
-          <FieldArray
-            name="application.contributionLinks"
-            requiredRows={1}
-            ErrorMessage="provide at least one contribution link"
-            hint="Please provide a description, URL, and type of contribution."
-            renderField={(field, i) => (
-              <>
-                <FormControl
-                  className="min-w-96 flex-1"
-                  name={`application.contributionLinks.${i}.description`}
-                  hint="Markdown is supported"
-                  required
-                >
-                  <Input placeholder="Description" />
-                </FormControl>
-                <FormControl
-                  name={`application.contributionLinks.${i}.url`}
-                  required
-                >
-                  <Input placeholder="https://" />
-                </FormControl>
-                <FormControl
-                  name={`application.contributionLinks.${i}.type`}
-                  required
-                >
-                  <Select>
-                    {Object.entries(contributionTypes).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </>
-            )}
-          />
-        </FormSection>
-
-        <FormSection
           title={"Project KYC Details"}
-          description="To comply with regulations, we need the following details. Note that legal name should match with profile or application name."
+          description="To comply with regulations, KYC information must be collected. The information is being collected at this stage to streamline distribution later. The KYC information collected will be private and confidential. If you can’t supply this information don’t apply."
           className="rounded border border-gray-300 p-4"
         >
           <FormControl
@@ -446,13 +460,18 @@ function ImpactTags() {
 
   const selected = watch("application.impactCategory") ?? [];
 
-  const error = formState.errors.application?.impactCategory;
+  const error =
+    (formState.errors.application?.impactCategory ?? selected.length > 1)
+      ? { message: "Select only one impact category" }
+      : selected.length === 0
+        ? { message: "Select one impact category" }
+        : null;
 
   return (
     <div className="mb-4">
       <FormSection
         title="Impact Categories"
-        description="Select the impact category that best describes your project/contributions. After selecting, answer the relevant questions below to provide insights into the impact your project made during the impact window [April 2024-September 2024]. Be as specific and succinct as possible."
+        description="Select the impact category that best describes your project/contributions. After selecting, answer the relevant questions below to provide insights into the impact your project made during the impact window [April 2024-September 2024]. You don't have to answer all questions, the questions are intended to serve as a guide, please free to add additional information you feel is relevant. Important: be as specific and succinct as possible."
         className="rounded border border-gray-300 p-4"
       >
         <div className="mt-4 flex flex-wrap gap-2">
@@ -476,10 +495,9 @@ function ImpactTags() {
             );
           })}
         </div>
+        {error && <ErrorMessage>{error.message}</ErrorMessage>}
       </FormSection>
       <ImpactQuestions selectedCategories={selected} />
-
-      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </div>
   );
 }
