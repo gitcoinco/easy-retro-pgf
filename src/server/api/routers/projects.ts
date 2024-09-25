@@ -20,6 +20,9 @@ import { getMetricsByProjectId } from "~/utils/fetchMetrics";
 import { fetchMetadataFromAttestations } from "~/utils/metadata";
 import { createOrderBy } from "~/utils/fetchAttestations/filters";
 import { possibleSpamIds } from "public/possibleSpamIds";
+import { Part } from "formidable";
+import { BatchedOSOMetricsCSV } from "~/types/metrics";
+import { getBatchedMetricsByProjectId, getMetricsByRecipientId } from "~/utils/fetchMetrics/getMetricsByProjectId";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -273,27 +276,34 @@ export const projectsRouter = createTRPCRouter({
             projectIds: approvedIds,
           });
 
+          const metricsByRecipientId: Record<string, Partial<BatchedOSOMetricsCSV>> 
+          = await getMetricsByRecipientId({
+            projectIds: approvedIds,
+          });
+
           const projectsResult: Array<
             Attestation & {
               metrics?: Partial<OSOMetricsCSV>;
               metadata: unknown;
             }
           > = approvedApplications
-          .filter((a) => {
-            if (search){
-              return a.id === search;
-            }
+            .filter((a) => {
+              if (search) {
+                return a.id === search;
+              }
               return true;
           })
           .map((project) => {
             const { id: projectId } = project;
             const metrics = metricsByProjectId[projectId];
             const metadata = metadataByProjectId[projectId];
+            const batched = metricsByRecipientId[project.recipient];
 
             return {
               ...project,
               metadata,
               metrics,
+              batched,
               nextPage: cursor + 1,
             };
           });

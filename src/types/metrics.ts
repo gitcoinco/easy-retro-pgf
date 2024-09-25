@@ -55,4 +55,13 @@ export type OSOMetricCSVProjectMeta = {
   address: Address;
 };
 
+export type BatchedOSOMetricCSVProjectMeta = {
+  recipient: Address;
+  name: string;
+  uuid_list: string[];
+  application_id_list: string[];
+};
+
+
 export type OSOMetricsCSV = OSOMetricCSVProjectMeta & OSOMetric;
+export type BatchedOSOMetricsCSV = BatchedOSOMetricCSVProjectMeta & OSOMetric;
