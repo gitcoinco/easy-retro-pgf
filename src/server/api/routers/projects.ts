@@ -15,11 +15,11 @@ import { TRPCError } from "@trpc/server";
 import { FilterSchema } from "~/features/filter/types";
 import { fetchMetadata } from "~/utils/fetchMetadata";
 import { fetchProfiles } from "./profile/utils";
-import type { OSOMetricsCSV } from "~/types";
-import { getMetricsByProjectId } from "~/utils/fetchMetrics";
+import type { OSOMetric } from "~/types";
 import { fetchMetadataFromAttestations } from "~/utils/metadata";
 import { createOrderBy } from "~/utils/fetchAttestations/filters";
 import { possibleSpamIds } from "public/possibleSpamIds";
+import { getMetricsByRecipientId } from "~/utils/fetchMetrics/getMetricsByProjectId";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -266,38 +266,50 @@ export const projectsRouter = createTRPCRouter({
           const metadataByProjectId =
             await fetchMetadataFromAttestations(approvedApplications);
 
-          const metricsByProjectId: Record<
+          const metricsByRecipientId: Record<
             string,
-            Partial<OSOMetricsCSV>
-          > = await getMetricsByProjectId({
+            {
+              name: string;
+              metrics: OSOMetric;
+              uuids: string[];
+              applicationIDs: string[];
+            }
+          > = await getMetricsByRecipientId({
             projectIds: approvedIds,
           });
 
-          const projectsResult: Array<
-            Attestation & {
-              metrics?: Partial<OSOMetricsCSV>;
-              metadata: unknown;
-            }
-          > = approvedApplications
-          .filter((a) => {
-            if (search){
-              return a.id === search;
-            }
-              return true;
-          })
-          .map((project) => {
-            const { id: projectId } = project;
-            const metrics = metricsByProjectId[projectId];
-            const metadata = metadataByProjectId[projectId];
+          const recipientResults = Object.keys(metricsByRecipientId)
+            .filter((recipient) => {
+              if (search) {
+                const applicationIDs =
+                  metricsByRecipientId?.[recipient]?.applicationIDs;
 
-            return {
-              ...project,
-              metadata,
-              metrics,
-              nextPage: cursor + 1,
-            };
-          });
-          return projectsResult;
+                return applicationIDs!.includes(search) || recipient === search;
+              }
+              return true;
+            })
+            .map((recipient) => {
+              const recipientData = metricsByRecipientId?.[recipient];
+              const applicationIDs = recipientData?.applicationIDs;
+              const firstProjectId = applicationIDs?.[0];
+
+              const metadata = firstProjectId
+                ? metadataByProjectId[firstProjectId]
+                : undefined;
+
+              const metrics = recipientData?.metrics;
+              const name = recipientData?.name;
+
+              return {
+                metadata,
+                name,
+                metrics,
+                recipient,
+                nextPage: cursor + 1,
+              };
+            });
+
+          return recipientResults;
         } catch (error) {
           throw new TRPCError({
             code: "BAD_REQUEST",
