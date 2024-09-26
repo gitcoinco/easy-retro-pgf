@@ -1,5 +1,5 @@
 import type { OSOMetric, OSOMetricsCSV } from "~/types";
-import type { BatchedOSOMetricsCSV } from "~/types/metrics";
+import type { BatchedOSOMetricsCSV, CreatorOSOMetricsCSV, OSOCreatorMetric } from "~/types/metrics";
 
 /**
  * Indexes metrics by project ID for efficient lookup
@@ -26,10 +26,11 @@ export const indexMetricsByProjectId = (
  */
 export const indexMetricsByRecipientId = (
   metricsArray: BatchedOSOMetricsCSV[],
+  creatorArray: CreatorOSOMetricsCSV[],
 ): Record<
   string,
   {
-    metrics: OSOMetric;
+    metrics: OSOMetric | OSOCreatorMetric;
     name: string;
     uuids: string[];
     applicationIDs: string[];
@@ -37,17 +38,20 @@ export const indexMetricsByRecipientId = (
 > => {
   if (!metricsArray || metricsArray.length === 0) return {};
 
+  const combinedArray = [...metricsArray, ...creatorArray];
+
   const metricsByRecipientId = Object.fromEntries(
-    metricsArray.map((metricsItem: BatchedOSOMetricsCSV) => {
-      const { recipient, name, uuid_list, application_id_list, ...metrics } =
+    combinedArray.map((metricsItem) => {
+      const { recipient, name = "", application_id_list, ...metrics } =
         metricsItem;
       return [
-        recipient,
+        `${recipient}_${name.replace(/[^a-zA-Z ]/g, "").replace(/\s/g, "")}`,
         {
           metrics,
           name,
-          uuids: uuid_list,
-          applicationIDs: application_id_list,
+          recipient,
+          uuids: [], // TODO remove this if we don't need it ?
+          applicationIDs: application_id_list!,
         },
       ];
     }),

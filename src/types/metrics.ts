@@ -28,6 +28,14 @@ export type OSOMetric = {
   transactions_90D: number;
 };
 
+export type OSOCreatorMetric = {
+  minting_wallet: Address;
+  num_drops: string;
+  num_unique_minters: string;
+  num_transactions: string;
+  usd_value_of_transactions: string;
+}
+
 export type MetricId = keyof OSOMetric;
 
 export type Metric = {
@@ -60,8 +68,10 @@ export type BatchedOSOMetricCSVProjectMeta = {
   name: string;
   uuid_list: string[];
   application_id_list: string[];
+  type: string;
 };
 
 
 export type OSOMetricsCSV = OSOMetricCSVProjectMeta & OSOMetric;
 export type BatchedOSOMetricsCSV = BatchedOSOMetricCSVProjectMeta & OSOMetric;
+export type CreatorOSOMetricsCSV = Partial<BatchedOSOMetricCSVProjectMeta> & OSOCreatorMetric;
