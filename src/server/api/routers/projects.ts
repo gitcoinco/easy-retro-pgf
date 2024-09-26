@@ -285,7 +285,13 @@ export const projectsRouter = createTRPCRouter({
                 const applicationIDs =
                   metricsByRecipientId?.[recipientIDAndName]?.applicationIDs;
 
+                  
+                    console.log(applicationIDs);
+                  
+
                 return applicationIDs!.includes(search) || recipientIDAndName.split("_")[0] === search;
+              }else{
+                console.log("no easrch")
               }
               return true;
             })
@@ -301,6 +307,7 @@ export const projectsRouter = createTRPCRouter({
               const metrics = recipientData?.metrics;
               const name = recipientData?.name;
               const recipient = recipientIDAndName.split("_")[0];
+              const applicationIds = recipientData?.applicationIDs;
 
 
               return {
@@ -308,6 +315,7 @@ export const projectsRouter = createTRPCRouter({
                 name,
                 metrics,
                 recipient,
+                applicationIds,
                 nextPage: cursor + 1,
               };
             });
