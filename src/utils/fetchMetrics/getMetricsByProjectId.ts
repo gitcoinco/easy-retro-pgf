@@ -3,9 +3,12 @@ import {
   fetchImpactMetricsFromCSV,
   type FetchImpactMetricsParams,
 } from "./fetchImpactMetricsFromCSV";
-import { indexMetricsByProjectId, indexMetricsByRecipientId } from "./indexMetricsByProjectId";
-import type { BatchedOSOMetricsCSV } from "~/types/metrics";
-import { fetchBatchedImpactMetricsFromCSV } from "./fetchBatchedImpactMetricsFromCSV copy";
+import {
+  indexMetricsByProjectId,
+  indexMetricsByRecipientId,
+} from "./indexMetricsByProjectId";
+import type { OSOMetric } from "~/types/metrics";
+import { fetchBatchedImpactMetricsFromCSV } from "./fetchBatchedImpactMetricsFromCSV";
 
 /**
  * Fetches impact metrics and indexes them by project ID for efficient lookup
@@ -26,7 +29,17 @@ export const getMetricsByProjectId = async (
  */
 export const getMetricsByRecipientId = async (
   filters?: FetchImpactMetricsParams,
-): Promise<Record<string, Partial<BatchedOSOMetricsCSV>>> => {
+): Promise<
+  Record<
+    string,
+    {
+      name: string;
+      metrics: OSOMetric;
+      uuids: string[];
+      applicationIDs: string[];
+    }
+  >
+> => {
   const metricsArray = await fetchBatchedImpactMetricsFromCSV(filters);
   const metricsByProjectId = indexMetricsByRecipientId(metricsArray);
   return metricsByProjectId;

@@ -1,5 +1,5 @@
-import type { OSOMetricsCSV } from "~/types";
-import { BatchedOSOMetricsCSV } from "~/types/metrics";
+import type { OSOMetric, OSOMetricsCSV } from "~/types";
+import type { BatchedOSOMetricsCSV } from "~/types/metrics";
 
 /**
  * Indexes metrics by project ID for efficient lookup
@@ -19,7 +19,6 @@ export const indexMetricsByProjectId = (
   );
 };
 
-
 /**
  * Indexes metrics by recipient ID for efficient lookup
  * @param {BatchedOSOMetricsCSV[]} metricsArray - The metrics array
@@ -27,13 +26,32 @@ export const indexMetricsByProjectId = (
  */
 export const indexMetricsByRecipientId = (
   metricsArray: BatchedOSOMetricsCSV[],
-): Record<string, Partial<BatchedOSOMetricsCSV>> => {
+): Record<
+  string,
+  {
+    metrics: OSOMetric;
+    name: string;
+    uuids: string[];
+    applicationIDs: string[];
+  }
+> => {
   if (!metricsArray || metricsArray.length === 0) return {};
 
-  return Object.fromEntries(
+  const metricsByRecipientId = Object.fromEntries(
     metricsArray.map((metricsItem: BatchedOSOMetricsCSV) => {
-      const { recipient, ...metrics } = metricsItem;
-      return [recipient, metrics];
+      const { recipient, name, uuid_list, application_id_list, ...metrics } =
+        metricsItem;
+      return [
+        recipient,
+        {
+          metrics,
+          name,
+          uuids: uuid_list,
+          applicationIDs: application_id_list,
+        },
+      ];
     }),
   );
+
+  return metricsByRecipientId;
 };
