@@ -7,8 +7,9 @@ import {
   indexMetricsByProjectId,
   indexMetricsByRecipientId,
 } from "./indexMetricsByProjectId";
-import type { OSOMetric } from "~/types/metrics";
+import type { OSOCreatorMetric, OSOMetric } from "~/types/metrics";
 import { fetchBatchedImpactMetricsFromCSV } from "./fetchBatchedImpactMetricsFromCSV";
+import { fetchCreatorImpactMetricsFromCSV } from "./fetchCreatorImpactMetricsFromCSV";
 
 /**
  * Fetches impact metrics and indexes them by project ID for efficient lookup
@@ -34,13 +35,23 @@ export const getMetricsByRecipientId = async (
     string,
     {
       name: string;
-      metrics: OSOMetric;
+      metrics: OSOMetric | OSOCreatorMetric;
       uuids: string[];
       applicationIDs: string[];
     }
   >
 > => {
+  console.log("----------------------" );
+  console.log("getting metrics...")
   const metricsArray = await fetchBatchedImpactMetricsFromCSV(filters);
-  const metricsByProjectId = indexMetricsByRecipientId(metricsArray);
+  console.log("metrics: ", metricsArray.length);
+  const creatorArray = await fetchCreatorImpactMetricsFromCSV(filters);
+  
+  console.log(metricsArray.length);
+  console.log(creatorArray.length);
+  const metricsByProjectId = indexMetricsByRecipientId(metricsArray, creatorArray);
+  
   return metricsByProjectId;
 };
+
+

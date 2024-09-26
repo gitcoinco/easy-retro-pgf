@@ -1,72 +1,62 @@
 import fs from "fs";
 import path from "path";
 import Papa from "papaparse";
-import type { BatchedOSOMetricsCSV, MetricId, OSOMetricsCSV } from "~/types/metrics";
+import type { CreatorOSOMetricsCSV, MetricId, OSOMetricsCSV } from "~/types/metrics";
 
 export type FetchImpactMetricsParams = {
   projectIds?: string[];
   metricIds?: MetricId[];
 };
 
-const CSV_FILENAME = "metrics.csv";
+const CSV_FILENAME = "creatormetrics.csv";
 const FILE_PATH = path.join(process.cwd(), "public", CSV_FILENAME);
 
-export async function fetchBatchedImpactMetricsFromCSV(
+export async function fetchCreatorImpactMetricsFromCSV(
   filters?: FetchImpactMetricsParams,
-): Promise<BatchedOSOMetricsCSV[]> {
+): Promise<CreatorOSOMetricsCSV[]> {
   if (!fs.existsSync(FILE_PATH)) {
     throw new Error(`CSV file ${CSV_FILENAME} does not exist.`);
   }
 
   const fileContent = fs.readFileSync(FILE_PATH, "utf-8");
 
-  const { projectIds, metricIds } = filters ?? {};
+  const { projectIds } = filters ?? {};
 
   const isFilterByProjectId = projectIds && projectIds.length > 0;
 
   return new Promise((resolve, reject) => {
-    const projectsMetricsArray: BatchedOSOMetricsCSV[] = [];
+    const projectsMetricsArray: CreatorOSOMetricsCSV[] = [];
 
-    Papa.parse<BatchedOSOMetricsCSV>(fileContent, {
+    Papa.parse<CreatorOSOMetricsCSV>(fileContent, {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
       step: (results) => {
-        // filtering out rows based on the projectIds array and project_id column
+        // filtering out rows based on the projectIds array and project_id column        
         const row = results.data;
-        const idIncluded = projectIds?.some(id => row.application_id_list.includes(id));
-        if (!isFilterByProjectId || idIncluded) {
+        const applicationIdList = row.application_id_list ? row.application_id_list : []; 
+        const idIncluded = projectIds?.some(id => applicationIdList.includes(id));
+      
+        if (!isFilterByProjectId || idIncluded || applicationIdList.length === 0) {
 
           // our parser parses them character by character into an array lol
-          const appIDArray = new String(row.application_id_list).substring(1, row.application_id_list.length - 1).split(",");
+          const appIDArray = new String(row.application_id_list).substring(1, applicationIdList.length - 1).split(",");
           const cleanAppid = appIDArray.map((appID) => {
             return appID.trim().split("\"").join('').split("\'").join('');
-          });
-
-          // our parser parses them character by character into an array lol
-          const uuidArray = new String(row.uuid_list).substring(1, row.uuid_list.length - 1).split(",");
-          const cleanUuid = uuidArray.map((uuid) => {
-            return uuid.trim().split("\"").join('').split("\'").join('');
           });
 
           const builtRow = {
             recipient: row.recipient,
             name: row.name,
-            transactions_90D: row.transactions_90D,
-            transactions_180D: row.transactions_180D,
-            active_addresses_90D: row.active_addresses_90D,
-            active_addresses_180D: row.active_addresses_180D,
-            farcaster_users_90D: row.farcaster_users_90D,
-            farcaster_users_180D: row.farcaster_users_180D,
-            daily_active_addresses_90D: row.daily_active_addresses_90D,
-            daily_active_addresses_180D: row.daily_active_addresses_180D,
-            uuid_list: cleanUuid,
+            minting_wallet: row.minting_wallet,
+            num_drops: row.num_drops,
+            num_unique_minters: row.num_unique_minters,
+            num_transactions: row.num_transactions,
+            usd_value_of_transactions: row.usd_value_of_transactions,
             application_id_list: cleanAppid,
-            type: "project",
+            type: "creator"
           }
           projectsMetricsArray.push(builtRow);
-        }else{
-          console.log("skpping: " + row.recipient + " " + row.name);
         }
       },
       complete: (results) => {

@@ -19,7 +19,8 @@ import type { OSOMetric } from "~/types";
 import { fetchMetadataFromAttestations } from "~/utils/metadata";
 import { createOrderBy } from "~/utils/fetchAttestations/filters";
 import { possibleSpamIds } from "public/possibleSpamIds";
-import { getMetricsByRecipientId } from "~/utils/fetchMetrics/getMetricsByProjectId";
+import { getCreatorMetricsByRecipientId, getMetricsByRecipientId } from "~/utils/fetchMetrics/getMetricsByProjectId";
+import { OSOCreatorMetric } from "~/types/metrics";
 
 export const projectsRouter = createTRPCRouter({
   count: attestationProcedure.query(async ({ ctx }) => {
@@ -270,7 +271,7 @@ export const projectsRouter = createTRPCRouter({
             string,
             {
               name: string;
-              metrics: OSOMetric;
+              metrics: OSOMetric | OSOCreatorMetric;
               uuids: string[];
               applicationIDs: string[];
             }
@@ -279,17 +280,17 @@ export const projectsRouter = createTRPCRouter({
           });
 
           const recipientResults = Object.keys(metricsByRecipientId)
-            .filter((recipient) => {
+            .filter((recipientIDAndName) => {
               if (search) {
                 const applicationIDs =
-                  metricsByRecipientId?.[recipient]?.applicationIDs;
+                  metricsByRecipientId?.[recipientIDAndName]?.applicationIDs;
 
-                return applicationIDs!.includes(search) || recipient === search;
+                return applicationIDs!.includes(search) || recipientIDAndName.split("_")[0] === search;
               }
               return true;
             })
-            .map((recipient) => {
-              const recipientData = metricsByRecipientId?.[recipient];
+            .map((recipientIDAndName) => {
+              const recipientData = metricsByRecipientId?.[recipientIDAndName];
               const applicationIDs = recipientData?.applicationIDs;
               const firstProjectId = applicationIDs?.[0];
 
@@ -299,6 +300,8 @@ export const projectsRouter = createTRPCRouter({
 
               const metrics = recipientData?.metrics;
               const name = recipientData?.name;
+              const recipient = recipientIDAndName.split("_")[0];
+
 
               return {
                 metadata,
