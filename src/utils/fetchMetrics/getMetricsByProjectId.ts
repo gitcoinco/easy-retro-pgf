@@ -41,14 +41,10 @@ export const getMetricsByRecipientId = async (
     }
   >
 > => {
-  console.log("----------------------" );
-  console.log("getting metrics...")
-  const metricsArray = await fetchBatchedImpactMetricsFromCSV(filters);
-  console.log("metrics: ", metricsArray.length);
-  const creatorArray = await fetchCreatorImpactMetricsFromCSV(filters);
   
-  console.log(metricsArray.length);
-  console.log(creatorArray.length);
+  const metricsArray = await fetchBatchedImpactMetricsFromCSV(filters);
+  const creatorArray = await fetchCreatorImpactMetricsFromCSV(filters);
+
   const metricsByProjectId = indexMetricsByRecipientId(metricsArray, creatorArray);
   
   return metricsByProjectId;

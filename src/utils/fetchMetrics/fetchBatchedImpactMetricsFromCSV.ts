@@ -65,8 +65,6 @@ export async function fetchBatchedImpactMetricsFromCSV(
             type: "project",
           }
           projectsMetricsArray.push(builtRow);
-        }else{
-          console.log("skpping: " + row.recipient + " " + row.name);
         }
       },
       complete: (results) => {

@@ -40,7 +40,6 @@ export const indexMetricsByRecipientId = (
 
   const combinedArray = [...metricsArray, ...creatorArray];
 
-
   const metricsByRecipientId = Object.fromEntries(
     combinedArray.map((metricsItem) => {
       const { recipient, name = "", application_id_list, ...metrics } =
