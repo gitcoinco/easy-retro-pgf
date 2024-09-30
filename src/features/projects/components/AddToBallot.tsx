@@ -70,7 +70,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
           <div className="text-lg font-semibold">
             Voting with your allocated credits will result in the square root of the allocated amount. Please consider this when casting your votes.        </div>
         </Alert>
-        <p className="pb-4 leading-relaxed">
+        <p className="mt-2 pb-4 leading-relaxed">
           How much votes should this Project receive to fill the gap between the
           impact they generated and the profit they received for generating this
           impact
