@@ -170,8 +170,8 @@ const roundMiddleware = t.middleware(async ({ ctx, next }) => {
       })
     : null;
 
-  // if (!round)
-  //   throw new TRPCError({ code: "NOT_FOUND", message: "Round not found" });
+  if (!round)
+    throw new TRPCError({ code: "NOT_FOUND", message: "Round not found" });
 
   return next({ ctx: { ...ctx, round } });
 });

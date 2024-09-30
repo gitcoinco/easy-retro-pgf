@@ -19,6 +19,7 @@ import {
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { AllocationInput } from "~/components/AllocationInput";
+import { Alert } from "~/components/ui/Alert";
 
 type Props = { id?: string; name?: string };
 
@@ -65,6 +66,10 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         onOpenChange={setOpen}
         title={`Vote for ${name}`}
       >
+        <Alert variant="info" className="flex items-center gap-2">
+          <div className="text-lg font-semibold">
+            Voting with your allocated credits will result in the square root of the allocated amount. Please consider this when casting your votes.        </div>
+        </Alert>
         <p className="pb-4 leading-relaxed">
           How much votes should this Project receive to fill the gap between the
           impact they generated and the profit they received for generating this
@@ -76,11 +81,11 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             amount: z
               .number()
               .min(0)
-              .max(Math.min(maxVotesProject, maxVotesTotal - sum))
+              .max(Math.min(maxVotesProject, maxVotesTotal - sum)) // no changes here, it will b ein BE
               .default(0),
           })}
           onSubmit={({ amount }) => {
-            add.mutate([{ projectId: id!, amount:amount**2 }]);
+            add.mutate([{ projectId: id!, amount }]);
             setOpen(false);
           }}
         >
@@ -116,7 +121,7 @@ const ProjectAllocation = ({
   const form = useFormContext();
   const formAmount = form.watch("amount") as string;
   const amount = formAmount
-    ? parseFloat(String(formAmount).replace(/,/g, ""))**2
+    ? parseFloat(String(formAmount).replace(/,/g, ""))
     : 0;
   const total = amount + current;
 

@@ -97,7 +97,7 @@ export function useSubmitBallot({
 
 export const sumBallot = (votes?: Vote[]) =>
   (votes ?? []).reduce(
-    (sum, x) => sum + (!isNaN(Number(x?.amount)) ? Number(x.amount) : 0),
+    (sum, x) => sum + (!isNaN(Number(x?.amount)) ? Number(x.amount) : 0), // we will do changes in BE
     0,
   );
 

@@ -50,18 +50,18 @@ export const Layout = ({ children, ...props }: Props) => {
     );
   }
 
-  // if (!isPending && !round) {
-  //   return (
-  //     <BaseLayout>
-  //       <div className="flex flex-col items-center gap-4 py-8">
-  //         Round not found
-  //         <Button as={Link} href={"/"}>
-  //           Go home
-  //         </Button>
-  //       </div>
-  //     </BaseLayout>
-  //   );
-  // }
+  if (!isPending && !round) {
+    return (
+      <BaseLayout>
+        <div className="flex flex-col items-center gap-4 py-8">
+          Round not found
+          <Button as={Link} href={"/"}>
+            Go home
+          </Button>
+        </div>
+      </BaseLayout>
+    );
+  }
 
   return (
     <BaseLayout {...props} header={<Header navLinks={navLinks} />}>

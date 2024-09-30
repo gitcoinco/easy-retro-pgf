@@ -21,15 +21,18 @@ export function BallotAllocationForm({ isPublished = false }) {
 
   const votes = form.watch("votes");
   function handleSaveBallot({ votes }: { votes: Vote[] }) {
-    const quadraticAmounts = votes.map((vote) => { return { ...vote, amount: vote.amount ** 2 } });
-    save.mutate({ votes: quadraticAmounts });
+    save.mutate({ votes });
   }
 
   const roundState = useRoundState();
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
-      <p className="mb-6">
+      <Alert variant="info" className="flex items-center gap-2">
+        <div className="text-lg font-semibold">
+          Voting with your allocated credits will result in the square root of the allocated amount. Please consider this when casting your votes.        </div>
+      </Alert>
+      <p className="mt-2 mb-6">
         Once you have reviewed your vote allocation, you can submit your ballot.
       </p>
       {save.error && (
@@ -130,9 +133,8 @@ function ImportCSV() {
             variant="primary"
             disabled={save.isPending}
             onClick={() => {
-              const quadraticAmounts = votes.map((vote) => { return { ...vote, amount: vote.amount ** 2 } });
               save
-                .mutateAsync({ votes: quadraticAmounts })
+                .mutateAsync({ votes })
                 .then(() => form.reset({ votes }))
                 .catch(console.log);
               setVotes([]);
