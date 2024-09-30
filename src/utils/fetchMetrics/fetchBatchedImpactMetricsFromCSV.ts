@@ -62,7 +62,7 @@ export async function fetchBatchedImpactMetricsFromCSV(
             daily_active_addresses_180D: row.daily_active_addresses_180D,
             uuid_list: cleanUuid,
             application_id_list: cleanAppid,
-            type: "project",
+            metrics_type: 0
           }
           projectsMetricsArray.push(builtRow);
         }

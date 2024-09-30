@@ -282,16 +282,10 @@ export const projectsRouter = createTRPCRouter({
           const recipientResults = Object.keys(metricsByRecipientId)
             .filter((recipientIDAndName) => {
               if (search) {
+                console.log("search", search);
                 const applicationIDs =
                   metricsByRecipientId?.[recipientIDAndName]?.applicationIDs;
-
-                  
-                    console.log(applicationIDs);
-                  
-
                 return applicationIDs!.includes(search) || recipientIDAndName.split("_")[0] === search;
-              }else{
-                console.log("no easrch")
               }
               return true;
             })
