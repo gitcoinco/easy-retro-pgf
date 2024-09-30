@@ -112,15 +112,15 @@ export const ballotRouter = createTRPCRouter({
         });
       }
 
-      // if (round?.resultAt && isAfter(new Date(), round.resultAt)) {
-      //   throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
-      // }
-      // if (ballot?.publishedAt) {
-      //   throw new TRPCError({
-      //     code: "FORBIDDEN",
-      //     message: "Ballot already published",
-      //   });
-      // }
+      if (round?.resultAt && isAfter(new Date(), round.resultAt)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
+      }
+      if (ballot?.publishedAt) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Ballot already published",
+        });
+      }
       const inputWithSquareRootAmounts = { ...input, votes: input.votes.map((vote) => { return { ...vote, amount: vote.amount ** 0.5 } }) }
       return ballot
         ? ctx.db.ballot.update({

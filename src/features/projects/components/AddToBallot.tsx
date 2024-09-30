@@ -68,7 +68,8 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
       >
         <Alert variant="info" className="flex items-center gap-2">
           <div className="text-lg font-semibold">
-            Voting with your allocated credits will result in the square root of the allocated amount. Please consider this when casting your votes.        </div>
+            Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes.
+          </div>
         </Alert>
         <p className="mt-2 pb-4 leading-relaxed">
           How much votes should this Project receive to fill the gap between the
@@ -81,7 +82,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
             amount: z
               .number()
               .min(0)
-              .max(Math.min(maxVotesProject, maxVotesTotal - sum)) // no changes here, it will b ein BE
+              .max(Math.min(maxVotesProject, maxVotesTotal - sum))
               .default(0),
           })}
           onSubmit={({ amount }) => {
