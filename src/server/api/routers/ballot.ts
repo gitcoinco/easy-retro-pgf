@@ -41,13 +41,7 @@ export const ballotRouter = createTRPCRouter({
       })
       .then((ballot) => ({
         ...ballot,
-        votes: ((ballot?.votes.map((vote) => {
-          if (vote &&
-            typeof vote === 'object' &&
-            !Array.isArray(vote)) {
-            return { ...vote, amount: (vote?.amount as number) ** 2 }
-          }
-        })) as Vote[]) ?? [],
+        votes: (ballot?.votes as Vote[]) ?? [],
       }));
   }),
   export: adminProcedure.mutation(({ ctx }) => {
@@ -121,15 +115,14 @@ export const ballotRouter = createTRPCRouter({
           message: "Ballot already published",
         });
       }
-      const inputWithSquareRootAmounts = { ...input, votes: input.votes.map((vote) => { return { ...vote, amount: vote.amount ** 0.5 } }) }
       return ballot
         ? ctx.db.ballot.update({
           select: defaultBallotSelect,
           where: { id: ballot?.id, roundId, voterId },
-          data: inputWithSquareRootAmounts,
+          data: input,
         })
         : ctx.db.ballot.create({
-          data: { ...inputWithSquareRootAmounts, roundId, voterId },
+          data: { ...input, roundId, voterId },
         });
     }),
   publish: protectedRoundProcedure

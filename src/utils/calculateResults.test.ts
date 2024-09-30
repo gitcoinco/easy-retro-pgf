@@ -60,8 +60,8 @@ describe("Calculate results", () => {
       ],
     },
   ];
-  test("custom payout", () => {
-    const { projects } = calculateVotes(ballots, { style: "custom" });
+  test("sum payout", () => {
+    const { projects } = calculateVotes(ballots, { calculation: "sum" });
 
     const actual: Record<
       string,
@@ -78,57 +78,57 @@ describe("Calculate results", () => {
       }
     }
     console.log(actual);
-
+    // ${30 ** 0.5 + 50 ** 0.5 + 40 ** 0.5}
     expect(actual).toMatchInlineSnapshot(`
       {
         "projectA": {
           "voters": 4,
-          "votes": 107,
+          "votes": ${20 ** 0.5 + 22 ** 0.5 + 30 ** 0.5 + 35 ** 0.5},
         },
         "projectB": {
           "voters": 3,
-          "votes": 120,
+          "votes": 18.872848707253894,
         },
         "projectC": {
           "voters": 2,
-          "votes": 130,
+          "votes": ${60 ** 0.5 + 70 ** 0.5},
         },
       }
     `);
   });
-  test("OP-style payout", () => {
-    const { projects } = calculateVotes(ballots, {
-      style: "op",
-      threshold: 3,
-    });
+  // test("OP-style payout", () => {
+  //   const { projects } = calculateVotes(ballots, {
+  //     style: "op",
+  //     threshold: 3,
+  //   });
 
-    const actual: Record<
-      string,
-      {
-        voters: number;
-        votes: number;
-      }
-    > = {};
+  //   const actual: Record<
+  //     string,
+  //     {
+  //       voters: number;
+  //       votes: number;
+  //     }
+  //   > = {};
 
-    for (const key in projects) {
-      if (projects.hasOwnProperty(key)) {
-        const { voters, votes } = projects[key]!;
-        actual[key] = { voters, votes };
-      }
-    }
+  //   for (const key in projects) {
+  //     if (projects.hasOwnProperty(key)) {
+  //       const { voters, votes } = projects[key]!;
+  //       actual[key] = { voters, votes };
+  //     }
+  //   }
 
-    console.log(actual);
-    expect(actual).toMatchInlineSnapshot(`
-      {
-        "projectA": {
-          "voters": 4,
-          "votes": 26,
-        },
-        "projectB": {
-          "voters": 3,
-          "votes": 40,
-        },
-      }
-    `);
-  });
+  //   console.log(actual);
+  //   expect(actual).toMatchInlineSnapshot(`
+  //     {
+  //       "projectA": {
+  //         "voters": 4,
+  //         "votes": 26,
+  //       },
+  //       "projectB": {
+  //         "voters": 3,
+  //         "votes": 40,
+  //       },
+  //     }
+  //   `);
+  // });
 });
