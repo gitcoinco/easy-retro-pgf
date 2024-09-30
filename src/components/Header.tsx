@@ -20,13 +20,14 @@ import { useClickAway } from "react-use"; // Import the useClickAway hook
 
 const Logo = () => (
   <div className="h-10">
-    {config.logoUrl ? (
+    {/* {config.logoUrl ? (
       <img className="size-10" src={config.logoUrl} />
     ) : (
       <div className="flex h-full items-center justify-center rounded-full border-2 border-dashed border-white px-4 text-xs font-medium tracking-wider text-white">
         {metadata.title}
       </div>
-    )}
+    )} */}
+    <img className="size-10" src={"../logo.png"} />
   </div>
 );
 
