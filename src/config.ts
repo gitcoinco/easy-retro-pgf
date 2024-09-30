@@ -43,7 +43,7 @@ export const metadata = {
   title: "FIL RetroPGF",
   description: "Filecoin Retro Public Goods",
   url: "https://ezrpgf-filecoin.vercel.app",
-  image: "/filrpgf.jpg",
+  image: "/fil-rpgf-2.jpg",
 };
 
 export const config = {
