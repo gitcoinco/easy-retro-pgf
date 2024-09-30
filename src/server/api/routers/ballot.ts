@@ -115,16 +115,16 @@ export const ballotRouter = createTRPCRouter({
           message: "Ballot already published",
         });
       }
-
+      const inputWithSquareRootAmounts = {...input,votes:input.votes.map((vote) => { return { ...vote, amount: vote.amount ** 0.5 } })}
       return ballot
         ? ctx.db.ballot.update({
-            select: defaultBallotSelect,
-            where: { id: ballot?.id, roundId, voterId },
-            data: input,
-          })
+          select: defaultBallotSelect,
+          where: { id: ballot?.id, roundId, voterId },
+          data: inputWithSquareRootAmounts,
+        })
         : ctx.db.ballot.create({
-            data: { ...input, roundId, voterId },
-          });
+          data: { ...inputWithSquareRootAmounts, roundId, voterId },
+        });
     }),
   publish: protectedRoundProcedure
     .input(BallotPublishSchema)
