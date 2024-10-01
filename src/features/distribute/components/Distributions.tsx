@@ -103,7 +103,7 @@ export function Distributions() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div>Total votes: {formatNumber(votes.data?.totalVotes)}</div>
+          <div>Total scores: {formatNumber(votes.data?.totalVotes)}</div>
           <ExportVotes />
         </div>
         <div className="min-h-[360px] overflow-auto">
@@ -113,7 +113,7 @@ export function Distributions() {
                 <Tr>
                   <Th>Project</Th>
                   <Th>Payout address</Th>
-                  <Th>Amount</Th>
+                  <Th>Score</Th>
                 </Tr>
               </Thead>
             )}
