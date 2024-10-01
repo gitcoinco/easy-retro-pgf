@@ -51,7 +51,7 @@ Distribution will start on June 20th 2024. We have reached out to recipients to 
       </Markdown> */}
 
       <Markdown>
-        {`### Welcome to FIL-RetroPGF-2, the Filecoin network's first Optimism-inspired Retroactive Public Goods Funding round.
+        {`### Welcome to FIL-RetroPGF-2, an Optimism-inspired Retroactive Public Goods Funding round for the Filecoin Ecosystem.
 
 We're looking forward to seeing impactful projects in the ecosystem participate in this round and get rewarded for their contributions and support in the process.
 

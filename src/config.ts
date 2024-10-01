@@ -49,6 +49,7 @@ export const metadata = {
 export const config = {
   logoUrl: "https://filecoin.io/images/filecoin-logo.svg",
   pageSize: 3 * 500,
+  showcaseStartsAt: new Date(process.env.NEXT_PUBLIC_SHOWCASE_START_DATE!),
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
   reviewEndsAt: new Date(process.env.NEXT_PUBLIC_REVIEW_END_DATE!),

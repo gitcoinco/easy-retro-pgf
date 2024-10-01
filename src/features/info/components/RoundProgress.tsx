@@ -8,7 +8,7 @@ import { formatDate } from "~/utils/time";
 const steps = [
   {
     label: "Showcase",
-    date: config.startsAt,
+    date: config.showcaseStartsAt,
   },
   /* {
     label: "Review & Approval",
@@ -16,12 +16,16 @@ const steps = [
   }, */
   {
     label: "Registration",
-    date: config.reviewEndsAt,
+    date: config.startsAt,
   },
   {
     label: "Voting",
-    date: config.votingEndsAt,
+    date: config.reviewEndsAt,
   },
+  // {
+  //   label: "Tallying",
+  //   date: config.votingEndsAt,
+  // },
   {
     label: "Distribution",
     date: config.resultsAt,
@@ -53,7 +57,7 @@ export function RoundProgress() {
           >
             <h3 className="font-semibold">{step.label}</h3>
             <div>
-              {format(step.date, i === 3 ? "MMM yyyy" : "dd MMM yyyy HH:mm")}
+              {format(step.date, i === 3 ? "MMM yyyy" : "dd MMM yyyy")}
             </div>
           </div>
         ))}
