@@ -36,10 +36,10 @@ export function calculateVotes(
           voterIds: new Set(),
         };
       }
-      projectVotes[vote.projectId]!.amounts.push(vote.amount ** 0.5);
+      projectVotes[vote.projectId]!.amounts.push(Math.sqrt(vote.amount));
       projectVotes[vote.projectId]!.voterIds.add(ballot.voterId);
-      projectVotes[vote.projectId]!.total += vote.amount**0.5;
-      actualTotalVotes += vote.amount**0.5;
+      projectVotes[vote.projectId]!.total += Math.sqrt(vote.amount);
+      actualTotalVotes += Math.sqrt(vote.amount);
     }
   }
 
