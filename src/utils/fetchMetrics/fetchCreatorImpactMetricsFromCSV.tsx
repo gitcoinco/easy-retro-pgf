@@ -53,8 +53,10 @@ export async function fetchCreatorImpactMetricsFromCSV(
             num_unique_minters: row.num_unique_minters,
             num_transactions: row.num_transactions,
             usd_value_of_transactions: row.usd_value_of_transactions,
+            num_farcaster_minters: row.num_farcaster_minters,
+            num_farcaster_transactions: row.num_farcaster_transactions,
             application_id_list: cleanAppid,
-            type: "creator"
+            metrics_type: 1
           }
           projectsMetricsArray.push(builtRow);
         }

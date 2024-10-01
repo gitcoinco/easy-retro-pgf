@@ -34,6 +34,9 @@ export type OSOCreatorMetric = {
   num_unique_minters: string;
   num_transactions: string;
   usd_value_of_transactions: string;
+  num_farcaster_minters: string;
+  num_farcaster_transactions: string;
+
 }
 
 export type MetricId = keyof OSOMetric;
