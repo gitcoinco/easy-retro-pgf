@@ -28,7 +28,12 @@ export function BallotAllocationForm({ isPublished = false }) {
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
-      <p className="mb-6">
+      <Alert variant="info" className="flex items-center gap-2">
+        <div className="text-lg font-semibold">
+          Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes.
+        </div>
+      </Alert>
+      <p className="mt-2 mb-6">
         Once you have reviewed your vote allocation, you can submit your ballot.
       </p>
       {save.error && (

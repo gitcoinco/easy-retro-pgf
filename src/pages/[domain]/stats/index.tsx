@@ -80,7 +80,7 @@ function Stats() {
       <div className="grid gap-2 md:grid-cols-3">
         <Stat title="Projects applied">{count.data?.count}</Stat>
         <Stat title="Projects voted for">{Object.keys(projects).length}</Stat>
-        <Stat title="Votes">
+        <Stat title="Scores">
           {isShowActualVotes ? actualTotalVotes : totalVotes}
         </Stat>
         <Stat title="People Voting">{totalVoters}</Stat>

@@ -115,16 +115,15 @@ export const ballotRouter = createTRPCRouter({
           message: "Ballot already published",
         });
       }
-
       return ballot
         ? ctx.db.ballot.update({
-            select: defaultBallotSelect,
-            where: { id: ballot?.id, roundId, voterId },
-            data: input,
-          })
+          select: defaultBallotSelect,
+          where: { id: ballot?.id, roundId, voterId },
+          data: input,
+        })
         : ctx.db.ballot.create({
-            data: { ...input, roundId, voterId },
-          });
+          data: { ...input, roundId, voterId },
+        });
     }),
   publish: protectedRoundProcedure
     .input(BallotPublishSchema)
