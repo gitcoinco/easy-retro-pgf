@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { metadata } from "~/config";
 import { useTheme } from "next-themes";
 import { Footer } from "~/components/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 const Context = createContext({ eligibilityCheck: false, showBallot: false });
 export const useLayoutOptions = () => useContext(Context);
@@ -87,6 +88,7 @@ export const BaseLayout = ({
             })}
           >
             {children}
+            <Analytics />
           </div>
           {sidebar === "right" ? wrappedSidebar : null}
         </div>

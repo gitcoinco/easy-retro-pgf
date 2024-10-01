@@ -7,7 +7,7 @@ import { formatDate } from "~/utils/time";
 
 const steps = [
   {
-    label: "Registration",
+    label: "Showcase",
     date: config.startsAt,
   },
   /* {
@@ -15,11 +15,11 @@ const steps = [
     date: config.registrationEndsAt,
   }, */
   {
-    label: "Voting",
+    label: "Registration",
     date: config.reviewEndsAt,
   },
   {
-    label: "Tallying",
+    label: "Voting",
     date: config.votingEndsAt,
   },
   {
