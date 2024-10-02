@@ -46,7 +46,7 @@ export const getMetricsByRecipientId = async (
   const creatorArray = await fetchCreatorImpactMetricsFromCSV(filters);
 
   const metricsByProjectId = indexMetricsByRecipientId(metricsArray, creatorArray);
-  
+
   return metricsByProjectId;
 };
 

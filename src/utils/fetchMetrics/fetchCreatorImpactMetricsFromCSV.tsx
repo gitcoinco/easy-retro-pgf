@@ -47,7 +47,7 @@ export async function fetchCreatorImpactMetricsFromCSV(
 
           const builtRow = {
             recipient: row.recipient,
-            name: row.name,
+            name: row.artist_profile,
             minting_wallet: row.minting_wallet,
             num_drops: row.num_drops,
             num_unique_minters: row.num_unique_minters,
@@ -58,6 +58,7 @@ export async function fetchCreatorImpactMetricsFromCSV(
             application_id_list: cleanAppid,
             metrics_type: 1
           }
+
           projectsMetricsArray.push(builtRow);
         }
       },
