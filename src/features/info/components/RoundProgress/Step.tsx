@@ -25,7 +25,6 @@ export type StepProps = {
 };
 
 export function Step({ step, index, nSteps }: StepProps) {
-  console.log("DEBUG", index, nSteps, step);
   const { progress } = calculateStepProgress(step);
 
   const isSingleStep =
