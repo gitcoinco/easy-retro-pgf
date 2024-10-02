@@ -52,6 +52,7 @@ export const config = {
   showcaseStartsAt: new Date(process.env.NEXT_PUBLIC_SHOWCASE_START_DATE!),
   startsAt: new Date(process.env.NEXT_PUBLIC_START_DATE!),
   registrationEndsAt: new Date(process.env.NEXT_PUBLIC_REGISTRATION_END_DATE!),
+  reviewStartsAt: new Date(process.env.NEXT_PUBLIC_VOTING_START_DATE!),
   reviewEndsAt: new Date(process.env.NEXT_PUBLIC_REVIEW_END_DATE!),
   votingEndsAt: new Date(process.env.NEXT_PUBLIC_VOTING_END_DATE!),
   resultsAt: new Date(process.env.NEXT_PUBLIC_RESULTS_DATE!),
