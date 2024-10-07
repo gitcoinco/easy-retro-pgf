@@ -14,11 +14,12 @@ export function ExportCSV({ votes }: { votes: Distribution[] }) {
     const votesWithProjects = votes.map((vote) => ({
       ...vote,
       name: projects.data?.find((p) => p.id === vote.projectId)?.name,
+      score: vote.amount,
     }));
 
     // Generate CSV file
     const csv = format(votesWithProjects, {
-      columns: ["projectId", "name", "payoutAddress", "amount"],
+      columns: ["projectId", "name", "payoutAddress", "score"],
     });
     window.open(`data:text/csv;charset=utf-8,${csv}`);
   }, [votes]);

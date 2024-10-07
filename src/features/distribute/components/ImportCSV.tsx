@@ -20,7 +20,7 @@ export function ImportCSV() {
       const distribution = data.map(({ projectId, amount, payoutAddress }) => ({
         projectId,
         payoutAddress: getAddress(payoutAddress),
-        amount: Number(amount),
+        amount: Math.sqrt(Number(amount)),
       }));
       console.log(123, distribution);
       setDistribution(distribution);
