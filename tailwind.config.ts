@@ -10,7 +10,7 @@ export default {
     extend: {
       colors: {
         ...colors,
-        primary: colors.green,
+        primary:"#2fe4ab",
         gray: colors.stone,
       },
       fontFamily: {
