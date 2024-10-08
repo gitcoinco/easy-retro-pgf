@@ -82,15 +82,14 @@ export const BaseLayout = ({
         <div className="mx-auto w-full flex-1 pt-2 2xl:container md:flex">
           {sidebar === "left" ? wrappedSidebar : null}
           <div
-            className={clsx("w-full min-w-0 px-2 pb-24", {
-              ["mx-auto max-w-5xl"]: !sidebar,
+            className={clsx("w-full min-w-0 px-20 pb-24", {
+              ["mx-auto max-w-full"]: !sidebar,
             })}
           >
             {children}
           </div>
           {sidebar === "right" ? wrappedSidebar : null}
         </div>
-        <Footer />
       </div>
     </Context.Provider>
   );
