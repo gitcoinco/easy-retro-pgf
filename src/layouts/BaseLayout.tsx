@@ -76,7 +76,7 @@ export const BaseLayout = ({
       </Head>
       <div
         className={clsx(
-          " flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
+          "flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
           theme,
         )}
       >

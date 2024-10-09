@@ -9,20 +9,16 @@ import { Github, Send } from "lucide-react";
 //extract all to reusable components and use already ones with variants and custom css
 const Header = () => {
   return (
-    <header className="flex justify-between items-center py-6 bg-white px-20 ">
+    <header className="flex justify-between items-center py-6 bg-white px-3 md:px-20 ">
       <div className="flex items-center">
         <img src="/ObolLogo.svg" alt="Obol Logo" />
       </div>
-      <div className="h-10 px-6 py-3 bg-primary rounded-lg backdrop-blur-sm justify-center items-center gap-2.5 inline-flex">
-        <div className="self-stretch justify-center items-center gap-2 flex">
           <ConnectButton>
             <Button className="text-[#182d32] text-base font-semibold font-['DM Sans'] leading-normal" variant="primary" as={Link} href={"/app"}>
               Enter RAF
             </Button>
           </ConnectButton>
-
-        </div>
-      </div>
+      
     </header>
   );
 };
@@ -30,21 +26,19 @@ const Header = () => {
 
 const Hero = () => {
   return (
-    <section className="relative flex flex-col items-center">
-      <div >
+    <section className="mt-32 md:mt-0 md:relative flex flex-col items-center">
+      <div className="mb-10 md:mb-0" >
         <img alt="Background" src="/Hero.png" />
       </div>
-      <div className="md:absolute top-[156px] flex flex-col gap-[40px] items-center text-center">
-        <h1 className="max-w-[625.61px] text-[#091011] text-[64px] leading-[64px] font-medium">Obol Retroactive Funding</h1>
+      <div className="md:absolute md:top-36 flex flex-col gap-10 items-center text-center">
+        <h1 className="sm:max-w-[332px] md:max-w-[625.61px] text-[#091011] text-[40px] md:text-[64px] leading-[40px]  md:leading-[64px] font-medium">Obol Retroactive Funding</h1>
         <p className="text-[32px] font-['DM Sans'] leading-[48px]">for everyone</p>
-        <div className="h-10 px-6 py-3 bg-primary rounded-lg backdrop-blur-sm justify-center items-center gap-2.5 inline-flex">
-          <div className="self-stretch justify-center items-center gap-2 flex">
+        <div className="mb-20 md:mb-0 h-10 py-3  rounded-lg backdrop-blur-sm justify-center items-center gap-2.5 inline-flex">
             <ConnectButton>
               <Button className="text-[#182d32] text-base font-semibold font-['DM Sans'] leading-normal" variant="primary" as={Link} href={"/app"}>
                 Enter RAF
               </Button>
             </ConnectButton>
-          </div>
         </div>
         <a href="#what-is-raf" className="text-black text-lg font-bold font-['DM Sans'] leading-7">What is RAF?</a>
       </div>
@@ -56,22 +50,22 @@ const InfoSection = () => {
   return (
     <section id="what-is-raf" className="py-24">
       <h2 className="text-black text-[40px] font-['DM Sans'] leading-[56px] mb-10">What is RAF?</h2>
-      <div className="flex justify-between space-x-8">
-        <div className="md:w-1/3">
+      <div className="sm:flex-col md:flex md:flex-row justify-between space-y-8 md:space-y-0 md:space-x-8 mb-8">
+        <div className="sm:w-full md:w-1/3">
           <h3 className="text-black text-lg font-semibold font-['DM Sans'] leading-7 mb-2">What is Obol’s Retroactive Funding (RAF)?</h3>
-          <p className="text-[#2d4d53] text-base font-normal font-['DM Sans'] leading-normal mb-8">All Obol Distributed Validators (DVs) contribute 1% of their staking rewards into a retroactive funding program, which will reward projects building on distributed validators and generally working to decentralise Ethereum. These might include staking protocols & products, DV client teams, DV tooling, node operators, educators, and community squad stakers.</p>
-          <div className="h-10 px-6 py-3 bg-[#182d32] rounded-lg justify-center items-center gap-2.5 inline-flex">
-            <Link target="_blank" href="https://docs.obol.org/docs/v0.17.1/sec/smart_contract_audit#l-01-obol-fees-will-be-applied-retroactively-to-all-non-distributed-funds-in-the-splitter" className="text-[#e1e9eb] text-base font-semibold font-['DM Sans'] leading-normal">Learn more</Link>
-          </div>
+          <p className="text-[#2d4d53] text-base font-normal font-['DM Sans'] leading-normal">All Obol Distributed Validators (DVs) contribute 1% of their staking rewards into a retroactive funding program, which will reward projects building on distributed validators and generally working to decentralise Ethereum. These might include staking protocols & products, DV client teams, DV tooling, node operators, educators, and community squad stakers.</p>
         </div>
-        <div className="md:w-1/3">
+        <div className="sm:w-full  md:w-1/3">
           <h3 className="text-black text-lg font-semibold font-['DM Sans'] leading-7 mb-2">Who is it for?</h3>
           <p className="text-[#2d4d53] text-base font-normal font-['DM Sans'] leading-normal">Any Obol Collective member can apply for retroactive funding, with their ecosystem impact and value-add being assessed based on KPIs such as TVL, code contributed, number of active DVs, etc.</p>
         </div>
-        <div className="md:w-1/3">
+        <div className="sm:w-full  md:w-1/3">
           <h3 className="text-black text-lg font-semibold font-['DM Sans'] leading-7 mb-2">How does it work?</h3>
           <p className="text-[#2d4d53] text-base font-normal font-['DM Sans'] leading-normal">Using the voting power earned from your contributions, you can vote for the projects to receive retroactive funding. Together, the community will determine which projects have created the most value for the ecosystem and can best put the funds to use decentralising Ethereum.</p>
         </div>
+      </div>
+      <div className="w-36 h-10 px-6 py-3 bg-[#182d32] rounded-lg justify-center items-center gap-2.5 inline-flex">
+        <Link target="_blank" href="https://docs.obol.org/docs/v0.17.1/sec/smart_contract_audit#l-01-obol-fees-will-be-applied-retroactively-to-all-non-distributed-funds-in-the-splitter" className="text-[#e1e9eb] text-base font-semibold font-['DM Sans'] leading-normal">Learn more</Link>
       </div>
     </section>
   );
@@ -155,7 +149,7 @@ const Footer = () => {
 export default function ProjectsPage({ }) {
   return (
 
-    <BaseLayout header={ <Header />} customClassName="px-20 max-w-full">
+    <BaseLayout header={<Header />} customClassName="px-3 md:px-20 max-w-full">
       <Hero />
       <InfoSection />
       <Footer />

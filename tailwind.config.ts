@@ -11,13 +11,11 @@ export default {
       colors: {
         primary: {
           ...colors,  
-          100: "#2fe4ab",//Check with Leonardo
-          200: "#2fe4ab",
-          300: "#2fe4ab",
-          400: "#2fe4ab",
-          500: "#2fe4ab",
+          100: "#D5FAEE",
+          500: "#47e9bb",
           600: "#2fe4ab",
-          700: "#2fe4ab",
+          700: "#1D5249",
+          800: "#0B1F1B",
         },
         gray: colors.stone,
       },
