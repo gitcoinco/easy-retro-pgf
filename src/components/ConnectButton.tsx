@@ -63,7 +63,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                   <Button
                     suppressHydrationWarning
                     onClick={openConnectModal}
-                    className="text-[#182d32] text-base font-semibold font-['DM Sans'] leading-normal" //needs improvements
+                    className="text-[#182d32] text-base font-semibold" //needs improvements
                     variant="primary"
                   >
                     {isMobile ? "Connect" : "Connect wallet"}
