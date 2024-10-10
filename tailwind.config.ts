@@ -9,8 +9,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        ...colors,
-        primary: colors.green,
+        primary: {
+          ...colors,  
+          100: "#D5FAEE",
+          500: "#47e9bb",
+          600: "#2fe4ab",
+          700: "#1D5249",
+          800: "#0B1F1B",
+        },
         gray: colors.stone,
       },
       fontFamily: {

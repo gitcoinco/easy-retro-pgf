@@ -17,12 +17,14 @@ const Context = createContext({ eligibilityCheck: false, showBallot: false });
 export const useLayoutOptions = () => useContext(Context);
 
 export type LayoutProps = {
+  customClassName?: string,
   title?: string;
   requireAuth?: boolean;
   eligibilityCheck?: boolean;
   showBallot?: boolean;
 };
 export const BaseLayout = ({
+  customClassName,
   header,
   title,
   sidebar,
@@ -74,7 +76,7 @@ export const BaseLayout = ({
       </Head>
       <div
         className={clsx(
-          " flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
+          "flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
           theme,
         )}
       >
@@ -82,15 +84,16 @@ export const BaseLayout = ({
         <div className="mx-auto w-full flex-1 pt-2 2xl:container md:flex">
           {sidebar === "left" ? wrappedSidebar : null}
           <div
-            className={clsx("w-full min-w-0 px-2 pb-24", {
-              ["mx-auto max-w-5xl"]: !sidebar,
-            })}
+            className={clsx(customClassName,
+              {
+                ["w-full min-w-0 px-2 pb-24"]: !customClassName,
+                ["mx-auto max-w-5xl"]: !sidebar && !customClassName,
+              })}
           >
             {children}
           </div>
           {sidebar === "right" ? wrappedSidebar : null}
         </div>
-        <Footer />
       </div>
     </Context.Provider>
   );
