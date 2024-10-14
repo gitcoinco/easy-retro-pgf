@@ -10,6 +10,7 @@ import {
   AllocationSchema,
   Allocation,
   BallotPublishSchema,
+  BallotV2Schema1,
 } from "~/features/ballot/types";
 import { calculateBalancedAllocations } from "~/features/ballot/hooks/useBallotEditor";
 import { TRPCError } from "@trpc/server";
@@ -43,6 +44,24 @@ export const ballotRouter = createTRPCRouter({
       select: defaultBallotSelect,
     });
   }),
+  saveBallot: ballotProcedure
+    .input(BallotV2Schema1)
+    .mutation(async ({ input, ctx }) => {
+      const voterId = input.voterId;
+      const roundId = input.roundId;
+      const type = input.type as RoundTypes;
+
+      return ctx.db.ballotV2.upsert({
+        where: { voterId_roundId_type: { voterId, roundId, type } },
+        update: {},
+        create: {
+          voterId,
+          roundId,
+          type,
+        },
+        select: defaultBallotSelect,
+      });
+    }),
   save: ballotProcedure
     .input(AllocationSchema)
     .mutation(async ({ input, ctx }) => {
