@@ -105,7 +105,7 @@ export function ApplicationForm() {
       >
         <FormSection
           title="Application Details"
-          description="Provide the necessary information for your application."
+          description="Share information on your application."
           className="rounded border border-gray-300 p-4"
         >
           <FormControl name="profile.name" label="Project name" required>
@@ -194,15 +194,6 @@ export function ApplicationForm() {
           >
             <Input placeholder="Enter your account..." />
           </FormControl>
-
-          <FormControl
-            label="Team composition"
-            name="application.teamDescription"
-            description={`Briefly describe your team size and any subgroups.`}
-            required
-          >
-            <Textarea rows={3} />
-          </FormControl>
           <FormControl
             label="Social Media"
             name="application.twitterPost"
@@ -280,7 +271,7 @@ export function ApplicationForm() {
 
           <FormControl
             name="application.impactDescription"
-            label="What are the number of positive reviews/testimonials that your project has received from developers in the Filecoin Ecosystem? Please share a link to these testimonials, if applicable "
+            label="If your project has received any testimonials from April - September 2024, you can share a link below. Please ensure a timestamp is visible."
             hint="Markdown is supported"
             required
           >
@@ -294,7 +285,7 @@ export function ApplicationForm() {
 
         <FormSection
           title={"Project KYC Details"}
-          description="To comply with regulations, KYC information must be collected. The information is being collected at this stage to streamline distribution later. The KYC information collected will be private and confidential. If you can’t supply this information don’t apply."
+          description="To comply with regulations, KYC information must be collected. The information is being collected at this stage to streamline distribution later. The KYC information collected will be private and confidential. Supplying KYC information is a condition for submitting an application."
           className="rounded border border-gray-300 p-4"
         >
           <FormControl
@@ -336,9 +327,17 @@ export function ApplicationForm() {
           >
             <Input placeholder="e.g. Slack/Telegram/Discord: @your_handle" />
           </FormControl>
+          <FormControl
+            label="Team composition (Optional)"
+            name="applicationVerification.teamDescription"
+            description={`Briefly describe your team size and any subgroups.`}
+          >
+            <Textarea rows={3} />
+          </FormControl>
           <FormSection
             title={"Funding sources (Optional)"}
-            description="From what sources have you received funding?"
+            description="From what sources have you received funding? This data will be used internally to analyze funding trends and analyze project and ecosystem growth. This will not be shared to badgeholders during the voting process and will have no impact on the outcomes of your application.
+"
             className="rounded border border-gray-300 p-4"
           >
             <FieldArray
@@ -466,7 +465,6 @@ function ImpactTags() {
       : selected.length === 0
         ? { message: "Select one impact category" }
         : null;
-
   return (
     <div className="mb-4">
       <FormSection
@@ -484,10 +482,8 @@ function ImpactTags() {
                 className={isSelected ? "border-2" : ""}
                 key={value}
                 onClick={() => {
-                  const currentlySelected = isSelected
-                    ? selected.filter((s) => s !== value)
-                    : selected.concat(value);
-                  field.onChange(currentlySelected);
+                  const select = selected[0] === value ? [] : [value];
+                  field.onChange(select);
                 }}
               >
                 {label}

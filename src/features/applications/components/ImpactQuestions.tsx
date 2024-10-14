@@ -31,26 +31,33 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
             >
               here
             </a>
-            .
+            .{" "}
+            <a
+              href="https://www.notion.so/fil-retropgf/Round-2-Application-Guidelines-394969fa60cf4b45a8d8ef5cbbfd3d7e?pvs=4#11ed0d646da1806998cac03d305c3b69"
+              target="_blank"
+              className="font-bold underline"
+            >
+              Why do we need your OSO_name?
+            </a>
           </span>
         ),
         component: Input,
       },
       topProjects: {
         label:
-          "Name the top 5 high-impact projects dependent on your library/repository.",
+          "Name high-impact projects dependent on your library/repository.",
         hint: "Include the names and brief descriptions of each project (Markdown is supported).",
         component: Textarea,
       },
       filecoinUsers: {
         label:
-          "What is the percentage of Filecoin users (or percentage of the network) that run on your implementation?",
+          "Describe what percentage of the network uses your implementation? ",
         hint: "Provide an estimated percentage if exact figures are not available (Markdown is supported).",
         component: Textarea,
       },
       economicContribution: {
         label:
-          "How has your project contributed to growing the Filecoin economy? For example, what volume of FIL-denominated transactions does your library support? [If possible, provide a numerical estimate]",
+          "How has your project contributed to growing the Filecoin economy? If possible, provide a numerical estimate.",
         hint: "You may use historical data to estimate your project's impact (Markdown is supported).",
         component: Textarea,
       },
@@ -76,20 +83,26 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
             >
               here
             </a>
-            .
+            .{" "}
+            <a
+              href="https://www.notion.so/fil-retropgf/Round-2-Application-Guidelines-394969fa60cf4b45a8d8ef5cbbfd3d7e?pvs=4#11ed0d646da1806998cac03d305c3b69"
+              target="_blank"
+              className="font-bold underline"
+            >
+              Why do we need your OSO_name?
+            </a>
           </span>
         ),
         component: Input,
       },
       dependentProjects: {
-        label:
-          "How many FVM projects are dependent on your project? Name the top 5 high-impact projects dependent on your tool.",
+        label: "How does your tool or utility contribute to the FVM ecosystem?",
         hint: "Provide the names and descriptions of the top 5 projects (Markdown is supported).",
         component: Textarea,
       },
       downloads: {
         label:
-          "How many times has an SDK or package developed by your project been downloaded?",
+          "Provide a description of usage or downloads for your tool or utility.",
         hint: "Use package statistics from npm, PyPI, etc (Markdown is supported).",
         component: Textarea,
       },
@@ -116,8 +129,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         component: Textarea,
       },
       impressions: {
-        label:
-          "What is the total number of impressions your content has received? What is the feedback score you have received?",
+        label: "How many people has your content reached?",
         hint: "Provide metrics from analytics tools, if available (Markdown is supported).",
         component: Textarea,
       },
@@ -145,7 +157,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
     questions: {
       dependentProjects: {
         label:
-          "Describe the impact of your research on the Filecoin core protocol. You can reference features that added utility, increased or efficiency.",
+          "Describe the impact of your research on the Filecoin core protocol.",
         hint: "(Markdown is supported).",
         component: Textarea,
       },
@@ -197,8 +209,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
         component: Textarea,
       },
       walletInteractions: {
-        label:
-          "How many new users has your product brought to Filecoin?",
+        label: "How many new users has your product brought to Filecoin?",
         hint: "Provide specific metrics if available (Markdown is supported).",
         component: Textarea,
       },
@@ -237,7 +248,7 @@ export function ImpactQuestions({
 }) {
   return (
     <div className="mt-2 space-y-2">
-      {(selectedCategories as ImpactCategoryKeys).map((categoryKey) => (
+      {(selectedCategories as ImpactCategoryKeys[]).map((categoryKey) => (
         <CategoryQuestions key={categoryKey} categoryKey={categoryKey} />
       ))}
     </div>
