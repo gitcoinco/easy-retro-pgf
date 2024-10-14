@@ -7,6 +7,7 @@ import {
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
 
+import { CSPostHogProvider } from "~/providers/CSPostHogProvider";
 import {
   argentWallet,
   trustWallet,
@@ -51,8 +52,10 @@ export function Providers({
               getSiweMessageOptions={getSiweMessageOptions}
             >
               <RainbowKitProvider>
-                {children}
-                <Toaster />
+                <CSPostHogProvider>
+                  {children}
+                  <Toaster />
+                </CSPostHogProvider>
               </RainbowKitProvider>
             </RainbowKitSiweNextAuthProvider>
           </QueryClientProvider>
