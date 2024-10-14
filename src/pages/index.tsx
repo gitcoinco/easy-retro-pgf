@@ -12,9 +12,9 @@ export default function LandingPage({}) {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold">Filecoin RetroPGF</h1>
-          {/* <Button icon={Plus} as={Link} href={"/applications/new"}>
+          <Button icon={Plus} as={Link} href={"/applications/new"}>
             Apply with your project
-          </Button> */}
+          </Button>
         </div>
         <RoundProgress />
         <Image

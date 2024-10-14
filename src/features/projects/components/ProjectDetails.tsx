@@ -39,7 +39,6 @@ export default function ProjectDetails({
     websiteUrl,
     payoutAddress,
     githubProjectLink,
-    teamDescription,
     twitterPost,
     fundingSources,
   } = metadata.data ?? {};
@@ -180,56 +179,6 @@ export default function ProjectDetails({
         </div>
       )}
 
-      {(teamDescription || twitterPost) && (
-        <div className="mt-8 ">
-          <div className="rounded-md bg-white p-6 shadow-md">
-            <Heading as="h3" size="2xl" className="mb-4">
-              Project Team Composition
-            </Heading>
-            <hr className="mb-8 mt-2" />
-
-            <div className="mb-4 flex flex-col gap-4 md:flex-row">
-              <div className="w-2/3">
-                {/* teamDescription */}
-                {teamDescription && (
-                  <div className="prose max-w-none">
-                    <Markdown>{teamDescription}</Markdown>
-                  </div>
-                )}
-              </div>
-              <div className="w-1/3 ">
-                <LinkBox
-                  label="Application Tweet"
-                  links={[
-                    {
-                      url: twitterPost ?? "",
-                    },
-                  ]}
-                  renderItem={(link) => {
-                    const icon: LucideIcon | undefined = {
-                      OTHER: GlobeIcon,
-                    }["OTHER" as keyof typeof icon];
-                    return (
-                      <>
-                        {createElement(icon ?? "div", {
-                          className: "w-4 h-4 mt-1",
-                        })}
-                        <div
-                          className="flex-1 truncate"
-                          title={"Application Tweet"}
-                        >
-                          {link.url}
-                        </div>
-                      </>
-                    );
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Admin Section */}
       {isAdmin && !isLoading && applicationVerificationData ? (
         <div className="mt-8 ">
@@ -273,6 +222,57 @@ export default function ProjectDetails({
                 </Tr>
               </Tbody>
             </Table>
+            {(applicationVerificationData.teamDescription || twitterPost) && (
+              <div className="mt-8 ">
+                <div className="rounded-md bg-white p-6 shadow-md">
+                  <Heading as="h3" size="2xl" className="mb-4">
+                    Project Team Composition
+                  </Heading>
+                  <hr className="mb-8 mt-2" />
+
+                  <div className="mb-4 flex flex-col gap-4 md:flex-row">
+                    <div className="w-2/3">
+                      {/* teamDescription */}
+                      {applicationVerificationData.teamDescription && (
+                        <div className="prose max-w-none">
+                          <Markdown>
+                            {applicationVerificationData.teamDescription}
+                          </Markdown>
+                        </div>
+                      )}
+                    </div>
+                    <div className="w-1/3 ">
+                      <LinkBox
+                        label="Application Tweet"
+                        links={[
+                          {
+                            url: twitterPost ?? "",
+                          },
+                        ]}
+                        renderItem={(link) => {
+                          const icon: LucideIcon | undefined = {
+                            OTHER: GlobeIcon,
+                          }["OTHER" as keyof typeof icon];
+                          return (
+                            <>
+                              {createElement(icon ?? "div", {
+                                className: "w-4 h-4 mt-1",
+                              })}
+                              <div
+                                className="flex-1 truncate"
+                                title={"Application Tweet"}
+                              >
+                                {link.url}
+                              </div>
+                            </>
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <div
               className={`${hasPreviousApplication || hasFundingSources ? "" : "hidden"} space-y-4`}
             >

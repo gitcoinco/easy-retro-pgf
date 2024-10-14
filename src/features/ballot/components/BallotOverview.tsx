@@ -95,10 +95,11 @@ function BallotOverview() {
           <BallotHeader>Voting hasn't started yet</BallotHeader>
           {appState === "REVIEWING" ? (
             <BallotSection title="Applications are being reviewed" />
-          ) : // <Button as={Link} href={"/applications/new"}>
-          //   Create application
-          // </Button>
-          null}
+          ) : appState === "APPLICATION" ? (
+            <Button as={Link} href={"/applications/new"}>
+              Create application
+            </Button>
+          ) : null}
         </BallotMessage>
       </>
     );

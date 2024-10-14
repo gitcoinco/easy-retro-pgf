@@ -13,19 +13,15 @@ export default function NewProjectPage() {
       <h3 className="mb-1 text-2xl font-semibold">New Application</h3>
       <hr />
       <p className="leading-loose text-gray-600 dark:text-gray-400">
-        Fill out this form to create an application for your project. It will
-        then be reviewed by our admins. Your progress is saved locally so you
-        can return to this page to resume your application.
+        Fill out this form to create an application for your project. Fields
+        with a red star <span className="text-red-500 font-semibold">*</span> are
+        mandatory. Your progress is saved locally so you can return to this page
+        to resume your application.
       </p>
       <hr className="mb-8" />
-      {/* {state !== "APPLICATION" ? (
+      {state !== "APPLICATION" ? (
         <Alert variant="info" title="Application period has ended"></Alert>
       ) : address ? (
-        <ApplicationForm />
-      ) : (
-        <Alert variant="info" title="Connect your wallet to continue"></Alert>
-      )} */}
-      {address ? (
         <ApplicationForm />
       ) : (
         <Alert variant="info" title="Connect your wallet to continue"></Alert>

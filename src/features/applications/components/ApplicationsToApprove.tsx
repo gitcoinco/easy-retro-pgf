@@ -199,9 +199,9 @@ Select the applications you want to approve. You must be a configured admin to a
           </div>
         ) : !applications.data?.length ? (
           <EmptyState title="No applications">
-            {/* <Button variant="primary" as={Link} href={`/applications/new`}>
+            <Button variant="primary" as={Link} href={`/applications/new`}>
               Go to create application
-            </Button> */}
+            </Button>
           </EmptyState>
         ) : null}
         {applications.data?.map((item) => (
