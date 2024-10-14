@@ -210,7 +210,7 @@ export function ApplicationForm() {
         >
           <FormControl
             name="application.contributionDescription"
-            label="Who is the end user that benefits from the project?"
+            label="Who is this project important for? What pain points does it solve? What are the tangible benefits of this contribution?"
             hint="Markdown is supported"
             required
           >
@@ -226,7 +226,7 @@ export function ApplicationForm() {
                 Contribution links <span className="text-red-300">*</span>
               </>
             }
-            description="Where can we find your contributions? Provide 1-5 that best demonstrate the impact of your contributions to the Filecoin Ecosystem."
+            description="Where can we find your contributions? Provide 1-5 links that best demonstrate the impact and contribution of your project to the Filecoin ecosystem. These could include GitHub repositories, blog posts, research papers, or any other relevant contributions that showcase your project’s progress and impact. Make sure the links are accessible and relevant to your application."
             className="rounded border border-gray-300 p-4"
           >
             <FieldArray

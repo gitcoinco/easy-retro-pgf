@@ -57,6 +57,7 @@
     "nuqs": "^1.17.1",
     "p-limit": "^5.0.0",
     "papaparse": "^5.4.1",
+    "posthog-js": "^1.167.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.49.3",
