@@ -57,7 +57,7 @@ export const roundsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
     const creatorId = ctx.session.user.name!;
 
-    return ctx.db.round.findMany({ where: { creatorId } });
+    return ctx.db.round.findMany({ where: { admins: { has: creatorId } } });
   }),
 });
 
