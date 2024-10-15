@@ -10,7 +10,6 @@ import {
 import {
   adminProcedure,
   createTRPCRouter,
-  protectedProcedure,
   protectedRoundProcedure,
 } from "~/server/api/trpc";
 import { ballotTypedData } from "~/utils/typedData";
@@ -31,9 +30,10 @@ const defaultBallotSelect = {
 } satisfies Prisma.BallotSelect;
 
 export const ballotRouter = createTRPCRouter({
-  get: protectedProcedure.query(({ ctx }) => {
-    const voterId = ctx.session.user.name!;
+  get: protectedRoundProcedure.query(({ ctx }) => {
+    const voterId = ctx.session?.user.name ?? "";
     const roundId = ctx.round?.id;
+
     return ctx.db.ballot
       .findFirst({
         select: defaultBallotSelect,
