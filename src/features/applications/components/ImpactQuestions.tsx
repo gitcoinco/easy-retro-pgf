@@ -37,6 +37,7 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
               target="_blank"
               className="font-bold underline"
             >
+              <br />
               Why do we need your OSO_name?
             </a>
           </span>
@@ -83,12 +84,13 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
             >
               here
             </a>
-            .{" "}
+            .
             <a
               href="https://www.notion.so/fil-retropgf/Round-2-Application-Guidelines-394969fa60cf4b45a8d8ef5cbbfd3d7e?pvs=4#11ed0d646da1806998cac03d305c3b69"
               target="_blank"
               className="font-bold underline"
             >
+              <br />
               Why do we need your OSO_name?
             </a>
           </span>
