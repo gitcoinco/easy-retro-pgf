@@ -10,7 +10,7 @@ import { cn } from "~/utils/classNames";
 import { Spinner } from "./Spinner";
 
 export const button = tv({
-  base: "w-36 inline-flex items-center justify-center font-semibold text-center transition-colors h-10 py-3 backdrop-blur-sm  gap-2.5 rounded-lg duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-gray-800",
+  base: "inline-flex items-center justify-center font-semibold text-center transition-colors h-10 py-3 backdrop-blur-sm  gap-2.5 rounded-lg duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-gray-800",
   variants: {
     variant: {
       primary:

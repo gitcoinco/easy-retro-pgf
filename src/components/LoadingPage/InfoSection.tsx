@@ -20,7 +20,7 @@ const InfoUnit = ({ heading, description }: { heading: string, description: stri
         </div>
         <div className="flex justify-center md:justify-start">
           <div className="w-36 h-10 px-6 py-3 bg-[#182d32] rounded-lg justify-center items-center inline-flex">
-            <Link target="_blank" href="https://blog.obol.org/1-percent-for-decentralisation/" className="text-[#e1e9eb] text-base font-semibold">Learn more</Link>
+            <Link target="_blank" href="https://blog.obol.org/1-percent-for-decentralisation/" className="text-[#e1e9eb] text-base">Learn more</Link>
           </div>
         </div>
       </section>
