@@ -16,7 +16,7 @@ export default function NewProjectPage() {
         Fill out this form to create an application for your project. Fields
         with a red star <span className="text-red-500 font-semibold">*</span> are
         mandatory. Your progress is saved locally so you can return to this page
-        to resume your application.
+        to resume your application. Please refer only to the impact you have created between April - September 2024 when filling out the form.
       </p>
       <hr className="mb-8" />
       {state !== "APPLICATION" ? (

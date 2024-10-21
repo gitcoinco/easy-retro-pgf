@@ -15,7 +15,7 @@ import { useIsAdmin } from "~/hooks/useIsAdmin";
 import { createElement, type ReactNode } from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "~/components/ui/Table";
 import { LinkBox } from "./LinkBox";
-import { GlobeIcon, LucideIcon } from "lucide-react";
+import { GlobeIcon, LucideIcon, GithubIcon } from "lucide-react";
 import { suffixNumber } from "~/utils/suffixNumber";
 
 export default function ProjectDetails({
@@ -48,6 +48,29 @@ export default function ProjectDetails({
 
   const hasFundingSources = applicationVerificationData?.fundingSources;
 
+  const LinkBoxItems = [];
+  githubProjectLink
+    ? LinkBoxItems.push({
+        label: "Project Github Link",
+        url: githubProjectLink,
+        icon: GithubIcon,
+      })
+    : null;
+  websiteUrl
+    ? LinkBoxItems.push({
+        label: "Project Website Link",
+        url: websiteUrl,
+        icon: GlobeIcon,
+      })
+    : null;
+  twitterPost
+    ? LinkBoxItems.push({
+        label: "Project Showcase Link",
+        url: twitterPost,
+        icon: GlobeIcon,
+      })
+    : null;
+
   return (
     <div className="relative mb-24">
       <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
@@ -59,54 +82,44 @@ export default function ProjectDetails({
       <div className="overflow-hidden rounded-3xl">
         <ProjectBanner size="lg" profileId={attestation?.recipient} />
       </div>
-      <div className="mb-8 flex items-end gap-4">
+      <div className="mb-5 flex items-end gap-4">
         <ProjectAvatar
           rounded="full"
           size={"lg"}
           className="-mt-20 ml-8"
           profileId={attestation?.recipient}
         />
-        <div className="flex flex-col items-center">
-          <div className="">
-            {payoutAddress && <NameENS address={payoutAddress} />}
-            {websiteUrl && (
-              <div>
-                <a
-                  href={websiteUrl}
-                  target="_blank"
-                  className="hover:underline"
-                >
-                  website: {websiteUrl}
-                </a>
-              </div>
-            )}
-            <div>
-              {githubProjectLink && (
-                <a
-                  href={githubProjectLink}
-                  target="_blank"
-                  className="hover:underline"
-                >
-                  github: {githubProjectLink}
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
+        {payoutAddress && <NameENS address={payoutAddress} />}
       </div>
-
+      <div className="mb-5 w-[315px]">
+        <LinkBox
+          label="Project Links"
+          links={LinkBoxItems}
+          renderItem={(link) => {
+            const icon = link.icon;
+            return (
+              <>
+                {createElement(icon ?? "div", {
+                  className: "w-4 h-4 mt-1",
+                })}
+                <div className="flex-1 truncate text-left" title={link.label}>
+                  {link.label}
+                </div>
+              </>
+            );
+          }}
+        />
+      </div>
       {/* Bio */}
       {bio && (
-        <div className="mt-8 ">
-          <div className="rounded-md bg-white p-6 shadow-md">
-            <Heading as="h3" size="2xl" className="mb-4">
-              About the Project
-            </Heading>
-            <hr className="mb-8 mt-2" />
+        <div className="rounded-md bg-white p-6 shadow-md">
+          <Heading as="h3" size="2xl" className="mb-4">
+            About the Project
+          </Heading>
+          <hr className="mb-8 mt-2" />
 
-            <div className="prose max-w-none">
-              <Markdown>{bio}</Markdown>
-            </div>
+          <div className="prose max-w-none">
+            <Markdown>{bio}</Markdown>
           </div>
         </div>
       )}
@@ -240,34 +253,6 @@ export default function ProjectDetails({
                           </Markdown>
                         </div>
                       )}
-                    </div>
-                    <div className="w-1/3 ">
-                      <LinkBox
-                        label="Application Tweet"
-                        links={[
-                          {
-                            url: twitterPost ?? "",
-                          },
-                        ]}
-                        renderItem={(link) => {
-                          const icon: LucideIcon | undefined = {
-                            OTHER: GlobeIcon,
-                          }["OTHER" as keyof typeof icon];
-                          return (
-                            <>
-                              {createElement(icon ?? "div", {
-                                className: "w-4 h-4 mt-1",
-                              })}
-                              <div
-                                className="flex-1 truncate"
-                                title={"Application Tweet"}
-                              >
-                                {link.url}
-                              </div>
-                            </>
-                          );
-                        }}
-                      />
                     </div>
                   </div>
                 </div>

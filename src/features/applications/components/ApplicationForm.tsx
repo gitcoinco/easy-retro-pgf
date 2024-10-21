@@ -195,9 +195,23 @@ export function ApplicationForm() {
             <Input placeholder="Enter your account..." />
           </FormControl>
           <FormControl
-            label="Social Media"
+            label="Project Showcase Link"
             name="application.twitterPost"
-            description={`Please share a link to the Social Media post you created as part of the showcase phase.`}
+            description={
+              <span>
+                Please insert a link to a social media promotion you have done
+                for your project in the last 6 months.
+                <a
+                  href="https://fil-retropgf.notion.site/Stage-2-Application-Intake-Guidelines-14th-October-4th-November-394969fa60cf4b45a8d8ef5cbbfd3d7e#11ed0d646da1806998cac03d305c3b69"
+                  target="_blank"
+                  className="font-bold underline"
+                >
+                  <br />
+                  What if I did not take part
+                </a>{" "}
+                in Stage 1: The Project Showcase?
+              </span>
+            }
           >
             <Input placeholder="https://" />
           </FormControl>

@@ -14,6 +14,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
   const categoryQuestions = project?.categoryQuestions;
 
   let oso_name = null;
+  let categoryHasOsoName = false;
 
   if (categoryQuestions && typeof categoryQuestions === "object") {
     const targetCategories = ["INFRASTRUCTURE", "TOOLING"];
@@ -22,8 +23,10 @@ export default function ProjectImpact({ isLoading, project }: Props) {
       (key) => key in categoryQuestions,
     );
     if (categoryKey && categoryQuestions[categoryKey]) {
+      categoryHasOsoName = true;
       const categoryAnswers = categoryQuestions[categoryKey];
       oso_name = categoryAnswers["osoName"] || null;
+      oso_name = oso_name === "" ? null : oso_name;
     }
   }
 
@@ -31,7 +34,13 @@ export default function ProjectImpact({ isLoading, project }: Props) {
 
   const data = metrics.data ? mapMetricsToData(metrics.data) : ([] as any);
 
-  const roundOneMetrics = (project?.impactMetrics ?? []) as any;
+  const roundOneMetrics = project?.impactMetrics;
+
+  const showOnlyImpactDescription =
+    project?.impactDescription &&
+    !roundOneMetrics &&
+    data.length === 0 &&
+    !oso_name;
 
   return (
     <div className="mt-8">
@@ -43,7 +52,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
         <hr className="mb-8 mt-2" />
 
         {/* Impact Description */}
-        {project?.impactDescription && !roundOneMetrics ? (
+        {showOnlyImpactDescription ? (
           <div className="mb-8">
             <div className="prose max-w-none">
               <Markdown isLoading={isLoading}>
@@ -60,7 +69,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
                 </Markdown>
               </div>
               <div className="md:w-1/3">
-                {data.length > 0 ? (
+                {categoryHasOsoName && oso_name ? (
                   <MetricsBox label="Impact Metrics" data={data} />
                 ) : (
                   roundOneMetrics && (
@@ -93,7 +102,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
           Object.entries(categoryQuestions ?? {}).length > 0 && (
             <div className="mt-8">
               <Heading as="h3" size="xl" className="mb-4">
-                Impact Category
+                Category-specific impact
               </Heading>
               <hr className="mb-8 mt-2" />
 

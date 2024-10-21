@@ -99,10 +99,7 @@ function createWagmiConfig() {
       },
     },
   });
-  const chains = [appConfig.config.network, allChains.mainnet] as [
-    Chain,
-    ...Chain[],
-  ];
+  const chains = [appConfig.config.network] as [Chain, ...Chain[]];
 
   const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 

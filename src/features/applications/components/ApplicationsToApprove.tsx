@@ -44,14 +44,29 @@ export function ApplicationItem({
 }) {
   const { address } = useAccount();
   const metadata = useMetadata<Application>(metadataPtr);
+  const { fundingSources = [], impactMetrics = [] } = metadata.data ?? {};
+
   const form = useFormContext();
   const revoke = useRevokeAttestations({});
 
-  const {
-    fundingSources = [],
-    impactMetrics = [],
-    impactCategory = [],
-  } = metadata.data ?? {};
+  const categoryQuestions = metadata?.data?.categoryQuestions;
+
+  let oso_name = null;
+
+  let categoryHasOsoName = false;
+
+  if (categoryQuestions && typeof categoryQuestions === "object") {
+    const targetCategories = ["INFRASTRUCTURE", "TOOLING"];
+
+    const categoryKey = targetCategories.find(
+      (key) => key in categoryQuestions,
+    );
+    if (categoryKey && categoryQuestions[categoryKey]) {
+      categoryHasOsoName = true;
+      const categoryAnswers = categoryQuestions[categoryKey];
+      oso_name = categoryAnswers["osoName"] || null;
+    }
+  }
   const isApproved = Boolean(approvedBy);
 
   const { decryptedData } = useDecryption(
@@ -63,7 +78,7 @@ export function ApplicationItem({
     | undefined;
 
   const metricsCount =
-    impactMetrics.length > 0 ? impactMetrics.length : impactCategory.length;
+    impactMetrics.length > 0 ? impactMetrics.length : undefined;
   const fundingCount =
     fundingSources.length > 0
       ? fundingSources.length
@@ -90,7 +105,13 @@ export function ApplicationItem({
           </div>
           <div className="flex gap-4 text-xs dark:text-gray-400">
             <div>{fundingCount} funding sources</div>
-            <div>{metricsCount} impact metrics</div>
+            {metricsCount ? (
+              <div>{metricsCount} impact metrics</div>
+            ) : !categoryHasOsoName ? null : oso_name ? (
+              <div>oso metrics available</div>
+            ) : (
+              <div>No oso name given</div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">

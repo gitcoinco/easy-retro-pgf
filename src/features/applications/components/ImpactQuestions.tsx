@@ -8,6 +8,7 @@ type Question = {
   label: string;
   hint?: string | ReactElement;
   component: FunctionComponent;
+  description?: string;
 };
 type ImpactCategoryQuestions = {
   [key: string]: {
@@ -20,6 +21,10 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
   INFRASTRUCTURE: {
     questions: {
       osoName: {
+        description: `OSO allows us to extract specific metrics from your repository on
+        usage and forks, allowing badgeholders a greater insight into the
+        impact your project has made. We thus encourage you to take the time
+        to create an oso_name.`,
         label: "Please include your oso_name.",
         hint: (
           <span>
@@ -73,6 +78,10 @@ export const impactCategoryQuestions: ImpactCategoryQuestions = {
   TOOLING: {
     questions: {
       osoName: {
+        description: `OSO allows us to extract specific metrics from your repository on
+            usage and forks, allowing badgeholders a greater insight into the
+            impact your project has made. We thus encourage you to take the time
+            to create an oso_name.`,
         label: "Please include your oso_name.",
         hint: (
           <span>
@@ -271,7 +280,7 @@ export function CategoryQuestions({ categoryKey }: CategoryQuestionsProps) {
   return (
     <Accordion title={`${label} - Guide Questions`} defaultOpen={true}>
       {Object.entries(questions).map(
-        ([name, { label: questionLabel, hint, component }]) => {
+        ([name, { label: questionLabel, hint, component, description }]) => {
           const fieldName = `application.categoryQuestions.${categoryKey}.${name}`;
           return (
             <FormControl
@@ -279,6 +288,7 @@ export function CategoryQuestions({ categoryKey }: CategoryQuestionsProps) {
               name={fieldName}
               label={questionLabel}
               hint={hint}
+              description={description}
             >
               {createElement(component)}
             </FormControl>
