@@ -6,9 +6,10 @@ import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export function ProjectAvatar({
   profileId,
+  time,
   ...props
-}: { profileId?: Address } & ComponentProps<typeof Avatar>) {
-  const profile = useProfileWithMetadata(profileId, 0);
+}: { profileId?: Address; time?: number } & ComponentProps<typeof Avatar>) {
+  const profile = useProfileWithMetadata(profileId, time ?? 0);
   const { profileImageUrl } = profile.data ?? {};
 
   return <Avatar {...props} src={profileImageUrl} />;

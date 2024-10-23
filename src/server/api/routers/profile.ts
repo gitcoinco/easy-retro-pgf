@@ -9,13 +9,17 @@ export const profileRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ id: z.string(), startsAt: z.number().optional() }))
     .query(async ({ input }) => {
-      return fetchAttestations([eas.schemas.metadata], {
-        where: {
-          recipient: { in: [input.id] },
-          ...createDataFilter("type", "bytes32", "profile"),
+      return fetchAttestations(
+        [eas.schemas.metadata],
+        {
+          where: {
+            recipient: { in: [input.id] },
+            ...createDataFilter("type", "bytes32", "profile"),
+          },
+          orderBy: [{ time: "asc" }],
         },
-        orderBy: [{ time: "desc" }],
-      },input.startsAt).then(([attestation]) => {
+        input.startsAt,
+      ).then(([attestation]) => {
         if (!attestation) {
           throw new TRPCError({ code: "NOT_FOUND" });
         }

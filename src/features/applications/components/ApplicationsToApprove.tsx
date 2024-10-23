@@ -96,7 +96,12 @@ export function ApplicationItem({
           type="checkbox"
         />
 
-        <ProjectAvatar isLoading={isLoading} size="sm" profileId={recipient} />
+        <ProjectAvatar
+          isLoading={isLoading}
+          size="sm"
+          profileId={recipient}
+          time={time}
+        />
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
