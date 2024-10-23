@@ -80,7 +80,11 @@ export default function ProjectDetails({
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        <ProjectBanner size="lg" profileId={attestation?.recipient} />
+        <ProjectBanner
+          size="lg"
+          profileId={attestation?.recipient}
+          applicationCreationTime={attestation?.time}
+        />
       </div>
       <div className="mb-5 flex items-end gap-4">
         <ProjectAvatar
@@ -88,6 +92,7 @@ export default function ProjectDetails({
           size={"lg"}
           className="-mt-20 ml-8"
           profileId={attestation?.recipient}
+          applicationCreationTime={attestation?.time}
         />
         {payoutAddress && <NameENS address={payoutAddress} />}
       </div>

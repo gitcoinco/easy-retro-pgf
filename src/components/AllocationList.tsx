@@ -238,7 +238,12 @@ export const ProjectAvatarWithName = ({
       })}
       href={`/projects/${id}`}
     >
-      <ProjectAvatar rounded="full" size="sm" profileId={project?.recipient} />
+      <ProjectAvatar
+        rounded="full"
+        size="sm"
+        profileId={project?.recipient}
+        applicationCreationTime={project?.time}
+      />
       <div>
         <div className="font-bold">{project?.name}</div>
         <div className="text-muted">{subtitle}</div>

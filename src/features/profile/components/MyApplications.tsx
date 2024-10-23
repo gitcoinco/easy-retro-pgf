@@ -66,7 +66,12 @@ function ApplicationItem({
         href={`/applications/${id}`}
         className="flex flex-1 cursor-pointer items-center gap-4 p-2"
       >
-        <ProjectAvatar isLoading={isLoading} size="sm" profileId={recipient} />
+        <ProjectAvatar
+          isLoading={isLoading}
+          size="sm"
+          profileId={recipient}
+          applicationCreationTime={time}
+        />
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">

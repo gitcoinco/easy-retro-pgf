@@ -108,7 +108,7 @@ export default function ProjectImpact({ isLoading, project }: Props) {
 
               <div className="space-y-6">
                 {project.impactCategory.map((categoryKey, i) => (
-                  <Accordion key={i} title={categoryKey}>
+                  <Accordion key={i} title={categoryKey} defaultOpen>
                     {categoryQuestions &&
                       Object.entries(categoryQuestions[categoryKey] ?? {})
                         .filter(([questionKey, _]) => questionKey !== "osoName")
