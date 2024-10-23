@@ -100,7 +100,7 @@ export function ApplicationItem({
           isLoading={isLoading}
           size="sm"
           profileId={recipient}
-          time={time}
+          applicationCreationTime={time}
         />
         <div className="flex-1">
           <div className="flex items-center justify-between">

@@ -83,7 +83,7 @@ export default function ProjectDetails({
         <ProjectBanner
           size="lg"
           profileId={attestation?.recipient}
-          time={attestation?.time}
+          applicationCreationTime={attestation?.time}
         />
       </div>
       <div className="mb-5 flex items-end gap-4">
@@ -92,7 +92,7 @@ export default function ProjectDetails({
           size={"lg"}
           className="-mt-20 ml-8"
           profileId={attestation?.recipient}
-          time={attestation?.time}
+          applicationCreationTime={attestation?.time}
         />
         {payoutAddress && <NameENS address={payoutAddress} />}
       </div>

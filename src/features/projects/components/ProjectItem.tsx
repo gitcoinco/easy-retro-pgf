@@ -23,11 +23,15 @@ export function ProjectItem({
       className="group rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
     >
       <div className="opacity-70 transition-opacity group-hover:opacity-100">
-        <ProjectBanner profileId={attestation?.recipient} />
+        <ProjectBanner
+          profileId={attestation?.recipient}
+          applicationCreationTime={attestation?.time}
+        />
         <ProjectAvatar
           rounded="full"
           className="-mt-8 ml-4"
           profileId={attestation?.recipient}
+          applicationCreationTime={attestation?.time}
         />
       </div>
       <Heading className="truncate" size="lg" as="h3">

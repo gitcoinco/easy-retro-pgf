@@ -6,10 +6,15 @@ import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export function ProjectBanner({
   profileId,
-  time,
+  applicationCreationTime,
   ...props
-}: { profileId?: Address; time?: number } & ComponentProps<typeof Banner>) {
-  const profile = useProfileWithMetadata(profileId, time ?? 0);
+}: { profileId?: Address; applicationCreationTime?: number } & ComponentProps<
+  typeof Banner
+>) {
+  const profile = useProfileWithMetadata(
+    profileId,
+    applicationCreationTime ?? 0,
+  );
   const { profileImageUrl, bannerImageUrl } = profile.data ?? {};
 
   return (

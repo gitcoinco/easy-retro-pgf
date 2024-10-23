@@ -77,6 +77,7 @@ export const ProjectsSearch = ({ addedProjects, onSelect }: Props) => {
                   <ProjectAvatar
                     className="h-6 w-6"
                     profileId={item.recipient}
+                    applicationCreationTime={item.time}
                   />
                   {item?.name}
                 </Command.Item>
