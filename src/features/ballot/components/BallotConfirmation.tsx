@@ -37,7 +37,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
                 target="_blank"
                 href={feedbackUrl}
               >
-                Share your feedback
+                Share feedback
               </Button>
             </div>
             <div className="h-[400px] max-h-[30vw] w-[400px] max-w-[30vw] flex-shrink-0 rounded-[40px]" />
@@ -78,7 +78,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
               target="_blank"
               href={feedbackUrl}
             >
-              Share your feedback
+              Share feedback
             </Button>
           </div>
         </Card>

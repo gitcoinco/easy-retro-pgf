@@ -32,11 +32,11 @@ export default function RoundPage() {
           <h1 className="text-4xl font-semibold">{data?.name}</h1>
         </Skeleton>
         <Button
-          icon={Plus}
+         className="text-[#182d32] h-10 px-6 py-3 inline-flex items-center justify-center text-center transition-colors  backdrop-blur-sm  rounded-lg duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-gray-800" variant="primary" //improve this
           as={Link}
           href={`/${data?.domain}/applications/new`}
         >
-          Apply with your project
+          Apply
         </Button>
       </div>
       <div className="mb-4 flex gap-16">

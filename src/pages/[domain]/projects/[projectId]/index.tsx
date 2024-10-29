@@ -19,7 +19,7 @@ export default function ProjectDetailsPage({ projectId = "" }) {
       <ProjectAddToBallot id={projectId} name={name} />
     );
   return (
-    <LayoutWithBallot sidebar="left" title={name} showBallot eligibilityCheck>
+    <LayoutWithBallot sidebar="right" title={name} showBallot eligibilityCheck>
       <ProjectDetails attestation={project.data} action={action} />
       <ProjectComments projectId={projectId} />
     </LayoutWithBallot>

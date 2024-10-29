@@ -12,7 +12,7 @@ export const Banner = createComponent(
         lg: "h-80 rounded-3xl",
       },
       rounded: {
-        full: "rounded-full",
+        full: "rounded-lg",
       },
     },
     defaultVariants: {

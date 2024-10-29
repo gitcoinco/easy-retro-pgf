@@ -112,7 +112,7 @@ const ConnectedDetails = ({
         ) : (
           <Chip className="gap-2" as={Link} href={`/${domain}/ballot`}>
             {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
-            <div className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold">
+            <div className="flex size-6 items-center justify-center rounded-lg bg-gray-200 text-xs font-bold">
               {ballotSize}
             </div>
           </Chip>
@@ -146,7 +146,7 @@ const UserInfo = ({
   }, [address, ens]);
   return (
     <Chip className="gap-2" {...props}>
-      <div className="h-6 w-6 overflow-hidden rounded-full">
+      <div className="h-6 w-6 overflow-hidden rounded-lg">
         {avatar.data ? (
           <Image width={24} height={24} alt={name} src={avatar.data} />
         ) : (

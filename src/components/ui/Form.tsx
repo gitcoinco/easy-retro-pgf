@@ -147,7 +147,7 @@ export const SearchInput = forwardRef(function SearchInput(
       <InputIcon>
         <Search />
       </InputIcon>
-      <Input ref={ref} {...props} className="rounded-full pl-12" />
+      <Input ref={ref} {...props} className="rounded-lg pl-12" />
     </InputWrapper>
   );
 });

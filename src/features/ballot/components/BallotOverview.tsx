@@ -63,9 +63,9 @@ function BallotOverview() {
   if (roundState === "RESULTS")
     return (
       <BallotMessage>
-        <BallotHeader>Results are live!</BallotHeader>
+        <BallotHeader>Results are Live  🙌</BallotHeader>
         <BallotSection title="Results are being tallied"></BallotSection>
-        <Button as={Link} href={`/${domain}/projects/results`}>
+        <Button as={Link} variant="primary" href={`/${domain}/projects/results`}>
           Go to results
         </Button>
       </BallotMessage>

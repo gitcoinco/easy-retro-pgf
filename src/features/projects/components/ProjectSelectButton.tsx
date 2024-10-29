@@ -7,7 +7,7 @@ import { createComponent } from "~/components/ui";
 const ActionButton = createComponent(
   "button",
   tv({
-    base: "flex h-6 w-6 items-center justify-center rounded-full border-2 border-transparent transition-colors bg-gray-100 dark:bg-gray-900",
+    base: "flex h-6 w-6 items-center justify-center rounded-lg border-2 border-transparent transition-colors bg-gray-100 dark:bg-gray-900",
     variants: {
       color: {
         default:

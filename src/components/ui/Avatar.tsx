@@ -14,7 +14,7 @@ export const Avatar = createComponent(
         lg: "w-40 h-40 rounded-3xl",
       },
       rounded: {
-        full: "rounded-full",
+        full: "rounded-lg",
       },
       bordered: {
         true: "outline outline-white dark:outline-gray-900",

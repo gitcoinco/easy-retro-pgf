@@ -72,11 +72,6 @@ function Stats() {
 
   return (
     <div>
-      <h3 className="text-lg font-bold">Top Projects</h3>
-      <div className="mb-8 h-[400px] rounded-xl bg-white text-black">
-        <ResultsChart data={isShowActualVotes ? actualData : calculatedData} />
-      </div>
-
       <div className="grid gap-2 md:grid-cols-3">
         <Stat title="Projects applied">{count.data?.count}</Stat>
         <Stat title="Projects voted for">{Object.keys(projects).length}</Stat>
@@ -87,6 +82,12 @@ function Stats() {
         {/* <Stat title="Average votes per project">
           {formatNumber(averageVotes)}
         </Stat> */}
+      </div>
+      <div className="mt-12">
+        <h3 className="text-lg font-bold">Top Projects</h3>
+      </div>
+      <div className="mb-8 h-[400px] rounded-xl bg-white text-black">
+        <ResultsChart data={isShowActualVotes ? actualData : calculatedData} />
       </div>
     </div>
   );

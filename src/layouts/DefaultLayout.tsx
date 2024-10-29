@@ -75,7 +75,7 @@ export function LayoutWithBallot(props: Props) {
   const { data: session } = useSession();
   return (
     <Layout
-      sidebar="left"
+      sidebar="right"
       sidebarComponent={address && session && <BallotOverview />}
       {...props}
     />
