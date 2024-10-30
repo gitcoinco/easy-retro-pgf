@@ -40,7 +40,7 @@ export const AllocationInput = forwardRef(function AllocationInput(
       // isAllowed={({ floatValue }) => (floatValue ?? 0) <= maxVotesProject}
       className={cn({
         ["pr-16"]: tokenAddon,
-        ["border-red-600 dark:border-red-900"]: field.value > maxVotesProject,
+        ["border-red-600"]: field.value > maxVotesProject,
       })}
     >
       {tokenAddon && (

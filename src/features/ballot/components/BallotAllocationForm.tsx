@@ -51,7 +51,7 @@ export function BallotAllocationForm({ isPublished = false }) {
         </div>
         {votes.length ? <ClearBallot /> : null}
       </div>
-      <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
+      <div className="relative rounded-2xl border border-gray-300">
         <div className="p-8">
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
@@ -65,7 +65,7 @@ export function BallotAllocationForm({ isPublished = false }) {
           </div>
         </div>
 
-        <div className="flex h-16 items-center justify-between rounded-b-2xl border-t border-gray-300 px-8 py-4 text-lg font-semibold dark:border-gray-800">
+        <div className="flex h-16 items-center justify-between rounded-b-2xl border-t border-gray-300 px-8 py-4 text-lg font-semibold">
           <div>Total votes in ballot</div>
           <div className="flex items-center gap-2">
             {save.isPending && <Spinner />}
@@ -185,7 +185,7 @@ function ClearBallot() {
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>
-        Remove all projects from ballot
+        Remove All
       </Button>
 
       <Dialog

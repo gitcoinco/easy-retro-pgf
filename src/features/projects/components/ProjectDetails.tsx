@@ -24,7 +24,7 @@ export default function ProjectDetails({
 
   return (
     <div className="relative mb-24">
-      <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4 dark:bg-gray-900">
+      <div className="sticky left-0 right-0 top-0 z-10 bg-white p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">{attestation?.name}</h1>
           {action}
@@ -43,7 +43,7 @@ export default function ProjectDetails({
         <div>
           <div className="">
             <NameENS address={payoutAddress} />
-            <a href={websiteUrl} target="_blank" className="hover:underline">
+            <a href={websiteUrl} target="_blank" className="text-[#16968e] underline">
               {websiteUrl}
             </a>
           </div>
@@ -79,7 +79,7 @@ export default function ProjectDetails({
                 <div className="flex-1 truncate text-xl">
                   {source.description}
                 </div>
-                <div className="text-sm tracking-widest text-gray-700 dark:text-gray-400">
+                <div className="text-sm tracking-widest text-gray-700">
                   {type}
                 </div>
                 <div className="w-32 text-xl font-medium">

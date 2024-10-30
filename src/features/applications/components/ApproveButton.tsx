@@ -15,7 +15,8 @@ function ApproveButton({
   if (approvals.data?.length)
     return (
       <Badge variant="success" size="lg">
-        Approved
+        <img src="/CheckIcon.svg" alt="check icon" />
+         Approved
       </Badge>
     );
   return (

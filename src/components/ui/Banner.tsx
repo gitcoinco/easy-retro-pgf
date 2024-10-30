@@ -5,7 +5,7 @@ import { BackgroundImage } from "./BackgroundImage";
 export const Banner = createComponent(
   BackgroundImage,
   tv({
-    base: "bg-gray-200 dark:bg-gray-800",
+    base: "bg-gray-200",
     variants: {
       size: {
         md: "h-24 rounded-2xl",

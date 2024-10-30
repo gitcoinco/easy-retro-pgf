@@ -94,7 +94,7 @@ function Stats() {
 }
 function Stat({ title, children }: PropsWithChildren<{ title: string }>) {
   return (
-    <div className="rounded border p-2 dark:border-gray-700">
+    <div className="rounded border p-2">
       <h3 className="font-bold text-gray-500">{title}</h3>
       <div className="text-4xl">{children}</div>
     </div>

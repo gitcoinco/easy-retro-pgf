@@ -135,7 +135,7 @@ const ProjectAllocation = ({
       <AllocationInput error={isError} name="amount" />
       <div className="flex justify-between gap-2 pt-2 text-sm">
         <div className="flex gap-2">
-          <span className="text-gray-600 dark:text-gray-400">
+          <span className="text-gray-600">
             Total allocated:
           </span>
           <span
@@ -154,8 +154,8 @@ const ProjectAllocation = ({
           >
             {formatNumber(amount)}
           </span>
-          <span className="text-gray-600 dark:text-gray-400">/</span>
-          <span className="text-gray-600 dark:text-gray-400">
+          <span className="text-gray-600">/</span>
+          <span className="text-gray-600">
             {formatNumber(maxVotesProject)}
           </span>
         </div>

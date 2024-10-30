@@ -31,5 +31,5 @@ export const VotingEndsIn = ({ resultAt }: { resultAt: Date }) => {
 
 const TimeSlice = createComponent(
   "span",
-  tv({ base: "text-gray-900 dark:text-gray-300" }),
+  tv({ base: "text-gray-900" }),
 );

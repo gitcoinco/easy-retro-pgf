@@ -10,9 +10,10 @@ import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Logo = () => (
-  <div className="">
-    <div className="flex h-full items-center justify-center rounded-full border-2 border-white  bg-gray-800 px-4 py-2 text-base font-medium tracking-wider text-white hover:bg-gray-700">
-      {metadata.title}
+  <div className="w-[161px] h-10 px-4 py-2 bg-stone-100 rounded-lg justify-center items-center gap-3 inline-flex">
+    <div className="flex items-center">
+      <img src="/ObolLogo.svg" alt="Obol Logo" />
+    </div>    <div className="text-[#091011] text-base font-semibold font-['DM Sans'] leading-normal">      {metadata.title}
     </div>
   </div>
 );
@@ -78,7 +79,7 @@ const MobileMenu = ({
 }) => (
   <div
     className={clsx(
-      "fixed left-0 top-16 z-10 h-full w-full bg-white transition-transform duration-150 dark:bg-gray-900",
+      "fixed left-0 top-16 z-10 h-full w-full bg-white transition-transform duration-150",
       {
         ["translate-x-full"]: !isOpen,
       },

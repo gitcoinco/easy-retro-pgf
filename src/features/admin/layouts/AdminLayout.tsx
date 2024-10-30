@@ -114,9 +114,9 @@ function RoundConfigSidebar() {
             key={item.href}
             href={item.href}
             className={cn(
-              "block rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800",
+              "block rounded-lg p-2 hover:bg-gray-100",
               {
-                ["bg-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-700"]:
+                ["bg-gray-200 hover:bg-gray-200"]:
                   isActive,
               },
             )}
@@ -125,7 +125,7 @@ function RoundConfigSidebar() {
               {createElement(item.icon, { className: "size-4 mt-1" })}
               <div>
                 {item.children}
-                <div className="text-xs dark:text-gray-300">
+                <div className="text-xs">
                   {item.description}
                 </div>
               </div>

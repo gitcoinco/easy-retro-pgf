@@ -12,7 +12,7 @@ export const Tbody = createComponent("tbody", tv({ base: "" }));
 export const Tr = createComponent(
   "tr",
   tv({
-    base: "border-b dark:border-gray-800 last:border-none",
+    base: "border-b last:border-none",
   }),
 );
 export const Th = createComponent("th", tv({ base: "text-left" }));

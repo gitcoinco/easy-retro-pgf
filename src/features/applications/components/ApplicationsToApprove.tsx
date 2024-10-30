@@ -22,7 +22,7 @@ import { ClockIcon } from "lucide-react";
 import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Alert } from "~/components/ui/Alert";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
-import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 import { useAccount } from "wagmi";
 import { useRevokeAttestations } from "~/hooks/useRevokeAttestations";
 
@@ -48,7 +48,7 @@ export function ApplicationItem({
   const isApproved = Boolean(approvedBy);
 
   return (
-    <div className="flex items-center gap-2 rounded border-b hover:bg-gray-100 dark:border-gray-800 hover:dark:bg-gray-800">
+    <div className="flex items-center gap-2 rounded border-b hover:bg-gray-100">
       <label className="flex flex-1 cursor-pointer items-center gap-4 p-2">
         <Checkbox
           disabled={isApproved}
@@ -64,12 +64,12 @@ export function ApplicationItem({
               {name}
             </Skeleton>
           </div>
-          <div className="flex gap-4 text-xs dark:text-gray-400">
+          <div className="flex gap-4 text-xs">
             <div>{fundingSources.length} funding sources</div>
             <div>{impactMetrics.length} impact metrics</div>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-gray-700">
           <ClockIcon className="size-3" />
           <Skeleton isLoading={isLoading} className="mb-1 min-h-5 min-w-24">
             {formatDate(time * 1000)}
@@ -157,7 +157,7 @@ export function ApplicationsToApprove() {
           <Alert variant="info">
             Newly submitted applications can take 10 minutes to show up.
           </Alert>
-          <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2 dark:bg-gray-900">
+          <div className="sticky top-0 z-10 my-2 flex items-center justify-between bg-white py-2">
             <div className="text-gray-300">
               {applications.data?.length
                 ? `${applications.data?.length} applications found`

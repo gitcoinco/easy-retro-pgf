@@ -76,7 +76,7 @@ export const BaseLayout = ({
       </Head>
       <div
         className={clsx(
-          "flex h-full px-3 md:px-20 min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
+          "flex h-full px-3 md:px-20 min-h-screen flex-1 flex-col",
           theme,
         )}
       >
@@ -86,7 +86,7 @@ export const BaseLayout = ({
           <div
             className={clsx(customClassName,
               {
-                ["w-full min-w-0 px-2 pb-24"]: !customClassName,
+                ["w-full min-w-0 mx-0 md:!ml-[80px] pb-24"]: !customClassName,
                 ["mx-auto max-w-5xl"]: !sidebar && !customClassName,
               })}
           >

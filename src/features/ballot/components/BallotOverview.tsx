@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { Alert } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Progress } from "~/components/ui/Progress";
+import { Notification } from "~/components/ui/Notification";
 import {
   useSubmitBallot,
   useBallot,
@@ -99,7 +100,7 @@ function BallotOverview() {
       </BallotSection>
       <BallotSection title="Projects added:">
         <div>
-          <span className="text-gray-900 dark:text-gray-300">
+          <span className="text-gray-900">
             {allocations.length}
           </span>
           /{projectCount?.count}
@@ -110,7 +111,7 @@ function BallotOverview() {
           <div className="flex justify-between">
             Votes allocated:
             <div
-              className={clsx("text-gray-900 dark:text-gray-300", {
+              className={clsx("text-gray-900", {
                 ["text-red-500"]: sum > maxVotesTotal,
               })}
             >
@@ -170,9 +171,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
   if (!isApprovedVoter) {
     return (
-      <Button disabled className="w-full">
-        Only approved voters can vote
-      </Button>
+      <Notification title="Only approved voters can vote" />
     );
   }
 
@@ -202,7 +201,7 @@ const SubmitBallotButton = ({ disabled = false }) => {
 
   const { title, instructions } =
     messages[
-      submit.isPending ? "signing" : submit.error ? "error" : "submitting"
+    submit.isPending ? "signing" : submit.error ? "error" : "submitting"
     ];
 
   return (
@@ -250,7 +249,7 @@ const BallotMessage = createComponent(
 const BallotHeader = createComponent(
   "h3",
   tv({
-    base: "text-sm font-semibold uppercase tracking-widest text-gray-700 dark:text-gray-300",
+    base: "text-sm font-semibold uppercase tracking-widest text-gray-700",
   }),
 );
 

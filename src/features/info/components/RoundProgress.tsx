@@ -48,7 +48,7 @@ const ProgressWrapper = createComponent(
 const ProgressBar = createComponent(
   "div",
   tv({
-    base: "h-full  bg-gradient-to-r from-[#FFFFFF] to-primary-600 transition-all dark:from-yellow-600 dark:to-yellow-700",
+    base: "h-full  bg-gradient-to-r from-[#FFFFFF] to-primary-600 transition-all",
   }),
 );
 

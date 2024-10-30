@@ -5,7 +5,7 @@ import { BackgroundImage } from "./BackgroundImage";
 export const Avatar = createComponent(
   BackgroundImage,
   tv({
-    base: "bg-gray-200 dark:bg-gray-800",
+    base: "bg-gray-200",
     variants: {
       size: {
         xs: "w-5 h-5 rounded-xs",
@@ -17,7 +17,7 @@ export const Avatar = createComponent(
         full: "rounded-lg",
       },
       bordered: {
-        true: "outline outline-white dark:outline-gray-900",
+        true: "outline outline-white",
       },
     },
     defaultVariants: {
