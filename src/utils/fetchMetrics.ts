@@ -40,17 +40,22 @@ const ImpactMetricsQuery = `
 `;
 
 export async function fetchImpactMetrics(projectName: string) {
-
   const headers = {
     Authorization: `Bearer ${OSO.apiKey}`,
   };
-  return fetch<{ oso_codeMetricsByProjectV1: ImpactMetrics[] }>(OSO.url, {
+
+  const extractedProjectName = projectName.split("/");
+  const lastIndex = extractedProjectName.length > 0 ? extractedProjectName[extractedProjectName.length - 1] : ""; // Safely get the last index
+  const formattedProjectName = projectName.includes("http")
+    ? lastIndex
+    : projectName;
+    return fetch<{ oso_codeMetricsByProjectV1: ImpactMetrics[] }>(OSO.url, {
     method: "POST",
     headers,
     body: JSON.stringify({
       query: ImpactMetricsQuery,
       variables: {
-        projectName,
+        projectName: formattedProjectName,
       },
     }),
   }).then((r) => {
