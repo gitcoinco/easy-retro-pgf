@@ -27,6 +27,10 @@ export const Layout = ({ children, ...props }: Props) => {
 
   const navLinks = [
     {
+      href: `/${domain}`,
+      children: `Summary`,
+    },
+    {
       href: `/${domain}/projects`,
       children: `Projects`,
     },

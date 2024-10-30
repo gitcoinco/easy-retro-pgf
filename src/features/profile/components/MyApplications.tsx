@@ -78,7 +78,7 @@ function ApplicationItem({
         </div>
         <div>{formatDate(time * 1000)}</div>
         {isApproved ? (
-          <Badge variant="success"><img src="/CheckIcon.svg" alt="check icon" />Approved</Badge>
+          <Badge variant="success">Approved</Badge>
         ) : (
           <Badge>Pending</Badge>
         )}

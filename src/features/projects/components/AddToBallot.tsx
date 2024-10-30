@@ -23,6 +23,12 @@ import { Alert } from "~/components/ui/Alert";
 
 type Props = { id?: string; name?: string };
 
+export const QuadraticVotingMessage = () => <div className="flex items-center gap-2">
+  <div className="text-lg">
+    Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes.
+  </div>
+</div>
+
 export const ProjectAddToBallot = ({ id, name }: Props) => {
   const { address } = useAccount();
   const [isOpen, setOpen] = useState(false);
@@ -66,11 +72,8 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         onOpenChange={setOpen}
         title={`Vote for ${name}`}
       >
-        <Alert variant="info" className="flex items-center gap-2">
-          <div className="text-lg font-semibold">
-            Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes.
-          </div>
-        </Alert>
+        <QuadraticVotingMessage/>
+
         <p className="mt-2 pb-4 leading-relaxed">
           How much votes should this Project receive to fill the gap between the
           impact they generated and the profit they received for generating this

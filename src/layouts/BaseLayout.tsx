@@ -81,13 +81,13 @@ export const BaseLayout = ({
         )}
       >
         {header}
-        <div className="mx-auto w-full flex-1 pt-2 2xl:container md:flex">
+        <div className="mx-auto w-full flex-1 pt-8 2xl:container md:flex">
           {sidebar === "left" ? wrappedSidebar : null}
           <div
             className={clsx(customClassName,
               {
-                ["w-full min-w-0 mx-0 md:!ml-[80px] pb-24"]: !customClassName,
-                ["mx-auto max-w-5xl"]: !sidebar && !customClassName,
+                ["w-full min-w-0 mx-0 md:!ml-[80px] pb-24"]: !customClassName && sidebar,
+                ["w-full min-w-0 mx-auto max-w-5xl pb-24"]: !sidebar && !customClassName,
               })}
           >
             {children}

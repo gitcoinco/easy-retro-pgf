@@ -11,7 +11,7 @@ export const Badge = createComponent(
         success: "bg-primary-100 text-[#16968e]", //check the color
       },
       size: {
-        md: "px-1",
+        md: "px-2",
         lg: "px-2 py-1 text-base",
       },
     },

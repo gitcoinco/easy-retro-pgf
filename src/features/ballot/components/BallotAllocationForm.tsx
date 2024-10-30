@@ -13,6 +13,7 @@ import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { QuadraticVotingMessage } from "~/features/projects/components/AddToBallot";
 
 export function BallotAllocationForm({ isPublished = false }) {
   const form = useFormContext<{ votes: Vote[] }>();
@@ -27,13 +28,9 @@ export function BallotAllocationForm({ isPublished = false }) {
   const roundState = useRoundState();
   return (
     <div>
-      <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
-      <Alert variant="info" className="flex items-center gap-2">
-        <div className="text-lg font-semibold">
-          Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes.
-        </div>
-      </Alert>
-      <p className="mt-2 mb-6">
+      <h1 className="mb-4 text-2xl font-bold">Review your ballot</h1>
+      <QuadraticVotingMessage/>
+      <p className="mt-4 mb-6 font-semibold">
         Once you have reviewed your vote allocation, you can submit your ballot.
       </p>
       {save.error && (
