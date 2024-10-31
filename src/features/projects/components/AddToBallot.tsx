@@ -51,7 +51,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
       ) : inBallot ? (
         <IconButton
           onClick={() => setOpen(true)}
-          variant="primary"
+          variant="secondary"
           icon={Check}
         >
           {formatNumber(inBallot.amount)} allocated

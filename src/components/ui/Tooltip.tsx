@@ -8,7 +8,7 @@ interface Props {
 export const Tooltip: React.FC<Props> = ({ children }) => (
   <div className="relative group text-gray-600">
     <HelpIcon />
-    <div className="absolute right-0 mt-2 w-80 p-6 text-sm bg-[#111f22] text-[#e1e9eb] rounded-lg z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+    <div className="absolute right-0 mt-2 w-80 p-6 text-sm bg-[#111f22] text-secondary-100 rounded-lg z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
       <p className="font-normal font-['DM Sans'] leading-normal tracking-wide">
         {children}
       </p>

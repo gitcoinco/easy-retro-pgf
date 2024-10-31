@@ -19,8 +19,8 @@ const InfoUnit = ({ heading, description }: { heading: string, description: stri
           <InfoUnit heading="How does it work?" description="Using the voting power earned from your contributions, you can vote for the projects to receive retroactive funding. Together, the community will determine which projects have created the most value for the ecosystem and can best put the funds to use decentralising Ethereum." />
         </div>
         <div className="flex justify-center md:justify-start">
-          <div className="w-36 h-10 px-6 py-3 bg-[#182d32] hover:bg-[#243d42] rounded-lg justify-center items-center inline-flex">
-            <Link target="_blank" href="https://blog.obol.org/1-percent-for-decentralisation/" className="text-[#e1e9eb] hover:text-[#FFFFFF] text-base ">Learn more</Link>
+          <div className="w-36 h-10 px-6 py-3 bg-secondary-600 hover:bg-secondary-500 rounded-lg justify-center items-center inline-flex">
+            <Link target="_blank" href="https://blog.obol.org/1-percent-for-decentralisation/" className="text-secondary-100 hover:text-white text-base ">Learn more</Link>
           </div>
         </div>
       </section>

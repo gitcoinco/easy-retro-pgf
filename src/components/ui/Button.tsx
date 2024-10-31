@@ -14,7 +14,9 @@ export const button = tv({
   variants: {
     variant: {
       primary:
-        "bg-primary-600 hover:bg-primary-500 text-[#182d32]",
+        "bg-primary-600 hover:bg-primary-500 text-secondary-600",
+      secondary:
+        "bg-secondary-600 hover:bg-secondary-500 text-secondary-100 hover:text-white",
       ghost: "hover:bg-gray-100",
       default:
         "bg-gray-100 hover:bg-gray-50",
