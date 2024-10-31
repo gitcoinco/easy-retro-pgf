@@ -92,7 +92,7 @@ function VoterCount() {
       </h3>
       <div className="pt-1 text-center text-2xl">
         <Skeleton
-          className="h-8 w-20 dark:bg-gray-700"
+          className="h-8 w-20"
           isLoading={voters.isPending || votes.isPending}
         >
           {votes.data?.totalVoters} / {voters.data?.length}

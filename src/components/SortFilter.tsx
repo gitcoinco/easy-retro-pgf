@@ -14,7 +14,7 @@ export const SortFilter = () => {
   return (
     <div className="mb-2 flex flex-1 flex-col items-end gap-2 sm:flex-row">
       <SearchInput
-        className="w-full rounded-full"
+        className="w-full rounded-lg"
         placeholder="Search project names..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}

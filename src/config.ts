@@ -2,8 +2,8 @@ import { getAddress } from "viem";
 import * as allChains from "viem/chains";
 
 export const metadata = {
-  title: "EasyRetroFunding",
-  description: "Open-source Retro Public Goods Funding platform",
+  title: "Obol RAF",
+  description: "Open-source Obol Retroactive Funding platform",
   url: "https://easyretropgf.xyz",
   image: "/api/og",
 };

@@ -21,7 +21,7 @@ import { EligibilityDialog } from "./EligibilityDialog";
 import { useLayoutOptions } from "~/layouts/BaseLayout";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { useIsCorrectNetwork } from "~/hooks/useIsCorrectNetwork";
-import { EnsureCorrectNetwork } from "./EnureCorrectNetwork";
+import { EnsureCorrectNetwork } from "./EnsureCorrectNetwork";
 
 const useBreakpoint = createBreakpoint({ XL: 1280, L: 768, S: 350 });
 
@@ -63,7 +63,7 @@ export const ConnectButton = ({ children }: PropsWithChildren) => {
                   <Button
                     suppressHydrationWarning
                     onClick={openConnectModal}
-                    className="text-[#182d32] h-10 px-6 py-3 w-36 inline-flex items-center justify-center  text-center transition-colors  backdrop-blur-sm  rounded-lg duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-gray-800" //move it as a variant to button ui
+                    className="text-[#182d32] h-10 px-6 py-3 w-36 inline-flex items-center justify-center  text-center transition-colors  backdrop-blur-sm  rounded-lg duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" //move it as a variant to button ui
                     variant="primary"
                   >
                     {isMobile ? "Connect" : "Connect wallet"}
@@ -112,7 +112,7 @@ const ConnectedDetails = ({
         ) : (
           <Chip className="gap-2" as={Link} href={`/${domain}/ballot`}>
             {isMobile ? <ListChecks className="size-4" /> : `View Ballot`}
-            <div className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold">
+            <div className="flex size-6 items-center justify-center rounded-lg bg-gray-200 text-xs font-bold">
               {ballotSize}
             </div>
           </Chip>
@@ -146,7 +146,7 @@ const UserInfo = ({
   }, [address, ens]);
   return (
     <Chip className="gap-2" {...props}>
-      <div className="h-6 w-6 overflow-hidden rounded-full">
+      <div className="h-6 w-6 overflow-hidden rounded-lg">
         {avatar.data ? (
           <Image width={24} height={24} alt={name} src={avatar.data} />
         ) : (

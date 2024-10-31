@@ -35,7 +35,7 @@ export function ProjectComments({ projectId = "" }) {
     <section>
       <h3 className="text-xl font-semibold">Comments</h3>
 
-      <ol className="mb-8 flex flex-col gap-8 divide-y dark:divide-gray-800">
+      <ol className="mb-8 flex flex-col gap-8 divide-y">
         {comments?.map(({ id, content, creatorId, createdAt }) => (
           <li key={id} className="flex gap-2 pt-8">
             <AvatarENS size="sm" address={creatorId} />
@@ -126,7 +126,7 @@ function CommentActionsDropdown({
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="z-50 rounded border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          className="z-50 rounded border border-gray-300 bg-white"
           sideOffset={5}
         >
           <DropdownItem onClick={onEdit}>Edit</DropdownItem>
@@ -140,6 +140,6 @@ function CommentActionsDropdown({
 const DropdownItem = createComponent(
   DropdownMenu.Item,
   tv({
-    base: "cursor-pointer rounded py-3 px-4 text-sm text-gray-900 outline-none hover:bg-gray-100 focus-visible:ring-0 dark:text-gray-300 dark:hover:bg-gray-800",
+    base: "cursor-pointer rounded py-3 px-4 text-sm text-gray-900 outline-none hover:bg-gray-100 focus-visible:ring-0",
   }),
 );

@@ -19,12 +19,12 @@ export function RoundProgress({
       >
         <ProgressBar style={{ width: `${progress * 100}%` }} />
       </ProgressWrapper>
-      <div className="rounded-xl border border-yellow-400 md:flex">
+      <div className="rounded-xl border border-primary-600 md:flex">
         {steps.map((step, i) => (
           <div
             key={i}
             className={cn(
-              "z-10 flex-1  rounded-xl border-l border-yellow-400 p-4 transition-opacity",
+              "z-10 flex-1  rounded-xl border-l border-primary-600 p-4 transition-opacity",
               {
                 ["opacity-50"]: currentStepIndex <= i,
               },
@@ -42,13 +42,13 @@ export function RoundProgress({
 const ProgressWrapper = createComponent(
   "div",
   tv({
-    base: "absolute hidden h-full w-4/5 overflow-hidden rounded-xl border-y border-yellow-400 md:block",
+    base: "absolute hidden h-full w-4/5 overflow-hidden rounded-xl border-y border-primary-600 md:block",
   }),
 );
 const ProgressBar = createComponent(
   "div",
   tv({
-    base: "h-full  bg-gradient-to-r from-yellow-50 to-yellow-200 transition-all dark:from-yellow-600 dark:to-yellow-700",
+    base: "h-full  bg-gradient-to-r from-[#FFFFFF] to-primary-600 transition-all",
   }),
 );
 

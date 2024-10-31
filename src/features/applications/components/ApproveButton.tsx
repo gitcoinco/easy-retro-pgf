@@ -6,7 +6,7 @@ import { useApprovedApplications } from "../hooks/useApprovedApplications";
 import { Badge } from "~/components/ui/Badge";
 
 function ApproveButton({
-  children = "Approve project",
+  children = "Approve",
   projectIds = [],
 }: PropsWithChildren<{ projectIds: string[] }>) {
   const approvals = useApprovedApplications(projectIds);
@@ -15,7 +15,7 @@ function ApproveButton({
   if (approvals.data?.length)
     return (
       <Badge variant="success" size="lg">
-        Approved
+         Approved
       </Badge>
     );
   return (

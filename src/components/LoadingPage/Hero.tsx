@@ -8,7 +8,7 @@ export const Hero = () => {
             </div>
             <div className="md:absolute md:top-36 flex flex-col gap-10 items-center text-center">
                 <h1 className="sm:max-w-[332px] md:max-w-[625.61px] text-[#091011] text-[40px] md:text-[64px] leading-[40px] md:leading-[64px] font-medium">Obol Retroactive Funding</h1>
-                <p className="text-[32px] leading-[48px]">for everyone</p>
+                <p className="text-[32px] leading-[48px]">for the Obol Collective</p>
                 <ConnectButtonSection />
                 <a href="#what-is-raf" className="text-black text-lg font-bold leading-7">What is RAF?</a>
             </div>

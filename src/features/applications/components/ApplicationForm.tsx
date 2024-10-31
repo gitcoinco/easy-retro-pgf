@@ -165,7 +165,7 @@ export function ApplicationForm({ address }: { address: Address }) {
         <FormSection
           title={
             <>
-              Contribution links <span className="text-red-300">*</span>
+              Contribution links <span className="text-primary-600">*</span>
             </>
           }
           description="Where can we find your contributions?"
@@ -207,7 +207,7 @@ export function ApplicationForm({ address }: { address: Address }) {
         <FormSection
           title={
             <>
-              Impact metrics <span className="text-red-300">*</span>
+              Impact metrics <span className="text-primary-600">*</span>
             </>
           }
           description="What kind of impact has your project made?"
@@ -249,7 +249,7 @@ export function ApplicationForm({ address }: { address: Address }) {
         <FormSection
           title={
             <>
-              Funding sources <span className="text-red-300">*</span>
+              Funding sources <span className="text-primary-600">*</span>
             </>
           }
           description="From what sources have you received funding?"
@@ -303,7 +303,7 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         {error ? (
-          <div className="mb-4 text-center text-gray-600 dark:text-gray-400">
+          <div className="mb-4 text-center text-gray-600">
             Make sure you have funds in your wallet and that you&apos;re not
             connected to a VPN since this can cause problems with the RPC and
             your wallet.
@@ -343,21 +343,6 @@ function CreateApplicationButton({
 
   return (
     <div className="flex items-center justify-between">
-      <div>
-        {!session && (
-          <div>You must connect wallet to create an application</div>
-        )}
-        {!isCorrectNetwork && (
-          <div className="flex items-center gap-2">
-            You must be connected to {correctNetwork?.name}
-          </div>
-        )}
-      </div>
-
-      {roundState !== "APPLICATION" && (
-        <Alert variant="info" title="Application period has ended" />
-      )}
-
       <EnsureCorrectNetwork>
         {hasBalance ? (
           <Button
@@ -374,6 +359,16 @@ function CreateApplicationButton({
           </Button>
         )}
       </EnsureCorrectNetwork>
+      <div>
+        {!session && (
+          <div>You must connect wallet to create an application</div>
+        )}
+        {!isCorrectNetwork && (
+          <div className="flex items-center gap-2">
+            You must be connected to {correctNetwork?.name}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -395,7 +390,7 @@ function ImpactTags() {
   return (
     <div className="mb-4">
       <Label>
-        Impact categories<span className="text-red-300">*</span>
+        Impact categories<span className="text-primary-600">*</span>
       </Label>
       <div className="flex flex-wrap gap-2">
         {round?.categories?.map(({ id, label }) => {

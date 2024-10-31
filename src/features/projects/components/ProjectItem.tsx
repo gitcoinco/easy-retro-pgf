@@ -19,7 +19,7 @@ export function ProjectItem({
   return (
     <article
       data-testid={`project-${attestation.id}`}
-      className="group rounded-2xl border border-gray-200 p-2 hover:border-primary-500 dark:border-gray-700 dark:hover:border-primary-500"
+      className="group rounded-2xl border border-gray-200 p-2 hover:border-primary-500"
     >
       <div className="opacity-70 transition-opacity group-hover:opacity-100">
         <ProjectBanner profileId={attestation?.recipient} />
@@ -33,7 +33,7 @@ export function ProjectItem({
         <Skeleton isLoading={isLoading}>{attestation?.name}</Skeleton>
       </Heading>
       <div className="mb-2">
-        <p className="line-clamp-2 h-10 text-sm dark:text-gray-300">
+        <p className="line-clamp-2 h-10 text-sm">
           <Skeleton isLoading={isLoading} className="w-full">
             {metadata.data?.bio}
           </Skeleton>
@@ -48,7 +48,7 @@ export function ProjectItem({
 
 export function ProjectItemAwarded({ amount = 0 }) {
   return (
-    <div className="absolute right-2 top-[100px] z-10 -mt-2 rounded bg-gray-100 p-1 text-sm dark:bg-gray-900">
+    <div className="absolute right-2 top-[100px] z-10 -mt-2 rounded bg-gray-100 p-1 text-sm">
       <span className="font-bold">{formatNumber(amount)}</span> scores
     </div>
   );

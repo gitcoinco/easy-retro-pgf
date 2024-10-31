@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import { metadata } from "~/config";
 import { useTheme } from "next-themes";
-import { Footer } from "~/components/Footer";
+import { Footer } from "~/components/LoadingPage";
 
 const Context = createContext({ eligibilityCheck: false, showBallot: false });
 export const useLayoutOptions = () => useContext(Context);
@@ -76,24 +76,25 @@ export const BaseLayout = ({
       </Head>
       <div
         className={clsx(
-          "flex h-full min-h-screen flex-1 flex-col dark:bg-gray-900 dark:text-white",
+          "flex h-full px-3 md:px-20 min-h-screen flex-1 flex-col",
           theme,
         )}
       >
         {header}
-        <div className="mx-auto w-full flex-1 pt-2 2xl:container md:flex">
+        <div className="mx-auto w-full flex-1 pt-8 2xl:container md:flex">
           {sidebar === "left" ? wrappedSidebar : null}
           <div
             className={clsx(customClassName,
               {
-                ["w-full min-w-0 px-2 pb-24"]: !customClassName,
-                ["mx-auto max-w-5xl"]: !sidebar && !customClassName,
+                ["w-full min-w-0 mx-0 md:!ml-[80px] pb-24"]: !customClassName && sidebar,
+                ["w-full min-w-0 mx-auto max-w-5xl pb-24"]: !sidebar && !customClassName,
               })}
           >
             {children}
           </div>
           {sidebar === "right" ? wrappedSidebar : null}
         </div>
+        <Footer />
       </div>
     </Context.Provider>
   );

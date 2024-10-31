@@ -2,14 +2,20 @@ import { Layout } from "~/layouts/DefaultLayout";
 
 import { ApplicationForm } from "~/features/applications/components/ApplicationForm";
 import { useAccount } from "wagmi";
+import { Notification } from "~/components/ui/Notification";
 import { Alert } from "~/components/ui/Alert";
 import { FormSection } from "~/components/ui/Form";
+import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 export default function NewProjectPage() {
   const { address } = useAccount();
+  const roundState = useRoundState();
 
   return (
     <Layout>
+      {roundState !== "APPLICATION" && (
+        <Notification className="justify-self-center" title="Application period has ended" />
+      )}
       <FormSection
         title="New application"
         description={

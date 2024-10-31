@@ -5,7 +5,6 @@ import theme from "tailwindcss/defaultTheme";
 
 export default {
   content: ["./src/**/*.tsx"],
-  darkMode: "class",
   theme: {
     extend: {
       colors: {

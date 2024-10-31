@@ -63,7 +63,7 @@ function ApplicationItem({
 }) {
   const roundId = useCurrentDomain();
   return (
-    <div className="flex items-center gap-2 rounded border-b hover:bg-gray-100 dark:border-gray-800 hover:dark:bg-gray-800">
+    <div className="flex items-center gap-2 rounded border-b hover:bg-gray-100">
       <Link
         href={`/${roundId}/applications/${id}`}
         className="flex flex-1 cursor-pointer items-center gap-4 p-2"

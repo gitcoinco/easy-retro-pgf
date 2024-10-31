@@ -2,16 +2,17 @@ import type { GetServerSidePropsContext } from "next";
 import { Layout } from "~/layouts/DefaultLayout";
 import { Markdown } from "~/components/ui/Markdown";
 import { Button } from "~/components/ui/Button";
+import { Tooltip } from "~/components/ui/Tooltip";
 import Link from "next/link";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { RoundProgress } from "~/features/info/components/RoundProgress";
 import { Banner } from "~/components/ui/Banner";
-import { CircleDollarSign, Globe, Plus } from "lucide-react";
 import { networkNames } from "~/config";
 import { createComponent } from "~/components/ui";
 import { tv } from "tailwind-variants";
 import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
 import { Skeleton } from "~/components/ui/Skeleton";
+
 
 export default function RoundPage() {
   const { data, isPending } = useCurrentRound();
@@ -32,11 +33,11 @@ export default function RoundPage() {
           <h1 className="text-4xl font-semibold">{data?.name}</h1>
         </Skeleton>
         <Button
-          icon={Plus}
+          className="text-[#182d32] h-10 px-6 py-3 inline-flex items-center justify-center text-center transition-colors  backdrop-blur-sm  rounded-lg duration-150 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" variant="primary" //improve this
           as={Link}
           href={`/${data?.domain}/applications/new`}
         >
-          Apply with your project
+          Apply
         </Button>
       </div>
       <div className="mb-4 flex gap-16">
@@ -54,8 +55,14 @@ export default function RoundPage() {
         </Meta>
         <Meta>
           <MetaLabel>Calculation</MetaLabel>
-          <Skeleton isLoading={isPending} className="h-7">
-            {data?.calculationType?.toUpperCase()}
+          <Skeleton isLoading={isPending}>
+            <div className="relative flex items-center space-x-1">
+              <span className="text-lg font-semibold">Quadratic</span>
+              <Tooltip>
+                <p>
+                  <span className="font-medium font-['DM Sans'] mb-2">Quadratic: </span>
+                  The voting power of each OBOL Token Delegate is proportional to the amount of OBOL tokens delegated to them. However, the funding results are calculated using quadratic funding, meaning that the square root of the votes is used to determine the final allocation. This approach ensures a broader distribution of funding across the Obol Collective, rather than allowing a small number of winners to dominate.
+                </p></Tooltip>            </div>
           </Skeleton>
         </Meta>
       </div>

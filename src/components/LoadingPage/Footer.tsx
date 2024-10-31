@@ -4,7 +4,7 @@ import { TwitterIcon } from "public/Twitter";
 import { TelegramIcon } from "public/Telegram";
 import { YoutubeIcon } from "public/Youtube";
 import { DiscordIcon } from "public/Discord";
-import { ObolLogo } from "./ObolLogo";
+import { LoadingPageLogo } from "./LoadingPageLogo";
 
 const SocialLink = ({ href, SvgIcon }: { href: string, SvgIcon: () => JSX.Element }) => {
     return <a target="_blank" href={href} className="text-gray-600 hover:text-gray-800">
@@ -14,7 +14,7 @@ const SocialLink = ({ href, SvgIcon }: { href: string, SvgIcon: () => JSX.Elemen
 export const Footer = () => {
     return (
         <footer className="flex flex-col-reverse md:flex-row justify-between items-center py-6">
-            <ObolLogo />
+            <LoadingPageLogo />
             <div className="flex space-x-6 mb-8 md:mb-0">
                 <SocialLink href="https://www.linkedin.com/company/obol-labs" SvgIcon={LinkedinIcon} />
                 <SocialLink href="https://github.com/ObolNetwork" SvgIcon={GithubIcon} />

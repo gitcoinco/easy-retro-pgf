@@ -7,7 +7,6 @@ export default function ProjectsPage({ }) {
     <BaseLayout header={<Header />} customClassName="px-3 md:px-20 max-w-full">
       <Hero />
       <InfoSection />
-      <Footer />
     </BaseLayout>
   );
 }

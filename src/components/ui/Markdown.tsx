@@ -12,8 +12,8 @@ export function Markdown({
 }: { isLoading?: boolean } & ComponentProps<typeof ReactMarkdown>) {
   return (
     <div
-      className={clsx("prose max-w-none dark:prose-invert", {
-        ["h-96 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"]:
+      className={clsx("prose max-w-none", {
+        ["h-96 animate-pulse rounded-xl bg-gray-100"]:
           isLoading,
       })}
     >

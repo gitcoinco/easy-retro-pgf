@@ -10,9 +10,10 @@ import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Logo = () => (
-  <div className="">
-    <div className="flex h-full items-center justify-center rounded-full border-2 border-white  bg-gray-800 px-4 py-2 text-base font-medium tracking-wider text-white hover:bg-gray-700">
-      {metadata.title}
+  <div className="w-[161px] h-10 px-4 py-2 bg-stone-100 rounded-lg justify-center items-center gap-3 inline-flex hover:bg-[#e2e2e2]">
+    <div className="flex items-center">
+      <img src="/ObolLogo.svg" alt="Obol Logo" />
+    </div>    <div className="text-[#091011] text-base font-semibold font-['DM Sans'] leading-normal">      {metadata.title}
     </div>
   </div>
 );
@@ -23,7 +24,7 @@ const NavLink = ({
 }: { isActive: boolean } & ComponentPropsWithRef<typeof Link>) => (
   <Link
     className={clsx(
-      "flex items-center rounded-full border-b-[3px] border-transparent px-6 py-2 font-semibold text-gray-600 transition-colors hover:bg-primary-100 hover:text-primary-800",
+      "flex items-center rounded-lg border-b-[3px] border-transparent px-6 py-2 font-semibold text-gray-600 transition-colors hover:bg-primary-100 hover:text-primary-800",
       {
         ["!border-white bg-primary-100 text-primary-700"]: isActive,
       },
@@ -39,7 +40,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
 
   return (
     <header className="relative z-10">
-      <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center justify-between px-2">
+      <div className="container mx-auto flex h-[72px] max-w-screen-2xl items-center justify-between">
         <div className="flex items-center">
           <IconButton
             icon={isOpen ? X : Menu}
@@ -54,7 +55,7 @@ export const Header = ({ navLinks }: { navLinks: NavLink[] }) => {
         <div className="hidden h-full items-center gap-2 overflow-x-auto md:flex">
           {navLinks?.map((link) => (
             <NavLink
-              isActive={asPath.startsWith(link.href)}
+              isActive={asPath === link.href || (asPath.startsWith(link.href)) && link.children !== "Summary"}
               key={link.href}
               href={link.href}
             >
@@ -78,7 +79,7 @@ const MobileMenu = ({
 }) => (
   <div
     className={clsx(
-      "fixed left-0 top-16 z-10 h-full w-full bg-white transition-transform duration-150 dark:bg-gray-900",
+      "fixed left-0 top-16 z-10 h-full w-full bg-white transition-transform duration-150",
       {
         ["translate-x-full"]: !isOpen,
       },

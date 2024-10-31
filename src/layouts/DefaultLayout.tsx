@@ -27,6 +27,10 @@ export const Layout = ({ children, ...props }: Props) => {
 
   const navLinks = [
     {
+      href: `/${domain}`,
+      children: `Summary`,
+    },
+    {
       href: `/${domain}/projects`,
       children: `Projects`,
     },
@@ -75,7 +79,7 @@ export function LayoutWithBallot(props: Props) {
   const { data: session } = useSession();
   return (
     <Layout
-      sidebar="left"
+      sidebar="right"
       sidebarComponent={address && session && <BallotOverview />}
       {...props}
     />

@@ -29,9 +29,6 @@ import { IconButton } from "./Button";
 import { Calendar, PlusIcon, Search, Trash } from "lucide-react";
 
 const inputBase = [
-  "dark:bg-gray-900",
-  "dark:text-gray-300",
-  "dark:border-gray-700",
   "border-gray-300",
   "rounded",
   "disabled:opacity-30",
@@ -58,10 +55,10 @@ export const InputWrapper = createComponent(
 export const InputAddon = createComponent(
   "div",
   tv({
-    base: "absolute text-gray-900 dark:text-gray-300 inline-flex items-center justify-center h-full border-gray-300 dark:border-gray-800 border-l px-4 font-semibold",
+    base: "absolute text-gray-900 inline-flex items-center justify-center h-full border-gray-300 border-l px-4 font-semibold",
     variants: {
       disabled: {
-        true: "text-gray-500 dark:text-gray-500",
+        true: "text-gray-500",
       },
       position: {
         left: "left-0",
@@ -95,9 +92,7 @@ const CheckboxComponent = createComponent(
   "input",
   tv({
     base: [
-      ...inputBase,
-      "checked:focus:dark:bg-gray-700 checked:hover:dark:bg-gray-700",
-    ],
+      ...inputBase],
   }),
 );
 
@@ -111,7 +106,7 @@ export const Checkbox = forwardRef(function Checkbox(
 export const Label = createComponent(
   "label",
   tv({
-    base: "block tracking-wider dark:text-gray-300 font-semibold",
+    base: "block tracking-wider font-semibold",
   }),
 );
 export const Textarea = createComponent(
@@ -128,7 +123,7 @@ export const InputWithAddon = forwardRef(function InputWithAddon(
       <InputAddon
         position="left"
         className={
-          "static whitespace-nowrap border-l-0 bg-gray-100 px-2 py-2.5 text-sm font-normal text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+          "static whitespace-nowrap border-l-0 bg-gray-100 px-2 py-2.5 text-sm font-normal text-gray-600"
         }
       >
         {addon}
@@ -147,7 +142,7 @@ export const SearchInput = forwardRef(function SearchInput(
       <InputIcon>
         <Search />
       </InputIcon>
-      <Input ref={ref} {...props} className="rounded-full pl-12" />
+      <Input ref={ref} {...props} className="rounded-lg pl-12" />
     </InputWrapper>
   );
 });
@@ -198,7 +193,7 @@ export const FormControl = ({
       {label && (
         <Label className="mb-1" htmlFor={name}>
           {label}
-          {required && <span className="text-red-300">*</span>}
+          {required && <span className="text-primary-600">*</span>}
         </Label>
       )}
       {cloneElement(children as ReactElement, {
@@ -207,7 +202,7 @@ export const FormControl = ({
         ...register(name, { valueAsNumber }),
       })}
       {hint && (
-        <div className="pl-0.5 pt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="pl-0.5 pt-1 text-xs text-gray-500">
           {hint}
         </div>
       )}
@@ -239,7 +234,7 @@ export function FieldArray<S extends z.Schema>({
   return (
     <div className="mb-8">
       {error && (
-        <div className="border border-red-900 p-2 dark:text-red-500">
+        <div className="border border-red-900 p-2">
           {String(error)}
         </div>
       )}
@@ -283,7 +278,7 @@ export function FormSection({
   return (
     <section className="mb-8">
       <h3 className="mb-1 text-xl font-semibold">{title}</h3>
-      <p className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
+      <p className="mb-4 leading-loose text-gray-600">
         {description}
       </p>
       {children}

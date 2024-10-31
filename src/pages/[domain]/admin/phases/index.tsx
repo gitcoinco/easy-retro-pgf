@@ -99,7 +99,7 @@ function DateFormItem({
     <div className="mb-8">
       <div
         className={cn(
-          "absolute -start-2 mt-1 flex  size-4 items-center justify-center rounded-full",
+          "absolute -start-2 mt-1 flex  size-4 items-center justify-center rounded-lg",
           {
             ["bg-gray-200 text-gray-800"]: !isSet,
             ["bg-green-200 text-green-800"]: isSet,

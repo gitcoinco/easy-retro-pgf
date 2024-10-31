@@ -13,6 +13,7 @@ import { useProjectsById } from "~/features/projects/hooks/useProjects";
 import { parse, format } from "~/utils/csv";
 import { formatNumber } from "~/utils/formatNumber";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
+import { QuadraticVotingMessage } from "~/features/projects/components/AddToBallot";
 
 export function BallotAllocationForm({ isPublished = false }) {
   const form = useFormContext<{ votes: Vote[] }>();
@@ -27,13 +28,9 @@ export function BallotAllocationForm({ isPublished = false }) {
   const roundState = useRoundState();
   return (
     <div>
-      <h1 className="mb-2 text-2xl font-bold">Review your ballot</h1>
-      <Alert variant="info" className="flex items-center gap-2">
-        <div className="text-lg font-semibold">
-          Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes.
-        </div>
-      </Alert>
-      <p className="mt-2 mb-6">
+      <h1 className="mb-4 text-2xl font-bold">Review your ballot</h1>
+      <QuadraticVotingMessage/>
+      <p className="mt-4 mb-6 font-semibold">
         Once you have reviewed your vote allocation, you can submit your ballot.
       </p>
       {save.error && (
@@ -51,7 +48,7 @@ export function BallotAllocationForm({ isPublished = false }) {
         </div>
         {votes.length ? <ClearBallot /> : null}
       </div>
-      <div className="relative rounded-2xl border border-gray-300 dark:border-gray-800">
+      <div className="relative rounded-2xl border border-gray-300">
         <div className="p-8">
           <div className="relative flex max-h-[500px] min-h-[360px] flex-col overflow-auto">
             {votes?.length ? (
@@ -65,7 +62,7 @@ export function BallotAllocationForm({ isPublished = false }) {
           </div>
         </div>
 
-        <div className="flex h-16 items-center justify-between rounded-b-2xl border-t border-gray-300 px-8 py-4 text-lg font-semibold dark:border-gray-800">
+        <div className="flex h-16 items-center justify-between rounded-b-2xl border-t border-gray-300 px-8 py-4 text-lg font-semibold">
           <div>Total votes in ballot</div>
           <div className="flex items-center gap-2">
             {save.isPending && <Spinner />}
@@ -185,7 +182,7 @@ function ClearBallot() {
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>
-        Remove all projects from ballot
+        Remove All
       </Button>
 
       <Dialog

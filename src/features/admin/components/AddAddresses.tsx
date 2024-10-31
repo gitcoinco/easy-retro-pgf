@@ -9,7 +9,7 @@ import { Button } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Checkbox, Form, FormControl, Textarea } from "~/components/ui/Form";
 import { NameENS } from "~/components/ENS";
-import { EnsureCorrectNetwork } from "~/components/EnureCorrectNetwork";
+import { EnsureCorrectNetwork } from "~/components/EnsureCorrectNetwork";
 import { cn } from "~/utils/classNames";
 
 type Props = {
@@ -80,7 +80,7 @@ export function AddressList({
           <div
             key={addr}
             className={cn(
-              "flex items-center gap-2 rounded border-b dark:border-gray-800 hover:dark:bg-gray-800",
+              "flex items-center gap-2 rounded border-b",
               {
                 ["opacity-60"]: isDisabled,
               },

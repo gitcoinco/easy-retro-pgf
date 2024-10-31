@@ -6,7 +6,7 @@ export function EmptyState({
   children,
 }: PropsWithChildren<{ title: string }>) {
   return (
-    <div className="flex flex-col items-center justify-center rounded border p-8 dark:border-gray-700">
+    <div className="flex flex-col items-center justify-center rounded border p-8">
       <Heading className="mt-0" as="h3" size="lg">
         {title}
       </Heading>
