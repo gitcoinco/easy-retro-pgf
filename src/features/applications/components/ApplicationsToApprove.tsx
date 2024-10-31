@@ -102,6 +102,7 @@ export function ApplicationItem({
         ) : (
           <Button
             disabled={isLoading}
+            size="sm"
             as={Link}
             target="_blank"
             href={`/${domain}/applications/${id}`}

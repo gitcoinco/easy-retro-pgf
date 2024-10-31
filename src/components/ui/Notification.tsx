@@ -3,7 +3,7 @@ import { createComponent } from ".";
 import { type ComponentProps } from "react";
 
 const notification = tv({
-    base: "h-10 flex items-center bg-[#e89e30]/10 rounded-lg  p-4",
+    base: "h-10 flex items-center bg-[#e89e30]/10 rounded-lg  gap-1 p-4",
 });
 
 export const NotificationComponent = createComponent("div", notification);
