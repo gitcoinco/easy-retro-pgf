@@ -10,7 +10,6 @@ export function EnsureCorrectNetwork({ children }: PropsWithChildren) {
   if (!isCorrectNetwork)
     return (
       <Chip
-        className="bg-[#182d32] hover:bg-[#243d42] text-[#e1e9eb] hover:text-[#FFFFFF]"
         onClick={() => switchChain({ chainId: correctNetwork?.id as number })}
       >
         Change network

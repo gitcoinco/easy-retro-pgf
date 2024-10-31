@@ -16,6 +16,12 @@ export default {
           700: "#1D5249",
           800: "#0B1F1B",
         },
+        secondary: {
+          ...colors,  
+          100: "#e1e9eb",
+          500: "#243d42",
+          600: "#182d32",      
+        },
         gray: colors.stone,
       },
       fontFamily: {
