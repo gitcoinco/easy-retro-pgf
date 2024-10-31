@@ -13,16 +13,6 @@ import { tv } from "tailwind-variants";
 import { useRoundToken } from "~/features/distribute/hooks/useAlloPool";
 import { Skeleton } from "~/components/ui/Skeleton";
 
-// const QuadraticTooltip = () =>
-//   <div className="relative group text-grey-600">
-//     <HelpIcon />
-//     <div className="absolute right-0 mt-2 w-80 p-6 text-sm bg-[#111f22] text-[#e1e9eb] rounded-lg  z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-//       <p className="font-normal font-['DM Sans'] leading-normal tracking-wide">
-//         <span className="font-medium font-['DM Sans'] mb-2">Quadratic: </span>
-//         The voting power of each OBOL Token Delegate is proportional to the amount of OBOL tokens delegated to them. However, the funding results are calculated using quadratic funding, meaning that the square root of the votes is used to determine the final allocation. This approach ensures a broader distribution of funding across the Obol Collective, rather than allowing a small number of winners to dominate.      </p>
-//       <div className="absolute top-0 right-4 transform -translate-y-1/2 bg-[#111f22] h-3 w-3 rotate-45"></div>
-//     </div>
-//   </div>
 
 export default function RoundPage() {
   const { data, isPending } = useCurrentRound();
