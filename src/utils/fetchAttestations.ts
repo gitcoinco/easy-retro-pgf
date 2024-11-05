@@ -84,6 +84,7 @@ export async function fetchApprovedVoter(address: string) {
   return fetchAttestations([eas.schemas.approval], {
     where: {
       recipient: { equals: address },
+      attester: { in: config.admins },
       AND: [
         createDataFilter("type", "bytes32", "voter"),
         createDataFilter("round", "bytes32", config.roundId),
