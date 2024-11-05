@@ -27,7 +27,7 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
                 Your vote has been received 🥳
               </h3>
               <p className="mb-10 text-gray-700 dark:text-gray-300">
-                Thank you for participating in RetroPGF 3. Please help us
+                Thank you for participating in Filecoin RPGF-2. Please help us
                 improve the process by providing feedback on your experience as
                 a badgeholder!
               </p>

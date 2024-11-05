@@ -21,7 +21,14 @@ import {
   fetchApprovedVoter,
   fetchAttestations,
 } from "~/utils/fetchAttestations";
-import { useProjectsById } from "~/features/projects/hooks/useProjects";
+
+const getVoterIdByRound = (voterId: string) => {
+  const roundId = config.roundId.split("ez-rpgf-filecoin-")[1] ?? 1;
+  if (roundId === 1) {
+    return voterId;
+  }
+  return `${roundId}-${voterId}`;
+};
 
 const defaultBallotSelect = {
   votes: true,
@@ -33,9 +40,12 @@ const defaultBallotSelect = {
 
 export const ballotRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) => {
-    const voterId = ctx.session.user.name!;
+    const voterIdByRound = getVoterIdByRound(ctx.session.user.name!);
     return ctx.db.ballot
-      .findUnique({ select: defaultBallotSelect, where: { voterId } })
+      .findUnique({
+        select: defaultBallotSelect,
+        where: { voterId: voterIdByRound },
+      })
       .then((ballot) => ({
         ...ballot,
         votes: (ballot?.votes as Vote[]) ?? [],
@@ -60,44 +70,64 @@ export const ballotRouter = createTRPCRouter({
         }).then((projects) =>
           Object.fromEntries(projects.map((p) => [p.id, p.name])),
         );
-        return ballots.flatMap(({ voterId, signature, publishedAt, votes }) =>
-          (votes as unknown as Vote[]).map(({ amount, projectId }) => ({
-            voterId,
-            signature,
-            publishedAt,
-            amount,
-            projectId,
-            project: projectsById?.[projectId],
-          })),
+        return ballots.flatMap(
+          ({ voterId: voterIdByRound, signature, publishedAt, votes }) =>
+            (votes as unknown as Vote[]).reduce(
+              (acc, { amount, projectId }) => {
+                const [roundId, voterId] = voterIdByRound.includes("-")
+                  ? voterIdByRound.split("-")
+                  : [1, voterIdByRound];
+                if (roundId === config.roundId) {
+                  acc.push({
+                    voterId,
+                    signature,
+                    publishedAt,
+                    amount,
+                    projectId,
+                    project: projectsById?.[projectId],
+                  });
+                }
+                return acc;
+              },
+              [] as {
+                voterId: string;
+                signature: string | null;
+                publishedAt: Date | null;
+                amount: number;
+                projectId: string;
+                project?: string;
+              }[],
+            ),
         );
       });
   }),
   save: protectedProcedure
     .input(BallotSchema)
     .mutation(async ({ input, ctx }) => {
-      const voterId = ctx.session.user.name!;
+      const voterIdByRound = getVoterIdByRound(ctx.session.user.name!);
       if (isAfter(new Date(), config.votingEndsAt)) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
       }
-      await verifyUnpublishedBallot(voterId, ctx.db);
+      await verifyUnpublishedBallot(voterIdByRound, ctx.db);
 
       return ctx.db.ballot.upsert({
         select: defaultBallotSelect,
-        where: { voterId },
+        where: { voterId: voterIdByRound },
         update: input,
-        create: { voterId, ...input },
+        create: { voterId: voterIdByRound, ...input },
       });
     }),
   publish: protectedProcedure
     .input(BallotPublishSchema)
     .mutation(async ({ input, ctx }) => {
+      const voterIdByRound = getVoterIdByRound(ctx.session.user.name!);
       const voterId = ctx.session.user.name!;
 
       if (isAfter(new Date(), config.votingEndsAt)) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Voting has ended" });
       }
 
-      const ballot = await verifyUnpublishedBallot(voterId, ctx.db);
+      const ballot = await verifyUnpublishedBallot(voterIdByRound, ctx.db);
       if (!ballot) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -139,7 +169,7 @@ export const ballotRouter = createTRPCRouter({
       }
 
       return ctx.db.ballot.update({
-        where: { voterId },
+        where: { voterId: voterIdByRound },
         data: { publishedAt: new Date(), signature },
       });
     }),
