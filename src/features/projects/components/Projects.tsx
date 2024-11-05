@@ -22,7 +22,7 @@ export function Projects() {
     <div>
       <div
         className={clsx(
-          "fixed right-0 top-0 z-20 flex justify-end gap-2 rounded-bl-3xl bg-white px-2 pb-2 pt-4 dark:bg-gray-900",
+          "flex justify-end gap-2 rounded-bl-3xl bg-white px-2 pb-2 pt-4 dark:bg-gray-900",
           {
             ["invisible"]: !select.count,
           },
