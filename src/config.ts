@@ -33,7 +33,6 @@ function getAdmins(roundId: string) {
   return (
     (admins[roundId as keyof typeof admins] ?? "").split(",") as `0x${string}`[]
   ).map((addr) => {
-    console.log(addr);
     if (isAddress(addr)) return getAddress(addr);
     throw new Error("Invalid admin address");
   });

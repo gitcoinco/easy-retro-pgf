@@ -8,7 +8,6 @@ import "./test-msw";
 import { server } from "./test-msw";
 import { config } from "./config";
 
-console.log(config);
 beforeAll(() => {
   // server.listen({ onUnhandledRequest: "warn" });
   /* eslint-disable-next-line */
