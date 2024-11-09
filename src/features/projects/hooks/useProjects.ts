@@ -1,4 +1,4 @@
-import { useBatchMetadata, useMetadata } from "~/hooks/useMetadata";
+import { useMetadata } from "~/hooks/useMetadata";
 import { api } from "~/utils/api";
 import { type Application } from "~/features/applications/types";
 import { useFilter } from "~/features/filter/hooks/useFilter";
@@ -10,6 +10,7 @@ import { convertAndDownload } from "~/utils/csv";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { roundsMap } from "~/config";
+import { useRoundProjects } from "~/hooks/useRoundProjects";
 export function useProjectById(id: string, startsAt?: number) {
   const query = api.projects.get.useQuery(
     { ids: [id], startsAt },
@@ -61,30 +62,14 @@ export function useProjectCount() {
 export function useDownloadProjects() {
   const { round } = useFilter();
 
-  const projs = api.projects.search.useQuery(
-    {
-      round: roundsMap[round as keyof typeof roundsMap],
-    },
-    {
-      select: (data: CustomAttestation[]): EASAttestation[] => {
-        const transformedData = data as unknown as EASAttestation[];
-        return shuffleProjects(transformedData);
-      },
-    },
-  );
-  const attestations = useMemo(
-    () => (projs.data ?? []) as unknown as CustomAttestation[],
-    [projs],
-  );
-  const metadataPtrs = attestations.map(
-    (attestation) => attestation.metadataPtr,
-  );
-  const { data, isLoading } = useBatchMetadata(metadataPtrs);
+  const { data, isLoading } = useRoundProjects({
+    round: roundsMap[round as keyof typeof roundsMap],
+  });
 
   const preparedData = useMemo(() => {
     if (isLoading || !data) return [];
 
-    return data;
+    return shuffleProjects(data);
   }, [data]);
 
   const downloadMetadata = () => {
@@ -95,7 +80,7 @@ export function useDownloadProjects() {
   return {
     downloadMetadata,
     isLoading: isLoading,
-    count: attestations.length,
+    count: data?.length,
   };
 }
 

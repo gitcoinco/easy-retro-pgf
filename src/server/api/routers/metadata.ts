@@ -8,7 +8,10 @@ export const metadataRouter = createTRPCRouter({
     .query(async ({ input: { metadataPtr } }) => fetchMetadata(metadataPtr)),
 
   getBatch: publicProcedure
-  .input(z.object({ metadataPtrs: z.array(z.string()) }))
-  .query(async ({ input: {metadataPtrs} }) => Promise.all(metadataPtrs.map(metadataPtr => fetchMetadata(metadataPtr))),
-    )
+    .input(z.object({ metadataPtrs: z.array(z.string()) }))
+    .query(async ({ input: { metadataPtrs } }) =>
+      Promise.all(
+        metadataPtrs.map((metadataPtr) => fetchMetadata(metadataPtr)),
+      ),
+    ),
 });
