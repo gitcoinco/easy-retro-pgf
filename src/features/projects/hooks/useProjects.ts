@@ -3,13 +3,13 @@ import { api } from "~/utils/api";
 import { type Application } from "~/features/applications/types";
 import { useFilter } from "~/features/filter/hooks/useFilter";
 import { SortOrder, type Filter } from "~/features/filter/types";
-import { Attestation as EASAttestation } from "@ethereum-attestation-service/eas-sdk/dist/eas";
-import { Attestation as CustomAttestation } from "~/utils/fetchAttestations";
+import { type Attestation as EASAttestation } from "@ethereum-attestation-service/eas-sdk/dist/eas";
+import { type Attestation as CustomAttestation } from "~/utils/fetchAttestations";
 import { shuffleProjects } from "~/utils/shuffleProjects";
 import { convertAndDownload } from "~/utils/csv";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { roundsMap } from "~/config";
+import { type RoundId, roundsMap } from "~/config";
 import { useRoundProjects } from "~/hooks/useRoundProjects";
 export function useProjectById(id: string, startsAt?: number) {
   const query = api.projects.get.useQuery(
@@ -62,8 +62,10 @@ export function useProjectCount() {
 export function useDownloadProjects() {
   const { round } = useFilter();
 
+  const roundId = roundsMap[round as keyof typeof roundsMap] as RoundId;
+
   const { data, isLoading } = useRoundProjects({
-    round: roundsMap[round as keyof typeof roundsMap],
+    round: roundId,
   });
 
   const preparedData = useMemo(() => {
@@ -74,7 +76,10 @@ export function useDownloadProjects() {
 
   const downloadMetadata = () => {
     if (!data || preparedData.length === 0) return;
-    convertAndDownload(preparedData);
+    convertAndDownload({
+      data: preparedData,
+      round: roundId,
+    });
   };
 
   return {

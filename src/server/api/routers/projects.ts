@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { fetchAttestations, createDataFilter } from "~/utils/fetchAttestations";
+import {
+  fetchAttestations,
+  createDataFilter,
+  type Attestation,
+} from "~/utils/fetchAttestations";
 import { TRPCError } from "@trpc/server";
 import { config, eas } from "~/config";
 import { FilterSchema } from "~/features/filter/types";
@@ -79,11 +83,18 @@ export const projectsRouter = createTRPCRouter({
   roundProjectsWithMetadata: publicProcedure
     .input(FilterSchema)
     .query(async ({ input }) => {
-      const projects = await searchProjects(input);
-      const metadataPtrs = projects?.map((project) => project.metadataPtr);
-      const batchMetadata = Promise.all(
-        metadataPtrs.map((metadataPtr) => fetchMetadata(metadataPtr)),
+      const projects: Attestation[] = await searchProjects(input);
+
+      const projectsWithMetadata = await Promise.all(
+        projects.map(async (project) => {
+          const { name, metadataPtr } = project;
+          const metadata = await fetchMetadata(metadataPtr);
+          return {
+            ...metadata,
+            name,
+          };
+        }),
       );
-      return batchMetadata;
+      return projectsWithMetadata;
     }),
 });
