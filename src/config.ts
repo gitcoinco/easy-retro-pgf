@@ -1,6 +1,8 @@
 import { getAddress, isAddress } from "viem";
 import * as wagmiChains from "wagmi/chains";
 
+export type RoundId = "ez-rpgf-filecoin-1" | "ez-rpgf-filecoin-2";
+
 const admins = {
   "ez-rpgf-filecoin-1": process.env.NEXT_PUBLIC_ADMIN_ADDRESSES,
   // For each new round, add a new admin addresses in .env file
