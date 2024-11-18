@@ -55,7 +55,7 @@ export const BaseLayout = ({
       <Head>
         <title>{title}</title>
         <meta name="description" content={metadata.description} />
-        <link rel="icon" href="favicon.svg" />
+        <link rel="icon" href="https://i.ibb.co/VjHvtHN/Primary-Icon-Circle-Dark-BG.png" />
         <meta property="og:url" content={metadata.url} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />

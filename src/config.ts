@@ -2,14 +2,16 @@ import { getAddress } from "viem";
 import * as allChains from "viem/chains";
 
 export const metadata = {
-  title: "EasyRetroFunding",
-  description: "Open-source Retro Public Goods Funding platform",
-  url: "https://easyretropgf.xyz",
-  image: "/api/og",
+
+  title: "Obol RAPGF",
+  description: "Retro Public Goods Funding for the Obol Collective",
+  url: "https://easy-retro-pgf.vercel.app",
+  image: "https://i.ibb.co/VjHvtHN/Primary-Icon-Circle-Dark-BG.png",
+
 };
 
 export const config = {
-  logoUrl: "",
+  logoUrl: "https://i.ibb.co/VjHvtHN/Primary-Icon-Circle-Dark-BG.png",
   pageSize: 3 * 4,
 };
 
