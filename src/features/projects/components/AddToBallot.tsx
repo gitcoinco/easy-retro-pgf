@@ -23,9 +23,12 @@ import { Alert } from "~/components/ui/Alert";
 
 type Props = { id?: string; name?: string };
 
+const QuadraticVotingMessageMessage = "Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes."
+
+
 export const QuadraticVotingMessage = () => <div className="flex items-center gap-2">
   <div className="text-lg">
-    Voting results are calculated using a quadratic formula. This method amplifies the impact of distributing votes across multiple projects, rather than concentrating them on a few. Please consider this when casting your votes.
+    {QuadraticVotingMessageMessage}
   </div>
 </div>
 
@@ -72,7 +75,13 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         onOpenChange={setOpen}
         title={`Vote for ${name}`}
       >
-        <QuadraticVotingMessage/>
+
+        <Alert
+          title={QuadraticVotingMessageMessage}
+          className="mb-4"
+          variant="info"
+        ></Alert>
+
 
         <p className="mt-2 pb-4 leading-relaxed">
           How much votes should this Project receive to fill the gap between the

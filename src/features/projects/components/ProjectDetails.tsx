@@ -54,12 +54,6 @@ export default function ProjectDetails({
         <Heading as="h2" size="3xl">
           Impact statements
         </Heading>
-
-        <ProjectContributions
-          isLoading={metadata.isPending}
-          project={metadata.data}
-        />
-
         <ProjectImpact isLoading={metadata.isPending} project={metadata.data} />
         <Heading as="h3" size="2xl">
           Past grants and funding

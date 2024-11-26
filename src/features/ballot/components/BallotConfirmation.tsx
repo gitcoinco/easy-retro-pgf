@@ -63,25 +63,6 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
             {votes && <AllocationList votes={votes} />}
           </section>
         </Card>
-        <Card>
-          <div>
-            <h5 className="mb-3 text-2xl font-bold">
-              Help us improve next round of RetroPGF
-            </h5>
-            <p className="mb-6 text-gray-700">
-              Your anonymized feedback will be influential to help us iterate on
-              the RetroPGF process.
-            </p>
-            <Button
-              variant="primary"
-              as={Link}
-              target="_blank"
-              href={feedbackUrl}
-            >
-              Share feedback
-            </Button>
-          </div>
-        </Card>
       </div>
     </section>
   );
