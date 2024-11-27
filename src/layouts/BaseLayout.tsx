@@ -67,7 +67,7 @@ export const BaseLayout = ({
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           property="twitter:domain"
-          content="https://github.com/gitcoinco/easy-retro-pgf"
+          content="https://github.com/obolnetwork/easy-retro-pgf"
         />
         <meta property="twitter:url" content={metadata.url} />
         <meta name="twitter:title" content={title} />

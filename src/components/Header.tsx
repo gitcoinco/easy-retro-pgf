@@ -10,7 +10,7 @@ import { Menu, X } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Logo = () => (
-  <div className="w-[161px] h-10 px-4 py-2 bg-gray-100 rounded-lg justify-center items-center gap-3 inline-flex hover:bg-[#e2e2e2]">
+  <div className="w-[161px] h-10 px-4 py-2 bg-gray-100 rounded-lg justify-center items-center gap-3 inline-flex hover:bg-gray-300">
     <div className="flex items-center">
       <img src="/ObolLogo.svg" alt="Obol Logo" />
     </div>    <div className="text-[#091011] text-base font-semibold font-['DM Sans'] leading-normal">      {metadata.title}

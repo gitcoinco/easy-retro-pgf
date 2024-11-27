@@ -63,7 +63,7 @@ export const ProjectAddToBallot = ({ id, name }: Props) => {
         <Button
           disabled={!address}
           onClick={() => setOpen(true)}
-          variant="primary"
+          variant="secondary"
           className="w-full md:w-auto"
         >
           Add to ballot
@@ -148,7 +148,7 @@ const ProjectAllocation = ({
       <div className="flex justify-between gap-2 pt-2 text-sm">
         <div className="flex gap-2">
           <span className="text-gray-600">
-            Total allocated:
+            Total votes allocated:
           </span>
           <span
             className={clsx("font-semibold", {

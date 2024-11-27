@@ -34,9 +34,11 @@ export default function StatsPage() {
       {useRoundState() === "RESULTS" ? (
         <Stats />
       ) : (
-        <Alert variant="info" className="mx-auto max-w-sm text-center">
+        <Alert variant="info" className="mx-auto max-w-xs text-center">
+          <div className="font-semibold">
           The results will be revealed in{" "}
-          <div className="text-3xl">
+          </div>
+          <div className="text-2xl font-bold">
             <Skeleton
               className="h-8 w-20"
               isLoading={round.isPending}
@@ -44,7 +46,9 @@ export default function StatsPage() {
               {differenceInDays(round.data?.resultAt as Date, new Date())}
             </Skeleton>
           </div>
-          days
+          <div className="text-gray-500 font-semibold">
+          Days
+          </div>
         </Alert>
       )}
     </Layout>

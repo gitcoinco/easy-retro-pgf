@@ -54,7 +54,7 @@ All networks EAS is deployed to are supported
 To run locally follow these instructions:
 
 ```sh
-git clone https://github.com/gitcoinco/easy-retro-pgf
+git clone https://github.com/obolnetwork/easy-retro-pgf
 
 bun install # (or pnpm / yarn / npm)
 

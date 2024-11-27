@@ -7,9 +7,8 @@ import { AllocationList } from "../../../components/AllocationList";
 import { Button } from "~/components/ui/Button";
 import { createComponent } from "~/components/ui";
 import { type Vote } from "../types";
-import { config } from "~/config";
 
-const feedbackUrl = process.env.NEXT_PUBLIC_FEEDBACK_URL;
+const feedbackUrl = "https://app.slack.com/client/T05G0QGB1DW/search"; //[TODO Hanan] shall change in future for the real round
 
 const Card = createComponent(
   "div",
