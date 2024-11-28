@@ -11,8 +11,8 @@ const InfoUnit = ({ heading, description }: { heading: string, description: stri
   
   export const InfoSection = () => {
     return (
-      <section id="what-is-raf" className="py-24">
-        <h2 className="text-black text-[40px] leading-[56px] mb-10">What is RAF?</h2>
+      <section id="what-is-raf" className="pt-24">
+        <h2 className="text-black text-4xl leading-10 mb-10">What is RAF?</h2>
         <div className="sm:flex-col md:flex md:flex-row justify-between space-y-8 md:space-y-0 md:space-x-8 mb-8">
           <InfoUnit heading="What is Obol’s Retroactive Funding (RAF)?" description="All Obol Distributed Validators (DVs) contribute 1% of their staking rewards into a retroactive funding program, which will reward projects building on distributed validators and generally working to decentralise Ethereum. These might include staking protocols & products, DV client teams, DV tooling, node operators, educators, and community squad stakers." />
           <InfoUnit heading="Who is it for?" description="Any Obol Collective member can apply for retroactive funding, with their ecosystem impact and value-add being assessed based on KPIs such as TVL, code contributed, number of active DVs, etc." />

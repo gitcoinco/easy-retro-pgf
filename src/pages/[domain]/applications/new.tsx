@@ -4,7 +4,6 @@ import { ApplicationForm } from "~/features/applications/components/ApplicationF
 import { useAccount } from "wagmi";
 import { Notification } from "~/components/ui/Notification";
 import { Alert } from "~/components/ui/Alert";
-import { FormSection } from "~/components/ui/Form";
 import { useRoundState } from "~/features/rounds/hooks/useRoundState";
 
 export default function NewProjectPage() {
@@ -16,27 +15,13 @@ export default function NewProjectPage() {
       {roundState !== "APPLICATION" && (
         <Notification className="justify-self-center" title="Application period has ended" />
       )}
-      <FormSection
-        title="New application"
-        description={
-          <>
-            <p>
-              Fill out this form to create an application for your project. It
-              will then be reviewed by our admins.
-            </p>
-            <p>
-              Your progress is saved locally so you can return to this page to
-              resume your application.
-            </p>
-          </>
-        }
-      >
+  
         {address ? (
           <ApplicationForm address={address} />
         ) : (
           <Alert variant="info" title="Connect your wallet to continue"></Alert>
         )}
-      </FormSection>
+   
     </Layout>
   );
 }

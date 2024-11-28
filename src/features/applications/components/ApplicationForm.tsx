@@ -60,268 +60,230 @@ export function ApplicationForm({ address }: { address: Address }) {
   }
   const error = create.error;
   return (
-    <div>
-      <Form
-        defaultValues={{
-          application: {
-            payoutAddress: address,
-            contributionLinks: [{}],
-            impactMetrics: [{}],
-            fundingSources: [{}],
-          },
-        }}
-        persist="application-draft"
-        schema={ApplicationCreateSchema}
-        onSubmit={async ({ profile, application }) => {
-          console.log(application, profile);
-          create.mutate({ application, profile });
-        }}
-      >
-        <FormSection
-          title="Profile"
-          description="Configure your profile name and choose your avatar and background for your project."
+    <FormSection
+      title="New application"
+      description={
+        <>
+          <p>
+            Fill out this form to create an application for your project. It
+            will then be reviewed by our admins.
+          </p>
+          <p>
+            Your progress is saved locally so you can return to this page to
+            resume your application.
+          </p>
+        </>
+      }
+    >
+      <div>
+        <Form
+          defaultValues={{
+            application: {
+              payoutAddress: address,
+              impactMetrics: [{}],
+              fundingSources: [{}],
+            },
+          }}
+          persist="application-draft"
+          schema={ApplicationCreateSchema}
+          onSubmit={async ({ profile, application }) => {
+            console.log(application, profile);
+            create.mutate({ application, profile });
+          }}
         >
-          <FormControl name="profile.name" label="Profile name" required>
-            <Input placeholder="Your name" />
-          </FormControl>
-          <div className="mb-4 gap-4 md:flex">
-            <FormControl
-              required
-              label="Project avatar"
-              name="profile.profileImageUrl"
-            >
-              <ImageUpload className="h-48 w-48 " />
-            </FormControl>
-            <FormControl
-              required
-              label="Project background image"
-              name="profile.bannerImageUrl"
-              className="flex-1"
-            >
-              <ImageUpload className="h-48 " />
-            </FormControl>
-          </div>
-        </FormSection>
-        <FormSection
-          title="Application"
-          description="Configure your application and the payout address to where tokens will be transferred."
-        >
-          <FormControl name="application.name" label="Name" required>
-            <Input placeholder="Project name" />
-          </FormControl>
-
-          <FormControl name="application.bio" label="Description" required>
-            <Textarea rows={4} placeholder="Project description" />
-          </FormControl>
-          <div className="gap-4 md:flex">
-            <FormControl
-              className="flex-1"
-              name="application.websiteUrl"
-              label="Website"
-              required
-            >
-              <Input placeholder="https://" />
-            </FormControl>
-
-            <FormControl
-              className="flex-1"
-              name="application.payoutAddress"
-              label="Payout address"
-              required
-            >
-              <Input placeholder="0x..." />
-            </FormControl>
-          </div>
-        </FormSection>
-
-        <FormSection
-          title={"Contribution & Impact"}
-          description="Describe the contribution and impact of your project."
-        >
-          <FormControl
-            name="application.contributionDescription"
-            label="Contribution description"
-            required
+          <FormSection
+            title="Profile"
+            description="Configure your profile name and choose your avatar and background for your project."
           >
-            <Textarea
-              rows={4}
-              placeholder="What has your project contributed to?"
-            />
-          </FormControl>
-
-          <FormControl
-            name="application.impactDescription"
-            label="Impact description"
-            required
+            <FormControl name="profile.name" label="Profile name" required>
+              <Input placeholder="Your name" />
+            </FormControl>
+            <div className="mb-4 gap-4 md:flex">
+              <FormControl
+                required
+                label="Project avatar"
+                name="profile.profileImageUrl"
+              >
+                <ImageUpload className="h-48 w-48 " />
+              </FormControl>
+              <FormControl
+                required
+                label="Project background image"
+                name="profile.bannerImageUrl"
+                className="flex-1"
+              >
+                <ImageUpload className="h-48 " />
+              </FormControl>
+            </div>
+          </FormSection>
+          <FormSection
+            title="Application"
+            description="Configure your application and the payout address to where tokens will be transferred."
           >
-            <Textarea
-              rows={4}
-              placeholder="What impact has your project had?"
+            <FormControl name="application.name" label="Name" required>
+              <Input placeholder="Project name" />
+            </FormControl>
+
+            <FormControl name="application.bio" label="Description" required>
+              <Textarea rows={4} placeholder="Project description" />
+            </FormControl>
+            <div className="gap-4 md:flex">
+              <FormControl
+                className="flex-1"
+                name="application.websiteUrl"
+                label="Website"
+                required
+              >
+                <Input placeholder="https://" />
+              </FormControl>
+
+              <FormControl
+                className="flex-1"
+                name="application.payoutAddress"
+                label="Payout address"
+                required
+              >
+                <Input placeholder="0x..." />
+              </FormControl>
+            </div>
+          </FormSection>
+
+          <FormSection
+            title={"Impact"}
+            description="Describe the impact of your project."
+          >
+
+            <FormControl
+              name="application.impactDescription"
+              label="Impact description"
+              required
+            >
+              <Textarea
+                rows={4}
+                placeholder="What impact has your project had?"
+              />
+            </FormControl>
+            <ImpactTags />
+          </FormSection>
+          <FormSection
+            title={
+              <>
+                Impact metrics <span className="text-primary-600">*</span>
+              </>
+            }
+            description="What kind of impact has your project made?"
+          >
+            <FieldArray
+              name="application.impactMetrics"
+              renderField={(field, i) => (
+                <>
+                  <FormControl
+                    className="min-w-96 flex-1"
+                    name={`application.impactMetrics.${i}.description`}
+                    required
+                  >
+                    <Input placeholder="Description" />
+                  </FormControl>
+                  <FormControl
+                    name={`application.impactMetrics.${i}.url`}
+                    required
+                  >
+                    <Input placeholder="https://" />
+                  </FormControl>
+                  <FormControl
+                    name={`application.impactMetrics.${i}.number`}
+                    required
+                    valueAsNumber
+                  >
+                    <Input
+                      type="number"
+                      placeholder="Number"
+                      min={0}
+                      step={0.01}
+                    />
+                  </FormControl>
+                </>
+              )}
             />
-          </FormControl>
-          <ImpactTags />
-        </FormSection>
+          </FormSection>
 
-        <FormSection
-          title={
-            <>
-              Contribution links <span className="text-primary-600">*</span>
-            </>
-          }
-          description="Where can we find your contributions?"
-        >
-          <FieldArray
-            name="application.contributionLinks"
-            renderField={(field, i) => (
+          <FormSection
+            title={
               <>
-                <FormControl
-                  className="min-w-96 flex-1"
-                  name={`application.contributionLinks.${i}.description`}
-                  required
-                >
-                  <Input placeholder="Description" />
-                </FormControl>
-                <FormControl
-                  name={`application.contributionLinks.${i}.url`}
-                  required
-                >
-                  <Input placeholder="https://" />
-                </FormControl>
-                <FormControl
-                  name={`application.contributionLinks.${i}.type`}
-                  required
-                >
-                  <Select>
-                    {Object.entries(contributionTypes).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
+                Funding sources <span className="text-primary-600">*</span>
               </>
-            )}
+            }
+            description="From what sources have you received funding?"
+          >
+            <FieldArray
+              name="application.fundingSources"
+              renderField={(field, i) => (
+                <>
+                  <FormControl
+                    className="min-w-96 flex-1"
+                    name={`application.fundingSources.${i}.description`}
+                    required
+                  >
+                    <Input placeholder="Description" />
+                  </FormControl>
+                  <FormControl
+                    name={`application.fundingSources.${i}.amount`}
+                    required
+                    valueAsNumber
+                  >
+                    <Input
+                      type="number"
+                      placeholder="Amount"
+                      min={0}
+                      step={0.01}
+                    />
+                  </FormControl>
+                  <FormControl
+                    name={`application.fundingSources.${i}.currency`}
+                    required
+                  >
+                    <Input placeholder="USD" />
+                  </FormControl>
+                  <FormControl
+                    name={`application.fundingSources.${i}.type`}
+                    required
+                  >
+                    <Select>
+                      {Object.entries(fundingSourceTypes).map(
+                        ([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ),
+                      )}
+                    </Select>
+                  </FormControl>
+                </>
+              )}
+            />
+          </FormSection>
+
+          {error ? (
+            <div className="mb-4 text-center text-gray-600">
+              Make sure you have funds in your wallet and that you&apos;re not
+              connected to a VPN since this can cause problems with the RPC and
+              your wallet.
+            </div>
+          ) : null}
+
+          <CreateApplicationButton
+            isLoading={create.isPending}
+            buttonText={
+              create.isUploading
+                ? "Uploading metadata"
+                : create.isAttesting
+                  ? "Creating attestation"
+                  : "Create application"
+            }
           />
-        </FormSection>
-
-        <FormSection
-          title={
-            <>
-              Impact metrics <span className="text-primary-600">*</span>
-            </>
-          }
-          description="What kind of impact has your project made?"
-        >
-          <FieldArray
-            name="application.impactMetrics"
-            renderField={(field, i) => (
-              <>
-                <FormControl
-                  className="min-w-96 flex-1"
-                  name={`application.impactMetrics.${i}.description`}
-                  required
-                >
-                  <Input placeholder="Description" />
-                </FormControl>
-                <FormControl
-                  name={`application.impactMetrics.${i}.url`}
-                  required
-                >
-                  <Input placeholder="https://" />
-                </FormControl>
-                <FormControl
-                  name={`application.impactMetrics.${i}.number`}
-                  required
-                  valueAsNumber
-                >
-                  <Input
-                    type="number"
-                    placeholder="Number"
-                    min={0}
-                    step={0.01}
-                  />
-                </FormControl>
-              </>
-            )}
-          />
-        </FormSection>
-
-        <FormSection
-          title={
-            <>
-              Funding sources <span className="text-primary-600">*</span>
-            </>
-          }
-          description="From what sources have you received funding?"
-        >
-          <FieldArray
-            name="application.fundingSources"
-            renderField={(field, i) => (
-              <>
-                <FormControl
-                  className="min-w-96 flex-1"
-                  name={`application.fundingSources.${i}.description`}
-                  required
-                >
-                  <Input placeholder="Description" />
-                </FormControl>
-                <FormControl
-                  name={`application.fundingSources.${i}.amount`}
-                  required
-                  valueAsNumber
-                >
-                  <Input
-                    type="number"
-                    placeholder="Amount"
-                    min={0}
-                    step={0.01}
-                  />
-                </FormControl>
-                <FormControl
-                  name={`application.fundingSources.${i}.currency`}
-                  required
-                >
-                  <Input placeholder="USD" />
-                </FormControl>
-                <FormControl
-                  name={`application.fundingSources.${i}.type`}
-                  required
-                >
-                  <Select>
-                    {Object.entries(fundingSourceTypes).map(
-                      ([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ),
-                    )}
-                  </Select>
-                </FormControl>
-              </>
-            )}
-          />
-        </FormSection>
-
-        {error ? (
-          <div className="mb-4 text-center text-gray-600">
-            Make sure you have funds in your wallet and that you&apos;re not
-            connected to a VPN since this can cause problems with the RPC and
-            your wallet.
-          </div>
-        ) : null}
-
-        <CreateApplicationButton
-          isLoading={create.isPending}
-          buttonText={
-            create.isUploading
-              ? "Uploading metadata"
-              : create.isAttesting
-                ? "Creating attestation"
-                : "Create application"
-          }
-        />
-      </Form>
-    </div>
+        </Form>
+      </div>
+    </FormSection>
   );
 }
 

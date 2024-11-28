@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useMemo, type PropsWithChildren } from "react";
 import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
+import { Skeleton } from "~/components/ui/Skeleton";
 import { config } from "~/config";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { useIsShowActualVotes } from "~/features/rounds/hooks/useIsShowActualVotes";
@@ -33,12 +34,21 @@ export default function StatsPage() {
       {useRoundState() === "RESULTS" ? (
         <Stats />
       ) : (
-        <Alert variant="info" className="mx-auto max-w-sm text-center">
+        <Alert variant="info" className="mx-auto max-w-xs text-center">
+          <div className="font-semibold">
           The results will be revealed in{" "}
-          <div className="text-3xl">
-            {differenceInDays(round.data?.resultAt, new Date())}
           </div>
-          days
+          <div className="text-2xl font-bold">
+            <Skeleton
+              className="h-8 w-20"
+              isLoading={round.isPending}
+            >
+              {differenceInDays(round.data?.resultAt as Date, new Date())}
+            </Skeleton>
+          </div>
+          <div className="text-gray-500 font-semibold">
+          Days
+          </div>
         </Alert>
       )}
     </Layout>

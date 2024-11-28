@@ -29,22 +29,21 @@ export function Projects() {
     <div>
       <div
         className={clsx(
-          "fixed right-0 top-0 z-20 flex justify-end gap-2 rounded-bl-3xl bg-white px-2 pb-2 pt-4",
+          "relative mb-2 md:mb-auto md:bottom-auto md:float-right md:mr-[-20rem] md:top-80 rounded-bl-3xl md:mt-2 flex",
           {
-            ["invisible"]: !select.count,
+            ["hidden"]: !select.count,
           },
         )}
       >
         <Button
-          size="sm"
-          variant="primary"
+          variant="secondary"
           onClick={select.add}
           disabled={!select.count}
-          className="w-full lg:w-72"
+          className="w-full mr-1 md:w-[248px] h-12 md:mr-2"
         >
           Add {select.count} projects to ballot
         </Button>
-        <Button icon={XIcon} size="sm" onClick={select.reset} />
+        <Button icon={XIcon} className="size-12" onClick={select.reset} />
       </div>
 
       <SortFilter />

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Alert } from "~/components/ui/Alert";
+import { Notification } from "~/components/ui/Notification";
 import { Button, IconButton } from "~/components/ui/Button";
 import { Dialog } from "~/components/ui/Dialog";
 import { Spinner } from "~/components/ui/Spinner";
@@ -29,10 +30,8 @@ export function BallotAllocationForm({ isPublished = false }) {
   return (
     <div>
       <h1 className="mb-4 text-2xl font-bold">Review your ballot</h1>
-      <QuadraticVotingMessage/>
-      <p className="mt-4 mb-6 font-semibold">
-        Once you have reviewed your vote allocation, you can submit your ballot.
-      </p>
+      <QuadraticVotingMessage />
+      <Notification className="mt-4 mb-6 !h-2" title="You can submit votes once per round so make sure to allocate votes to all the projects of your choice before submitting. Click on Submit Ballot if you are ready." />
       {save.error && (
         <Alert
           icon={AlertCircle}

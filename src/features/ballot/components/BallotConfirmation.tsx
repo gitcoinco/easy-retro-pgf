@@ -7,9 +7,8 @@ import { AllocationList } from "../../../components/AllocationList";
 import { Button } from "~/components/ui/Button";
 import { createComponent } from "~/components/ui";
 import { type Vote } from "../types";
-import { config } from "~/config";
 
-const feedbackUrl = process.env.NEXT_PUBLIC_FEEDBACK_URL;
+const feedbackUrl = "https://app.slack.com/client/T05G0QGB1DW/search"; //[TODO Hanan] shall change in future for the real round
 
 const Card = createComponent(
   "div",
@@ -62,25 +61,6 @@ export const BallotConfirmation = ({ votes }: { votes: Vote[] }) => {
           <section className="max-h-[480px] overflow-y-scroll">
             {votes && <AllocationList votes={votes} />}
           </section>
-        </Card>
-        <Card>
-          <div>
-            <h5 className="mb-3 text-2xl font-bold">
-              Help us improve next round of RetroPGF
-            </h5>
-            <p className="mb-6 text-gray-700">
-              Your anonymized feedback will be influential to help us iterate on
-              the RetroPGF process.
-            </p>
-            <Button
-              variant="primary"
-              as={Link}
-              target="_blank"
-              href={feedbackUrl}
-            >
-              Share feedback
-            </Button>
-          </div>
         </Card>
       </div>
     </section>

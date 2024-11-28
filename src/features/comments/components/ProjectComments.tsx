@@ -102,7 +102,7 @@ export function ProjectComments({ projectId = "" }) {
         </FormControl>
         <div className="flex items-center justify-between">
           <div className="text-gray-600">Markdown is supported</div>
-          <Button variant="primary" type="submit" isLoading={comment.isPending}>
+          <Button variant="secondary" type="submit" isLoading={comment.isPending}>
             Comment
           </Button>
         </div>
