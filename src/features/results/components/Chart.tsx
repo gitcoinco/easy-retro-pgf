@@ -1,5 +1,4 @@
-import { ResponsiveLine } from "@nivo/line";
-import { formatNumber } from "~/utils/formatNumber";
+import { ResponsiveBar } from "@nivo/bar";
 import { suffixNumber } from "~/utils/suffixNumber";
 
 export default function ResultsChart({
@@ -10,19 +9,22 @@ export default function ResultsChart({
     data: { x: string; y: number | undefined }[];
   }[];
 }) {
+  // Transform data into the format required by ResponsiveBar
+  const barData = data.map((dataset) =>
+    dataset.data.map((point) => ({
+      id: dataset.id,
+      x: point.x,
+      y: point.y || 0,
+    }))
+  ).flat();
+
   return (
-    <ResponsiveLine
-      data={data}
+    <ResponsiveBar
+      data={barData}
+      keys={["y"]}
+      indexBy="x"
       margin={{ top: 30, right: 60, bottom: 60, left: 60 }}
-      yScale={{
-        type: "linear",
-        min: "auto",
-        max: "auto",
-      }}
-      curve="monotoneX"
-      axisTop={null}
-      axisRight={null}
-      yFormat={(v) => formatNumber(Number(v))}
+      colors={()=>`#2fe4ab`} 
       axisLeft={{
         tickSize: 5,
         tickPadding: 5,
@@ -53,13 +55,10 @@ export default function ResultsChart({
             </text>
           </g>
         ),
+         tickPadding: 10,
       }}
-      pointSize={10}
-      pointColor={{ theme: "background" }}
-      pointBorderWidth={2}
-      pointBorderColor={{ from: "serieColor" }}
-      pointLabelYOffset={-12}
-      useMesh={true}
+      labelSkipWidth={0}
+      labelSkipHeight={0}
     />
-  );
+);
 }
