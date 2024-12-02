@@ -13,14 +13,16 @@ export const FAQ = () => {
 
   const faqs = [
     {
-      question: 'What is the Obol Contributions Program?', answer: `As described in our blog post, the Obol Contributions Program is an opportunity for every staker to participate in and get recognised for scaling and decentralising Ethereum by staking on Obol distributed validators (DVs).\n` +
-        `\n• Stake deployed on Obol DVs will contribute 1% of staking rewards to the Obol Collective’s retroactive funding mechanism.\n` +
-        `\n• Those contributions will be tracked and recognised, serving as the basis for future governance and ownership in the Obol Collective.`
+      question: 'What is the Obol RAF?', answer: "The Obol RAF (Retroactive Fund) is a funding model by the Obol Collective aimed at supporting Ethereum's decentralization by rewarding projects that contribute significantly to its ecosystem. Users of Obol distributed validators (DV) contribute 1% of their staking rewards to this funding pool, which is then distributed to impactful projects through rounds of voting by $OBOL token delegates."
     },
-    { question: 'How do I participate in the Obol Contributions Program?', answer: 'Stake on DVs via partner products Stakely, Chorus One Vault for Stakewise, or Mellow Vault for Lido, or deploy a distributed validator cluster yourself via the Launchpad, for example by using a DappNode.' },
-    { question: 'How can I track my contributions?', answer: 'If you’re staking through a partner product, their dashboard will display your contributions. If you’re running your own DV, your contributions will be displayed on the DV Launchpad.' },
-    { question: 'What benefits do I get from contributing?', answer: 'Contributions will serve as the basis for future ownership and governance of the Obol Collective’s retroactive funding mechanism.' },
-    { question: 'How are contributions calculated?', answer: 'Contributions are based on 1% of validator rewards, which are contributed to the Obol Collective’s “1% for Decentralization” retroactive fund. (retroactivefunding.obol.eth) Contributions are calculated daily and tracked off-chain. See our docs for a more detailed explanation.' },
+    { question: 'Who can apply in the RAF?', answer: "Any project or team that aligns with the Obol Collective's mission can apply. Applications are submitted through the RAF portal, and may require certain eligibility criteria in the future, such as holding a minimum amount of $OBOL tokens." },
+    { question: 'What criteria are used to evaluate projects for RAF funding?', answer: "Projects are evaluated based on their alignment with the Obol Collective's mission, impact on Ethereum's decentralization, and other project-specific metrics. Delegates are encouraged to assess each project's contributions, relying on both quantitative and qualitative impacts." },
+    { question: 'When will the applications close?', answer: 'Application and voting dates are defined for each RAF round, with specific start and end dates provided per round.' },
+    { question: 'Who is eligible to vote?', answer: 'Voting is conducted by $OBOL token delegates who have delegated voting power. Only addresses with sufficient delegation can vote, and contributors with conflicts of interest are restricted from voting on projects in which they have a direct stake. Voting power is based on the amount of $OBOL tokens delegated. A snapshot of voting power is taken at the start of each voting period to ensure accurate representation during voting rounds.'},
+    { question: 'When are the rewards paid out?', answer: 'Rewards are disbursed after the voting round concludes, based on the votes by $OBOL delegates. The distribution uses a quadratic funding mechanism, ensuring compliance with legal standards and may require KYC completion by grant recipients.' },
+    { question: 'Can I submit feedback after participating in the RAF?', answer: 'Yes, participants are encouraged to provide feedback at the end of each RAF round. This feedback helps refine future rounds and strengthens the RAF governance process.' },
+    { question: 'What is the role of the Obol Association in RAF funding?', answer: 'The Obol Association oversees administrative tasks like moderating proposals, managing vote accuracy, and ensuring compliance for funding disbursement, including KYC verification as necessary.' },
+
   ];
 
   return (
