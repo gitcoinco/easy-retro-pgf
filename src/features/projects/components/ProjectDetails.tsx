@@ -1,5 +1,8 @@
 import { type ReactNode } from "react";
-import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
+import {
+  CeloProjectBanner,
+  ProjectBanner,
+} from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
 import ProjectContributions from "./ProjectContributions";
@@ -9,6 +12,7 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
+import { useIsCeloRound } from "~/hooks/useIsCeloRound";
 
 export default function ProjectDetails({
   attestation,
@@ -18,6 +22,8 @@ export default function ProjectDetails({
   attestation?: Attestation;
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
+
+  const isCeloRound = useIsCeloRound();
 
   const { bio, websiteUrl, payoutAddress, fundingSources } =
     metadata.data ?? {};
@@ -31,7 +37,11 @@ export default function ProjectDetails({
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        <ProjectBanner size="lg" profileId={attestation?.recipient} />
+        {isCeloRound ? (
+          <CeloProjectBanner size="lg" />
+        ) : (
+          <ProjectBanner size="lg" profileId={attestation?.recipient} />
+        )}
       </div>
       <div className="mb-8 flex items-end gap-4">
         <ProjectAvatar
@@ -43,9 +53,11 @@ export default function ProjectDetails({
         <div>
           <div className="">
             <NameENS address={payoutAddress} />
-            <a href={websiteUrl} target="_blank" className="hover:underline">
-              {websiteUrl}
-            </a>
+            {!isCeloRound && (
+              <a href={websiteUrl} target="_blank" className="hover:underline">
+                {websiteUrl}
+              </a>
+            )}
           </div>
         </div>
       </div>

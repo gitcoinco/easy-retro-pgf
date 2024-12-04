@@ -11,6 +11,7 @@ export const metadata = {
 export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
+  celoRoundId: process.env.NEXT_PUBLIC_CELO_ROUND2_DOMAIN_ID!,
 };
 
 export const networks = {
