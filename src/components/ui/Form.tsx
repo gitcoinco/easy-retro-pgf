@@ -174,12 +174,14 @@ export const FormControl = ({
   children,
   valueAsNumber,
   className,
+  description,
 }: {
   name: string;
   label?: string;
   required?: boolean;
   valueAsNumber?: boolean;
   hint?: string | ReactElement;
+  description?: string | ReactElement;
 } & ComponentPropsWithoutRef<"fieldset">) => {
   const {
     register,
@@ -196,10 +198,15 @@ export const FormControl = ({
   return (
     <fieldset className={cn("mb-4", className)}>
       {label && (
-        <Label className="mb-1" htmlFor={name}>
+        <Label className="" htmlFor={name}>
           {label}
           {required && <span className="text-red-300">*</span>}
         </Label>
+      )}
+      {description && (
+        <div className="mb-1 text-xs text-gray-500 dark:text-gray-400">
+          {description}
+        </div>
       )}
       {cloneElement(children as ReactElement, {
         id: name,
