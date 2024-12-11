@@ -40,7 +40,7 @@ const ApplicationCreateSchema = z.object({
 });
 
 export function CeloApplicationForm({ address }: { address: Address }) {
-  const clearDraft = useLocalStorage("application-draft")[2];
+  const clearDraft = useLocalStorage("application-draft-celo")[2];
 
   const create = useCreateApplication({
     onSuccess: () => {
@@ -76,7 +76,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
             bannerImageUrl: "https://undefined.com", // Add default value for hidden field
           },
         }}
-        persist="application-draft"
+        persist="application-draft-celo"
         schema={ApplicationCreateSchema}
         onSubmit={async ({ profile, application }) => {
           console.log(application, profile);
