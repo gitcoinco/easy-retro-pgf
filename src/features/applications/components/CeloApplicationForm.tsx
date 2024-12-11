@@ -42,6 +42,7 @@ const ApplicationCreateSchema = z.object({
 export function CeloApplicationForm({ address }: { address: Address }) {
   const clearDraft = useLocalStorage("application-draft-celo")[2];
 
+
   const create = useCreateApplication({
     onSuccess: () => {
       toast.success("Application created successfully!");
