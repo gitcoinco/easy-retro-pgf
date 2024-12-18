@@ -12,7 +12,7 @@ import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
-import { useIsCeloRound } from "~/hooks/useIsCeloRound";
+import { useRoundType } from "~/hooks/useRoundType";
 
 export default function ProjectDetails({
   attestation,
@@ -23,9 +23,15 @@ export default function ProjectDetails({
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
 
-  const isCeloRound = useIsCeloRound();
+  const roundType = useRoundType();
 
-  const { bio, websiteUrl, payoutAddress, fundingSources } =
+  if (roundType === null) {
+    return null;
+  }
+  const isCeloRound = roundType === "CELO";
+  const isDripRound = roundType === "DRIP";
+
+  const { bio, websiteUrl, payoutAddress, fundingSources, githubUrl } =
     metadata.data ?? {};
 
   return (
@@ -53,6 +59,13 @@ export default function ProjectDetails({
         <div>
           <div className="">
             <NameENS address={payoutAddress} />
+            {isDripRound && (
+              <div>
+                <a href={githubUrl} target="_blank" className="hover:underline">
+                  {githubUrl}
+                </a>
+              </div>
+            )}
             {!isCeloRound && (
               <a href={websiteUrl} target="_blank" className="hover:underline">
                 {websiteUrl}
