@@ -1,14 +1,17 @@
 import { type ReactNode } from "react";
-import { ProjectBanner } from "~/features/projects/components/ProjectBanner";
+import {
+  CeloProjectBanner,
+  ProjectBanner,
+} from "~/features/projects/components/ProjectBanner";
 import { ProjectAvatar } from "~/features/projects/components/ProjectAvatar";
 import { Heading } from "~/components/ui/Heading";
-import ProjectContributions from "./ProjectContributions";
 import ProjectImpact from "./ProjectImpact";
 import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
 import { Markdown } from "~/components/ui/Markdown";
+import { useRoundType } from "~/hooks/useRoundType";
 
 export default function ProjectDetails({
   attestation,
@@ -19,7 +22,15 @@ export default function ProjectDetails({
 }) {
   const metadata = useProjectMetadata(attestation?.metadataPtr);
 
-  const { bio, websiteUrl, payoutAddress, fundingSources } =
+  const roundType = useRoundType();
+
+  if (roundType === null) {
+    return null;
+  }
+  const isCeloRound = roundType === "CELO";
+  const isDripRound = roundType === "DRIP";
+
+  const { bio, websiteUrl, payoutAddress, fundingSources, githubUrl } =
     metadata.data ?? {};
 
   return (
@@ -31,7 +42,11 @@ export default function ProjectDetails({
         </div>
       </div>
       <div className="overflow-hidden rounded-3xl">
-        <ProjectBanner size="lg" profileId={attestation?.recipient} />
+        {isCeloRound ? (
+          <CeloProjectBanner size="lg" />
+        ) : (
+          <ProjectBanner size="lg" profileId={attestation?.recipient} />
+        )}
       </div>
       <div className="mb-8 flex items-end gap-4">
         <ProjectAvatar
@@ -43,9 +58,18 @@ export default function ProjectDetails({
         <div>
           <div className="">
             <NameENS address={payoutAddress} />
-            <a href={websiteUrl} target="_blank" className="text-[#16968e] underline">
-              {websiteUrl}
-            </a>
+            {isDripRound && (
+              <div>
+                <a href={githubUrl} target="_blank" className="text-[#16968e] underline">
+                  {githubUrl}
+                </a>
+              </div>
+            )}
+            {!isCeloRound && (
+              <a href={websiteUrl} target="_blank" className="text-[#16968e] underline">
+                {websiteUrl}
+              </a>
+            )}
           </div>
         </div>
       </div>
