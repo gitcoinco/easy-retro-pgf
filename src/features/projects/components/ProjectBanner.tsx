@@ -2,6 +2,7 @@ import { type ComponentProps } from "react";
 import { type Address } from "viem";
 
 import { Banner } from "~/components/ui/Banner";
+import { useCurrentRound } from "~/features/rounds/hooks/useRound";
 import { useProfileWithMetadata } from "~/hooks/useProfile";
 
 export function ProjectBanner({
@@ -14,6 +15,21 @@ export function ProjectBanner({
   return (
     <div className="overflow-hidden rounded-3xl">
       <Banner {...props} src={bannerImageUrl} fallbackSrc={profileImageUrl} />
+    </div>
+  );
+}
+
+// The Celo Project Banner is a component that displays the banner image of the round, as the application form does not gather any banner.
+export function CeloProjectBanner({ ...props }: ComponentProps<typeof Banner>) {
+  const round = useCurrentRound();
+
+  return (
+    <div className="overflow-hidden rounded-3xl">
+      <Banner
+        {...props}
+        src={round.data?.bannerImageUrl}
+        fallbackSrc={round.data?.bannerImageUrl}
+      />
     </div>
   );
 }

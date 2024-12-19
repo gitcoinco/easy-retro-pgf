@@ -29,7 +29,7 @@ export function useSearchProjects(filterOverride?: Partial<Filter>) {
 }
 
 export function useProjectMetadata(metadataPtr?: string) {
-  return useMetadata<Application>(metadataPtr);
+  return useMetadata<Application & { githubUrl?: string }>(metadataPtr);
 }
 
 export function useProjectCount() {

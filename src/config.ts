@@ -11,6 +11,8 @@ export const metadata = {
 export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
+  celoRoundId: process.env.NEXT_PUBLIC_CELO_ROUND2_DOMAIN_ID!,
+  dripsRounds: process.env.NEXT_PUBLIC_DRIPS_ROUND_DOMAIN_IDS!.split(","),
 };
 
 export const networks = {
@@ -24,6 +26,7 @@ export const networks = {
   baseGoerli: "baseGoerli",
   celo: "celo",
   avalanche: "avalanche",
+  metis: "metis",
 } as const;
 
 export const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -85,6 +88,16 @@ export const eas = {
       eas: "0xC2679fBD37d54388Ce493F1DB75320D236e1815e",
       registry: "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0",
     },
+    [networks.metis]: {
+      eas: "0x5E3FF1a3B34c06Beb247b38484067c845cfe6fAE",
+      registry: "0xa4Ab012Ba80B127E5B543719FFb50363D78C2564",
+      schemas: {
+        metadata:
+          "0xd00c966351896bd3dc37d22017bf1ef23165f859d7546a2aba12a01623dec912",
+        approval:
+          "0x858e0bc94997c072d762d90440966759b57c8bca892d4c9447d2eeb205f14c69",
+      },
+    },
     default: {
       eas: "0x4200000000000000000000000000000000000021",
       registry: "0x4200000000000000000000000000000000000020",
@@ -118,6 +131,7 @@ export const easApiEndpoints = {
   [networks.celo]: "https://celo.easscan.org/graphql",
   [networks.avalanche]:
     "http://ec2-35-174-143-89.compute-1.amazonaws.com:32768/",
+  [networks.metis]: "https://eas-metis-indexer.fly.dev/",
 } as const;
 
 // TODO: Remove and move to round config

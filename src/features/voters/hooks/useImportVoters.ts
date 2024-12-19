@@ -83,9 +83,8 @@ export function useImportVoters() {
 
       console.log("Creating attestations for:", newVoters);
       if (newVoters.length > 0) {
-        await Promise.all(
-          newVoters.map((voter) => approveVoters.mutateAsync([voter.voterId])),
-        );
+        const newVoterIds = newVoters.map((voter) => voter.voterId);
+        await approveVoters.mutateAsync(newVoterIds);
       }
 
       return upsertedVoters;
