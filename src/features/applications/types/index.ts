@@ -72,6 +72,16 @@ export const DripsApplicationSchema = z.object({
   ...ApplicationSchema.shape,
 });
 
+export const CeloApplicationSchema = z.object({
+  ...ApplicationSchema.shape,
+  twitterHandle: z.string().optional(),
+  farcasterHandle: z.string().optional(),
+  telegramHandle: z.string().optional(),
+  githubHandle: z.string().optional(),
+  emailHandle: z.string().optional(),
+  country: z.string().optional(),
+});
+
 export type Application = z.infer<typeof ApplicationSchema>;
 
 export type DripsApplication = z.infer<typeof DripsApplicationSchema>;

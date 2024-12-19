@@ -20,7 +20,7 @@ import {
   Textarea,
 } from "~/components/ui/Form";
 import {
-  ApplicationSchema,
+  CeloApplicationSchema,
   ProfileSchema,
   contributionTypes,
   fundingSourceTypes,
@@ -36,12 +36,11 @@ import { useEffect } from "react";
 
 const ApplicationCreateSchema = z.object({
   profile: ProfileSchema,
-  application: ApplicationSchema,
+  application: CeloApplicationSchema,
 });
 
 export function CeloApplicationForm({ address }: { address: Address }) {
   const clearDraft = useLocalStorage("application-draft-celo")[2];
-
 
   const create = useCreateApplication({
     onSuccess: () => {
@@ -99,15 +98,68 @@ export function CeloApplicationForm({ address }: { address: Address }) {
           <FormControl name="application.name" label="Name" required>
             <Input placeholder="Your name" />
           </FormControl>
-          <FormControl
-            required
-            label="Personal avatar"
-            name="profile.profileImageUrl"
-            hint={"Upload an image with a 1:1 aspect ratio. Less than 1MB."}
-          >
-            <ImageUpload className="h-48 w-48 " />
-          </FormControl>
-
+          <div className="flex flex-wrap justify-start  gap-8">
+            <FormControl
+              required
+              label="Personal avatar"
+              name="profile.profileImageUrl"
+              hint={
+                <div className="max-w-48">
+                  Upload an image with a 1:1 aspect ratio. Less than 1MB.
+                </div>
+              }
+            >
+              <ImageUpload className="h-48 w-48 " />
+            </FormControl>
+            <div className="flex w-2/3 gap-8">
+              <div className="w-1/2">
+                <FormControl
+                  className="flex-1"
+                  name="application.twitterHandle"
+                  label="X handle"
+                >
+                  <Input placeholder={"Your x handle"} />
+                </FormControl>
+                <FormControl
+                  className="flex-1"
+                  name="application.farcasterHandle"
+                  label="Farcaster"
+                >
+                  <Input placeholder={"Your Farcaster handle"} />
+                </FormControl>
+                <FormControl
+                  className="flex-1"
+                  name="application.telegramHandle"
+                  label="Telegram Handle"
+                >
+                  <Input placeholder={"Your Telegram handle"} />
+                </FormControl>
+              </div>
+              <div className="w-1/2">
+                <FormControl
+                  className="flex-1"
+                  name="application.githubHandle"
+                  label="Github"
+                >
+                  <Input placeholder={"Your GitHub handle"} />
+                </FormControl>
+                <FormControl
+                  className="flex-1"
+                  name="application.emailHandle"
+                  label="Email"
+                >
+                  <Input placeholder={"Your email address"} />
+                </FormControl>
+                <FormControl
+                  className="flex-1"
+                  name="application.country"
+                  label="Country"
+                >
+                  <Input placeholder="The country you’re based in" />
+                </FormControl>
+              </div>
+            </div>
+          </div>
           <FormControl
             className="flex-1"
             name="application.payoutAddress"
@@ -132,13 +184,40 @@ export function CeloApplicationForm({ address }: { address: Address }) {
 
           <FormSection
             title={<>Contribution</>}
-            description="Highlight the overall contributions and specific actions you have made in advancing the Celo ecosystem. Share any links that showcase your contributions, these could be GitHub repositories, forum discussions, articles, event recordings, or other verifiable public records.
-"
+            description={
+              <span>
+                Highlight the overall contributions and specific actions you
+                have taken to advance the Celo ecosystem. Share any links that
+                showcase your contributions; these could be GitHub repositories,
+                forum discussions, articles, event recordings, or other
+                verifiable public records. Examples of relevant points can be
+                found in the{" "}
+                <a
+                  href="https://forum.celo.org/t/celo-citizen-retro-round-details/9637"
+                  target="_blank"
+                  className="font-bold underline"
+                >
+                  Celo Citizen Retro: Round Details thread.
+                </a>{" "}
+              </span>
+            }
           >
             <FormControl
               name="application.contributionDescription"
               label="Contribution description"
-              description={"What have you contributed to?"}
+              description={
+                <span>
+                  What have you contributed to? Reference as many points
+                  mentioned in the{" "}
+                  <a
+                    href="https://forum.celo.org/t/celo-citizen-retro-round-details/9637"
+                    target="_blank"
+                    className="font-bold underline"
+                  >
+                    Celo Citizen Retro: Round Details as possible.
+                  </a>{" "}
+                </span>
+              }
               required
             >
               <Textarea rows={4} placeholder="What have you contributed to?" />
@@ -190,13 +269,40 @@ export function CeloApplicationForm({ address }: { address: Address }) {
 
           <FormSection
             title={<>Impact</>}
-            description="Highlight how your contributions have positively impacted the Celo ecosystem. Provide measurable data to back up your impact claims. Metrics could include number of users onboarded, event attendees, community members, forum engagement, or governance votes influenced.
-"
+            description={
+              <span>
+                Highlight how your contributions have positively impacted the
+                Celo ecosystem. Provide measurable data to back up your impact
+                claims. Metrics could include the number of users onboarded,
+                event attendees, community members, forum engagement, or
+                governance votes influenced. Examples of relevant points can be
+                found in the{" "}
+                <a
+                  href="https://forum.celo.org/t/celo-citizen-retro-round-details/9637"
+                  target="_blank"
+                  className="font-bold underline"
+                >
+                  Celo Citizen Retro: Round Details thread.
+                </a>{" "}
+              </span>
+            }
           >
             <FormControl
               name="application.impactDescription"
               label="Impact description"
-              description={"What impact have your contributions had?"}
+              description={
+                <span>
+                  What impact have your contributions had? Reference as many
+                  points mentioned in the{" "}
+                  <a
+                    href="https://forum.celo.org/t/celo-citizen-retro-round-details/9637"
+                    target="_blank"
+                    className="font-bold underline"
+                  >
+                    Celo Citizen Retro: Round Details as possible.
+                  </a>{" "}
+                </span>
+              }
               required
             >
               <Textarea
