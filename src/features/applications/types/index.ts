@@ -67,4 +67,11 @@ export const ApplicationSchema = z.object({
     .min(1),
 });
 
+export const DripsApplicationSchema = z.object({
+  githubUrl: z.string().includes("https://github.com/"),
+  ...ApplicationSchema.shape,
+});
+
 export type Application = z.infer<typeof ApplicationSchema>;
+
+export type DripsApplication = z.infer<typeof DripsApplicationSchema>;

@@ -12,6 +12,7 @@ export const config = {
   logoUrl: "",
   pageSize: 3 * 4,
   celoRoundId: process.env.NEXT_PUBLIC_CELO_ROUND2_DOMAIN_ID!,
+  dripsRounds: process.env.NEXT_PUBLIC_DRIPS_ROUND_DOMAIN_IDS!.split(","),
 };
 
 export const networks = {
