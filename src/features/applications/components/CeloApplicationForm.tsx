@@ -22,8 +22,8 @@ import {
 import {
   CeloApplicationSchema,
   ProfileSchema,
-  celoFundingSourceTypes,
   contributionTypes,
+  fundingSourceTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
 import { Tag } from "~/components/ui/Tag";
@@ -68,7 +68,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
             payoutAddress: address,
             contributionLinks: [{}],
             impactMetrics: [{}],
-            fundingSources: [{}],
+            fundingSources: [],
             websiteUrl: "https://undefined.com", // Add default value for hidden field
           },
           profile: {
@@ -385,7 +385,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
                     required
                   >
                     <Select>
-                      {Object.entries(celoFundingSourceTypes).map(
+                      {Object.entries(fundingSourceTypes).map(
                         ([value, label]) => (
                           <option key={value} value={value}>
                             {label}
