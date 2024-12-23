@@ -22,8 +22,8 @@ import {
 import {
   CeloApplicationSchema,
   ProfileSchema,
+  celoFundingSourceTypes,
   contributionTypes,
-  fundingSourceTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
 import { Tag } from "~/components/ui/Tag";
@@ -354,11 +354,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
             />
           </FormSection>
           <FormSection
-            title={
-              <>
-                Funding sources <span className="text-red-300">*</span>
-              </>
-            }
+            title="Funding sources"
             description="From what sources have you received funding?"
           >
             <FieldArray
@@ -395,7 +391,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
                     required
                   >
                     <Select>
-                      {Object.entries(fundingSourceTypes).map(
+                      {Object.entries(celoFundingSourceTypes).map(
                         ([value, label]) => (
                           <option key={value} value={value}>
                             {label}
