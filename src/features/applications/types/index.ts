@@ -29,11 +29,6 @@ export const fundingSourceTypes = {
   OTHER: "Other",
 } as const;
 
-export const celoFundingSourceTypes = {
-  ...fundingSourceTypes,
-  NONE: "None",
-} as const;
-
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
@@ -79,16 +74,14 @@ export const DripsApplicationSchema = z.object({
 
 export const CeloApplicationSchema = z.object({
   ...ApplicationSchema.shape,
-  fundingSources: z
-    .array(
-      z.object({
-        description: z.string().min(3),
-        amount: z.number(),
-        currency: z.string().min(3).max(4),
-        type: z.nativeEnum(reverseKeys(celoFundingSourceTypes)),
-      }),
-    )
-    .min(1),
+  fundingSources: z.array(
+    z.object({
+      description: z.string().min(3),
+      amount: z.number(),
+      currency: z.string().min(3).max(4),
+      type: z.nativeEnum(reverseKeys(fundingSourceTypes)),
+    }),
+  ),
   twitterHandle: z.string().optional(),
   farcasterHandle: z.string().optional(),
   telegramHandle: z.string().optional(),
