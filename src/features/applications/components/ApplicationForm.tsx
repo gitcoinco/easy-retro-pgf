@@ -163,11 +163,8 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Contribution links <span className="text-red-300">*</span>
-            </>
-          }
+          required
+          title="Contribution links"
           description="Where can we find your contributions?"
         >
           <FieldArray
@@ -205,11 +202,8 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Impact metrics <span className="text-red-300">*</span>
-            </>
-          }
+          required
+          title="Impact metrics"
           description="What kind of impact has your project made?"
         >
           <FieldArray
@@ -247,11 +241,8 @@ export function ApplicationForm({ address }: { address: Address }) {
         </FormSection>
 
         <FormSection
-          title={
-            <>
-              Funding sources <span className="text-red-300">*</span>
-            </>
-          }
+          required
+          title="Funding sources"
           description="From what sources have you received funding?"
         >
           <FieldArray
