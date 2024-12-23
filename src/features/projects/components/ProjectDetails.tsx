@@ -11,8 +11,8 @@ import { NameENS } from "~/components/ENS";
 import { suffixNumber } from "~/utils/suffixNumber";
 import { useProjectMetadata } from "../hooks/useProjects";
 import { type Attestation } from "~/utils/fetchAttestations";
-import { Markdown } from "~/components/ui/Markdown";
 import { useRoundType } from "~/hooks/useRoundType";
+import BioInfo from "./BioInfo";
 
 export default function ProjectDetails({
   attestation,
@@ -31,7 +31,7 @@ export default function ProjectDetails({
   const isCeloRound = roundType === "CELO";
   const isDripRound = roundType === "DRIP";
 
-  const { bio, websiteUrl, payoutAddress, fundingSources, githubUrl } =
+  const { websiteUrl, payoutAddress, fundingSources, githubUrl } =
     metadata.data ?? {};
 
   return (
@@ -74,7 +74,7 @@ export default function ProjectDetails({
           </div>
         </div>
       </div>
-      <Markdown>{bio}</Markdown>
+      <BioInfo project={metadata.data} />
       <div>
         <Heading as="h2" size="3xl">
           Impact statements
@@ -98,6 +98,7 @@ export default function ProjectDetails({
                 GOVERNANCE_FUND: "Governance Fund",
                 PARTNER_FUND: "Partner Fund",
                 REVENUE: "Revenue",
+                NONE: "None",
               }[source.type] ?? source.type;
             return (
               <div key={i} className="flex items-center gap-4">
