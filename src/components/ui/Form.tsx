@@ -282,14 +282,19 @@ export function FieldArray<S extends z.Schema>({
 export function FormSection({
   title,
   description,
+  required,
   children,
 }: {
   title: ReactNode | string;
   description: ReactNode | string;
+  required?: boolean;
 } & ComponentProps<"section">) {
   return (
     <section className="mb-8">
-      <h3 className="mb-1 text-xl font-semibold">{title}</h3>
+      <h3 className="mb-1 text-xl font-semibold">
+        {title}
+        {required && <span className="text-red-300">*</span>}
+      </h3>
       <p className="mb-4 leading-loose text-gray-600 dark:text-gray-400">
         {description}
       </p>

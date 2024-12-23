@@ -22,8 +22,8 @@ import {
 import {
   CeloApplicationSchema,
   ProfileSchema,
+  celoFundingSourceTypes,
   contributionTypes,
-  fundingSourceTypes,
 } from "../types";
 import { useCreateApplication } from "../hooks/useCreateApplication";
 import { Tag } from "~/components/ui/Tag";
@@ -183,7 +183,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
           <ImpactTags />
 
           <FormSection
-            title={<>Contribution</>}
+            title="Contribution"
             description={
               <span>
                 Highlight the overall contributions and specific actions you
@@ -224,11 +224,8 @@ export function CeloApplicationForm({ address }: { address: Address }) {
             </FormControl>
           </FormSection>
           <FormSection
-            title={
-              <>
-                Contribution links <span className="text-red-300">*</span>
-              </>
-            }
+            required
+            title="Contribution links"
             description="Where can we find your contributions?"
           >
             <FieldArray
@@ -268,7 +265,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
           </FormSection>
 
           <FormSection
-            title={<>Impact</>}
+            title="Impact"
             description={
               <span>
                 Highlight how your contributions have positively impacted the
@@ -313,11 +310,8 @@ export function CeloApplicationForm({ address }: { address: Address }) {
           </FormSection>
 
           <FormSection
-            title={
-              <>
-                Impact metrics <span className="text-red-300">*</span>
-              </>
-            }
+            required
+            title="Impact metrics"
             description="What kind of impact has your project made?"
           >
             <FieldArray
@@ -354,11 +348,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
             />
           </FormSection>
           <FormSection
-            title={
-              <>
-                Funding sources <span className="text-red-300">*</span>
-              </>
-            }
+            title="Funding sources"
             description="From what sources have you received funding?"
           >
             <FieldArray
@@ -395,7 +385,7 @@ export function CeloApplicationForm({ address }: { address: Address }) {
                     required
                   >
                     <Select>
-                      {Object.entries(fundingSourceTypes).map(
+                      {Object.entries(celoFundingSourceTypes).map(
                         ([value, label]) => (
                           <option key={value} value={value}>
                             {label}
