@@ -15,12 +15,15 @@ import { SortFilter } from "~/components/SortFilter";
 import { ProjectItem, ProjectItemAwarded } from "./ProjectItem";
 import { useCurrentDomain } from "~/features/rounds/hooks/useRound";
 import { useIsShowActualVotes } from "~/features/rounds/hooks/useIsShowActualVotes";
+import { useBallot } from "~/features/ballot/hooks/useBallot";
 
 export function Projects() {
   const projects = useSearchProjects();
   const select = useSelectProjects();
   const results = useResults();
   const domain = useCurrentDomain();
+  const { data: ballot } = useBallot();
+  const allocations = ballot?.votes ?? [];
 
   const isShowActualVotes = useIsShowActualVotes();
 
@@ -36,7 +39,7 @@ export function Projects() {
         )}
       >
         <Button
-          variant="secondary"
+          variant={allocations?.length ? "secondary" : "primary"}
           onClick={select.add}
           disabled={!select.count}
           className="w-full mr-1 md:w-[248px] h-12 md:mr-2"
