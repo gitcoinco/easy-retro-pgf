@@ -4,7 +4,6 @@ import { useMemo, type PropsWithChildren } from "react";
 import { Alert } from "~/components/ui/Alert";
 import { Heading } from "~/components/ui/Heading";
 import { Skeleton } from "~/components/ui/Skeleton";
-import { config } from "~/config";
 import { useProjectCount } from "~/features/projects/hooks/useProjects";
 import { useIsShowActualVotes } from "~/features/rounds/hooks/useIsShowActualVotes";
 import { useCurrentRound } from "~/features/rounds/hooks/useRound";
@@ -32,11 +31,14 @@ export default function StatsPage() {
       </Heading>
 
       {useRoundState() === "RESULTS" ? (
-        <Stats />
+        <>
+          <Alert variant="info" className="mb-5" ><div className="font-semibold">Scores are calculated using square rooting the votes allocated.</div></Alert>
+          <Stats />
+        </>
       ) : (
         <Alert variant="info" className="mx-auto max-w-xs text-center">
           <div className="font-semibold">
-          The results will be revealed in{" "}
+            The results will be revealed in{" "}
           </div>
           <div className="text-2xl font-bold">
             <Skeleton
@@ -47,7 +49,7 @@ export default function StatsPage() {
             </Skeleton>
           </div>
           <div className="text-gray-500 font-semibold">
-          Days
+            Days
           </div>
         </Alert>
       )}
@@ -85,7 +87,7 @@ function Stats() {
       <div className="grid gap-2 md:grid-cols-3">
         <Stat title="Projects applied">{count.data?.count}</Stat>
         <Stat title="Projects voted for">{Object.keys(projects).length}</Stat>
-        <Stat title="Scores">
+        <Stat title="Total Scores">
           {isShowActualVotes ? actualTotalVotes : totalVotes}
         </Stat>
         <Stat title="People Voting">{totalVoters}</Stat>

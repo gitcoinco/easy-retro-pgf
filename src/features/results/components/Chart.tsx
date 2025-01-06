@@ -14,20 +14,21 @@ export default function ResultsChart({
     dataset.data.map((point) => ({
       id: dataset.id,
       x: point.x,
-      y: point.y || 0,
+      score: point.y || 0,
     }))
   ).flat();
 
   return (
     <ResponsiveBar
       data={barData}
-      keys={["y"]}
+      keys={["score"]}
       indexBy="x"
       margin={{ top: 30, right: 60, bottom: 60, left: 60 }}
-      colors={()=>`#2fe4ab`} 
+      colors={() => `#2fe4ab`}
       axisLeft={{
         tickSize: 5,
         tickPadding: 5,
+        legend: 'Score',
         tickRotation: 0,
         legendOffset: -40,
         legendPosition: "middle",
@@ -49,16 +50,25 @@ export default function ResultsChart({
             <text
               fontSize={10}
               textAnchor={textAnchor}
-              transform={`translate(${textX},${textY}) rotate(${-20})`}
+              transform={`translate(${textX},${textY}) rotate(${0})`}
             >
               <tspan>{value}</tspan>
             </text>
           </g>
         ),
-         tickPadding: 10,
+        tickPadding: 10,
       }}
       labelSkipWidth={0}
       labelSkipHeight={0}
+      theme={{
+        axis: {
+            legend: {
+                text: {
+                    fontSize: 16,
+                },
+            },
+        },
+    }}
     />
 );
 }
