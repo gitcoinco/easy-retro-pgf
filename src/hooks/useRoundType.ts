@@ -11,9 +11,9 @@ export function useRoundType() {
   useEffect(() => {
     const isCeloRound = router.asPath.includes(config.celoRoundId);
 
-    const isDripRound = config.dripsRounds.some((round) =>
+    const isDripRound = config.dripsRounds?.some((round) =>
       router.asPath.includes(round),
-    );
+    ) || false;
     setIsCeloRound(isCeloRound);
     setIsDripRound(isDripRound);
     setIsOtherRound(!(isCeloRound ?? isDripRound));
