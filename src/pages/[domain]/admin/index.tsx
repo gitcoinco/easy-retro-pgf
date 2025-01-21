@@ -55,7 +55,7 @@ function RoundForm({ round }: { round: RoundSchema }) {
         </FormControl>
 
         <FormControl className="flex-1" name="domain" label="Round URL">
-          <InputWithAddon addon="https://easyretropgf.xyz/" />
+          <InputWithAddon addon="https://raf.obol.org/" />
         </FormControl>
 
         <FormControl required label="Image" name="bannerImageUrl">

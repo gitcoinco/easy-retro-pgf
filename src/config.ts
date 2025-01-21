@@ -4,7 +4,7 @@ import * as allChains from "viem/chains";
 export const metadata = {
   title: "Obol RAF",
   description: "Open-source Obol Retroactive Funding platform",
-  url: "https://easyretropgf.xyz",
+  url: "https://raf.obol.org",
   image: "/api/og",
 };
 
