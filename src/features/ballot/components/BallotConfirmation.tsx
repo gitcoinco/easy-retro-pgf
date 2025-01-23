@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/Button";
 import { createComponent } from "~/components/ui";
 import { type Vote } from "../types";
 
-const feedbackUrl = "https://app.slack.com/client/T05G0QGB1DW/search"; //[TODO Hanan] shall change in future for the real round
+const feedbackUrl = "https://obol.typeform.com/RAFfeedback"; //[TODO Hanan] shall change in future for the real round
 
 const Card = createComponent(
   "div",
