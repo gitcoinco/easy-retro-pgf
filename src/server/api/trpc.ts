@@ -274,15 +274,15 @@ export const ballotProcedure = protectedProcedure.use(roundMiddleware).use(
   t.middleware(async ({ ctx, next }) => {
     const voterId = ctx.session?.user.name!;
     const roundId = ctx.round?.id!;
-    const type = ctx.round?.type as RoundTypes;
 
-    // Find or create ballot
-    const ballot = await ctx.db.ballotV2.upsert({
-      where: { voterId_roundId_type: { voterId, roundId, type } },
-      update: {},
-      create: { voterId, roundId, type },
-      include: { allocations: true },
+    // Find ballot
+    const ballot = await ctx.db.ballotV2.findFirst({
+      where: { voterId, roundId },
+      select: { id: true },
     });
+    if (!ballot) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Ballot not found" });
+    }
     return next({
       ctx: { ...ctx, voterId, roundId, ballotId: ballot.id, ballot },
     });
