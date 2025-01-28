@@ -74,7 +74,7 @@ export default function RoundPage() {
 }
 function TokenSymbol() {
   const token = useRoundToken();
-  return <>{token.data?.symbol}</>;
+  return <>OBOL</>;
 }
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { domain } = ctx.query;
