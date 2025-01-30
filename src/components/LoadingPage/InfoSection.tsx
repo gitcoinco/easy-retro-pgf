@@ -14,13 +14,13 @@ const InfoUnit = ({ heading, description }: { heading: string, description: stri
       <section id="what-is-raf" className="pt-24">
         <h2 className="text-black text-4xl leading-10 mb-10">What is RAF?</h2>
         <div className="sm:flex-col md:flex md:flex-row justify-between space-y-8 md:space-y-0 md:space-x-8 mb-8">
-          <InfoUnit heading="What is Obol’s Retroactive Funding (RAF)?" description="All Obol Distributed Validators (DVs) contribute 1% of their staking rewards into a retroactive funding program, which will reward projects building on distributed validators and generally working to decentralise Ethereum. These might include staking protocols & products, DV client teams, DV tooling, node operators, educators, and community squad stakers." />
-          <InfoUnit heading="Who is it for?" description="Any Obol Collective member can apply for retroactive funding, with their ecosystem impact and value-add being assessed based on KPIs such as TVL, code contributed, number of active DVs, etc." />
-          <InfoUnit heading="How does it work?" description="Using the voting power earned from your contributions, you can vote for the projects to receive retroactive funding. Together, the community will determine which projects have created the most value for the ecosystem and can best put the funds to use decentralising Ethereum." />
+          <InfoUnit heading="What is Obol’s Retroactive Funding (RAF)?" description="Obol Retroactive Funding rewards projects which strengthen and promote the Obol Collective’s Decentralized Operator Ecosystem and its ability to scale decentralized infrastructure networks like Ethereum." />
+          <InfoUnit heading="Who is it for?" description="The funding is designed to reward tangible impact while creating strong incentives for sustained innovation and collaboration by the community. Any project can apply for retroactive funding. Their ecosystem impact and value-add will be assessed via voting by the community of delegates, using impact metrics-based evaluation." />
+          <InfoUnit heading="How does it work?" description="The responsibility for allocating votes and determining funding distribution, through quadratic funding, lies with the Delegates. Together, the community will determine which projects have created the most value for the ecosystem." />
         </div>
         <div className="flex justify-center md:justify-start">
           <div className="w-36 h-10 px-6 py-3 bg-secondary-600 hover:bg-secondary-500 rounded-lg justify-center items-center inline-flex">
-            <Link target="_blank" href="https://blog.obol.org/1-percent-for-decentralisation/" className="text-secondary-100 hover:text-white text-base ">Learn more</Link>
+            <Link target="_blank" href="https://docs.obol.org/gov/governance/raf" className="text-secondary-100 hover:text-white text-base ">Learn more</Link>
           </div>
         </div>
       </section>

@@ -16,12 +16,11 @@ export const Footer = () => {
         <footer className="flex flex-col-reverse md:flex-row justify-between items-center py-6">
             <LoadingPageLogo />
             <div className="flex space-x-6 mb-8 md:mb-0">
-                <SocialLink href="https://www.linkedin.com/company/obol-labs" SvgIcon={LinkedinIcon} />
+                <SocialLink href="https://www.linkedin.com/showcase/obol-collective" SvgIcon={LinkedinIcon} />
                 <SocialLink href="https://github.com/ObolNetwork" SvgIcon={GithubIcon} />
                 <SocialLink href="https://x.com/Obol_Collective" SvgIcon={TwitterIcon} />
-                <SocialLink href="https://web.telegram.org" SvgIcon={TelegramIcon} />
                 <SocialLink href="https://www.youtube.com/@ObolCollective" SvgIcon={YoutubeIcon} />
-                <SocialLink href="https://discord.com/channels/849256203614945310/950735199124226109" SvgIcon={DiscordIcon} />
+                <SocialLink href="https://discord.gg/obol" SvgIcon={DiscordIcon} />
             </div>
         </footer>
     );
