@@ -32,7 +32,7 @@ export const fundingSourceTypes = {
 export const ApplicationSchema = z.object({
   name: z.string().min(3),
   bio: z.string().min(3),
-  websiteUrl: z.string().url().min(1),
+  websiteUrl: z.string().startsWith("www."),
   payoutAddress: EthAddressSchema,
   impactDescription: z.string().min(3),
   impactCategory: z.array(z.string()).default([]),
@@ -40,7 +40,7 @@ export const ApplicationSchema = z.object({
     .array(
       z.object({
         description: z.string().min(3),
-        url: z.string().url(),
+        url: z.string().startsWith("www."),
         number: z.number(),
       }),
     )
