@@ -45,6 +45,7 @@ export const allo = {
     [networks.baseGoerli]: "",
     [networks.celo]: "0x53a27a249518cb777e445a553b5ece124fd1a532",
     [networks.avalanche]: "0x5E3FF1a3B34c06Beb247b38484067c845cfe6fAE",
+    [networks.metis]: "0x7ab0edb54486c106e5fba340a055ec5715cb789b",
   },
 };
 
