@@ -8,6 +8,14 @@
 
 </div>
 
+## Key Steps
+- Set round timing variables in the .env. The application only works with one round at the time.
+- Projects applications open
+- Admins review applications and approve if relevant
+- Voting opens by whitelisted addresses (by admins)
+- Results are displayed
+- Distribution can be done
+
 <div style="display:flex">
 
 [<img width="49%" src="./docs/images/screenshot_landing_project.png">](https://easyretropgf.xyz/sustainable-urban-development)

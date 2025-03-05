@@ -2,9 +2,7 @@
 
 Once the voting has ended you can distribute tokens to the projects.
 
-Navigate to:
-
-- https://easy-retro-pgf.vercel.app/distribute
+Navigate to: https://easy-retro-pgf-ochre.vercel.app/distribute
 
 Before you should have configured your chosen payout token: `NEXT_PUBLIC_TOKEN_ADDRESS`
 
