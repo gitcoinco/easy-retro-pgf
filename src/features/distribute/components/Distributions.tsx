@@ -13,7 +13,7 @@ import {
   DistributionSchema,
 } from "~/features/distribute/types";
 import { api } from "~/utils/api";
-import { usePoolAmount } from "../hooks/useAlloPool";
+import { usePoolAmount, usePoolToken } from "../hooks/useAlloPool";
 import { ConfirmDistributionDialog } from "./ConfirmDistributionDialog";
 import { ExportCSV } from "./ExportCSV";
 import { calculatePayout } from "../utils/calculatePayout";
@@ -25,7 +25,7 @@ export function Distributions() {
   const [confirmDistribution, setConfirmDistribution] = useState<
     Distribution[]
   >([]);
-
+  const { data: poolToken, isPending: isPoolTokenPending } = usePoolToken();
   const poolAmount = usePoolAmount();
   const votes = api.results.votes.useQuery();
   const projectIds = Object.keys(votes.data?.projects ?? {});
@@ -56,7 +56,7 @@ export function Distributions() {
               ? parseFloat(
                   formatUnits(
                     calculatePayout(p.amount, totalVotes, totalTokens),
-                    18,
+                    poolToken?.decimals ?? 18,
                   ),
                 )
               : p.amount,
@@ -67,7 +67,12 @@ export function Distributions() {
   if (!votes.isPending && !projectIds.length) {
     return <EmptyState title="No project votes found" />;
   }
-  if (projects.isPending ?? votes.isPending ?? poolAmount.isPending) {
+  if (
+    projects.isPending ??
+    votes.isPending ??
+    poolAmount.isPending ??
+    isPoolTokenPending
+  ) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner className="size-6" />
